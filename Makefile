@@ -14,8 +14,13 @@ LIBRARY_FILES:=$(shell find $(LIBRARY_FOLDERS) -name "*.py" -print)
 TEST_FOLDERS:=test
 TEST_FILES:=$(shell find $(TEST_FOLDERS) -name "*.py" -print)
 
+REPO:=`git config --get remote.origin.url`
+BRANCH=`git branch --show-current`
+COMMIT=`git rev-parse HEAD`
+VERSION=`git tag | tail -1`
+
 DOC_S3_BUCKET:=layer-cake
-DOC_VERSION:=$(shell tail -1 DOCUMENTATION)
+DOC_VERSION:=$(VERSION)
 DOC_LATEST=https://$(DOC_S3_BUCKET).s3.ap-southeast-2.amazonaws.com/$(DOC_VERSION)/index.html
 
 # https://layer-cake.s3.ap-southeast-2.amazonaws.com/0.0.0/index.html
@@ -26,23 +31,27 @@ DOC_LATEST=https://$(DOC_S3_BUCKET).s3.ap-southeast-2.amazonaws.com/$(DOC_VERSIO
 # test coverage.
 REQUIRED_COMMAND+=pytest pycodestyle pydocstyle coverage
 
-test: code_test code_coverage code_style code_doc
+test: code_test code_coverage code_style
 
 code_test:
 	pytest test
 
 code_coverage:
 	coverage run -m pytest
+	coverage json
+	jq .totals.percent_covered_display coverage.json | sed 's/"//g' > coverage_percent
+	PERCENT=`cat coverage_percent`; if test $$PERCENT -lt 85; then echo "red"; elif test $$PERCENT -lt 95; then echo "amber"; else echo "brightgreen"; fi > coverage_colour
 	coverage html
 
-code_style:
-	pycodestyle -v src
+clean::
+	rm -f .coverage coverage.json
+	rm -rf htmlcov
+	rm -f coverage_percent coverage_colour
 
-code_doc:
-	pydocstyle -v src
+code_style:
+	pycodestyle src
 
 clean::
-	rm -rf .noseids .coverage coverage
 	find src test -depth -type d -name "__pycache__" -exec rm -rf "{}" \;
 
 # Packaging - build the package and push to a package
@@ -55,19 +64,19 @@ INIT_FILE:=src/layer_cake/__init__.py
 package: package_build package_push
 
 package_init:
-	package-init LICENSE DESCRIPTION FROM > $(INIT_FILE)
+	python3 template/cheetah-replace.py template/__init__.tmpl repo=$(REPO) branch=$(BRANCH) commit=$(COMMIT) version=$(VERSION) > $(INIT_FILE)
 
 package_build: package_init code_coverage
 	python3 template/cheetah-replace.py template/pyproject.tmpl documentation=$(DOC_LATEST) > pyproject.toml
-	coverage json
-	jq .totals.percent_covered_display coverage.json | sed 's/"//g' > coverage_percent
 	python3 template/cheetah-replace.py template/README.tmpl \
-		coverage_percent=`cat coverage_percent` coverage_colour=brightgreen \
+		coverage_percent=`cat coverage_percent` coverage_colour=`cat coverage_colour` \
 		integration_status=passing integration_colour=cyan > README.md
+	git tag | tail -1 > VERSION
+	python3 template/version-after.py `cat VERSION`; echo
 	rm -rf build dist
 	find src -depth -type d -name "*.egg-info" -exec rm -rf "{}" \;
 	python -m build
-	git commit -m "Auto-increment build number." --quiet VERSION $(INIT_FILE)
+	#git commit -m "Auto-increment build number." --quiet VERSION $(INIT_FILE)
 
 # pip install -i https://test.pypi.org/pypi/ --extra-index-url https://pypi.org/simple ansar-connect
 package_push: find_shareable
@@ -81,16 +90,6 @@ clean::
 	rm -rf build dist
 	find src -depth -type d -name "*.egg-info" -exec rm -rf "{}" \;
 	find . -depth -type d -name ".ansar-home" -exec rm -rf "{}" \;
-
-#
-# TRIAL
-trial::
-	# coverage_percent=87 bash template/trial.sh
-	python3 template/cheetah-replace.py template/pyproject.tmpl documentation=
-
-#	echo $(README_TEMPLATE) > template.py
-#	pytho3 template.py
-
 
 # Documentation - construct materials for a static website,
 # run quality checks and push to a public url.
@@ -133,7 +132,7 @@ show_test:
 	done
 
 show_coverage:
-	@xdg-open file://$(PWD)/coverage/index.html
+	@xdg-open file://$(PWD)/htmlcov/index.html
 
 show_py:
 	@find src test -name "*.py" -print | sed -e "s/^/<Y> /"

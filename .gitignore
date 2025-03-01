@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+.vscode/
+
 # Distribution / packaging
 .Python
 build/
@@ -41,7 +43,10 @@ htmlcov/
 .tox/
 .nox/
 .coverage
+.coveragerc
 .coverage.*
+coverage_*
+coverage.json
 .cache
 nosetests.xml
 coverage.xml
