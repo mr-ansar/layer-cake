@@ -96,7 +96,7 @@ def create_an_object(object_type, object_ending, parent_address, args, kw_args):
 	- `args`: tuple of values, the args forwarded on to the object
 	__init__ call using `*args`.
 	- `kw_args`: dict of named values, the named args forwarded on to the
-	 object __init__ call using `**kw_args`.
+	object __init__ call using `**kw_args`.
 
 	Returns:
 
