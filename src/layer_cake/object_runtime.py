@@ -64,6 +64,14 @@ class AddOn(object):
 		cs = (create, stop)
 		PB.add_ons.append(cs)
 
+# A silent intermediary between the worlds of sync and
+# async.
+class QuietChannel(Channel):
+	def __init__(self):
+		Channel.__init__(self)
+
+bind_point(QuietChannel, lifecycle=False, message_trail=False, execution_trace=False, user_logs=USER_LOG.NONE)
+
 # A non-logging channel.
 root_lock = threading.RLock()
 
