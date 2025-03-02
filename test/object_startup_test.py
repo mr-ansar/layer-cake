@@ -52,6 +52,7 @@ def birdsnest(self, a: dict[int, dict[str,list[C]]]):
 lc.bind_routine(empty)
 lc.bind_routine(single)
 lc.bind_routine(unit_test)
+lc.bind_routine(say_hi)
 lc.bind_routine(birdsnest)
 
 from os.path import join
@@ -97,17 +98,31 @@ class TestObjectStartup(TestCase):
 		assert 'test-3' in h
 		assert h['test-3'].log_storage() == 250000000
 
+	def test_start_tear(self):
+		# Testing the low-level runtime management but
+		# cant use the atexit mechanism.
+		start_up(self_cleaning=False)
+		PB.exit_status = None
+		tear_down()
+		assert True
+
 	def test_start_light(self):
-		lc.create(unit_test)
-		assert PB.exit_status is 0
+		lc.create(unit_test, self_cleaning=False)
+		PB.exit_status = None
+		tear_down()
+		assert isinstance(PB.output_value, tuple)
+		assert isinstance(PB.output_value[0], bool)
+		assert PB.output_value[0] == True
+		assert isinstance(PB.output_value[1], Boolean)
 
 	def test_start_sticky(self):
-		lc.create(unit_test, sticky=True)
+		lc.create(unit_test, sticky=True, self_cleaning=False)
+		PB.exit_status = None
+		tear_down()
 		lc.remove_folder('.layer-cake')
-		assert PB.exit_status is 0
 
 	def test_start_recording(self):
-		return
-		lc.create(say_hi, recording=True)
+		lc.create(say_hi, recording=True, self_cleaning=False)
+		PB.exit_status = None
+		tear_down()
 		lc.remove_folder('.layer-cake')
-		assert PB.exit_status is 0

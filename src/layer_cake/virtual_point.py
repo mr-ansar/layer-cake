@@ -52,7 +52,7 @@ from .convert_hints import *
 
 
 __all__ = [
-	'PRA',
+	'VP',
 	'Point',
 	'PointRuntime',
 	'T1', 'T2', 'T3', 'T4',
@@ -63,6 +63,7 @@ __all__ = [
 	'completed_object',
 	'Threaded',
 	'Channel',
+	'Machine',
 	'object_dispatch',
 	'bind_point',
 	'halt',
@@ -72,10 +73,10 @@ __all__ = [
 # Point Runtime Addresses
 # Initialized during startup or default
 # to null, i.e. not available or no effect.
-PRA = Gas(log_address=NO_SUCH_ADDRESS,
+VP = Gas(log_address=NO_SUCH_ADDRESS,
 	timer_address=NO_SUCH_ADDRESS,
 	test_address=NO_SUCH_ADDRESS,
-	circuit_address=None,
+	circuit_address=NO_SUCH_ADDRESS,
 	thread_classes={})
 
 # Timing facility, i.e. Point.start().
@@ -355,7 +356,7 @@ class Point(object):
 		:param seconds: time span before expiry
 		:type seconds: float
 		"""
-		self.send(StartTimer(timer, seconds, repeating), PRA.timer_address)
+		self.send(StartTimer(timer, seconds, repeating), VP.timer_address)
 
 	def cancel(self, timer):
 		"""Abort the specified timer for this object.
@@ -367,7 +368,7 @@ class Point(object):
 		:param timer: the pending timer
 		:type timer: a registered class
 		"""
-		self.send(CancelTimer(timer), PRA.timer_address)
+		self.send(CancelTimer(timer), VP.timer_address)
 
 	def complete(self, value=None):
 		"""Cause an immediate termination. The method never returns.
@@ -474,7 +475,7 @@ class Point(object):
 
 		if isinstance(a, str):
 			e.text = a
-			send_a_message(e, PRA.log_address, self.object_address)
+			send_a_message(e, VP.log_address, self.object_address)
 			return
 
 		b, first = bytearray(), True
@@ -493,7 +494,7 @@ class Point(object):
 				x = s.encode('utf-8')
 			b += x
 		e.text = b.decode('ascii', 'backslashreplace')
-		send_a_message(e, PRA.log_address, self.object_address)
+		send_a_message(e, VP.log_address, self.object_address)
 
 	def pass_fail(self, condition, source, line, text):
 		p = PointTest()
@@ -507,7 +508,7 @@ class Point(object):
 		encoded = text.encode('utf-8')
 		decoded = encoded.decode('ascii', 'backslashreplace')
 		p.text = decoded
-		send_a_message(p, PRA.test_address, self.object_address)
+		send_a_message(p, VP.test_address, self.object_address)
 
 	def debug(self, *a):
 		"""Generate a log at level DEBUG.
@@ -687,10 +688,10 @@ def bind_point(point, return_type=None, thread=None, lifecycle=True, message_tra
 
 	if thread:
 		try:
-			q = PRA.thread_classes[thread]
+			q = VP.thread_classes[thread]
 		except KeyError:
 			q = set()
-			PRA.thread_classes[thread] = q
+			VP.thread_classes[thread] = q
 		q.add(point)
 
 def halt(address):

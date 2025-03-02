@@ -20,7 +20,7 @@ __all__ = [
 class ObjectWithPump(lcp.Pump):
 	def __init__(self):
 		lcp.Pump.__init__(self)
-		self.address = lc.NO_SUCH_ADDRESS			# Identity of this object.
+		self.object_address = lc.NO_SUCH_ADDRESS	# Identity of this object.
 		self.queue_address = lc.NO_SUCH_ADDRESS		# Where are messages processed.
 		self.parent_address = lc.NO_SUCH_ADDRESS	# Who created this object.
 		self.to_address = lc.NO_SUCH_ADDRESS		# Delivery address on current message.
@@ -30,7 +30,7 @@ class ObjectWithPump(lcp.Pump):
 
 class ObjectNoPump(object):
 	def __init__(self):
-		self.address = lc.NO_SUCH_ADDRESS			# Identity of this object.
+		self.object_address = lc.NO_SUCH_ADDRESS	# Identity of this object.
 		self.queue_address = lc.NO_SUCH_ADDRESS		# Where are messages processed.
 		self.parent_address = lc.NO_SUCH_ADDRESS	# Who created this object.
 		self.to_address = lc.NO_SUCH_ADDRESS		# Delivery address on current message.

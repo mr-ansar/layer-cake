@@ -50,9 +50,9 @@ def log_to_stderr(log):
 	name = log.name.split('.')[-1]
 	state = log.state
 	if state is None:
-		p = '[%08d] %s %s <%08x>%s - %s\n' % (PID, mark, log.tag, log.address[-1], name, log.text)
+		p = '[%08d] %s %s <%08x>%s - %s\n' % (PID, mark, log.tag.value, log.address[-1], name, log.text)
 	else:
-		p = '[%08d] %s %s <%08x>%s[%s] - %s\n' % (PID, mark, log.tag, log.address[-1], name, state, log.text)
+		p = '[%08d] %s %s <%08x>%s[%s] - %s\n' % (PID, mark, log.tag.value, log.address[-1], name, state, log.text)
 	sys.stderr.write(p)
 	sys.stderr.flush()
 

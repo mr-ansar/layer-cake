@@ -115,9 +115,9 @@ class RollingLog(object):
 		name = log.name.split('.')[-1]
 		state = log.state
 		if state is None:
-			line = '%s %s <%08x>%s - %s\n' % (lt, log.tag, log.address[-1], name, log.text)
+			line = '%s %s <%08x>%s - %s\n' % (lt, log.tag.value, log.address[-1], name, log.text)
 		else:
-			line = '%s %s <%08x>%s[%s] - %s\n' % (lt, log.tag, log.address[-1], name, state, log.text)
+			line = '%s %s <%08x>%s[%s] - %s\n' % (lt, log.tag.value, log.address[-1], name, state, log.text)
 		self.opened.write(line)
 		self.opened.flush()
 

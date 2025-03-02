@@ -378,28 +378,6 @@ def p2w_address(c, p, t):
 	w = list(p)
 	return w
 
-'''
-def p2w_any(c, p, t):
-	if isinstance(p, Incognito):	# Created during a previous decoding operation.
-		t = p.type_name				# Global identifier
-		w = p.decoded_word			# Generic body
-		if p.saved_pointers:
-			c.portable_pointer.update(p.saved_pointers)	 # Include upstream pointer materials.
-			r = [k for k in p.saved_pointers.keys()]		# List of pointers.
-		else:
-			r = []
-	else:
-		a = UserDefined(p.__class__)
-		s = c.any_stack
-		s.append(set())
-		t = python_to_word(c, a, Type())
-		w = python_to_word(c, p, a)
-		n = s.pop()
-		s[-1].update(n)
-		r = [x for x in n]
-
-	return [t, w, r]
-'''
 def p2w_any(c, p, t):
 	a = type(p)
 	if a == Incognito:	# Created during a previous decoding operation.
@@ -418,7 +396,7 @@ def p2w_any(c, p, t):
 		n = s.pop()
 		s[-1].update(n)
 		r = [x for x in n]
-	elif isinstance(p, (list, tuple)) and len(p) == 2 and isinstance(p[1], Portable):
+	elif isinstance(p, tuple) and len(p) == 2 and isinstance(p[1], Portable):
 		s = c.any_stack
 		s.append(set())
 		t = python_to_word(c, p[1], Type())
@@ -427,7 +405,7 @@ def p2w_any(c, p, t):
 		s[-1].update(n)
 		r = [x for x in n]
 	else:
-		raise ValueError(f'cannot encode any that is not an Incognito, message or pair')
+		raise ValueError(f'encoding any, expecting message, tuple[2] or Incognito.')
 
 	return [t, w, r]
 
@@ -491,7 +469,6 @@ p2w = {
 	(Message, UserDefined): p2w_message,
 	(Message, Any): p2w_any,
 	(tuple, Any): p2w_any,
-	(list, Any): p2w_any,
 
 	# Support for Word, i.e. passthru anything
 	# that could have been produced by the functions
@@ -833,27 +810,7 @@ def w2p_address(c, w, t):
 def w2p_null_pointer(c, w, t):
 	return [0, None]
 
-# Covert inbound 2-word tuple into the original
-# object
-#
-'''
-def w2p_any(c, w, t):
-	a = w[0]	# Inbound type name.
-	b = w[1]	# A generic word.
-	r = w[2]	# Pointer aliases.
-	e = word_to_python(c, a, Type())		# Type to class.
-	if e is None:							# No such type.
-		y = c.portable_pointer				# Everything shipped
-		h = [x for x in r if x not in y]	# Needed for this any
-		if h:
-			raise ValueError(f'cannot go incognito - unresolved pointers e.g. "{h[0]}"')
-		m = {x: y[x] for x in r}			# Needed for this any
-		p = Incognito(a, b, m)
-	else:
-		p = word_to_python(c, b, e)
-	return p
-'''
-
+# Covert inbound 3-word tuple into the original object
 def w2p_any(c, w, t):
 	a = w[0]	# Inbound type name.
 	b = w[1]	# A generic word.
@@ -870,7 +827,7 @@ def w2p_any(c, w, t):
 		p = word_to_python(c, b, UserDefined(e))	# Need to pass back data and type.
 	elif isinstance(e, Portable):
 		p = word_to_python(c, b, e)		# Need to pass back data and type.
-		p = [p, e]
+		p = (p, e)
 	return p
 
 #

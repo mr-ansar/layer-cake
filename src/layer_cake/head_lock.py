@@ -134,7 +134,7 @@ def head_lock(self, path, name, group_pid=None):
 	except OSError:
 		# Address a not needed in completion code.
 		f = File(lock, LockedOut)
-		lo, _ = f.recover()
+		lo = f.recover()
 		return lo
 
 bind_routine(head_lock)

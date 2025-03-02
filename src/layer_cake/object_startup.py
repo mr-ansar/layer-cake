@@ -55,12 +55,15 @@ from .platform_system import *
 from .head_lock import *
 
 __all__ = [
+	'FAULTY_EXIT',
 	'StartStop',
 	'HomeRole',
 	'open_role',
 	'open_home',
 	'create',
 ]
+
+FAULTY_EXIT = 71
 
 #
 class Unassigned(object): pass
@@ -387,7 +390,7 @@ bind_routine(start_vector, lifecycle=True, message_trail=True, execution_trace=T
 	object_type=Type(),
 	argument=MapOf(Unicode(), Any()))
 
-def run_object(home, role, object_type, args, logs, locking):
+def run_object(home, role, object_type, args, logs, locking, self_cleaning):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
 	early_return = False
 	output = None
@@ -400,7 +403,7 @@ def run_object(home, role, object_type, args, logs, locking):
 		ps()
 
 		# Start the async runtime.
-		root = start_up(logs)
+		root = start_up(logs, self_cleaning)
 
 		# Exclusive access to disk-based resources.
 		if locking or isinstance(logs, RollingLog):
@@ -409,7 +412,7 @@ def run_object(home, role, object_type, args, logs, locking):
 			m = root.select(Ready, Completed)
 			if isinstance(m, Completed):	# Cannot lock.
 				root.debrief()
-				c = Faulted(f'role {home.role_name} is running')
+				c = Faulted(f'role {home.lock.path} is running')
 				raise Incomplete(c)
 
 		# Respond to daemon context, i.e. send output and close stdout.
@@ -451,17 +454,17 @@ def run_object(home, role, object_type, args, logs, locking):
 	finally:
 		root.abort()					# Stop the lock if present.
 		while root.working():
-			root.select(Completed)
+			m = root.select(Completed)
 			root.debrief()
 
 		rt = object_type.__art__
-		if isinstance(rt, RoutineRuntime):
+		if isinstance(rt, (RoutineRuntime, PointRuntime)):
 			t = rt.return_type
 		else:
 			t = None
 
 		if not isinstance(t, UserDefined):
-			output = [output, t]
+			output = (output, t)
 		home.stopped(output)
 
 	if early_return:		# Already sent output. Silence any output.
@@ -500,7 +503,7 @@ def object_output(value, pretty_format=True):
 			return
 	except CodecError as e:
 		value = Faulted(str(e))
-		PB.exit_status = 69
+		PB.exit_status = FAULTY_EXIT
 		if not CL.pure_object:
 			object_error(value)
 			return
@@ -512,7 +515,7 @@ def object_output(value, pretty_format=True):
 #
 def create(object_type, object_table=None,
 	environment_variables=None,
-	sticky=False, model=False, tmp=False, recording=False):
+	sticky=False, model=False, tmp=False, recording=False, self_cleaning=True):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -566,7 +569,7 @@ def create(object_type, object_table=None,
 
 		args = {k: from_any(v) for k, v in settings.items()}
 
-		output = run_object(home, role, object_type, args, logs, locking)
+		output = run_object(home, role, object_type, args, logs, locking, self_cleaning)
 	except (CodecError, ValueError, KeyError) as e:
 		s = str(e)
 		output = Faulted(s)
@@ -576,7 +579,7 @@ def create(object_type, object_table=None,
 	def end():
 		exit_status = 0
 		if isinstance(output, Faulted):
-			exit_status = output.exit_status if output.exit_status is not None else 69
+			exit_status = output.exit_status if output.exit_status is not None else FAULTY_EXIT
 			if not CL.pure_object:
 				object_error(output)
 				return exit_status
@@ -584,4 +587,5 @@ def create(object_type, object_table=None,
 		object_output(output)
 		return exit_status
 
+	PB.output_value = output
 	PB.exit_status = end()

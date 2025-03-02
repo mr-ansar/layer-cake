@@ -126,7 +126,7 @@ def first_letters(k):
 def to_any(v, t):
 	if isinstance(t, UserDefined):
 		return v
-	return [v, t]
+	return (v, t)
 
 def from_any(v):
 	if isinstance(v, (list, tuple)) and len(v) == 2 and isinstance(v[1], Portable):

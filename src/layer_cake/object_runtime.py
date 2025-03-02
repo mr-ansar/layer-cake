@@ -36,6 +36,8 @@ from .virtual_point import *
 from .point_runtime import *
 from .general_purpose import *
 from .object_logs import *
+from .log_agent import *
+from .countdown_timer import *
 
 __all__ = [
 	'PB',
@@ -52,6 +54,7 @@ PB = Gas(
 	root=None,					# The top of the hierarchy.
 	thread_dispatch={},
 	add_ons=[],
+	output_value=None,
 	exit_status=None,
 )
 
@@ -75,7 +78,7 @@ bind_point(QuietChannel, lifecycle=False, message_trail=False, execution_trace=F
 # A non-logging channel.
 root_lock = threading.RLock()
 
-def start_up(logs=log_to_nowhere):
+def start_up(logs=log_to_nowhere, self_cleaning=True):
 	"""Start the async runtime. Return the root object.
 
 	This is the function that actually creates the threads and objects
@@ -94,19 +97,27 @@ def start_up(logs=log_to_nowhere):
 		root_lock.acquire()
 		root = PB.root
 		if root is None:
-			atexit.register(tear_down)
+			if self_cleaning:
+				atexit.register(tear_down)
 
 			nowhere = Point()
+
 			root = nowhere.create(QuietChannel)
+
 			PB.root = root
-			#PRA.log_address = root.create(LogAgent, logs)
-			#PRA.timer_address = root.create(cotems():
-			#	t = root.create(object_dispatch)
-			#	for c in s:
-			#		set_queue(c, t)
-			#	PB.thread_dispatch[k] = t
-			#for cs in PB.add_ons:
-			#	cs[0](root)
+			VP.log_address = root.create(LogAgent, logs)
+			VP.timer_address = root.create(CountdownTimer)
+			#PB.test_address = root.create(TestRecord)
+			VP.circuit_address = root.create(timer_circuit, VP.timer_address)
+			bg = root.create(object_dispatch)
+			set_queue(None, bg)
+			for k, s in VP.thread_classes.items():
+				t = root.create(object_dispatch)
+				for c in s:
+					set_queue(c, t)
+				PB.thread_dispatch[k] = t
+			for cs in PB.add_ons:
+				cs[0](root)
 	finally:
 		root_lock.release()
 	return root
@@ -122,7 +133,6 @@ def tear_down():
 		root = PB.root
 		if root:
 			s = Stop()
-			'''
 			for cs in reversed(PB.add_ons):
 				cs[1](root)
 			for _, t in PB.thread_dispatch.items():
@@ -131,12 +141,14 @@ def tear_down():
 			bg = get_queue_address(None)
 			root.send(s, bg)
 			root.select(Completed)
-			halt(PRA.circuit_address)
-			root.select(Completed)co
+			halt(VP.circuit_address)
+			root.select(Completed)
+			root.send(s, VP.timer_address)
+			root.select(Completed)
+			root.send(s, VP.log_address)
 			root.select(Completed)
 			drop_channel(root)
-			'''
-			root = None
+			PB.root = None
 	finally:
 		root_lock.release()
 
@@ -171,7 +183,7 @@ def drop_channel(c):
 	"""
 	if c.__art__.lifecycle:
 		c.log(USER_TAG.DESTROYED, 'Destroyed')
-	destroy_an_object(c.address)
+	destroy_an_object(c.object_address)
 
 #
 #
