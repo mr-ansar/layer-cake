@@ -44,6 +44,7 @@ __all__ = [
 import os
 import sys
 from .virtual_memory import *
+from .convert_type import *
 from .message_memory import *
 from .virtual_codec import *
 from .json_codec import *
@@ -104,6 +105,7 @@ DEQUOTED = {
 	TimeDelta: w2p_delta,
 	UUID: w2p_uuid,
 	Type: w2p_type,
+	Any: w2p_any,
 }
 
 def decode_argument(c, s, t):
@@ -111,6 +113,11 @@ def decode_argument(c, s, t):
 	q = DEQUOTED.get(type(t), None)
 	if q is not None:
 		d = q(c, s, t)
+	elif s is None:
+		if isinstance(t, Boolean):
+			return True
+		e = type_signature(t)
+		raise ValueError(f'empty value for type "{e}"')
 	else:
 		j = f'{{"value": {s} }}'
 		d = c.decode(j, t)

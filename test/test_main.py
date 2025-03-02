@@ -17,4 +17,4 @@ def main(self, a: dict[int, dict[str,list[C]]]=None, b: int=10, c: int=0, d: C=N
 lc.bind_routine(main)
 
 if __name__ == '__main__':
-	lc.create(main)
+	lc.create(main, sticky=True)

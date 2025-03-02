@@ -33,6 +33,7 @@ import time
 import signal
 import uuid
 import datetime
+import tempfile
 from os.path import join
 from .virtual_memory import *
 from .convert_memory import *
@@ -512,10 +513,49 @@ def object_output(value, pretty_format=True):
 	# output, i.e. cant open output file or failed encoding.
 	object_encode(value, pretty_format=pretty_format)
 
+def edit_settings(self, home):
+	editor = os.getenv('LC_EDITOR') or 'vi'
+
+	try:
+		fd, name = tempfile.mkstemp()
+		os.close(fd)
+
+		# Prepare materials for editor.
+		temporary = File(name, MapOf(Unicode(), Any()), decorate_names=False)
+		temporary.store(home.settings())
+
+		# Setup detection of change.
+		modified = os.stat(name).st_mtime
+
+		# Run the editor.
+		a = self.create(Utility, editor, name)
+		self.assign(a, editor)
+		m = self.select(Completed, Faulted, Stop)
+		if isinstance(m, Faulted):
+			return m
+		e = self.debrief()
+		value = m.value
+		if isinstance(value, Faulted):
+			return value
+
+		# Was the file modified?
+		if os.stat(name).st_mtime == modified:
+			return Faulted(f'settings not modified')
+
+		# Validate contents and update the runtime.
+		a = temporary.recover()
+		home.settings.update(a)
+	except (CodecError, OSError) as e:
+		return Faulted(f'cannot update settings ({e})')
+	finally:
+		os.remove(name)
+	return True
+
 #
 def create(object_type, object_table=None,
 	environment_variables=None,
-	sticky=False, model=False, tmp=False, recording=False, self_cleaning=True):
+	sticky=False, model=False, tmp=False, recording=False,
+	self_cleaning=True):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -542,19 +582,29 @@ def create(object_type, object_table=None,
 		# Current arguments not included.
 		if CL.factory_reset:
 			home.settings.update({})
-			raise Incomplete(None)
+			raise Incomplete(Ack())
+
+		if CL.create_settings:
+			home.settings.update(argument)
+			raise Incomplete(Ack())
 
 		if CL.dump_settings:
-			# ES.output_value = argment
-			raise Incomplete(home.settings())
+			settings = (home.settings(), MapOf(Unicode(), Any()))
+			raise Incomplete(settings)
 
 		# Add/override current settings with values from
 		# the command line.
 		settings = home.settings()
+
+		# This needs to happen within the async context.
+		# if CL.edit_settings:
+		# edit = edit_settings(home)
+		# raise Incomplete(edit)
+
 		for k, v in argument.items():
 			settings[k] = v
 
-		if CL.store_settings:
+		if CL.update_settings:
 			home.settings.update()
 			raise Incomplete(Ack())
 

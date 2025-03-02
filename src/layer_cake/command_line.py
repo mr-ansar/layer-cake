@@ -65,10 +65,12 @@ class CommandLine(object):
 	:type point_of_origin: enum
 	:param help: enable output of help page
 	:type help: bool
+	:param create_settings: save the specified settings
+	:type create_settings: bool
+	:param update_settings: add/override the specified settings
+	:type update_settings: bool
 	:param dump_settings: enable output of current settings
 	:type dump_settings: bool
-	:param store_settings: enable saving of the current settings
-	:type store_settings: bool
 	:param edit_settings: enable visual editing of the current settings
 	:type edit_settings: bool
 	:param factory_reset: discard stored settings
@@ -88,9 +90,10 @@ class CommandLine(object):
 			home_path: str=None, role_name: str=None,
 			point_of_origin=None,
 			help: bool=False,
-			dump_settings: bool=False, store_settings: bool=False,
-			edit_settings: bool=False,
+			create_settings: bool=False, update_settings: bool=False,
 			factory_reset: bool=False,
+			dump_settings: bool=False,
+			edit_settings: bool=False,
 			settings_file: str=None, output_file: str=None,
 			group_pid: int=None, group_listen: int=None):
 		self.pure_object = pure_object
@@ -99,10 +102,11 @@ class CommandLine(object):
 		self.role_name = role_name
 		self.point_of_origin = point_of_origin
 		self.help = help
-		self.dump_settings = dump_settings
-		self.store_settings = store_settings
-		self.edit_settings = edit_settings
+		self.create_settings = create_settings
+		self.update_settings = update_settings
 		self.factory_reset = factory_reset
+		self.dump_settings = dump_settings
+		self.edit_settings = edit_settings
 		self.settings_file = settings_file
 		self.output_file = output_file
 		self.group_pid = group_pid

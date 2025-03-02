@@ -99,6 +99,7 @@ __all__ = [
 	'w2p_uuid',
 	'w2p_enumeration',
 	'w2p_type',
+	'w2p_any',
 ]
 
 #
