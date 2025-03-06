@@ -21,10 +21,6 @@ def Main_Start(self, message):
 def Main_Completed(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnCompleted):
-		# VALUE IS;
-		# Faulted
-		# Message
-		# tuple(value, portable)
 		d(message)
 
 def Main_Stop(self, message):

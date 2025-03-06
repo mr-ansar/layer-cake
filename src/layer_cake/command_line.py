@@ -69,6 +69,8 @@ class CommandLine(object):
 	:type edit_settings: bool
 	:param factory_reset: discard stored settings
 	:type factory_reset: bool
+	:param delete_settings: remove persisted settings
+	:type delete_settings: bool
 	:param settings_file: use the settings in the specified file
 	:type settings_file: str
 	:param output_file: place any output in the specified file
@@ -89,6 +91,7 @@ class CommandLine(object):
 			factory_reset: bool=False,
 			dump_settings: bool=False,
 			edit_settings: bool=False,
+			delete_settings: bool=False,
 			settings_file: str=None, output_file: str=None,
 			keep_logs: bool=False,
 			group_pid: int=None, group_listen: int=None):
@@ -104,6 +107,7 @@ class CommandLine(object):
 		self.factory_reset = factory_reset
 		self.dump_settings = dump_settings
 		self.edit_settings = edit_settings
+		self.delete_settings = delete_settings
 		self.settings_file = settings_file
 		self.output_file = output_file
 		self.keep_logs = keep_logs

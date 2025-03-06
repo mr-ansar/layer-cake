@@ -550,6 +550,10 @@ def create(object_type, object_table=None,
 
 		home_path = os.path.abspath(home_path)
 		home_role = join(home_path, role_name)
+
+		if CL.create_settings and isinstance(home.settings, HomeFile):
+			raise Incomplete(Faulted('settings already present'))
+
 		if CL.create_settings:
 			f = Folder(home_role)
 			s = f.file('settings', MapOf(Unicode(), Any()))
@@ -567,6 +571,10 @@ def create(object_type, object_table=None,
 		HR.home_role = home_role
 		HR.role_name = role_name
 
+		expect_settings = CL.update_settings or CL.dump_settings or CL.factory_reset
+		if expect_settings and not isinstance(home.settings, HomeFile):
+			raise Incomplete(Faulted('no settings available'))
+
 		# Non-operational features, i.e. command object not called.
 		# Current arguments not included.
 		if CL.factory_reset:
@@ -576,23 +584,17 @@ def create(object_type, object_table=None,
 		if CL.dump_settings:
 			settings = (home.settings(), MapOf(Unicode(), Any()))
 			object_encode(settings)
-			raise Incomplete(None)
+			raise Incomplete(None)		# Settings on stdout.
 
 		# Add/override current settings with values from
 		# the command line.
 		settings = home.settings()
-
-		# This needs to happen within the async context.
-		# if CL.edit_settings:
-		# edit = edit_settings(home)
-		# raise Incomplete(edit)
-
 		for k, v in argument.items():
 			settings[k] = v
 
 		if CL.update_settings:
 			home.settings.update()
-			raise Incomplete(Ack())
+			raise Incomplete(True)
 
 		if CL.help:
 			#command_help(object_type, argument)

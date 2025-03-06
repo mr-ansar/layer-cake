@@ -67,12 +67,12 @@ class Completed(object):
 	:param value: return value for an async object
 	:type value: any
 	"""
-	def __init__(self, value=None, object_type=None):
+	def __init__(self, value=None, created_type=None):
 		self.value = value
-		self.object_type = object_type
+		self.created_type = created_type
 
 bind_message(Start)
-bind_message(Completed, value=Any(), object_type=Type())
+bind_message(Completed, value=Any(), created_type=Type())
 
 #
 #
