@@ -32,6 +32,8 @@ from .message_memory import *
 from .make_message import *
 from .virtual_codec import *
 from .json_codec import *
+from .object_logs import *
+from .object_runtime import *
 from .virtual_point import *
 from .point_runtime import *
 from .routine_point import *
@@ -39,6 +41,6 @@ from .point_machine import *
 from .file_object import *
 from .folder_object import *
 from .object_startup import *
-from .object_process import *
+from .process_object import *
 from .edit_settings import *
 from .bind_type import *

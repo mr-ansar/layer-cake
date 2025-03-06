@@ -33,7 +33,7 @@ of arguments and behave differently with respect to the standard streams (e.g. s
 The class provides for convenient sending of a stream of text or bytes to the process,
 and the corresponding ability to receive text or bytes as a result.
 
-The Process class is used where the targeted executable is implemented using a
+The ProcessObject class is used where the targeted executable is implemented using a
 special framework provided by the library. An instance of a message (i.e. with
 fully typed members) is passed over the input pipe, to serve as "arguments" or
 "configuration". An instance of an Any() expression is expected on the output.
@@ -77,7 +77,7 @@ from .command_startup import *
 from .home_role import *
 
 __all__ = [
-	'Process',
+	'ProcessObject',
 	'Punctuation',
 	'Utility',
 	'process_args',
@@ -117,7 +117,7 @@ def collect_output(self, p, piping):
 
 bind_routine(collect_output)
 
-# The Process class
+# The ProcessObject class
 # A platform process that accepts a set of fully-typed arguments
 # and returns a fully-typed result.
 class INITIAL: pass
@@ -126,10 +126,10 @@ class CLEARING: pass
 
 # Control over the family of processes that can result from the initiation
 # of a single one. This was quite difficult to get right and requires the
-# proper use of a Process object (paramters origin and debug) to preserve
+# proper use of a ProcessObject object (paramters origin and debug) to preserve
 # the correct behaviour from one component to the next.
 
-class Process(Point, StateMachine):
+class ProcessObject(Point, StateMachine):
 	"""An async proxy object that starts and manages a standard sub-process.
 
 	:param name: name of the executable file
@@ -178,7 +178,7 @@ class Process(Point, StateMachine):
 		self.p = None
 
 
-def Process_INITIAL_Start(self, message):
+def ProcessObject_INITIAL_Start(self, message):
 	executable = sys.executable
 
 	# Build the sub-process command line.
@@ -248,12 +248,12 @@ def Process_INITIAL_Start(self, message):
 	self.create(wait, self.p, True)
 	return EXECUTING
 
-def Process_EXECUTING_Completed(self, message):
+def ProcessObject_EXECUTING_Completed(self, message):
 	# Wait thread has returned
 	# Forward the result.
 	code, out = message.value
 
-	self.log(USER_TAG.ENDED, 'Process ({pid}) ended with {code}'.format(pid=self.p.pid, code=code))
+	self.log(USER_TAG.ENDED, 'ProcessObject ({pid}) ended with {code}'.format(pid=self.p.pid, code=code))
 
 	#if not self.output:	# The client is not interested in any result.
 	#	# Shortcut around decoding. Discard the output.
@@ -273,7 +273,7 @@ def Process_EXECUTING_Completed(self, message):
 
 	self.complete(output)
 
-def Process_EXECUTING_Stop(self, message):
+def ProcessObject_EXECUTING_Stop(self, message):
 	pid = self.p.pid
 	self.trace(f'Relaying local Stop to remote <{pid}> as SIGINT')
 	try:
@@ -282,8 +282,8 @@ def Process_EXECUTING_Stop(self, message):
 		self.complete(Faulted(process_kill=(e, f'cannot relay local Stop as SIGINT')))
 	return CLEARING
 
-def Process_CLEARING_Completed(self, message):
-	Process_EXECUTING_Completed(self, message)
+def ProcessObject_CLEARING_Completed(self, message):
+	ProcessObject_EXECUTING_Completed(self, message)
 
 PROCESS_DISPATCH = {
 	INITIAL: (
@@ -300,7 +300,7 @@ PROCESS_DISPATCH = {
 	),
 }
 
-bind_statemachine(Process, dispatch=PROCESS_DISPATCH)
+bind_statemachine(ProcessObject, dispatch=PROCESS_DISPATCH)
 
 #
 #

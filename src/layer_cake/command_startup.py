@@ -86,7 +86,7 @@ def process_flags(flags):
 	return word, (lf, sf)
 
 def break_arguments(arguments):
-	'''Process a command line. Return executable, words and flags.'''
+	'''ProcessObject a command line. Return executable, words and flags.'''
 	executable = os.path.abspath(arguments[0])
 	word, flags = process_flags(arguments[1:])
 	return executable, word, flags

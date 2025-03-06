@@ -51,6 +51,7 @@ __all__ = [
 ]
 
 PB = Gas(
+	tear_down_atexit=True,
 	root=None,					# The top of the hierarchy.
 	thread_dispatch={},
 	add_ons=[],
@@ -78,7 +79,7 @@ bind_point(QuietChannel, lifecycle=False, message_trail=False, execution_trace=F
 # A non-logging channel.
 root_lock = threading.RLock()
 
-def start_up(logs=log_to_nowhere, self_cleaning=True):
+def start_up(logs=log_to_nowhere):
 	"""Start the async runtime. Return the root object.
 
 	This is the function that actually creates the threads and objects
@@ -97,7 +98,7 @@ def start_up(logs=log_to_nowhere, self_cleaning=True):
 		root_lock.acquire()
 		root = PB.root
 		if root is None:
-			if self_cleaning:
+			if PB.tear_down_atexit:
 				atexit.register(tear_down)
 
 			nowhere = Point()

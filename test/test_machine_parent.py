@@ -11,7 +11,7 @@ class Main(lc.Point, lc.Stateless):
 
 def Main_Start(self, message):
 	t = lc.text_to_world('1963-03-26T02:24')
-	a = self.create(lc.Process, test_main.main, b=32, c=99, t=t)
+	a = self.create(lc.ProcessObject, test_main.main, b=32, c=99, t=t)
 
 	def test_main_complete(value, _):
 		self.complete(value)

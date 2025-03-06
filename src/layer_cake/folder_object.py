@@ -257,7 +257,7 @@ class Folder(object):
 			yield f
 
 	def each(self):
-		"""Process the files in the folder.
+		"""ProcessObject the files in the folder.
 
 		:return: a sequence of :py:class:`~ansar.file.File` objects matching
 			the :py:class:`~ansar.folder.Folder` criteria.

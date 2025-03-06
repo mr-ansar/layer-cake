@@ -36,7 +36,7 @@ from .noop_codec import *
 from .file_object import *
 from .point_runtime import *
 from .home_role import *
-from .object_process import *
+from .process_object import *
 
 
 def edit_settings(self, home):

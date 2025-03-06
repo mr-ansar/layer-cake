@@ -9,9 +9,11 @@ from layer_cake.command_line import *
 from layer_cake.command_startup import *
 from layer_cake.object_runtime import *
 from layer_cake.object_startup import *
+import test_process_blank
+import test_person
 
 __all__ = [
-	'TestObjectStartup',
+	'TestProcessObject',
 ]
 
 class C(object): pass
@@ -57,7 +59,7 @@ lc.bind_routine(birdsnest)
 
 from os.path import join
 
-class TestObjectStartup(TestCase):
+class TestProcessObject(TestCase):
 	def setUp(self):
 		PB.tear_down_atexit = False
 		# Hand-roll a bare-bones home of roles.
@@ -72,56 +74,25 @@ class TestObjectStartup(TestCase):
 		f.file('settings', MapOf(Unicode(),Any())).store({})
 		f.file('log_storage', Integer8()).store(250000000)
 		f.file('executable_file', Unicode()).store('xyz.py')
+		lc.start_up(lc.log_to_stderr)
 		super().__init__()
 
 	def tearDown(self):
 		lc.remove_folder('home')
+		lc.tear_down()
 		return super().tearDown()
 
-	def test_no_role(self):
-		r = open_role('no-such-home-role')
-		assert r is None
+	def test_channel(self):
+		with lc.channel() as ch:
+			assert isinstance(ch, lc.Channel)
 
-	def test_is_role(self):
-		role = join('home', 'client-1')
-		r = open_role(role)
-		assert isinstance(r, HomeRole)
+	def test_process(self):
+		with lc.channel() as ch:
+			ch.create(lc.ProcessObject, test_process_blank.main)
+			m = ch.select(lc.Completed, lc.Stop)
 
-	def test_no_home(self):
-		h = open_home('no-such-home')
-		assert h is None
-
-	def test_is_home(self):
-		h = open_home('home')
-		assert isinstance(h, dict)
-		assert len(h) == 5
-		assert 'client-1' in h
-		assert 'test-3' in h
-		assert h['test-3'].log_storage() == 250000000
-
-	def test_start_tear(self):
-		# Testing the low-level runtime management but
-		# cant use the atexit mechanism.
-		start_up()
-		PB.exit_status = None
-		tear_down()
-		assert True
-
-	def test_start_light(self):
-		lc.create(unit_test)
-		PB.exit_status = None
-		tear_down()
-		assert isinstance(PB.output_value, bool)
-		assert PB.output_value == True
-
-	def test_start_sticky(self):
-		lc.create(unit_test)
-		PB.exit_status = None
-		tear_down()
-		lc.remove_folder('.layer-cake')
-
-	def test_start_recording(self):
-		lc.create(say_hi, recording=True)
-		PB.exit_status = None
-		tear_down()
-		lc.remove_folder('.layer-cake')
+		assert isinstance(m, lc.Completed)
+		assert m.created_type == lc.ProcessObject
+		assert isinstance(m.value, tuple)
+		assert isinstance(m.value[0], list)
+		assert isinstance(m.value[0][0], test_person.Person)

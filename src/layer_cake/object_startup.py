@@ -391,7 +391,7 @@ def any_output(output, object_type):
 			s = (s, t)
 	return s
 
-def run_object(home, object_type, args, logs, locking, self_cleaning):
+def run_object(home, object_type, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
 	early_return = False
 	output = None
@@ -404,7 +404,7 @@ def run_object(home, object_type, args, logs, locking, self_cleaning):
 		ps()
 
 		# Start the async runtime.
-		root = start_up(logs, self_cleaning)
+		root = start_up(logs)
 
 		# Exclusive access to disk-based resources.
 		if locking or isinstance(logs, RollingLog):
@@ -524,8 +524,7 @@ def object_output(value, pretty_format=True):
 #
 def create(object_type, object_table=None,
 	environment_variables=None,
-	sticky=False, model=False, tmp=False, recording=False,
-	self_cleaning=True):
+	sticky=False, model=False, tmp=False, recording=False):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -609,7 +608,7 @@ def create(object_type, object_table=None,
 
 		args = {k: from_any(v) for k, v in settings.items()}
 
-		output = run_object(home, object_type, args, logs, locking, self_cleaning)
+		output = run_object(home, object_type, args, logs, locking)
 	except (CodecError, ValueError, KeyError) as e:
 		s = str(e)
 		output = Faulted(s)
