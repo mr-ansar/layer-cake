@@ -32,6 +32,7 @@ __all__ = [
 	'process_flags',
 	'break_arguments',
 	'decode_argument',
+	'encode_argument',
 	'to_any',
 	'from_any',
 	'extract_arguments',
@@ -43,6 +44,7 @@ __all__ = [
 
 import os
 import sys
+import json
 from .virtual_memory import *
 from .convert_type import *
 from .message_memory import *
@@ -123,6 +125,37 @@ def decode_argument(c, s, t):
 		d = c.decode(j, t)
 	return d
 
+ENQUOTED = {
+	Character: p2w_string,
+	Rune: verbatim,
+	Block: p2w_block,
+	String: p2w_string,
+	Unicode: verbatim,
+	Enumeration: p2w_enumeration,
+	ClockTime: p2w_clock,
+	TimeSpan: p2w_span,
+	WorldTime: p2w_world,
+	TimeDelta: p2w_delta,
+	UUID: p2w_uuid,
+	Type: p2w_type,
+	Any: p2w_any,
+}
+
+def encode_argument(c, p, t):
+	'''Convert the python value into a JSON representation based on type. Return encoded string.'''
+	q = ENQUOTED.get(type(t), None)
+	if q is not None:
+		s = q(c, p, t)
+	elif p is None:
+		if isinstance(t, Boolean):
+			return 'true'
+		e = type_signature(t)
+		raise ValueError(f'empty value for type "{e}"')
+	else:
+		w = c.encode(p, t)
+		s = json.dumps(w['value'])
+	return s
+
 def first_letters(k):
 	'''Generate an acronym for k. Return a string.'''
 	s = k.split('_')
@@ -131,12 +164,12 @@ def first_letters(k):
 	return c
 
 def to_any(v, t):
-	if isinstance(t, UserDefined):
+	if hasattr(v, '__art__') or v is None:
 		return v
 	return (v, t)
 
 def from_any(v):
-	if isinstance(v, (list, tuple)) and len(v) == 2 and isinstance(v[1], Portable):
+	if isinstance(v, tuple) and len(v) == 2 and isinstance(v[1], Portable):
 		return v[0]
 	return v
 

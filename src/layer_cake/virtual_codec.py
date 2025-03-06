@@ -100,6 +100,17 @@ __all__ = [
 	'w2p_enumeration',
 	'w2p_type',
 	'w2p_any',
+
+	'p2w_string',
+	'p2w_block',
+	'p2w_clock',
+	'p2w_span',
+	'p2w_world',
+	'p2w_delta',
+	'p2w_uuid',
+	'p2w_enumeration',
+	'p2w_type',
+	'p2w_any',
 ]
 
 #
@@ -1060,7 +1071,7 @@ class Codec(object):
 			text = self.nesting()
 			if len(text) == 0:
 				e = str(e)
-				raise CodecRuntimeError(f'transformation ({e})')
+				raise CodecRuntimeError(e)
 			raise CodecRuntimeError(f'transformation, near "{text}" ({e})')
 
 		# Create a dict with value, address and version.
@@ -1121,7 +1132,7 @@ class Codec(object):
 				text = self.nesting()
 				if len(text) == 0:
 					e = str(e)
-					raise CodecRuntimeError(f'transformation ({e})')
+					raise CodecRuntimeError(e)
 				raise CodecRuntimeError(f'transformation, near "{text}" ({e})')
 			return p
 

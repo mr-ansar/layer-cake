@@ -38,14 +38,14 @@ lc.bind_routine(empty)
 lc.bind_routine(single)
 lc.bind_routine(birdsnest)
 
-GOOD_FLAGS = ['--pure-object=true', 'input', '-hp=other-path', 'output']
+GOOD_FLAGS = ['--full-output=true', 'input', '-hp=other-path', 'output']
 
 SCHEMA = {
-	'pure_object': lc.Boolean(),
+	'full_output': lc.Boolean(),
 	'home_path': lc.Unicode(),
 }
 
-LONG_AND_SHORT = ['--pure-object=true', '-po=true', 'input']
+LONG_AND_SHORT = ['--full-output=true', '-fo=true', 'input']
 
 AMBIGUOUS = {
 	'runtime_permission': lc.Boolean(),
@@ -64,15 +64,15 @@ class TestPocArgs(TestCase):
 		assert 'input' in words
 		assert 'output' in words
 
-		assert 'pure-object' in lf
-		assert lf['pure-object'] == 'true'
+		assert 'full-output' in lf
+		assert lf['full-output'] == 'true'
 
 	def test_extract_arguments(self):
 		words, flags = process_flags(GOOD_FLAGS)
 		extracted, remainder = extract_arguments(SCHEMA, flags)
-		assert 'pure_object' in extracted
+		assert 'full_output' in extracted
 		# Any format.
-		assert extracted['pure_object'][0] == True
+		assert extracted['full_output'][0] == True
 
 		assert len(remainder[0]) == 0
 		assert len(remainder[1]) == 0
@@ -104,11 +104,11 @@ class TestPocArgs(TestCase):
 
 	def test_insert_setting(self):
 		try:
-			executable, arguments, word = command_arguments(single, override_arguments=['blah', '--pure-object=true', '--settings-file=content', '--a=10'])
+			executable, arguments, word = command_arguments(single, override_arguments=['blah', '--full-output=true', '--settings-file=content', '--a=10'])
 		except ValueError as e:
 			assert False
 
-		assert CL.pure_object == True
+		assert CL.full_output == True
 		assert CL.settings_file == 'content'
 		assert 'a' in arguments
 		# Still in any format.

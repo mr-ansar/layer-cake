@@ -34,12 +34,14 @@ import signal
 import uuid
 import datetime
 import tempfile
+import json
 from os.path import join
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
 from .virtual_codec import *
 from .json_codec import *
+from .noop_codec import *
 from .file_object import *
 from .folder_object import *
 from .virtual_runtime import *
@@ -54,6 +56,7 @@ from .object_logs import *
 from .rolling_log import *
 from .platform_system import *
 from .head_lock import *
+from .home_role import *
 
 __all__ = [
 	'FAULTY_EXIT',
@@ -222,40 +225,29 @@ def open_home(home_path):
 
 	return listing
 
-def object_home(executable, sticky=False, model=False, tmp=False, recording=False):
+def object_home(executable, home_role, model=False, tmp=False, recording=False):
 	'''Compile the runtime, file-based context for the current process. Return HomeRole and role.'''
-
-	bp = breakpath(executable)
-	name = bp[1]
-
-	# Compose the location of file-based materials.
-	home_path = CL.home_path or DEFAULT_HOME
-	role_name = CL.role_name or name
-
-	home_path = os.path.abspath(home_path)
-	home_role = join(home_path, role_name)
 
 	# Load whats already there.
 	role = open_role(home_role)
-	creating = sticky or model or tmp
+	creating = model or tmp
 	if role is None:
 		if creating:
 			Folder(home_role)
 		role = HomeRole()
 
 	# Reconcile with current requirements.
+	sticky = role.settings is not None
 	def recover(name, portable, value):
 		a = getattr(role, name, None)
-		if not sticky:
-			if a:
-				value = a()
-			f = NoHomeFile(value)
-		elif a is None:
-			f = HomeFile(join(home_role, name), portable)
-			f.update(value)
-		else:
-			a.resume()
+		if a is not None:
 			return
+		if not sticky:
+			f = NoHomeFile(value)
+		else:
+			path_name = join(home_role, name)
+			f = HomeFile(path_name, portable)
+			f.update(value)
 		setattr(role, name, f)
 
 	recover('unique_id', UUID(), uuid.uuid4())
@@ -292,7 +284,7 @@ def object_home(executable, sticky=False, model=False, tmp=False, recording=Fals
 	if role.tmp:
 		remove_contents(role.tmp.path)
 
-	return role, role_name, logs
+	return role, logs
 
 def daemonize():
 	"""
@@ -339,18 +331,15 @@ def daemonize():
 	#file(self.pidfile,'w+').write("%s\n" % pid)
 
 def open_logs(home_role, storage, recording):
-	origin = CL.point_of_origin or POINT_OF_ORIGIN.RUN_ORIGIN
 	debug_level = CL.debug_level
 
 	role_logs = None
-	if origin in (POINT_OF_ORIGIN.START_ORIGIN, POINT_OF_ORIGIN.START_CHILD) or recording:
+	if CL.background_daemon or recording or CL.keep_logs:
 		bytes_in_file = 120 * LINES_IN_FILE
 		files_in_folder = storage / bytes_in_file
 		role_logs = join(home_role, 'logs')
 		return None, (role_logs, files_in_folder)
 	elif debug_level is None:
-		logs = log_to_stderr
-	elif debug_level == USER_LOG.NONE:
 		logs = log_to_nowhere
 	else:
 		logs = select_logs(debug_level)
@@ -376,8 +365,6 @@ def start_vector(self, object_type, args):
 		if isinstance(m, Completed):
 			# Do a "fake" signaling. Sidestep all the platform machinery
 			# and just set a global. It does avoid any complexities
-			# arising from overlapping events. Spent far too much time
-			# trying to untangle signals, exceptions and interrupted i/o.
 			PS.signal_received = PS.platform_kill
 			return m.value
 		elif isinstance(m, Stop):
@@ -391,7 +378,20 @@ bind_routine(start_vector, lifecycle=True, message_trail=True, execution_trace=T
 	object_type=Type(),
 	argument=MapOf(Unicode(), Any()))
 
-def run_object(home, role, object_type, args, logs, locking, self_cleaning):
+def any_output(output, object_type):
+	rt = object_type.__art__
+	if isinstance(rt, (RoutineRuntime, PointRuntime)):
+		t = rt.return_type
+	else:
+		t = None
+
+	s = output
+	if not isinstance(t, Any):
+		if not hasattr(s, '__art__') and s is not None:
+			s = (s, t)
+	return s
+
+def run_object(home, object_type, args, logs, locking, self_cleaning):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
 	early_return = False
 	output = None
@@ -416,10 +416,15 @@ def run_object(home, role, object_type, args, logs, locking, self_cleaning):
 				c = Faulted(f'role {home.lock.path} is running')
 				raise Incomplete(c)
 
+		if CL.edit_settings:
+			output = HR.edit_settings(root, home)
+			return output
+
 		# Respond to daemon context, i.e. send output and close stdout.
 		#cs = CL.call_signature
 		#no_output = cs is not None and 'o' not in cs
-		if CL.point_of_origin == POINT_OF_ORIGIN.START_ORIGIN:	# or no_output:
+		daemon = CL.background_daemon and not CL.child_process
+		if daemon:	# or no_output:
 			early_return = True
 			object_encode(Ack())
 			sys.stdout.close()
@@ -458,25 +463,26 @@ def run_object(home, role, object_type, args, logs, locking, self_cleaning):
 			m = root.select(Completed)
 			root.debrief()
 
-		rt = object_type.__art__
-		if isinstance(rt, (RoutineRuntime, PointRuntime)):
-			t = rt.return_type
-		else:
-			t = None
-
-		if not isinstance(t, UserDefined):
-			output = (output, t)
-		home.stopped(output)
+		s = any_output(output, object_type)
+		home.stopped(s)
 
 	if early_return:		# Already sent output. Silence any output.
 		return None
 
 	return output
 
-def object_encode(value, pretty_format=True):
+def object_encode(value, expression=Any(), pretty_format=True):
 	'''Put the encoding of the final result, on to stdout.'''
-	codec = CodecJson(pretty_format=pretty_format)
-	output = codec.encode(value, Any())
+	if CL.full_output:
+		codec = CodecJson(pretty_format=pretty_format)
+		output = codec.encode(value, expression)
+		sys.stdout.write(output)
+		sys.stdout.write('\n')
+		return
+	codec = CodecNoop(pretty_format=pretty_format)
+	js = codec.encode(value, expression)
+	value = js['value'][1]
+	output = json.dumps(value, indent=4)
 	sys.stdout.write(output)
 	sys.stdout.write('\n')
 
@@ -487,69 +493,33 @@ def object_error(fault):
 
 def object_output(value, pretty_format=True):
 	'''Put the final output into an output file or on stdout.'''
+	if value is None:
+		return
 	output_file = CL.output_file
 
 	try:
-		if output_file is None:
-			object_encode(value, pretty_format=pretty_format)
+		if output_file:
+			f = File(output_file, Any())
+			f.store(value)
 			return
-		f = File(output_file, Any())
-		f.store(value)
+		object_encode(value, pretty_format=pretty_format)
 		return
 	except OSError as e:
 		value = Faulted(str(e))
 		PB.exit_status = e.args[0]
-		if not CL.pure_object:
+		if not CL.full_output:
 			object_error(value)
 			return
 	except CodecError as e:
 		value = Faulted(str(e))
 		PB.exit_status = FAULTY_EXIT
-		if not CL.pure_object:
+		if not CL.full_output:
 			object_error(value)
 			return
 
 	# Single, unmanaged attempt to output a failed object
 	# output, i.e. cant open output file or failed encoding.
 	object_encode(value, pretty_format=pretty_format)
-
-def edit_settings(self, home):
-	editor = os.getenv('LC_EDITOR') or 'vi'
-
-	try:
-		fd, name = tempfile.mkstemp()
-		os.close(fd)
-
-		# Prepare materials for editor.
-		temporary = File(name, MapOf(Unicode(), Any()), decorate_names=False)
-		temporary.store(home.settings())
-
-		# Setup detection of change.
-		modified = os.stat(name).st_mtime
-
-		# Run the editor.
-		a = self.create(Utility, editor, name)
-		self.assign(a, editor)
-		m = self.select(Completed, Faulted, Stop)
-		if isinstance(m, Faulted):
-			return m
-		e = self.debrief()
-		value = m.value
-		if isinstance(value, Faulted):
-			return value
-
-		# Was the file modified?
-		if os.stat(name).st_mtime == modified:
-			return Faulted(f'settings not modified')
-
-		# Validate contents and update the runtime.
-		a = temporary.recover()
-		home.settings.update(a)
-	except (CodecError, OSError) as e:
-		return Faulted(f'cannot update settings ({e})')
-	finally:
-		os.remove(name)
-	return True
 
 #
 def create(object_type, object_table=None,
@@ -571,26 +541,42 @@ def create(object_type, object_table=None,
 		else:
 			executable, argument, word, sub = command_sub_arguments(object_type, object_table)
 
+		bp = breakpath(executable)
+		name = bp[1]
+
+		# Compose the location of file-based materials.
+		home_path = CL.home_path or DEFAULT_HOME
+		role_name = CL.role_name or name
+
+		home_path = os.path.abspath(home_path)
+		home_role = join(home_path, role_name)
+		if CL.create_settings:
+			f = Folder(home_role)
+			s = f.file('settings', MapOf(Unicode(), Any()))
+			s.store(argument)
+			raise Incomplete(True)
+
 		# Extract values from the environment with reference
 		# to the name/type info in the variables object.
 		command_variables(environment_variables)
 
 		# Resume the appropriate operational context, i.e. home.
-		home, role, logs = object_home(executable, sticky=sticky, model=model, tmp=tmp, recording=recording)
+		home, logs = object_home(executable, home_role, model=model, tmp=tmp, recording=recording)
+
+		HR.home_path = home_path
+		HR.home_role = home_role
+		HR.role_name = role_name
 
 		# Non-operational features, i.e. command object not called.
 		# Current arguments not included.
 		if CL.factory_reset:
 			home.settings.update({})
-			raise Incomplete(Ack())
-
-		if CL.create_settings:
-			home.settings.update(argument)
-			raise Incomplete(Ack())
+			raise Incomplete(True)
 
 		if CL.dump_settings:
 			settings = (home.settings(), MapOf(Unicode(), Any()))
-			raise Incomplete(settings)
+			object_encode(settings)
+			raise Incomplete(None)
 
 		# Add/override current settings with values from
 		# the command line.
@@ -612,30 +598,33 @@ def create(object_type, object_table=None,
 			#command_help(object_type, argument)
 			raise Incomplete(None)
 
-		if CL.point_of_origin == POINT_OF_ORIGIN.START_ORIGIN:
+		daemon = CL.background_daemon and not CL.child_process
+		if daemon:
 			daemonize()
 
+		sticky = isinstance(home.settings, HomeFile)
 		locking = sticky or model or tmp
 
 		args = {k: from_any(v) for k, v in settings.items()}
 
-		output = run_object(home, role, object_type, args, logs, locking, self_cleaning)
+		output = run_object(home, object_type, args, logs, locking, self_cleaning)
 	except (CodecError, ValueError, KeyError) as e:
 		s = str(e)
 		output = Faulted(s)
 	except Incomplete as e:
 		output = e.value
 
-	def end():
+	def ending(output):
 		exit_status = 0
+		output = any_output(output, object_type)
 		if isinstance(output, Faulted):
 			exit_status = output.exit_status if output.exit_status is not None else FAULTY_EXIT
-			if not CL.pure_object:
+			if not CL.full_output:
 				object_error(output)
 				return exit_status
-
 		object_output(output)
 		return exit_status
 
-	PB.output_value = output
-	PB.exit_status = end()
+	# Make available to tear_down (atexit) and also for checking
+	# within unit tests.
+	PB.output_value, PB.exit_status = output, ending(output)

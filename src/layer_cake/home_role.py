@@ -20,48 +20,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Logging methods available within the async runtime.
+"""Management of the async runtime.
 
+Ensure that the support for async operation is in place when the process
+needs it. Ensure that support is cleared out during process termination.
 """
 __docformat__ = 'restructuredtext'
 
-import os
-import sys
-import time
-
+from .general_purpose import *
 from .virtual_runtime import *
+from .command_line import *
 
 __all__ = [
-	'PID',
-	'log_to_nowhere',
-	'log_to_stderr',
-	'select_logs',
+	'HR',
 ]
 
-# Some essential logging options.
-PID = os.getpid()
-
-def log_to_nowhere(log):
-	pass
-
-def log_to_stderr(log):
-	second = time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(log.stamp))
-	fraction = '%.3f' % (log.stamp,)
-	fraction = fraction[-3:]
-	mark = '%s.%s' % (second, fraction)
-	name = log.name.split('.')[-1]
-	state = log.state
-	if state is None:
-		p = '[%08d] %s %s <%08x>%s - %s\n' % (PID, mark, log.tag.value, log.address[-1], name, log.text)
-	else:
-		p = '[%08d] %s %s <%08x>%s[%s] - %s\n' % (PID, mark, log.tag.value, log.address[-1], name, state, log.text)
-	sys.stderr.write(p)
-	sys.stderr.flush()
-
-def select_logs(tag):
-	def log_by_number(log):
-		t = tag_to_log(log.tag)
-		if tag.value > t.value:
-			return
-		log_to_stderr(log)
-	return log_by_number
+HR = Gas(home_path=None, home_role=None, role_name=None, edit_settings=None)

@@ -303,10 +303,6 @@ class PointerTo(Container):
 class Any(Portable):
 	"""The combination of a Type and a Word."""
 
-	def __init__(self, *possibles):
-		"""Accept these types in a version-managed scenario."""
-		self.possibles = possibles
-
 class TargetAddress(Portable):
 	"""The address of a receiving object."""
 

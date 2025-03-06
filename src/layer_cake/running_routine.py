@@ -136,4 +136,4 @@ def running_in_thread(routine, queue, args, kw_args):
 		queue.log(USER_TAG.DESTROYED, 'Destroyed')
 	ending = queue.object_ending
 	destroy_an_object(address)
-	ending(value, parent, address)
+	ending(value, parent, address, routine)

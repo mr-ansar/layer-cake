@@ -31,10 +31,10 @@ import types
 import re
 import sys
 
+from .message_memory import *
 from .virtual_runtime import *
 from .point_runtime import *
 from .virtual_point import *
-from .message_memory import *
 
 __all__ = [
 	'Stateless',

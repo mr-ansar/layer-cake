@@ -201,8 +201,8 @@ def check_line():
 
 # Low level control over behaviour of terminating
 # object, i.e. some go quietly.
-def completed_object(value, parent, address):
-	send_a_message(Completed(value), parent, address)
+def completed_object(value, parent, address, object_type):
+	send_a_message(Completed(value, object_type), parent, address)
 
 # Automation of response to completion.
 class OnCompleted(object):
@@ -219,8 +219,8 @@ class OnCompleted(object):
 		self.routine = routine
 		self.args = args
 
-	def __call__(self, value):
-		return self.routine(value, self.args)	# Make the call.
+	def __call__(self, completed):
+		return self.routine(completed.value, self.args)	# Make the call.
 
 #
 #
@@ -1027,7 +1027,7 @@ def object_dispatch(queue):
 		s = p.parent_address
 		ending = p.object_ending
 		destroy_an_object(t)
-		ending(value, s, t)
+		ending(value, s, t, type(p))
 
 	# Termination of child objects occurs by raising of the
 	# Completion exception from within the received() call [2].

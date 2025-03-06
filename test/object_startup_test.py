@@ -110,10 +110,8 @@ class TestObjectStartup(TestCase):
 		lc.create(unit_test, self_cleaning=False)
 		PB.exit_status = None
 		tear_down()
-		assert isinstance(PB.output_value, tuple)
-		assert isinstance(PB.output_value[0], bool)
-		assert PB.output_value[0] == True
-		assert isinstance(PB.output_value[1], Boolean)
+		assert isinstance(PB.output_value, bool)
+		assert PB.output_value == True
 
 	def test_start_sticky(self):
 		lc.create(unit_test, sticky=True, self_cleaning=False)
