@@ -204,9 +204,8 @@ def ProcessObject_INITIAL_Start(self, message):
 	#	command.append(arg)
 
 	rt = self.object_type.__art__
-	schema = {}
 	if isinstance(rt, (RoutineRuntime, PointRuntime)):
-		schema = rt.schema
+		schema = rt.schema | CommandLine.__art__.schema
 
 		try:
 			c = CodecNoop()
@@ -216,9 +215,12 @@ def ProcessObject_INITIAL_Start(self, message):
 				k = k.replace('_', '-')
 				v = encode_argument(c, v, e)
 				command.append(f'--{k}={v}')
+		except KeyError as e:
+			self.complete(Faulted(f'cannot encode value for "{self.role_name}" ({e.args[0]} does not exist)'))
 		except CodecError as e:
 			e = str(e)
-			self.complete(Faulted(f'cannot encode value for "{self.role_name}.{name}" ({e})'))
+			s = e.replace('cannot encode', f'cannot encode value for "{self.role_name}.{name}"')
+			self.complete(Faulted(s))
 
 	# Force the details of the I/O streams.
 	try:
@@ -260,9 +262,8 @@ def ProcessObject_EXECUTING_Completed(self, message):
 	#	# Could verify that Ack was sent from sub-component?
 	#	self.complete(None)
 
-	if not out:			 # None or empty.
-		f = Faulted('no output from process (not a standard executable?)')
-		self.complete(f)
+	if not out:
+		self.complete(None)
 
 	encoding = CodecJson()
 	try:
@@ -974,15 +975,15 @@ def python_to_args(c, p, t):
 
 	if a is None:
 		if b is None:
-			raise TypeError('data and specification are unusable')
-		raise TypeError('data with specification "%s" is unusable' % (b.__name__,))
+			raise TypeError('unusable value and type')
+		raise TypeError(f'value with type "{b.__name__}" is unusable')
 	elif b is None:
-		raise TypeError('data "%s" has unusable specification' % (a.__name__,))
+		raise TypeError(f'value "{a.__name__}" is unusable')
 
 	try:
 		f = p2a[a, b]
 	except KeyError:
-		raise TypeError('no transformation for data/specification %s/%s' % (a.__name__, b.__name__))
+		raise TypeError(f'no transform {a.__name__}/{b.__name__}')
 
 	# Apply the transform function
 	return f(c, p, t)
