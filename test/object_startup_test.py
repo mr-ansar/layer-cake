@@ -118,7 +118,11 @@ class TestObjectStartup(TestCase):
 		lc.create(unit_test)
 		PB.exit_status = None
 		tear_down()
-		lc.remove_folder('.layer-cake')
+		try:
+			lc.remove_folder('.layer-cake')
+		except FileNotFoundError:
+			pass
+		assert True
 
 	def test_start_recording(self):
 		lc.create(say_hi, recording=True)

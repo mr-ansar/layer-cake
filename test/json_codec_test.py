@@ -44,7 +44,7 @@ class TestCodecJson(TestCase):
 			assert False
 		except lc.CodecRuntimeError as e:
 			assert e.note.find('near "f"') != -1
-			assert e.note.find('type/Unicode') != -1
+			assert e.note.find('no transform type/Unicode') != -1
 
 	def test_decode_failed(self):
 		c = lc.CodecJson()
@@ -62,7 +62,7 @@ class TestCodecJson(TestCase):
 			assert False
 		except lc.CodecRuntimeError as e:
 			assert e.note.find('near "c"') != -1
-			assert e.note.find('str/Float8') != -1
+			assert e.note.find('no transform str/Float8') != -1
 
 	def test_plain(self):
 		assert encode_decode(lc.CodecJson(), AutoTypes)
@@ -185,7 +185,7 @@ class TestCodecJson(TestCase):
 			assert False
 		except lc.CodecRuntimeError as e:
 			assert e.note.find('near "p"') != -1
-			assert e.note.find('int/Enumeration') != -1
+			assert e.note.find('no transform int/Enumeration') != -1
 
 	def test_array_misfit_short(self):
 		c = lc.CodecJson()
@@ -230,7 +230,7 @@ class TestCodecJson(TestCase):
 			assert False
 		except lc.CodecRuntimeError as e:
 			assert e.note.find('near "a"') != -1
-			assert e.note.find('7/8') != -1
+			assert e.note.find('array [7] vs') != -1
 
 	def test_not_trombone(self):
 		x = lc.CodecJson(return_proxy=(26,))

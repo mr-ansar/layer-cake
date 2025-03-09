@@ -80,7 +80,7 @@ class TestFileObject(TestCase):
 			assert False
 		except CodecError as e:
 			s = str(e)
-			assert 'no transformation' in s
+			assert 'no transform bool/ArrayOf' in s
 
 	def test_write_read_file_cycle(self):
 		a = os.path.join(self.temp, 'write-read_file-inferred')

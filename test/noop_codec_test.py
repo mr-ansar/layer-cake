@@ -67,7 +67,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			assert e.note.find('near "f"') != -1
-			assert e.note.find('type/Unicode') != -1
+			assert e.note.find('no transform type/Unicode') != -1
 
 	def test_decode_failed(self):
 		c = CodecNoop()
@@ -85,7 +85,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			assert e.note.find('near "f"') != -1
-			assert e.note.find('type/Unicode') != -1
+			assert e.note.find('no transform type/Unicode') != -1
 
 	def test_decode_unkown_member(self):
 		c = CodecNoop()
@@ -248,6 +248,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			print(e.note)
+			assert e.note.find('near "a"') != -1
 			assert e.note.find('cannot represent -1') != -1
 
 	def test_time_decoding(self):
@@ -271,6 +272,7 @@ class TestCodecNoop(TestCase):
 		except lc.CodecError as e:
 			s = str(e)
 			print(s)
+			assert e.note.find('near "c"') != -1
 			assert s.find('cannot recover WorldTime') != -1
 
 	def test_pointer(self):
@@ -328,7 +330,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			assert e.note.find('near "p"') != -1
-			assert e.note.find('no number for "RUBBISH"') != -1
+			assert e.note.find('undefined enum') != -1
 
 	def test_array_misfit_short(self):
 		c = CodecNoop()
@@ -375,7 +377,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			assert e.note.find('near "a"') != -1
-			assert e.note.find('7/8') != -1
+			assert e.note.find('array [7] vs') != -1
 
 	def test_not_trombone(self):
 		x = CodecNoop(return_proxy=(26,))
@@ -531,8 +533,7 @@ class TestCodecNoop(TestCase):
 			assert False
 		except lc.CodecError as e:
 			assert e.note.find('near "f"') != -1
-			assert e.note.find('null value detected for structural') != -1
-
+			assert e.note.find('null structure') != -1
 
 	def test_guaranteed_decode(self):
 		c = CodecNoop()
@@ -551,5 +552,5 @@ class TestCodecNoop(TestCase):
 			b = c.decode(s, t)
 		except lc.CodecError as e:
 			assert e.note.find('near "e"') != -1
-			assert e.note.find('null value detected for structural') != -1
+			assert e.note.find('null structure') != -1
 
