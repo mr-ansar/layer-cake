@@ -275,7 +275,7 @@ def p2w_message(c, p, t):
 				return
 			elif m is None:
 				if is_structural(v):
-					raise ValueError(f'null value detected for structural "{rt.name}.{k}"')
+					raise ValueError(f'null structure')
 			w[k] = python_to_word(c, m, v)
 		get_put()
 		c.walking_stack.pop()
@@ -286,7 +286,7 @@ def p2w_array(c, p, t):
 	n = len(p)
 	s = t.size
 	if n != s:
-		raise ValueError(f'array size vs specification - {n}/{s}')
+		raise ValueError(f'array [{n}] vs type [{s}]')
 	w = []
 	for i, y in enumerate(p):
 		c.walking_stack.append(i)
@@ -354,8 +354,11 @@ def p2w_type(c, p, t):
 		w = p.__art__.path
 	elif isinstance(p, Portable):
 		w = type_signature(p)
+	elif hasattr(p, '__name__'):
+		name = p.__name__
+		raise ValueError(f'nameless type "{name}"')
 	else:
-		raise ValueError(f'cannot encode type')
+		raise ValueError(f'opaque type')
 	return w
 
 def p2w_target(c, p, t):
@@ -416,8 +419,11 @@ def p2w_any(c, p, t):
 		n = s.pop()
 		s[-1].update(n)
 		r = [x for x in n]
+	elif hasattr(p, '__class__'):
+		name = p.__class__.__name__
+		raise ValueError(f'unexpected any value "{name}"')
 	else:
-		raise ValueError(f'encoding any, expecting message, tuple[2] or Incognito.')
+		raise ValueError(f'opaque any value')
 
 	return [t, w, r]
 
@@ -560,21 +566,21 @@ def python_to_word(c, p, t):
 		a = None
 
 	try:
-		b = t.__class__		 # One of the universal types.
+		b = t.__class__		 # One of the portable types.
 	except AttributeError:
 		b = None
 
 	if a is None:
 		if b is None:
-			raise TypeError('data and specification are unusable')
-		raise TypeError(f'data with specification "{b.__name__}" is unusable')
+			raise TypeError('unusable value and type')
+		raise TypeError(f'value with type "{b.__name__}" is unusable')
 	elif b is None:
-		raise TypeError(f'data "{a.__name__}" has unusable specification')
+		raise TypeError(f'value "{a.__name__}" is unusable')
 
 	try:
 		f = p2w[a, b]
 	except KeyError:
-		raise TypeError(f'no transformation for data/specification {a.__name__}/{b.__name__}')
+		raise TypeError(f'no transform {a.__name__}/{b.__name__}')
 
 	# Apply the transform function
 	return f(c, p, t)
@@ -617,7 +623,7 @@ def w2p_enumeration(c, w, t):
 		p = t.element[w]
 	except KeyError:
 		m = t.element.__name__
-		raise EnumerationRuntimeError(f'no number for "{w}" in "{m}"')
+		raise ValueError(f'undefined enum "{m}.{w}"')
 	return p
 
 def w2p_message(c, w, t):
@@ -640,7 +646,7 @@ def w2p_message(c, w, t):
 				return
 			elif d is None:
 				if is_structural(v):
-					raise ValueError(f'null value detected for structural "{rt.name}.{k}"')
+					raise ValueError(f'null structure')
 				return
 
 			def patch(a):
@@ -678,7 +684,7 @@ def w2p_pointer(c, a, t):
 	try:
 		w = c.portable_pointer[a]
 	except KeyError:
-		raise ValueError('pointer alias not in materials')
+		raise ValueError('dangling pointer')
 
 	c.pointer_reference.add(a)
 	p = word_to_python(c, w, t.element)
@@ -832,7 +838,7 @@ def w2p_any(c, w, t):
 		y = c.portable_pointer				# Everything shipped
 		h = [x for x in r if x not in y]	# Needed for this any
 		if h:
-			raise ValueError('cannot go incognito - unresolved pointers e.g. "%s"', h[0])
+			raise ValueError(f'missing pointers')
 		m = {x: y[x] for x in r}			# Needed for this any
 		p = Incognito(a, b, m)
 	elif hasattr(e, '__art__'):						# Direct message type.
@@ -962,15 +968,15 @@ def word_to_python(c, w, t):
 
 	if a is None:
 		if b is None:
-			raise TypeError('data and specification are unusable')
-		raise TypeError(f'data with specification "{b.__name__}" is unusable')
+			raise TypeError('unusable value and type')
+		raise TypeError(f'value with type "{b.__name__}" is unusable')
 	elif b is None:
-		raise TypeError(f'specification with data "{a.__name__}" is unusable')
+		raise TypeError(f'value "{a.__name__}" is unusable')
 
 	try:
 		f = w2p[a, b]
 	except KeyError:
-		raise TypeError(f'no transformation for data/specification {a.__name__}/{b.__name__}')
+		raise TypeError(f'no transform {a.__name__}/{b.__name__}')
 
 	return f(c, w, t)
 
@@ -1013,14 +1019,14 @@ class Codec(object):
 		if return_proxy is None:
 			self.return_proxy = 0
 		elif not isinstance(return_proxy, tuple) or len(return_proxy) != 1:
-			raise CodecUsageError('unusable address passed as return proxy')
+			raise CodecUsageError('unusable return proxy')
 		else:
 			self.return_proxy = return_proxy[0]
 
 		if local_termination is None:
 			self.local_termination = 0
 		elif not isinstance(local_termination, tuple) or len(local_termination) != 1:
-			raise CodecUsageError('unusable address passed as local termination')
+			raise CodecUsageError('unusable local termination')
 		else:
 			self.local_termination = local_termination[0]
 
@@ -1066,13 +1072,12 @@ class Codec(object):
 			# representation.
 
 			w = python_to_word(self, value, expression)
-		except (AttributeError, TypeError, ValueError, IndexError, KeyError,
-				EnumerationRuntimeError, ConversionEncodeError) as e:
-			text = self.nesting()
-			if len(text) == 0:
-				e = str(e)
-				raise CodecRuntimeError(e)
-			raise CodecRuntimeError(f'transformation, near "{text}" ({e})')
+		except (AttributeError, TypeError, ValueError, IndexError, KeyError, ConversionEncodeError) as e:
+			s = str(e)
+			nesting = self.nesting()
+			if len(nesting) == 0:
+				raise CodecRuntimeError(f'cannot encode ({s})')
+			raise CodecRuntimeError(f'cannot encode, near "{nesting}" ({s})')
 
 		# Create a dict with value, address and version.
 		shipment = {'value': w}
@@ -1092,9 +1097,9 @@ class Codec(object):
 			# representation.
 
 			s = self.w2t(self, shipment)
-		except (TypeError, ValueError) as e:
+		except (AttributeError, TypeError, ValueError, IndexError, KeyError) as e:
 			e = str(e)
-			raise CodecRuntimeError(f'serialization ({e})')
+			raise CodecRuntimeError(f'cannot encode ({e})')
 		return s
 
 	def decode(self, representation, expression, space=None):
@@ -1117,8 +1122,9 @@ class Codec(object):
 			# Convert portable representation into generic
 			# intermediate form.
 			shipment = self.t2w(self, representation)
-		except (TypeError, ValueError) as e:
-			raise CodecRuntimeError('parsing (%s)', str(e))
+		except (AttributeError, TypeError, ValueError, IndexError, KeyError) as e:
+			s = str(e)
+			raise CodecRuntimeError(f'cannot decode ({s})')
 
 		# Now everything is in the generic form. Need to rebuild python
 		# types in steps due to work around pointers.
@@ -1127,13 +1133,12 @@ class Codec(object):
 			self.pointer_reference = set()
 			try:
 				p = word_to_python(self, w, expression)
-			except (AttributeError, TypeError, ValueError, IndexError, KeyError,
-					EnumerationRuntimeError, ConversionDecodeError) as e:
+			except (AttributeError, TypeError, ValueError, IndexError, KeyError, ConversionDecodeError) as e:
+				s = str(e)
 				text = self.nesting()
 				if len(text) == 0:
-					e = str(e)
-					raise CodecRuntimeError(e)
-				raise CodecRuntimeError(f'transformation, near "{text}" ({e})')
+					raise CodecRuntimeError(f'cannot decode ({s})')
+				raise CodecRuntimeError(f'cannot decode, near "{text}" ({s})')
 			return p
 
 		try:
@@ -1146,12 +1151,12 @@ class Codec(object):
 		except KeyError:
 			pass
 		except (AttributeError, TypeError, ValueError, IndexError):
-			raise CodecRuntimeError('unexpected input (not the output of an encoding?)')
+			raise CodecRuntimeError('cannot decode (not the output of an encoding?)')
 
 		try:
 			w = shipment['value']
 		except KeyError:
-			raise CodecRuntimeError('no "value" available')
+			raise CodecRuntimeError('cannot decode (no "value" available)')
 
 		# Decode the word to its final application resting-place. This performs
 		# transforms into final types, including the pointer materials. Backpatch
