@@ -118,8 +118,7 @@ def decode_argument(c, s, t):
 	elif s is None:
 		if isinstance(t, Boolean):
 			return True
-		e = type_signature(t)
-		raise ValueError(f'empty value for type "{e}"')
+		return None
 	else:
 		j = f'{{"value": {s} }}'
 		d = c.decode(j, t)
@@ -211,8 +210,15 @@ def extract_arguments(schema, ls):
 		r = k.replace('-', '_')
 		t = schema.get(r, None)
 		if t is not None:
-			d = decode_argument(c, v, t)	# Matched.
-			extracted[r] = to_any(d, t)
+			try:
+				d = decode_argument(c, v, t)	# Matched.
+				extracted[r] = to_any(d, t)
+			except KeyError as e:
+				raise ValueError(f'cannot decode value for "{k}" ({e.args[0]} does not exist)')
+			except CodecError as e:
+				s = str(e)
+				s = e.replace('cannot decode', f'cannot decode value for "{k}"')
+				raise ValueError(s)
 		else:
 			lr[k] = v			# Not matched - remainder.
 
@@ -224,11 +230,18 @@ def extract_arguments(schema, ls):
 			continue
 		r = t.replace('_', '-')
 		if t in extracted:
-			raise ValueError(f'use of both long and short forms for "{t}" ({r}/{k})')
+			raise ValueError(f'cannot decode value for "{k}" (use of both long and short forms)')
 		x = schema.get(t, None)
 		if x is not None:
-			d = decode_argument(c, v, x)
-			extracted[t] = to_any(d, x)
+			try:
+				d = decode_argument(c, v, x)
+				extracted[t] = to_any(d, x)
+			except KeyError as e:
+				raise ValueError(f'cannot decode value for "{k}" ({e.args[0]} does not exist)')
+			except CodecError as e:
+				s = str(e)
+				s = e.replace('cannot decode', f'cannot decode value for "{k}"')
+				raise ValueError(s)
 		else:
 			sr[k] = v
 
@@ -332,5 +345,9 @@ def command_variables(factory_variables):
 		e = environment.get(K, None)
 		if e is None:
 			continue
-		v = decode_argument(c, e, t)
-		setattr(factory_variables, k, v)
+		try:
+			v = decode_argument(c, e, t)
+			setattr(factory_variables, k, v)
+		except CodecError as e:
+			s = str(e)
+			raise ValueError(f'cannot process variable "{K}" ({k}) - {s}')
