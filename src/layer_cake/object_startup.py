@@ -60,6 +60,7 @@ from .home_role import *
 
 __all__ = [
 	'FAULTY_EXIT',
+	'CommandResponse',
 	'StartStop',
 	'HomeRole',
 	'open_role',
@@ -75,6 +76,13 @@ class Unassigned(object): pass
 class Incomplete(Exception):
 	def __init__(self, value=Unassigned):
 		self.value = value
+
+class CommandResponse(object):
+	def __init__(self, command: str=None, note: str=None):
+		self.command = command
+		self.note = note
+
+bind_message(CommandResponse)
 
 class HomeFile(object):
 	def __init__(self, path_name, t):
@@ -298,7 +306,8 @@ def daemonize():
 			# exit first parent
 			sys.exit(0)
 	except OSError as e:
-		f = Faulted(str(e))
+		e = str(e)
+		f = Faulted(f'cannot fork to daemonize #1 ({e})')
 		raise Incomplete(f)
 
 	# decouple from parent environment
@@ -312,7 +321,8 @@ def daemonize():
 			# exit second parent
 			sys.exit(0)
 	except OSError as e:
-		f = Faulted(str(e))
+		e = str(e)
+		f = Faulted(f'cannot fork to daemonize #2 ({e})')
 		raise Incomplete(f)
 
 	# redirect standard file descriptors
@@ -381,15 +391,16 @@ bind_routine(start_vector, lifecycle=True, message_trail=True, execution_trace=T
 def any_output(output, object_type):
 	rt = object_type.__art__
 	if isinstance(rt, (RoutineRuntime, PointRuntime)):
-		t = rt.return_type
+		return_type = rt.return_type
 	else:
-		t = None
+		return output	# No declaration - same as Any.
 
-	s = output
-	if not isinstance(t, Any):
-		if not hasattr(s, '__art__') and s is not None:
-			s = (s, t)
-	return s
+	if isinstance(return_type, Any) or return_type is None:
+		return output
+
+	if hasattr(output, '__art__'):
+		return output
+	return (output, return_type)
 
 def run_object(home, object_type, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
@@ -426,7 +437,7 @@ def run_object(home, object_type, args, logs, locking):
 		daemon = CL.background_daemon and not CL.child_process
 		if daemon:	# or no_output:
 			early_return = True
-			object_encode(Ack())
+			object_encode(CommandResponse('background-daemon'))
 			sys.stdout.close()
 			os.close(1)
 
@@ -471,18 +482,20 @@ def run_object(home, object_type, args, logs, locking):
 
 	return output
 
-def object_encode(value, expression=Any(), pretty_format=True):
+def object_encode(value):
 	'''Put the encoding of the final result, on to stdout.'''
+	pretty_format = not CL.child_process
 	if CL.full_output:
 		codec = CodecJson(pretty_format=pretty_format)
-		output = codec.encode(value, expression)
+		output = codec.encode(value, Any())
 		sys.stdout.write(output)
 		sys.stdout.write('\n')
 		return
-	codec = CodecNoop(pretty_format=pretty_format)
-	js = codec.encode(value, expression)
+	codec = CodecNoop()
+	js = codec.encode(value, Any())
 	value = js['value'][1]
-	output = json.dumps(value, indent=4)
+	indent = 4 if pretty_format else None
+	output = json.dumps(value, indent=indent)
 	sys.stdout.write(output)
 	sys.stdout.write('\n')
 
@@ -491,7 +504,7 @@ def object_error(fault):
 	p = sys.argv[0]
 	sys.stderr.write(f'{p}: {fault}\n')
 
-def object_output(value, pretty_format=True):
+def object_output(value):
 	'''Put the final output into an output file or on stdout.'''
 	if value is None:
 		return
@@ -502,7 +515,7 @@ def object_output(value, pretty_format=True):
 			f = File(output_file, Any())
 			f.store(value)
 			return
-		object_encode(value, pretty_format=pretty_format)
+		object_encode(value)
 		return
 	except OSError as e:
 		value = Faulted(str(e))
@@ -519,7 +532,7 @@ def object_output(value, pretty_format=True):
 
 	# Single, unmanaged attempt to output a failed object
 	# output, i.e. cant open output file or failed encoding.
-	object_encode(value, pretty_format=pretty_format)
+	object_encode(value)
 
 #
 def create(object_type, object_table=None,
@@ -550,15 +563,6 @@ def create(object_type, object_table=None,
 		home_path = os.path.abspath(home_path)
 		home_role = join(home_path, role_name)
 
-		if CL.create_settings and isinstance(home.settings, HomeFile):
-			raise Incomplete(Faulted('settings already present'))
-
-		if CL.create_settings:
-			f = Folder(home_role)
-			s = f.file('settings', MapOf(Unicode(), Any()))
-			s.store(argument)
-			raise Incomplete(True)
-
 		# Extract values from the environment with reference
 		# to the name/type info in the variables object.
 		command_variables(environment_variables)
@@ -570,15 +574,29 @@ def create(object_type, object_table=None,
 		HR.home_role = home_role
 		HR.role_name = role_name
 
-		expect_settings = CL.update_settings or CL.dump_settings or CL.factory_reset
+		if CL.create_settings:
+			if isinstance(home.settings, HomeFile):
+				raise Incomplete(Faulted(f'settings already present at "{home_role}"'))
+			f = Folder(home_role)
+			s = f.file('settings', MapOf(Unicode(), Any()))
+			s.store(argument)
+			t = [a for a in argument.keys()]
+			if not t:
+				t = ['empty']
+			c = CommandResponse('create-settings', ','.join(t))
+			raise Incomplete(c)
+
+		expect_settings = CL.update_settings or CL.dump_settings
+		expect_settings = expect_settings or CL.factory_reset or CL.delete_settings
 		if expect_settings and not isinstance(home.settings, HomeFile):
-			raise Incomplete(Faulted('no settings available'))
+			raise Incomplete(Faulted(f'no settings available "{home_role}"'))
 
 		# Non-operational features, i.e. command object not called.
 		# Current arguments not included.
 		if CL.factory_reset:
 			home.settings.update({})
-			raise Incomplete(True)
+			c = CommandResponse('factory-reset')
+			raise Incomplete(c)
 
 		if CL.dump_settings:
 			settings = (home.settings(), MapOf(Unicode(), Any()))
@@ -593,7 +611,20 @@ def create(object_type, object_table=None,
 
 		if CL.update_settings:
 			home.settings.update()
-			raise Incomplete(True)
+			t = [a for a in settings.keys()]
+			if not t:
+				t = ['empty']
+			c = CommandResponse('update-settings', ','.join(t))
+			raise Incomplete(c)
+
+		if CL.delete_settings:
+			home.unique_id.file.remove()
+			home.start_stop.file.remove()
+			home.log_storage.file.remove()
+			home.executable_file.file.remove()
+			home.settings.file.remove()
+			c = CommandResponse('delete-settings')
+			raise Incomplete(c)
 
 		if CL.help:
 			#command_help(object_type, argument)
