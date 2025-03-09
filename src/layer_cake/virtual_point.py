@@ -1013,7 +1013,7 @@ def object_dispatch(queue):
 			value = c.value
 		except Exception as e:
 			s = str(e)
-			s = 'unhandled exception "%s" (%r)' % (s, e)
+			s = f'unhandled exception ({s})'
 			p.fault(s)
 			value = Faulted('object faulted', s)
 		except:
