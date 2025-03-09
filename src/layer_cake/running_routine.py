@@ -113,24 +113,24 @@ def running_in_thread(routine, queue, args, kw_args):
 	except KeyboardInterrupt:
 		s = 'unexpected keyboard interrrupt'
 		queue.fault(s)
-		value = Faulted('object compromised', s), 'Faulted'
+		value = Faulted('object compromised', s)
 	except SystemExit:
 		s = 'unexpected system exit'
 		queue.fault(s)
-		value = Faulted('object compromised', s), 'Faulted'
+		value = Faulted('object compromised', s)
 	except Completion as c:
 		# From run_object (threads dedicated to machines), object_dispatch (e.g. class
 		# threads) and all custom routines.
 		value = c.value
 	except Exception as e:
 		s = str(e)
-		s = 'unhandled exception "%s" (%r)' % (s, e)
+		s = f'unhandled exception ({s})'
 		queue.fault(s)
-		value = Faulted('object faulted', s), 'Faulted'
+		value = Faulted('object faulted', s)
 	except:
 		s = 'unhandled opaque exception'
 		queue.fault(s)
-		value = Faulted('object faulted', s), 'Faulted'
+		value = Faulted('object faulted', s)
 
 	if queue.__art__.lifecycle:
 		queue.log(USER_TAG.DESTROYED, 'Destroyed')
