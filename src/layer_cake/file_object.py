@@ -135,6 +135,19 @@ class File(object):
 			raise
 		return r
 
+	def full_name(self, encoding=None):
+		encoding = encoding or self.encoding or CodecJson
+		encoding = encoding(decorate_names=self.decorate_names)
+		return encoding.full_name(self.name)
+
+	def remove(self):
+		name = self.full_name()
+		try:
+			os.remove(name)
+		except FileNotFoundError:
+			return False
+		return True
+
 # The primitives.
 def read_from_file(expression, name, encoding=None, **kv):
 	"""Recover an application object from the representation loaded from the named file."""
