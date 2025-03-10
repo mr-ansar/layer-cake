@@ -35,36 +35,17 @@ import types
 
 __all__ = [
 	'convert_hint',
-	'lookup_signature',
-	'lookup_type',
-	'lookup_hint',
-	'hints_to_memory',
-	'branch_table',
-	'jump_table',
 ]
 
 from .virtual_memory import *
 from .virtual_runtime import *
-from .convert_type import *
+from .convert_signature import *
 from collections import deque
 from datetime import datetime, timedelta
 import uuid
 
 # Map of signature-to-type, ensuring the same type
 # instance is in use at runtime.
-SIGNATURE_TABLE = {}
-
-def lookup_signature(s, candidate=None):
-	'''Given a signature and optional Portable, resolve to managed entry. Return a Portable.'''
-	f = SIGNATURE_TABLE.get(s, None)
-	if f is None:
-		if candidate is None:
-			# Not there. Make the first
-			# instance.
-			candidate = signature_type(s)
-		SIGNATURE_TABLE[s] = candidate
-		return candidate
-	return f
 
 # Direct mapping from Python hint to
 # library type.
@@ -123,66 +104,5 @@ def convert_hint(hint):
 	t = get()
 	if t is None:
 		return None
-	s = type_signature(t)
+	s = portable_to_signature(t)
 	return lookup_signature(s, candidate=t)
-
-def lookup_type(t):
-	"""Walk the type ensuring everything is properly registered."""
-
-	if not is_portable(t):
-		return None
-
-	def get():
-		if isinstance(t, Enumeration):
-			pass
-		elif isinstance(t, (VectorOf, ArrayOf, DequeOf, SetOf, UserDefined)):
-			lookup_type(t.element)
-		elif isinstance(t, MapOf):
-			lookup_type(t.key)
-			lookup_type(t.value)
-		return t
-
-	t = get()
-	if t is None:
-		return None
-	s = type_signature(t)
-	return lookup_signature(s, candidate=t)
-
-def lookup_hint(hint):
-	'''Resolve a Python hint to an entry in the managed set of Portable objects. Return a Portable.'''
-	c = convert_hint(hint)
-	return c
-
-def hints_to_memory(t):
-	'''Convert standard Python hints into a managed set of Portable objects. Return a 2-tuple of dict and Portable.'''
-	named_type = {}
-	return_type = None
-	for k, v in t.items():
-		m = lookup_hint(v)
-		if m is None:
-			continue
-		if k == 'return':
-			return_type = m
-		else:
-			named_type[k] = m
-	return named_type, return_type
-
-def branch_table(*hints):
-	'''.'''
-	table = []
-	messaging = {}
-	for i, h in enumerate(hints):
-		t = lookup_hint(h)
-		if isinstance(t, UserDefined):
-			messaging[t.element] = i
-		table.append(t)
-	return table, messaging
-
-def jump_table(**jumps):
-	'''.'''
-	i, table = 0, {}
-	for k, v in jumps.items():
-		t = lookup_hint(v)
-		table[k] = (t, i)
-		i += 1
-	return table

@@ -60,6 +60,7 @@ from enum import Enum
 from .virtual_memory import *
 from .convert_memory import *
 from .convert_hints import *
+from .convert_type import *
 from .virtual_runtime import *
 
 __all__ = [
@@ -104,9 +105,6 @@ __all__ = [
 
 	'is_message',
 	'is_message_class',
-
-	'fix_expression',
-	'fix_schema',
 	'compile_schema',
 
 	'MessageRuntime',
@@ -354,78 +352,13 @@ CONVERT_PYTHON = {
 	bool: Boolean(),
 	int: Integer8(),
 	float: Float8(),
+	str: Unicode(),
+	bytes: String(),
+	bytearray: Block(),
 	datetime: WorldTime(),
 	timedelta: TimeDelta(),
-	bytearray: Block(),
-	bytes: String(),
-	str: Unicode(),
 	uuid.UUID: UUID(),
 }
-
-def fix_expression(a, bread):
-	"""Promote parameter a from class to instance, as required."""
-	if is_portable(a):
-		if not is_container(a):
-			return a	# No change.
-		# Fall thru for structured processing.
-	elif is_portable_class(a):
-		if not is_container_class(a):
-			return a()  # Promotion of simple type.
-		raise TypeTrack(a.__name__, 'container class used in type information, instance required')
-	elif is_message_class(a):
-		return UserDefined(a)
-	else:
-		# Is it one of the mapped Python classes.
-		try:
-			e = CONVERT_PYTHON[a]
-			return e
-		except KeyError:
-			pass
-		except TypeError:   # Unhashable - list.
-			pass
-		# Is it an instance of a mapped Python class.
-		try:
-			e = CONVERT_PYTHON[a.__class__]
-			return e
-		except KeyError:
-			pass
-		except AttributeError:   # No class.
-			pass
-		raise TypeTrack(None, 'not one of the portable types')
-
-	# We have an instance of a structuring.
-	try:
-		name = a.__class__.__name__
-		if isinstance(a, ArrayOf):
-			a.element = fix_expression(a.element, bread)
-		elif isinstance(a, VectorOf):
-			a.element = fix_expression(a.element, bread)
-		elif isinstance(a, SetOf):
-			a.element = fix_expression(a.element, bread)
-		elif isinstance(a, MapOf):
-			a.key = fix_expression(a.key, bread)
-			a.value = fix_expression(a.value, bread)
-		elif isinstance(a, DequeOf):
-			a.element = fix_expression(a.element, bread)
-		elif isinstance(a, UserDefined):
-			if not is_message_class(a.element):
-				raise TypeTrack(None, f'"{name}" is not a user-defined message')
-		elif isinstance(a, Enumeration):
-			if not issubclass(a.element, Enum):
-				raise TypeTrack(None, f'"{name}" is not an enum class')
-		elif isinstance(a, PointerTo):
-			try:
-				e = bread[id(a)]
-			except KeyError:
-				e = fix_expression(a.element, bread)
-				bread[id(a)] = e
-			a.element = e
-		else:
-			raise TypeTrack(None, 'unexpected container type')
-	except TypeTrack as e:
-		e.path.append(name)
-		raise e
-	return a
 
 def fix_schema(name, schema):
 	"""Promote schema items from class to instance, as required.
@@ -441,7 +374,7 @@ def fix_schema(name, schema):
 	d = {}
 	for k, t in schema.items():
 		try:
-			d[k] = fix_expression(t, dict())
+			d[k] = install_portable(t, dict())
 		except TypeTrack as e:
 			track = correct_track(e)
 			raise MessageRegistrationError(f'{name}.{k} ({track})', e.reason)
@@ -487,18 +420,15 @@ def compile_schema(message, explicit_schema):
 	"""
 	name = message.__name__
 	hints = typing.get_type_hints(message)
-	class_hints, _ = hints_to_memory(hints)
+	class_hints, _ = install_hints(hints)
 	if hasattr(message, '__init__'):
 		hints = typing.get_type_hints(message.__init__)
-		init_hints, init_return = hints_to_memory(hints)
+		init_hints, init_return = install_hints(hints)
 		if init_return:
 			raise MessageRegistrationError(name, 'returns value from ctor')
 
 	hint_schema = class_hints or init_hints
-
-	fix_schema(name, explicit_schema)
-	for k, v in explicit_schema.items():
-		lookup_type(v)
+	explicit_schema = {k: install_portable(v) for k, v in explicit_schema.items()}
 
 	try:
 		m = message()

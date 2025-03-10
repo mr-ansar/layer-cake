@@ -26,7 +26,7 @@ Version: 0.1.1
 
 from .virtual_memory import *
 from .convert_memory import *
-from .convert_type import *
+from .convert_signature import *
 from .convert_hints import *
 from .message_memory import *
 from .make_message import *

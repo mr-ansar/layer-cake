@@ -75,6 +75,7 @@ from .point_machine import *
 from .command_line import *
 from .command_startup import *
 from .home_role import *
+from .bind_type import *
 
 __all__ = [
 	'ProcessObject',
@@ -587,11 +588,11 @@ def resolve(name, value, schema, punctuation):
 			except KeyError:
 				inferred = True
 				t = type(value)
-				te = fix_expression(t, set())
+				te = t	#fix_expression(t, set())
 		else:
 			inferred = True
 			t = type(value)
-			te = fix_expression(t, set())
+			te = t	#fix_expression(t, set())
 
 		value = encoding.encode(value, te, punctuation)
 		return value

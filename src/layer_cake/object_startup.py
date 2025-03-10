@@ -57,6 +57,7 @@ from .rolling_log import *
 from .platform_system import *
 from .head_lock import *
 from .home_role import *
+from .bind_type import *
 
 __all__ = [
 	'FAULTY_EXIT',

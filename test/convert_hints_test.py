@@ -6,6 +6,7 @@ import types
 from typing import get_type_hints
 
 import layer_cake as lc
+from layer_cake.convert_type import *
 
 __all__ = [
 	'TestConvertHints',
@@ -81,31 +82,20 @@ class TestConvertHints(TestCase):
 	def test_single(self):
 		h = get_type_hints(Single.__init__)
 		a = h.get('a', None)
-		t = lc.lookup_hint(a)
+		t = lookup_hint(a)
 
 		assert isinstance(t, lc.Integer8)
 
 	def test_basic(self):
 		h = get_type_hints(Basic.__init__)
-		t = h.get('a', None)
-		a = lc.lookup_hint(t)
-		t = h.get('b', None)
-		b = lc.lookup_hint(t)
-		t = h.get('c', None)
-		c = lc.lookup_hint(t)
-		t = h.get('d', None)
-		d = lc.lookup_hint(t)
-		t = h.get('e', None)
-		e = lc.lookup_hint(t)
-		t = h.get('f', None)
-		f = lc.lookup_hint(t)
+		schema, return_type = install_hints(h)
 
-		assert isinstance(a, lc.Boolean)
-		assert isinstance(b, lc.Integer8)
-		assert isinstance(c, lc.Float8)
-		assert isinstance(d, lc.Unicode)
-		assert isinstance(e, lc.String)
-		assert isinstance(f, lc.Block)
+		assert isinstance(schema['a'], lc.Boolean)
+		assert isinstance(schema['b'], lc.Integer8)
+		assert isinstance(schema['c'], lc.Float8)
+		assert isinstance(schema['d'], lc.Unicode)
+		assert isinstance(schema['e'], lc.String)
+		assert isinstance(schema['f'], lc.Block)
 
 	def test_array(self):
 		lc.bind_message(Array, a=lc.ArrayOf(lc.Integer8(), 8))
@@ -189,7 +179,7 @@ class TestConvertHints(TestCase):
 
 	def test_f_void(self):
 		lc.bind_routine(f_void)
-		art = f_empty.__art__
+		art = f_void.__art__
 		schema, return_type = art.schema, art.return_type
 		assert return_type is None
 

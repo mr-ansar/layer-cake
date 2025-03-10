@@ -42,6 +42,7 @@ from .general_purpose import *
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
+from .convert_type import *
 from .virtual_runtime import *
 from .point_runtime import *
 from .running_routine import *
@@ -54,7 +55,6 @@ from .convert_hints import *
 __all__ = [
 	'VP',
 	'Point',
-	'PointRuntime',
 	'T1', 'T2', 'T3', 'T4',
 	'StartTimer',
 	'CancelTimer',
@@ -64,8 +64,8 @@ __all__ = [
 	'Threaded',
 	'Channel',
 	'Machine',
+	'threaded_object',
 	'object_dispatch',
-	'bind_point',
 	'halt',
 	'AutoStop',
 ]
@@ -614,86 +614,6 @@ class Point(object):
 		self.log(USER_TAG.CHECK, f'{note} ({s}:{l})')
 		return condition
 
-#
-class PointRuntime(Runtime):
-	"""Settings to control logging and other behaviour, for a Point."""
-
-	def __init__(self,
-			name, module, schema, return_type,
-			**flags):
-		"""Construct the settings.
-
-		:param name: the name of the class being registered
-		:type name: str
-		:param module: the name of the module the class is located in
-		:type module: str
-		:param value: the application value, e.g. a function
-		:type value: any
-		:param lifecycle: enable logging of created, destroyed
-		:type lifecycle: bool
-		:param message_trail: enable logging of sent
-		:type message_trail: bool
-		:param execution_trace: enable logging of received
-		:type execution_trace: bool
-		:param copy_before_sending: enable auto-copy before send
-		:type copy_before_sending: bool
-		:param not_portable: prevent inappropriate send
-		:type not_portable: bool
-		:param user_logs: log level
-		:type user_logs: int
-		"""
-		super().__init__(name, module, **flags)
-		self.schema = schema
-		self.return_type = return_type
-
-def bind_point(point, return_type=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
-	"""Set the runtime flags for the given async object type.
-
-	:param point: a class derived from ``Point``.
-	:type point: class
-	:param lifecycle: log all create() and complete() events
-	:type lifecycle: bool
-	:param message_trail: log all send() events
-	:type message_trail: bool
-	:param execution_trace: log all receive events
-	:type execution_trace: bool
-	:param user_logs: the logging level for this object type
-	:type user_logs: enumeration
-	"""
-	rt = PointRuntime(point.__name__, point.__module__, None, None,
-		lifecycle=lifecycle,
-		message_trail=message_trail,
-		execution_trace=execution_trace,
-		user_logs=user_logs)
-
-	setattr(point, '__art__', rt)
-
-	fix_schema(rt.name, explicit_schema)
-	for k, v in explicit_schema.items():
-		lookup_type(v)
-
-	hints = typing.get_type_hints(point.__init__)
-	point_hints, _ = hints_to_memory(hints)
-
-	if return_type:
-		return_type = fix_expression(return_type, {})
-
-	r = {}
-	for k, a in explicit_schema.items():
-		if k in point_hints:
-			pass
-		point_hints[k] = a	# Add or override existing.
-
-	rt.schema, rt.return_type = point_hints, return_type
-
-	if thread:
-		try:
-			q = VP.thread_classes[thread]
-		except KeyError:
-			q = set()
-			VP.thread_classes[thread] = q
-		q.add(point)
-
 def halt(address):
 	"""Mark the object at the specified address as halted.
 
@@ -924,8 +844,6 @@ class Threaded(Pump, Point, Dispatching):
 		Point.__init__(self)
 		Dispatching.__init__(self)
 
-bind_point(Threaded)
-
 class Channel(Pump, Point, Buffering):
 	"""A sync object.
 
@@ -940,8 +858,6 @@ class Channel(Pump, Point, Buffering):
 		Point.__init__(self)
 		Buffering.__init__(self)
 		self.halted = False
-
-bind_point(Channel)
 
 class Machine(object):
 	"""Base for machines, providing for presentation of messages and save."""
@@ -959,7 +875,7 @@ class Machine(object):
 
 # Standard routines for running the
 # message handlers for async class instances.
-def run_object(queue):
+def threaded_object(queue):
 	"""The thread object silently allocated to machines with dedicated threads."""
 	a = queue.object_address
 	queue.received(queue, Start(), queue.parent_address)
@@ -1036,9 +952,6 @@ def object_dispatch(queue):
 	# as for any object, by sending a Stop(). The running_in_thread
 	# function concludes the protocol.
 
-bind_routine(run_object, lifecycle=False, message_trail=False, execution_trace=False, user_logs=USER_LOG.NONE)
-bind_routine(object_dispatch, lifecycle=False, message_trail=False, execution_trace=False, user_logs=USER_LOG.NONE)
-
 # Object creation.
 #
 def create_a_point(object_type, object_ending, parent_address, args, kw):
@@ -1101,8 +1014,8 @@ def object_and_thread(object_type, object_ending, parent_address, args, kw):
 	# Assume the class context, i.e. a derived application class.
 	if q.__art__.lifecycle:
 		q.log(USER_TAG.CREATED, 'Created by <%08x>' % (parent_address[-1],))
-	start_a_thread(q, run_object, (), {})
-	# The run_object routine provides the Start message.
+	start_a_thread(q, threaded_object, (), {})
+	# The threaded_object routine provides the Start message.
 	return a
 
 def object_only(object_type, object_ending, parent_address, args, kw):

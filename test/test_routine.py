@@ -21,8 +21,8 @@ lc.bind_message(Radiating)
 # 4. Hints use Python syntax, bind types expect Portable (unfixed) but accept hint or class as well.
 
 # POINT AS FUNCTION ---------------------------------------------------------------------
-BR_1 = lc.branch_table(int, dict[int, str])
-JP_1 = lc.jump_table(a=int, b=dict[int, str])
+BR_1 = 1	#lc.branch_table(int, dict[int, str])
+JP_1 = 2	#lc.jump_table(a=int, b=dict[int, str])
 
 def main(self, a: int=None, b: dict[int, str]=None, c=None) -> int:
 	b = b or {}

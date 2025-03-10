@@ -32,6 +32,7 @@ from .point_runtime import *
 from .message_memory import *
 from .routine_point import *
 from .file_object import *
+from .bind_type import *
 
 __all__ = [
 	'lock_file',

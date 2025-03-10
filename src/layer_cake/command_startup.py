@@ -46,7 +46,7 @@ import os
 import sys
 import json
 from .virtual_memory import *
-from .convert_type import *
+from .convert_signature import *
 from .message_memory import *
 from .virtual_codec import *
 from .json_codec import *
@@ -148,7 +148,7 @@ def encode_argument(c, p, t):
 	elif p is None:
 		if isinstance(t, Boolean):
 			return 'true'
-		e = type_signature(t)
+		e = portable_to_signature(t)
 		raise ValueError(f'empty value for type "{e}"')
 	else:
 		w = c.encode(p, t)
@@ -217,7 +217,7 @@ def extract_arguments(schema, ls):
 				raise ValueError(f'cannot decode value for "{k}" ({e.args[0]} does not exist)')
 			except CodecError as e:
 				s = str(e)
-				s = e.replace('cannot decode', f'cannot decode value for "{k}"')
+				s = s.replace('cannot decode', f'cannot decode value for "{k}"')
 				raise ValueError(s)
 		else:
 			lr[k] = v			# Not matched - remainder.

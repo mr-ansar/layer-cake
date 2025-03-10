@@ -43,6 +43,7 @@ from .virtual_point import *
 from .message_memory import *
 from .routine_point import *
 from .point_machine import *
+from .bind_type import *
 
 __all__ = [
 	'Tick',

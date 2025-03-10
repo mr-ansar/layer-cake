@@ -33,6 +33,7 @@ from .virtual_point import *
 from .virtual_runtime import *
 from .point_runtime import *
 from .point_machine import *
+from .bind_type import *
 
 __all__ = [
 	'LogAgent',

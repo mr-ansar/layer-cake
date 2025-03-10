@@ -32,8 +32,8 @@ from .virtual_memory import *
 from enum import Enum
 
 __all__ = [
-	'signature_type',
-	'type_signature',
+	'signature_to_portable',
+	'portable_to_signature',
 ]
 
 NAME_CLASS = {
@@ -198,7 +198,7 @@ parser = yacc.yacc(debug=False)
 
 #
 #
-def signature_type(text):
+def signature_to_portable(text):
 	'''Given a unique string representation, generate the associated type. Return a Portable.'''
 	t = parser.parse(text)
 	return t
@@ -243,7 +243,7 @@ CLASS_NAME = {
 
 #
 #
-def type_signature(a):
+def portable_to_signature(a):
 	'''Given a Portable, generate a unique signature. Return a string.'''
 	c = a.__class__
 	t = CLASS_NAME.get(c, NotFound)
@@ -257,14 +257,14 @@ def type_signature(a):
 		s = a.element.__name__
 		return f'{m}.{s}'
 	if c in (VectorOf, DequeOf, SetOf, PointerTo):
-		e = type_signature(a.element)
+		e = portable_to_signature(a.element)
 		return f'{t}<{e}>'
 	if c == MapOf:
-		k = type_signature(a.key)
-		v = type_signature(a.value)
+		k = portable_to_signature(a.key)
+		v = portable_to_signature(a.value)
 		return f'{t}<{k},{v}>'
 	if c == ArrayOf:
-		e = type_signature(a.element)
+		e = portable_to_signature(a.element)
 		return f'{t}<{e},{a.size}>'
 
 	return t

@@ -6,7 +6,7 @@ import types
 from typing import get_type_hints
 
 import layer_cake as lc
-
+from layer_cake.convert_type import *
 __all__ = [
 	'TestMessageMemory',
 ]
@@ -269,7 +269,7 @@ class TestMessageMemory(TestCase):
 		assert isinstance(a, lc.Integer8)
 
 	def test_fix_builtin_instance(self):
-		lc.bind_message(FixExpression, a=int())
+		lc.bind_message(FixExpression, a=lc.Integer8)
 		rt = FixExpression.__art__
 
 		a = rt.schema.get('a', None)
@@ -279,7 +279,7 @@ class TestMessageMemory(TestCase):
 		try:
 			lc.bind_message(FixExpression, a=dict)
 			assert False
-		except lc.MessageRegistrationError:
+		except ValueError:
 			assert True
 
 	def test_fix_memory_class(self):
@@ -294,7 +294,7 @@ class TestMessageMemory(TestCase):
 		try:
 			lc.bind_message(FixExpression, a=lc.VectorOf)
 			assert False
-		except lc.MessageRegistrationError:
+		except ValueError as e:
 			assert True
 
 	def test_fix_nested_class(self):
@@ -360,7 +360,7 @@ class TestMessageMemory(TestCase):
 		try:
 			lc.bind_message(FixExpression, a=lc.UserDefined(NotRegistered))
 			assert False
-		except lc.MessageRegistrationError:
+		except ValueError as e:
 			assert True
 
 	def test_fix_pointer_to(self):
@@ -405,9 +405,9 @@ class TestMessageMemory(TestCase):
 
 	def test_cant_fix_non_message(self):
 		try:
-			lc.fix_expression(lc.UTC, {})
+			lookup_portable(lc.UTC)
 			assert False
-		except lc.TypeTrack as e:
+		except ValueError as e:
 			assert True
 
 	def test_equal_to(self):

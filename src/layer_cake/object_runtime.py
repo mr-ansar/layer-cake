@@ -38,6 +38,7 @@ from .general_purpose import *
 from .object_logs import *
 from .log_agent import *
 from .countdown_timer import *
+from .bind_type import *
 
 __all__ = [
 	'PB',

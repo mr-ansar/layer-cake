@@ -72,7 +72,9 @@ class File(object):
 	def __init__(self, name, expression, encoding=None, create_default=False, pretty_format=True, decorate_names=True):
 		"""Not published."""
 		self.name = name
-		self.fixed = fix_expression(expression, dict())
+		# Cant fix expressions at runtime.
+		#self.fixed = fix_expression(expression, dict())
+		self.fixed = expression
 		self.encoding = encoding
 		self.create_default = create_default
 		self.pretty_format = pretty_format

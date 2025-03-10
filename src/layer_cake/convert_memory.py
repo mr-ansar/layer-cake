@@ -47,7 +47,7 @@ import re
 import uuid
 
 from .virtual_memory import *
-from .convert_type import *
+from .convert_signature import *
 from .convert_hints import *
 
 __all__ = [
@@ -464,7 +464,7 @@ def text_to_type(t):
 
 def type_to_text(s):
 	"""Convert the class *c* to a dotted string representation."""
-	t = type_signature(s)
+	t = portable_to_signature(s)
 	return t
 #
 #

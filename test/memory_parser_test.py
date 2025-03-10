@@ -3,7 +3,7 @@ from unittest import TestCase
 from enum import Enum
 
 import layer_cake as lc
-import layer_cake.convert_type as mp
+import layer_cake.convert_signature as mp
 
 __all__ = [
 	'TestMemoryParser',
@@ -18,8 +18,8 @@ class MOT(Enum):
 	BIKE=2
 
 def check_type(t):
-	s = mp.type_signature(t)
-	p = mp.signature_type(s)
+	s = mp.portable_to_signature(t)
+	p = mp.signature_to_portable(s)
 	assert t.__class__ == p.__class__
 
 NO_ARGS = [

@@ -71,7 +71,7 @@ from enum import Enum
 
 from .virtual_memory import *
 from .convert_memory import *
-from .convert_type import *
+from .convert_signature import *
 from .convert_hints import *
 from .virtual_runtime import *
 from .message_memory import *
@@ -353,7 +353,7 @@ def p2w_type(c, p, t):
 	if hasattr(p, '__art__'):
 		w = p.__art__.path
 	elif isinstance(p, Portable):
-		w = type_signature(p)
+		w = portable_to_signature(p)
 	elif hasattr(p, '__name__'):
 		name = p.__name__
 		raise ValueError(f'nameless type "{name}"')
@@ -695,7 +695,7 @@ def w2p_pointer(c, a, t):
 
 def w2p_type(c, w, t):
 	try:
-		p = signature_type(w)
+		p = signature_to_portable(w)
 	except ValueError:
 		return None
 	if isinstance(p, UserDefined):

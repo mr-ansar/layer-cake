@@ -33,21 +33,21 @@ lc.bind_message(C)
 def empty(self):
 	pass
 
-bind_routine(empty)
+lc.bind_routine(empty)
 
 # Routine that receives and completes,
 def receiver(self) -> int:
 	m, t, r = self.get()
 	return 42
 
-bind_routine(receiver, a=Address())
+lc.bind_routine(receiver, a=Address())
 
 # Routine that sends.
 def sender(self, a=None) -> int:
 	self.send(C(), a)
 	return 42
 
-bind_routine(sender, a=Address())
+lc.bind_routine(sender, a=Address())
 
 class TestRoutinePoint(TestCase):
 	def test_existence(self):

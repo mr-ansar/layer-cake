@@ -133,8 +133,10 @@ class Folder(object):
 		path = path or '.'
 		if make_absolute:
 			path = os.path.abspath(path)
-		if te:
-			te = fix_expression(te, dict())
+		# Retired behaviour. Cant fix
+		# at runtime.
+		#if te:
+		#	te = fix_expression(te, dict())
 		self.path = path
 		if re is None:
 			self.re = None
@@ -182,8 +184,8 @@ class Folder(object):
 		:return: a new location in the filesystem
 		:rtype: :py:class:`~ansar.folder.Folder`
 		"""
-		if te:
-			te = fix_expression(te, dict())
+		#if te:
+		#	te = fix_expression(te, dict())
 		te = te or self.te
 		if re is None:
 			self.re = None
