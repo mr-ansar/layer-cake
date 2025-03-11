@@ -54,13 +54,14 @@ from .convert_hints import *
 
 __all__ = [
 	'VP',
+	'SelectTimer',
 	'Point',
 	'T1', 'T2', 'T3', 'T4',
 	'StartTimer',
 	'CancelTimer',
 	'PointLog',
-	'OnCompleted',
-	'completed_object',
+	'OnReturned',
+	'returned_object',
 	'Threaded',
 	'Channel',
 	'Machine',
@@ -201,11 +202,11 @@ def check_line():
 
 # Low level control over behaviour of terminating
 # object, i.e. some go quietly.
-def completed_object(value, parent, address, created_type):
-	send_a_message(Completed(value, created_type), parent, address)
+def returned_object(value, parent, address, created_type):
+	send_a_message(Returned(value, created_type), parent, address)
 
 # Automation of response to completion.
-class OnCompleted(object):
+class OnReturned(object):
 	"""Capture values needed for response to object completion.
 
 	:param routine: type to be created
@@ -245,7 +246,7 @@ class Point(object):
 		self.address_job = {}
 		self.aborted_value = None
 
-	def create(self, object_type, *args, object_ending=completed_object, **kw):
+	def create(self, object_type, *args, object_ending=returned_object, **kw):
 		"""Create a child instance of `object_type`. Return the address of the new object.
 
 		:param object_type: async type to instantiate
@@ -436,11 +437,11 @@ class Point(object):
 		return c
 
 	def begin(self, a, f, **kw):
-		c = OnCompleted(f, Gas(**kw))
+		c = OnReturned(f, Gas(**kw))
 		self.assign(a, c)
 
 	def then(self, a, f, g):
-		c = OnCompleted(f, g)
+		c = OnReturned(f, g)
 		self.assign(a, c)
 
 	def log(self, tag, a):
@@ -530,7 +531,7 @@ class Point(object):
 			return
 		self.log(USER_TAG.TRACE, a)
 
-	def console(self, *a):
+	def console(self, *a, **kv):
 		"""Generate a log at level CONSOLE.
 
 		:param a: the message to log
@@ -538,6 +539,21 @@ class Point(object):
 		"""
 		if self.__art__.user_logs.value > USER_LOG.CONSOLE.value:
 			return
+
+		if len(a) > 0:
+			note = ' '.join(a)
+			if len(kv) > 0:
+				eq = [f'{k}={v}'for k, v in kv.items()]
+				t = ','.join(eq)
+				a = f'{note} ({t})'
+			else:
+				a = note
+		elif len(kv) > 0:
+			eq = [f'{k}={v}'for k, v in kv.items()]
+			a = ','.join(eq)
+		else:
+			return
+
 		self.log(USER_TAG.CONSOLE, a)
 
 	def sample(self, **kv):
@@ -748,26 +764,26 @@ class Buffering(Player):
 		:type seconds: float
 		:rtype: message object
 		"""
-		if saving is None:
-			saving = ()
-		elif saving == Unknown:
+		if len(matching) == 0:
+			matching = Unknown
+		elif isinstance(matching[0], SelectTable):
+			matching = matching[0]
+		else:
+			matching = select_list_adhoc(*matching)
+
+		if saving in (None, Unknown):
 			pass
-		elif not isinstance(saving, tuple):
-			saving = (saving,)
+		elif isinstance(saving, SelectTable):
+			pass
+		elif isinstance(saving, tuple):
+			saving = select_list_adhoc(*saving)
+		else:
+			saving = select_list_adhoc(saving)
 
 		# Not None and not zero.
 		if seconds:
 			matching += (SelectTimer,)
 			self.start(SelectTimer, seconds)
-
-		def c_in_matching(m, matching):
-			c = type(m)
-			for t in matching:
-				if issubclass(c, t):
-					return m
-			if Other in matching:
-				return Other(m)
-			return None
 
 		qf = self.__art__
 		while True:
@@ -782,14 +798,19 @@ class Buffering(Player):
 			# 1) matched and returned,
 			# 2) saved for later,
 			# 3) or dropped on the floor.
-			r = c_in_matching(m, matching)
+			if matching == Unknown:
+				r = 0, m, None
+			else:
+				r = matching.find(m)
 			if r is not None:
 				if seconds:
 					self.cancel(SelectTimer)
 				if qf.execution_trace and mf.execution_trace:
 					self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, a))
 				return r
-			if saving == Unknown or c in saving:
+			if saving is None:
+				continue
+			if saving == Unknown or saving.find(m):
 				self.save(m)
 				continue
 			if qf.execution_trace and mf.execution_trace:
@@ -816,7 +837,7 @@ class Buffering(Player):
 			return self.select(r, saving=saving, seconds=seconds)
 		return self.select(*r, saving=saving, seconds=seconds)
 
-	def stop(self, a, r=(Completed,), saving=None, seconds=None):
+	def stop(self, a, r=(Returned,), saving=None, seconds=None):
 		"""Request the termination of an object.
 
 		:param a: async object to be queried
@@ -1083,7 +1104,7 @@ class AutoStop(object):
 
 		point.abort()
 		while point.working():
-			c = point.select(Completed)
+			c = point.select(Returned)
 			k = point.debrief()
 			if completed is not None:
 				completed[k] = c.value

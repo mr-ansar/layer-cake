@@ -11,16 +11,18 @@ def main(self, table: dict[str,list[Person]]=None, count: int=10, ratio: float=0
 	when = when or lc.world_now()
 	unique_id = unique_id or uuid.uuid4()
 
+	i, m, t = self.select(int, lc.Boolean(), lc.Stop, dict[str,list[Person]], bool, float, list[Person])
+	self.console(i=i, m=m, t=t)
+
 	person = []
 	for v in table.values():
 		for p in v:
 			person.append(p.given_name)
 
 	csv = ','.join(person)
-
-	self.console(f'table: {csv}')
-	self.console(f'count: {count}, ratio: {ratio}')
-	self.console(f'when: {when}, unique_id: {unique_id}')
+	self.console(table=csv)
+	self.console(count=count, ratio=ratio)
+	self.console(when=when, unique_id=unique_id)
 
 lc.bind(main)
 

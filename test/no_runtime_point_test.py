@@ -85,10 +85,10 @@ class TestRoutinePoint(TestCase):
 		a = c.create(empty)
 		m, t, r = c.get()
 
-		# Check that Completed came from the
+		# Check that Returned came from the
 		# instance of empty.
 		assert r == a
-		assert isinstance(m, Completed)
+		assert isinstance(m, Returned)
 
 	def test_send(self):
 		root = Point()

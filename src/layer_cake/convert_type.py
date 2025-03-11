@@ -41,7 +41,9 @@ __all__ = [
 	'install_portable',
 	'lookup_portable',
 	'install_hints',
-	'select_table',
+	'SelectTable',
+	'select_list',
+	'select_list_adhoc',
 	'return_type',
 ]
 
@@ -88,55 +90,6 @@ SIMPLE_TYPE = {
 	uuid.UUID: UUID(),
 	Any: Any(),
 }
-
-def convert_type(hint, then):
-	"""Accept a portable, message, basic type, Python hint or None."""
-
-	if isinstance(hint, Portable):
-		return hint
-
-	if hasattr(hint, '__art__'):
-		return UserDefined(hint)
-
-	t = SIMPLE_TYPE.get(hint, None)
-	if t is not None:
-		return t
-
-	if isinstance(hint, types.GenericAlias):
-		c = hint.__origin__
-		a = hint.__args__
-		if c == list:
-			if len(a) != 1:
-				raise PointConstructionError(f'expected an argument for type "{c.__name__}"')
-			a0 = convert_type(a[0], then)
-			then(a0)
-			return VectorOf(a0)
-		elif c == dict:
-			if len(a) != 2:
-				raise PointConstructionError(f'expected key and value arguments for type "{c.__name__}"')
-			a0 = convert_type(a[0], then)
-			a1 = convert_type(a[1], then)
-			then(a0)
-			then(a1)
-			return MapOf(a0, a1)
-		elif c == set:
-			if len(a) != 1:
-				raise PointConstructionError(f'expected an argument for type "{c.__name__}"')
-			a0 = convert_type(a[0], then)
-			then(a0)
-			return SetOf(a0)
-		elif c == deque:
-			if len(a) != 1:
-				raise PointConstructionError(f'expected an argument for type "{c.__name__}"')
-			a0 = convert_type(a[0], then)
-			then(a0)
-			return DequeOf(a0)
-	elif hint == typing.Any:
-		return None
-	elif hint == types.NoneType:
-		return None
-
-	raise PointConstructionError(f'cannot convert type')
 
 SIMPLE_TYPE = {
 	bool: Boolean(),
@@ -195,7 +148,7 @@ def convert_hint(hint, then):
 	elif hint == types.NoneType:
 		return None
 
-	raise PointConstructionError(f'cannot convert type')
+	raise PointConstructionError(f'cannot convert hint "{hint}"')
 
 def lookup(p):
 	s = portable_to_signature(p)
@@ -327,15 +280,53 @@ class SelectTable(object):
 		self.unique = unique
 		self.messaging = messaging
 
-def select_table(*selection):
+	def find(self, message):
+		if hasattr(message, '__art__'):
+			c = message.__class__
+			m = self.messaging.get(c, None)
+			if m is None:
+				for k, v in self.messaging.items():
+					if issubclass(c, k):
+						# Base-derived match.
+						return v[0], message, v[1]
+				return None
+			# Explicit match.
+			return m[0], message, m[1]
+		elif isinstance(message, tuple):
+			value, t = message
+			m = self.unique.get(id(t), None)
+			if m is None:
+				return None
+			return m[0], value, m[1]
+		else:
+			raise ValueError(f'cannot match {message}')
+
+def select_list(*selection):
 	'''.'''
 	unique = {}
 	messaging = {}
 	for i, t in enumerate(selection):
-		p = install_portable(t)
-		unique[id(p)] = i
+		if isinstance(t, Portable):
+			p = install_portable(t)
+		else:
+			p = install_hint(t)
+		unique[id(p)] = (i, p)
 		if isinstance(p, UserDefined):
-			messaging[p.element] = i
+			messaging[p.element] = (i, p)
+	return SelectTable(unique, messaging)
+
+def select_list_adhoc(*selection):
+	'''.'''
+	unique = {}
+	messaging = {}
+	for i, t in enumerate(selection):
+		if isinstance(t, Portable):
+			p = lookup_portable(t)
+		else:
+			p = lookup_hint(t)
+		unique[id(p)] = (i, p)
+		if isinstance(p, UserDefined):
+			messaging[p.element] = (i, p)
 	return SelectTable(unique, messaging)
 
 def return_type(t):

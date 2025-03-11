@@ -18,15 +18,15 @@ def Main_Start(self, message):
 
 	self.begin(a, test_main_complete)
 
-def Main_Completed(self, message):
+def Main_Returned(self, message):
 	d = self.debrief()
-	if isinstance(d, lc.OnCompleted):
+	if isinstance(d, lc.OnReturned):
 		d(message)
 
 def Main_Stop(self, message):
 	self.abort()
 
-lc.bind(Main, dispatch=(lc.Start, lc.Completed, lc.Stop), return_type=lc.Any())
+lc.bind(Main, dispatch=(lc.Start, lc.Returned, lc.Stop), return_type=lc.Any())
 
 if __name__ == '__main__':
 	lc.create(Main)

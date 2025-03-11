@@ -251,7 +251,7 @@ def ProcessObject_INITIAL_Start(self, message):
 	self.create(wait, self.p, True)
 	return EXECUTING
 
-def ProcessObject_EXECUTING_Completed(self, message):
+def ProcessObject_EXECUTING_Returned(self, message):
 	# Wait thread has returned
 	# Forward the result.
 	code, out = message.value
@@ -284,8 +284,8 @@ def ProcessObject_EXECUTING_Stop(self, message):
 		self.complete(Faulted(process_kill=(e, f'cannot relay local Stop as SIGINT')))
 	return CLEARING
 
-def ProcessObject_CLEARING_Completed(self, message):
-	ProcessObject_EXECUTING_Completed(self, message)
+def ProcessObject_CLEARING_Returned(self, message):
+	ProcessObject_EXECUTING_Returned(self, message)
 
 PROCESS_DISPATCH = {
 	INITIAL: (
@@ -293,11 +293,11 @@ PROCESS_DISPATCH = {
 		()
 	),
 	EXECUTING: (
-		(Completed, Stop),
+		(Returned, Stop),
 		()
 	),
 	CLEARING: (
-		(Completed,),
+		(Returned,),
 		()
 	),
 }
@@ -364,7 +364,7 @@ class Utility(Point, StateMachine):
 
 	The named executable is started and the machine waits for termination. If stdin
 	is a ``str`` the contents are written to an input pipe. If stdout is ``str`` (i.e. the class)
-	the object will return the text received on the output pipe, in the :class:`~.lifecycle.Completed`
+	the object will return the text received on the output pipe, in the :class:`~.lifecycle.Returned`
 	message.
 
 	Parameters are passed from the calling process to the child process by translating the
@@ -512,7 +512,7 @@ def Utility_INITIAL_Start(self, message):
 	self.create(wait, self.p, self.piping)
 	return EXECUTING
 
-def Utility_EXECUTING_Completed(self, message):
+def Utility_EXECUTING_Returned(self, message):
 	# Wait thread has returned
 	# Forward the result.
 	code, out = message.value
@@ -525,7 +525,7 @@ def Utility_EXECUTING_Stop(self, message):
 	self.p.terminate()
 	return CLEARING
 
-def Utility_CLEARING_Completed(self, message):
+def Utility_CLEARING_Returned(self, message):
 	code, _ = message.value
 	if code < 0:
 		if -code == signal.SIGTERM:
@@ -545,11 +545,11 @@ UTILITY_DISPATCH = {
 		()
 	),
 	EXECUTING: (
-		(Completed, Stop),
+		(Returned, Stop),
 		()
 	),
 	CLEARING: (
-		(Completed,),
+		(Returned,),
 		()
 	),
 }

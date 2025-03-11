@@ -96,9 +96,9 @@ class TestProcessObject(TestCase):
 		# test_main.main is a procedure - no declared return type.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main.main)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.value is None
 		assert m.created_type == lc.ProcessObject
 
@@ -108,9 +108,9 @@ class TestProcessObject(TestCase):
 		# type info available to write encoding to stdout.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return.main, return_an_int=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert isinstance(m.value, lc.Faulted)
 		e = str(m.value)
 		assert 'no transform int/Any' in e
@@ -121,9 +121,9 @@ class TestProcessObject(TestCase):
 		number = 26
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return.main, return_an_int_any=number)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert isinstance(m.value, tuple)
 		assert isinstance(m.value[0], int)
 		assert m.value[0] == number
@@ -140,9 +140,9 @@ class TestProcessObject(TestCase):
 		# Returns Faulted, table of Person, table of datetime or bool.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return_any.main)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, tuple)
 		assert isinstance(m.value[0], bool)
@@ -158,9 +158,9 @@ class TestProcessObject(TestCase):
 		# Returns Faulted, table of Person, table of datetime or bool.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return_any.main, height=height)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		s = str(m.value)
@@ -177,9 +177,9 @@ class TestProcessObject(TestCase):
 		# Returns Faulted, table of Person, table of datetime or bool.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return_any.main, height=height, width=width, who=who)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, tuple)
 		table = m.value[0]
@@ -203,9 +203,9 @@ class TestProcessObject(TestCase):
 		# Returns Faulted, table of Person, table of datetime or bool.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_return_any.main, height=height, width=width, when=when)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, tuple)
 		table = m.value[0]
@@ -227,9 +227,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, table=table, count=count, ratio=ratio, when=when, unique_id=unique_id)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert m.value is None
 
@@ -241,9 +241,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, table=table)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		s = str(m.value)
@@ -255,9 +255,9 @@ class TestProcessObject(TestCase):
 		# Watch out for materials left in "../layer-cake/test/.layer-cake/test_main_args"
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -266,9 +266,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -286,9 +286,9 @@ class TestProcessObject(TestCase):
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True,
 			table=table, count=count, ratio=ratio, when=when, unique_id=unique_id)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -297,9 +297,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -318,9 +318,9 @@ class TestProcessObject(TestCase):
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True,
 			table=table, count=count)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -331,9 +331,9 @@ class TestProcessObject(TestCase):
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', update_settings=True,
 			count=count, ratio=ratio, when=when, unique_id=unique_id)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -342,9 +342,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -355,9 +355,9 @@ class TestProcessObject(TestCase):
 		# Create with half.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -367,9 +367,9 @@ class TestProcessObject(TestCase):
 		# Repeat.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)
@@ -377,9 +377,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
@@ -388,9 +388,9 @@ class TestProcessObject(TestCase):
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
-			m = ch.select(lc.Completed, lc.Stop)
+			m = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Completed)
+		assert isinstance(m, lc.Returned)
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)

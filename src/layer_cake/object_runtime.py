@@ -31,6 +31,7 @@ import os
 import threading
 import atexit
 from .object_space import *
+from .convert_type import *
 from .virtual_runtime import *
 from .virtual_point import *
 from .point_runtime import *
@@ -139,16 +140,16 @@ def tear_down():
 				cs[1](root)
 			for _, t in PB.thread_dispatch.items():
 				root.send(s, t)
-				root.select(Completed)
+				root.select(Returned)
 			bg = get_queue_address(None)
 			root.send(s, bg)
-			root.select(Completed)
+			root.select(Returned)
 			halt(VP.circuit_address)
-			root.select(Completed)
+			root.select(Returned)
 			root.send(s, VP.timer_address)
-			root.select(Completed)
+			root.select(Returned)
 			root.send(s, VP.log_address)
-			root.select(Completed)
+			root.select(Returned)
 			drop_channel(root)
 			PB.root = None
 	finally:

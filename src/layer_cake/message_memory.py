@@ -517,6 +517,8 @@ def bind_message(message,
 	setattr(message, '__art__', rt)
 	if not not_portable:
 		rt.schema = compile_schema(message, object_schema)
+	
+	install_portable(UserDefined(message))
 
 # This should not need be needed (Incognito) as they are never
 # on-the-wire. But registration needed for dispatching within

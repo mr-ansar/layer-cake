@@ -25,7 +25,7 @@
 .
 
 .. autoclass:: Start
-.. autoclass:: Completed
+.. autoclass:: Returned
 .. autoclass:: Stop
 """
 
@@ -36,7 +36,7 @@ __docformat__ = 'restructuredtext'
 
 __all__ = [
 	'Start',
-	'Completed',
+	'Returned',
 	'Stop',
 	'Pause',
 	'Resume',
@@ -61,7 +61,7 @@ class Start(object):
 	"""First message received by every async machine, from creator to child."""
 	pass
 
-class Completed(object):
+class Returned(object):
 	"""Last message sent, from child to creator.
 
 	:param value: return value for an async object
@@ -72,7 +72,7 @@ class Completed(object):
 		self.created_type = created_type
 
 bind_message(Start)
-bind_message(Completed, value=Any(), created_type=Type())
+bind_message(Returned, value=Any(), created_type=Type())
 
 #
 #

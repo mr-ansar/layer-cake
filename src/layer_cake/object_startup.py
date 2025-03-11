@@ -39,6 +39,7 @@ from os.path import join
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
+from .convert_type import *
 from .virtual_codec import *
 from .json_codec import *
 from .noop_codec import *
@@ -371,17 +372,21 @@ def start_vector(self, object_type, args):
 	a = self.create(object_type, **args)
 
 	while True:
-		m = self.select(Completed, Stop)
+		i, m, t = self.select(Returned, Stop)
 
-		if isinstance(m, Completed):
+		if i == 0:
 			# Do a "fake" signaling. Sidestep all the platform machinery
 			# and just set a global. It does avoid any complexities
 			PS.signal_received = PS.platform_kill
-			return m.value
-		elif isinstance(m, Stop):
+			if isinstance(t, UserDefined):
+				return m.value
+			return (m.value, t)
+		elif i == 1:
 			self.send(m, a)
-			m = self.select(Completed)
-			return m.value
+			i, m, t = self.select(Returned)
+			if isinstance(t, UserDefined):
+				return m.value
+			return (m.value, t)
 
 		self.send(m, a)
 
@@ -422,8 +427,8 @@ def run_object(home, object_type, args, logs, locking):
 		if locking or isinstance(logs, RollingLog):
 			a = root.create(head_lock, home.lock.path, 'head', group_pid=CL.group_pid)
 			root.assign(a, 1)
-			m = root.select(Ready, Completed)
-			if isinstance(m, Completed):	# Cannot lock.
+			m = root.select(Ready, Returned)
+			if isinstance(m, Returned):	# Cannot lock.
 				root.debrief()
 				c = Faulted(f'role {home.lock.path} is running')
 				raise Incomplete(c)
@@ -466,13 +471,13 @@ def run_object(home, object_type, args, logs, locking):
 				root.send(Stop(), a)
 				running = False
 
-		m = root.select(Completed)		# End of start_vector.
+		i, m, t = root.select(Returned)		# End of start_vector.
 		output = m.value
 
 	finally:
 		root.abort()					# Stop the lock if present.
 		while root.working():
-			m = root.select(Completed)
+			m = root.select(Returned)
 			root.debrief()
 
 		s = any_output(output, object_type)
