@@ -417,7 +417,6 @@ class Utility(Point, StateMachine):
 			**kw):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
-		fix_schema(name, args_schema)
 		self.name = name
 		self.args = args
 		self.args_schema = args_schema
@@ -588,11 +587,11 @@ def resolve(name, value, schema, punctuation):
 			except KeyError:
 				inferred = True
 				t = type(value)
-				te = t	#fix_expression(t, set())
+				te = fix_expression(t, set())
 		else:
 			inferred = True
 			t = type(value)
-			te = t	#fix_expression(t, set())
+			te = fix_expression(t, set())
 
 		value = encoding.encode(value, te, punctuation)
 		return value

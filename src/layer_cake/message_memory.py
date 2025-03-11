@@ -103,6 +103,7 @@ __all__ = [
 	# Require parameters.
 	'default_array',
 
+	'fix_expression',
 	'is_message',
 	'is_message_class',
 	'compile_schema',
@@ -360,25 +361,73 @@ CONVERT_PYTHON = {
 	uuid.UUID: UUID(),
 }
 
-def fix_schema(name, schema):
-	"""Promote schema items from class to instance, as required.
+# NEEDS TO BE DROPPED
+# Legacy requirement in the arg processing for
+# the Utility class.
+def fix_expression(a, bread=None):
+	"""Promote parameter a from class to instance, as required."""
+	if bread is None:
+		bread = {}
 
-	:param name: name of the message
-	:type name: str
-	:param schema: the current schema
-	:type name: a map of <name, portable declaration> pairs
-	:return: the modified schema
-	"""
-	if schema is None:
-		return
-	d = {}
-	for k, t in schema.items():
+	if is_portable(a):
+		if not is_container(a):
+			return a	# No change.
+		# Fall thru for structured processing.
+	elif is_portable_class(a):
+		if not is_container_class(a):
+			return a()  # Promotion of simple type.
+		raise TypeTrack(a.__name__, 'container class used in type information, instance required')
+	elif is_message_class(a):
+		return UserDefined(a)
+	else:
+		# Is it one of the mapped Python classes.
 		try:
-			d[k] = install_portable(t, dict())
-		except TypeTrack as e:
-			track = correct_track(e)
-			raise MessageRegistrationError(f'{name}.{k} ({track})', e.reason)
-	schema.update(d)
+			e = CONVERT_PYTHON[a]
+			return e
+		except KeyError:
+			pass
+		except TypeError:   # Unhashable - list.
+			pass
+		# Is it an instance of a mapped Python class.
+		try:
+			e = CONVERT_PYTHON[a.__class__]
+			return e
+		except KeyError:
+			pass
+		except AttributeError:   # No class.
+			pass
+		raise TypeTrack(None, 'not one of the portable types')
+
+	# We have an instance of a structuring.
+	try:
+		name = a.__class__.__name__
+		if isinstance(a, ArrayOf):
+			a.element = fix_expression(a.element, bread)
+		elif isinstance(a, VectorOf):
+			a.element = fix_expression(a.element, bread)
+		elif isinstance(a, SetOf):
+			a.element = fix_expression(a.element, bread)
+		elif isinstance(a, MapOf):
+			a.key = fix_expression(a.key, bread)
+			a.value = fix_expression(a.value, bread)
+		elif isinstance(a, DequeOf):
+			a.element = fix_expression(a.element, bread)
+		elif isinstance(a, UserDefined):
+			if not is_message_class(a.element):
+				raise TypeTrack(None, '"%s" is not a user-defined message' % (name,))
+		elif isinstance(a, PointerTo):
+			try:
+				e = bread[id(a)]
+			except KeyError:
+				e = fix_expression(a.element, bread)
+				bread[id(a)] = e
+			a.element = e
+		else:
+			raise TypeTrack(None, 'unexpected container type')
+	except TypeTrack as e:
+		e.path.append(name)
+		raise e
+	return a
 
 def override(name, explicit):
 	"""Is there explicit information for the named item.
