@@ -29,6 +29,7 @@ __docformat__ = 'restructuredtext'
 from .virtual_runtime import *
 from .virtual_point import *
 from .point_runtime import *
+from .virtual_memory import *
 from .message_memory import *
 from .routine_point import *
 from .file_object import *
@@ -98,7 +99,7 @@ class LockUp:
 	def __init__(self, path, *args, group_pid=None, **kwargs):
 		self.file = open(path, *args, **kwargs)
 		lock_file(self.file)
-		f = File(path, LockedOut)
+		f = File(path, UserDefined(LockedOut))
 		lo = LockedOut()
 		lo.path = path
 		lo.pid = os.getpid()
@@ -134,7 +135,7 @@ def head_lock(self, path, name, group_pid=None):
 		return None
 	except OSError:
 		# Address a not needed in completion code.
-		f = File(lock, LockedOut)
+		f = File(lock, UserDefined(LockedOut))
 		lo = f.recover()
 		return lo
 

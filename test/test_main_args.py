@@ -5,24 +5,28 @@ import layer_cake as lc
 
 from test_person import *
 
-def main(self, table: dict[str,list[Person]]=None, count: int=10, ratio: float=0.5, when: datetime.datetime=None, unique_id: uuid.UUID=None):
-	# Ensure printable values.
+def main(self, table: dict[str,list[Person]]=None,
+	count: int=10, ratio: float=0.5,
+	who: Person=None, when: datetime.datetime=None,
+	unique_id: uuid.UUID=None):
+	# Arrange defaults.
 	table = table or dict(recent=[Person('Felicity'), Person('Frederic')])
+	who = who or Person('Wilfred')
 	when = when or lc.world_now()
 	unique_id = unique_id or uuid.uuid4()
 
-	i, m, t = self.select(int, lc.Boolean(), lc.Stop, dict[str,list[Person]], bool, float, list[Person])
-	self.console(i=i, m=m, t=t)
-
+	# Name of every person.
 	person = []
 	for v in table.values():
 		for p in v:
 			person.append(p.given_name)
 
+	# Log values.
 	csv = ','.join(person)
 	self.console(table=csv)
 	self.console(count=count, ratio=ratio)
-	self.console(when=when, unique_id=unique_id)
+	self.console(who=who.given_name, when=when)
+	self.console(unique_id=unique_id)
 
 lc.bind(main)
 
