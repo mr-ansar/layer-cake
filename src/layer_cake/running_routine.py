@@ -134,6 +134,18 @@ def running_in_thread(routine, queue, args, kw_args):
 
 	if queue.__art__.lifecycle:
 		queue.log(USER_TAG.DESTROYED, 'Destroyed')
+
+	return_type = routine.__art__.return_type
+	if return_type is None:
+		pass
+	elif isinstance(return_type, Any):
+		pass
+	elif isinstance(return_type, Portable):
+		if not hasattr(value, '__art__'):
+			value = (value, return_type)
+	else:
+		value = Faulted(f'unexpected return type for routine "{routine.__name__}"')
+
 	ending = queue.object_ending
 	destroy_an_object(address)
 	ending(value, parent, address, routine)

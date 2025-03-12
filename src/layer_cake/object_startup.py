@@ -394,20 +394,6 @@ bind_routine(start_vector, lifecycle=True, message_trail=True, execution_trace=T
 	object_type=Type(),
 	argument=MapOf(Unicode(), Any()))
 
-def any_output(output, object_type):
-	rt = object_type.__art__
-	if isinstance(rt, (RoutineRuntime, PointRuntime)):
-		return_type = rt.return_type
-	else:
-		return output	# No declaration - same as Any.
-
-	if isinstance(return_type, Any) or return_type is None:
-		return output
-
-	if hasattr(output, '__art__'):
-		return output
-	return (output, return_type)
-
 def run_object(home, object_type, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
 	early_return = False
@@ -480,8 +466,7 @@ def run_object(home, object_type, args, logs, locking):
 			m = root.select(Returned)
 			root.debrief()
 
-		s = any_output(output, object_type)
-		home.stopped(s)
+		home.stopped(output)
 
 	if early_return:		# Already sent output. Silence any output.
 		return None
@@ -654,7 +639,6 @@ def create(object_type, object_table=None,
 
 	def ending(output):
 		exit_status = 0
-		output = any_output(output, object_type)
 		if isinstance(output, Faulted):
 			exit_status = output.exit_status if output.exit_status is not None else FAULTY_EXIT
 			if not CL.full_output:

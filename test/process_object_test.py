@@ -115,10 +115,10 @@ class TestProcessObject(TestCase):
 			ch.create(lc.ProcessObject, test_main_return.main, return_an_int=True)
 			i, m, t = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m, lc.Returned)
 		assert isinstance(m.value, lc.Faulted)
-		e = str(m.value)
-		assert 'no transform int/Any' in e
+		s = str(m.value)
+		assert 'cannot encode' in s
+		assert 'int/Any' in s
 		assert m.created_type == lc.ProcessObject
 
 	def test_return_an_int_any(self):

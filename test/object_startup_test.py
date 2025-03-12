@@ -111,8 +111,10 @@ class TestObjectStartup(TestCase):
 		lc.create(unit_test)
 		PB.exit_status = None
 		tear_down()
-		assert isinstance(PB.output_value, bool)
-		assert PB.output_value == True
+		value = PB.output_value
+		assert isinstance(value, tuple)
+		assert isinstance(value[0], bool)
+		assert value[0] == True
 
 	def test_start_sticky(self):
 		lc.create(unit_test)

@@ -962,6 +962,18 @@ def object_dispatch(queue):
 		if p.__art__.lifecycle:
 			p.log(USER_TAG.DESTROYED, 'Destroyed')
 		s = p.parent_address
+
+		return_type = p.__art__.return_type
+		if return_type is None:
+			pass
+		elif isinstance(return_type, Any):
+			pass
+		elif isinstance(return_type, Portable):
+			if not hasattr(value, '__art__'):
+				value = (value, return_type)
+		else:
+			value = Faulted(f'unexpected return type for machine "{p.__class__.__name__}"')
+
 		ending = p.object_ending
 		destroy_an_object(t)
 		ending(value, s, t, type(p))
