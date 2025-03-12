@@ -241,6 +241,7 @@ class Point(object):
 		self.assigned_queue = None				# Parent queue for non-threaded machine.
 		self.object_ending = None
 
+		self.message_type = None
 		self.current_state = None
 
 		self.address_job = {}

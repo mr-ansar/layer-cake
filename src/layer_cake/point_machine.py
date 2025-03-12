@@ -29,7 +29,10 @@ __docformat__ = 'restructuredtext'
 
 import re
 
+from .virtual_memory import *
 from .message_memory import *
+from .convert_signature import *
+from .convert_type import *
 from .virtual_runtime import *
 from .point_runtime import *
 from .virtual_point import *
@@ -45,6 +48,7 @@ class DEFAULT: pass
 # Find the state and message embedded within a function name.
 state_message = re.compile('(?P<state>[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)_(?P<message>[A-Z][A-Za-z0-9]*)')
 
+unknown = install_hint(Unknown)
 
 class Stateless(Machine):
 	"""Base for simple machines that maintain no formal state.
@@ -54,40 +58,6 @@ class Stateless(Machine):
 	"""
 	def __init__(self):
 		Machine.__init__(self)
-
-	def received_old(self, queue, message, return_address):
-		"""Dispatch message to the appropriate handler.
-
-		:parm queue: instance of a Queue-based async object
-		:type queue: a Queue-based async class
-		:parm message: the received massage
-		:type message: instance of a registered class
-		:parm return_address: origin of the message
-		:type return_address: object address
-		:rtype: none
-		"""
-		pf = self.__art__
-		mf = message.__art__	# Could go straight to __class__.
-
-		shift = pf.value
-		try:
-			k = message.__class__
-			f = shift[k]
-		except KeyError:
-			# Obvious dispatch failed. Provide a
-			# default clause.
-			try:
-				k = Unknown
-				f = shift[k]
-			except KeyError:
-				if pf.execution_trace and mf.execution_trace:
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (mf.name, return_address[-1]))
-				return
-
-		if pf.execution_trace and mf.execution_trace:
-			self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (mf.name, return_address[-1]))
-		f(self, message)
-		self.previous_message = message
 
 	def received(self, queue, message, return_address):
 		"""Dispatch message to the appropriate handler.
@@ -101,40 +71,53 @@ class Stateless(Machine):
 		:rtype: none
 		"""
 		pf = self.__art__
-		mf = message.__art__	# Could go straight to __class__.
-		mc = message.__class__
+		shift, messaging = pf.value
 
-		shift = pf.value
 		def transition():
-			f = shift.get(mc, None)
+			art = getattr(message, '__art__', None)
+			if art:
+				m = message
+				p = lookup_signature(art.path)
+			elif isinstance(message, tuple):
+				m = message[0]
+				p = message[1]
+			else:
+				raise ValueError(f'machine "{pf.path}" cannot identify message ({message})')
+
+			f = shift.get(id(p), None)			# Explicit match.
 			if f:
-				return f
+				return m, p, f
 
-			for c, f in shift.items():
-				if isinstance(message, c):
-					return f
+			if art:
+				for c, f in messaging.items():
+					if isinstance(m, c):		# Base-derived match.
+						return m, p, f
 
-			return shift.get(Unknown, None)
+			f = shift.get(id(unknown), None)	# Catch-all.
+			return m, p, f
 
-		t = transition()
-		if t is None:
-			if pf.execution_trace and mf.execution_trace:
-				if isinstance(message, Faulted):
-					f = str(message)
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (mf.name, return_address[-1], f))
+		m, p, f = transition()
+		if f is None:
+			if pf.execution_trace:
+				t = portable_to_tag(p)
+				if isinstance(m, Faulted):
+					f = str(m)
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], f))
 				else:
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (mf.name, return_address[-1]))
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
 			return
 
-		if pf.execution_trace and mf.execution_trace:
-			if isinstance(message, Faulted):
-				f = str(message)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (mf.name, return_address[-1], f))
+		if pf.execution_trace:
+			t = portable_to_tag(p)
+			if isinstance(m, Faulted):
+				f = str(m)
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], f))
 			else:
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (mf.name, return_address[-1]))
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
 
-		t(self, message)
-		self.previous_message = message
+		self.message_type = p
+		f(self, m)
+		self.previous_message = m
 
 class StateMachine(Machine):
 	"""Base for machines that maintain a formal state.
@@ -162,42 +145,56 @@ class StateMachine(Machine):
 		:rtype: none
 		"""
 		pf = self.__art__
-		mf = message.__art__	# Could go straight to __class__.
-		mc = message.__class__
+		shift, messaging = pf.value
 
-		shift = pf.value
 		def transition(state):
-			r = shift.get(state, None)
-			if r is None:
-				return None
+			art = getattr(message, '__art__', None)
+			if art:
+				m = message
+				p = lookup_signature(art.path)
+			elif isinstance(message, tuple):
+				m = message[0]
+				p = message[1]
+			else:
+				raise ValueError(f'machine "{pf.path}" cannot identify message ({message})')
 
-			f = r.get(mc, None)
+			shifted = shift.get(state, None)
+			if shifted is None:
+				raise ValueError(f'machine "{pf.path}" shifted to nowhere')
+
+			f = shifted.get(id(p), None)				# Explicit match.
 			if f:
-				return f
+				return m, p, f
 
-			for c, f in r.items():
-				if isinstance(message, c):
-					return f
+			if art:
+				messaged = messaging.get(state, None)
+				if messaged:
+					for c, f in messaged.items():
+						if isinstance(m, c):			# Base-derived match.
+							return m, p, f
 
-			return r.get(Unknown, None)
+			f = shifted.get(id(unknown), None)			# Catch-all.
+			return m, p, f
 
-		t = transition(self.current_state)
-		if t is None:
-			t = transition(DEFAULT)
-			if t is None:
-				if pf.execution_trace and mf.execution_trace:
-					if isinstance(message, Faulted):
-						f = str(message)
-						self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (mf.name, return_address[-1], f))
-					else:
-						self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (mf.name, return_address[-1]))
-				return
+		m, p, f = transition(self.current_state)
+		if f is None:
+			if pf.execution_trace:
+				t = portable_to_tag(p)
+				if isinstance(message, Faulted):
+					f = str(message)
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], f))
+				else:
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
+			return
 
-		if pf.execution_trace and mf.execution_trace:
+		if pf.execution_trace:
+			t = portable_to_tag(p)
 			if isinstance(message, Faulted):
 				f = str(message)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (mf.name, return_address[-1], f))
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], f))
 			else:
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (mf.name, return_address[-1]))
-		self.current_state = t(self, message)
-		self.previous_message = message
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
+
+		self.message_type = p
+		self.current_state = f(self, m)
+		self.previous_message = m

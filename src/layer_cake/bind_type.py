@@ -29,6 +29,7 @@ import typing
 from .virtual_memory import *
 from .message_memory import *
 from .convert_type import *
+from .convert_signature import *
 from .virtual_runtime import *
 from .virtual_point import *
 from .point_machine import *
@@ -251,16 +252,28 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 	bind_point(machine, *args, **kw_args)
 	if dispatch is None:
 		return
-	shift = {}
-	for s in unfold(dispatch):
-		name = '%s_%s' % (machine.__name__, s.__name__)
-		f = message_handler(name)
-		if f:
-			shift[s] = f
-		else:
-			raise PointConstructionError('Stateless function "%s" not found' % (name,))
 
-	machine.__art__.value = shift
+	select_list
+	shift = {}
+	messaging = {}
+	for s in unfold(dispatch):
+		p = install_type(s)
+		d = isinstance(p, UserDefined)
+		if d:
+			tag = p.element.__name__
+		else:
+			tag = portable_to_tag(p)
+		name = f'{machine.__name__}_{tag}'
+		
+		f = message_handler(name)
+		if f is None:
+			raise PointConstructionError(f'function "{name}" not found ({machine.__art__.path})')
+
+		shift[id(p)] = f
+		if d and s is not Unknown:
+			messaging[p.element] = f
+
+	machine.__art__.value = (shift, messaging)
 
 def bind_statemachine(machine, dispatch, *args, **kw_args):
 	"""Sets the runtime environment for the given FSM. Returns nothing.
@@ -305,6 +318,7 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 	if dispatch is None:
 		return
 	shift = {}
+	messaging = {}
 	for state, v in dispatch.items():
 		if not isinstance(v, tuple) or len(v) != 2:
 			raise PointConstructionError(f'FSM {machine.__name__}[{state.__name__}] dispatch is not a tuple or is not length 2')
@@ -316,27 +330,48 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 			raise PointConstructionError(f'FSM {machine.__name__}[{state.__name__}] (saving) is not a tuple')
 
 		for m in matching:
-			if m in saving:
-				raise PointConstructionError(f'FSM {machine.__name__}[{state.__name__}] has "{m.__name__}" in both matching and saving')
-			name = '%s_%s_%s' % (machine.__name__, state.__name__, m.__name__)
-			f = message_handler(name)
-			if f:
-				r = shift.get(state, None)
-				if r is None:
-					r = {}
-					shift[state] = r
-				r[m] = f
+			p = install_type(m)
+			d = isinstance(p, UserDefined)
+			if d:
+				tag = p.element.__name__
 			else:
-				raise PointConstructionError(f'FSM function "{name}" not found')
+				tag = portable_to_tag(p)
+			name = '%s_%s_%s' % (machine.__name__, state.__name__, tag)
+			f = message_handler(name)
+			if f is None:
+				raise PointConstructionError(f'function "{name}" not found ({machine.__art__.path})')
 
-		for s in saving:
 			r = shift.get(state, None)
 			if r is None:
 				r = {}
 				shift[state] = r
-			r[s] = statemachine_save
+			r[id(p)] = f
 
-	machine.__art__.value = shift
+			if d and m is not Unknown:
+				r = messaging.get(state, None)
+				if r is None:
+					r = {}
+					messaging[state] = r
+				r[p.element] = f
+
+		for s in saving:
+			p = install_type(s)
+			r = shift.get(state, None)
+			if r is None:
+				r = {}
+				shift[state] = r
+			if id(p) in r:
+				raise PointConstructionError(f'FSM {machine.__name__}[{state.__name__}] has "{m.__name__}" in both matching and saving')
+			r[id(p)] = statemachine_save
+
+			if isinstance(p, UserDefined) and s is not Unknown:
+				r = messaging.get(state, None)
+				if r is None:
+					r = {}
+					messaging[state] = r
+				r[p.element] = f
+
+	machine.__art__.value = (shift, messaging)
 
 def bind(object_type, *args, **kw_args):
 	"""

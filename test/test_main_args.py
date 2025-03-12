@@ -9,7 +9,8 @@ def main(self, table: dict[str,list[Person]]=None,
 	count: int=10, ratio: float=0.5,
 	who: Person=None, when: datetime.datetime=None,
 	unique_id: uuid.UUID=None):
-	# Arrange defaults.
+
+	# Traditional defaults.
 	table = table or dict(recent=[Person('Felicity'), Person('Frederic')])
 	who = who or Person('Wilfred')
 	when = when or lc.world_now()

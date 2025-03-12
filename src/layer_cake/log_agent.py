@@ -25,10 +25,6 @@
 """
 __docformat__ = 'restructuredtext'
 
-import os
-import sys
-import time
-
 from .virtual_point import *
 from .virtual_runtime import *
 from .point_runtime import *
@@ -118,9 +114,24 @@ def LogAgent_Enquiry(self, message):
 def LogAgent_Stop(self, message):
 	self.complete()
 
+def LogAgent_int(self, message):
+	self.complete()
+
+def LogAgent_float(self, message):
+	self.complete()
+
+def LogAgent_dict_str_int(self, message):
+	self.complete()
+
+def LogAgent_Stop(self, message):
+	self.complete()
+
 LOG_AGENT_DISPATCH = (Start,
 	PointLog,
-	Enquiry, Stop)
+	Enquiry, Stop,
+	int,
+	float,
+	dict[str,int])
 
 bind_stateless(LogAgent, dispatch = LOG_AGENT_DISPATCH,
 	lifecycle=False, message_trail=False,

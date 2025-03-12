@@ -34,6 +34,7 @@ from enum import Enum
 __all__ = [
 	'signature_to_portable',
 	'portable_to_signature',
+	'portable_to_tag',
 ]
 
 NAME_CLASS = {
@@ -266,5 +267,67 @@ def portable_to_signature(a):
 	if c == ArrayOf:
 		e = portable_to_signature(a.element)
 		return f'{t}<{e},{a.size}>'
+
+	return t
+
+TAG_NAME = {
+	Boolean: 'bool',
+	Integer2: 'integer2',
+	Integer4: 'integer4',
+	Integer8: 'int',
+	Unsigned2: 'unsigned2',
+	Unsigned4: 'unsigned4',
+	Unsigned8: 'unsigned8',
+	Float4: 'float4',
+	Float8: 'float',
+	Byte: 'byte',
+	Block: 'bytearray',
+	Character: 'character',
+	String: 'bytes',
+	Rune: 'rune',
+	Unicode: 'str',
+	ClockTime: 'clock',
+	TimeSpan: 'span',
+	WorldTime: 'datetime',
+	TimeDelta: 'timedelta',
+	UUID: 'UUID',
+	Enumeration: 'not used',
+	Any: 'any',
+	TargetAddress: 'target',
+	Address: 'address',
+	Type: 'type',
+	Word: 'word',
+	ArrayOf: 'array',
+	VectorOf: 'list',
+	DequeOf: 'deque',
+	SetOf: 'set',
+	MapOf: 'dict',
+	UserDefined: 'not used',
+	PointerTo: 'pointer',
+}
+
+def portable_to_tag(a):
+	'''Given a Portable, generate a unique signature. Return a string.'''
+	c = a.__class__
+	t = TAG_NAME.get(c, NotFound)
+	if t is NotFound:
+		return ''
+
+	if c == UserDefined:
+		return a.element.__art__.name
+	if c == Enumeration:
+		m = a.element.__module__
+		s = a.element.__name__
+		return f'{m}_{s}'
+	if c in (VectorOf, DequeOf, SetOf, PointerTo):
+		e = portable_to_tag(a.element)
+		return f'{t}_{e}'
+	if c == MapOf:
+		k = portable_to_tag(a.key)
+		v = portable_to_tag(a.value)
+		return f'dict_{k}_{v}'
+	if c == ArrayOf:
+		e = portable_to_signature(a.element)
+		return f'array_{e}_{a.size}'
 
 	return t

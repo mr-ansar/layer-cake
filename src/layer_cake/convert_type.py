@@ -40,6 +40,9 @@ __all__ = [
 	'convert_portable',
 	'install_portable',
 	'lookup_portable',
+	'lookup_signature',
+	'install_type',
+	'lookup_type',
 	'install_hints',
 	'SelectTable',
 	'select_list',
@@ -261,6 +264,10 @@ def install_portable(t):
 	p = convert_portable(t, install)
 	return install(p)
 
+def lookup_signature(s):
+	f = SIGNATURE_TABLE.get(s, None)
+	return f
+
 def install_hints(hints):
 	'''Convert standard Python hints into a managed set of Portable objects. Return a 2-tuple of dict and Portable.'''
 	named_type = {}
@@ -301,15 +308,24 @@ class SelectTable(object):
 		else:
 			raise ValueError(f'cannot match {message}')
 
+def lookup_type(t):
+	"""Search the internal table for properly installed types. Return the identity type."""
+	if isinstance(t, Portable):
+		return lookup_portable(t)
+	return lookup_hint(t)
+
+def install_type(t):
+	"""Search the internal table for properly installed types."""
+	if isinstance(t, Portable):
+		return install_portable(t)
+	return install_hint(t)
+
 def select_list(*selection):
 	'''.'''
 	unique = {}
 	messaging = {}
 	for i, t in enumerate(selection):
-		if isinstance(t, Portable):
-			p = install_portable(t)
-		else:
-			p = install_hint(t)
+		p = install_type(t)
 		unique[id(p)] = (i, p)
 		if isinstance(p, UserDefined):
 			messaging[p.element] = (i, p)
@@ -320,10 +336,7 @@ def select_list_adhoc(*selection):
 	unique = {}
 	messaging = {}
 	for i, t in enumerate(selection):
-		if isinstance(t, Portable):
-			p = lookup_portable(t)
-		else:
-			p = lookup_hint(t)
+		p = lookup_type(t)
 		unique[id(p)] = (i, p)
 		if isinstance(p, UserDefined):
 			messaging[p.element] = (i, p)
