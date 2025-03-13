@@ -47,12 +47,21 @@ __all__ = [
 	'SelectTable',
 	'select_list',
 	'select_list_adhoc',
-	'return_type',
+	'type_cast',
+	'cast_back',
+	'bool_cast',
+	'int_cast',
+	'float_cast',
+	'str_cast',
+	'bytes_cast',
+	'bytearray_cast',
+	'datetime_cast',
+	'timedelta_cast',
+	'uuid_cast',
 ]
 
 from .virtual_memory import *
 from .virtual_runtime import *
-from .convert_hints import *
 from .convert_signature import *
 from collections import deque
 from datetime import datetime, timedelta
@@ -342,8 +351,30 @@ def select_list_adhoc(*selection):
 			messaging[p.element] = (i, p)
 	return SelectTable(unique, messaging)
 
-def return_type(t):
-	p = install_portable(t)
+def type_cast(t):
+	p = install_type(t)
 	def any(value):
 		return (value, p)
 	return any
+
+bool_cast = type_cast(Boolean())
+int_cast = type_cast(Integer8())
+float_cast = type_cast(Float8())
+str_cast = type_cast(Unicode())
+bytes_cast = type_cast(String())
+bytearray_cast = type_cast(Block())
+datetime_cast = type_cast(WorldTime())
+timedelta_cast = type_cast(TimeDelta())
+uuid_cast = type_cast(UUID())
+
+def cast_back(message):
+	art = getattr(message, '__art__', None)
+	if art:
+		m = message
+		p = lookup_signature(art.path)
+	elif isinstance(message, tuple):
+		m = message[0]
+		p = message[1]
+	else:
+		raise ValueError(f'cannot unroll {message}')
+	return m, p, art

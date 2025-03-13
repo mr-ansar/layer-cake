@@ -33,7 +33,6 @@ import uuid
 from datetime import MINYEAR, datetime, timedelta
 from .virtual_memory import *
 from .convert_memory import *
-from .convert_hints import *
 from .virtual_runtime import *
 from .message_memory import *
 

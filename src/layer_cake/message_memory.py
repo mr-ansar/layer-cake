@@ -59,7 +59,6 @@ from datetime import MINYEAR, datetime, timedelta
 from enum import Enum
 from .virtual_memory import *
 from .convert_memory import *
-from .convert_hints import *
 from .convert_type import *
 from .virtual_runtime import *
 

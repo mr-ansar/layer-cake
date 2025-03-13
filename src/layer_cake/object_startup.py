@@ -40,6 +40,7 @@ from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
 from .convert_type import *
+from .convert_type import SIGNATURE_TABLE
 from .virtual_codec import *
 from .json_codec import *
 from .noop_codec import *
@@ -564,6 +565,12 @@ def create(object_type, object_table=None,
 		HR.home_path = home_path
 		HR.home_role = home_role
 		HR.role_name = role_name
+
+		if CL.dump_types:
+			table = sorted(SIGNATURE_TABLE.keys())
+			for t in table:
+				print(t)
+			raise Incomplete(None)
 
 		if CL.create_settings:
 			if isinstance(home.settings, HomeFile):

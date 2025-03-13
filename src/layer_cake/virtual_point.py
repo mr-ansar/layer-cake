@@ -42,6 +42,7 @@ from .general_purpose import *
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
+from .convert_signature import *
 from .convert_type import *
 from .virtual_runtime import *
 from .point_runtime import *
@@ -49,7 +50,6 @@ from .running_routine import *
 from .routine_point import *
 from .object_space import *
 from .message_pump import *
-from .convert_hints import *
 
 
 __all__ = [
@@ -284,14 +284,18 @@ class Point(object):
 		:type to: ansar address
 		"""
 		pf = self.__art__
-		mf = m.__art__
-		xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
-		if pf.message_trail and xf.message_trail:
-			self.log(USER_TAG.SENT, 'Sent %s to <%08x>' % (mf.name, to[-1]))
-		if mf.copy_before_sending:
-			c = deepcopy(m)
-			send_a_message(c, to, self.object_address)
-			return
+		try:
+			mf = getattr(m, '__art__')
+		except AttributeError:
+			mf = None
+		if mf:
+			xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
+			if pf.message_trail and xf.message_trail:
+				self.log(USER_TAG.SENT, 'Sent %s to <%08x>' % (mf.name, to[-1]))
+			if mf.copy_before_sending:
+				c = deepcopy(m)
+				send_a_message(c, to, self.object_address)
+				return
 		send_a_message(m, to, self.object_address)
 
 	def reply(self, m):
@@ -781,7 +785,6 @@ class Buffering(Player):
 		else:
 			saving = select_list_adhoc(saving)
 
-		# Not None and not zero.
 		if seconds:
 			matching += (SelectTimer,)
 			self.start(SelectTimer, seconds)
@@ -793,12 +796,7 @@ class Buffering(Player):
 			self.to_address = mtr[1]
 			self.return_address = mtr[2]
 			a = self.return_address[-1]
-			mf = m.__art__
-			c = type(m)
-			# Latest message is either
-			# 1) matched and returned,
-			# 2) saved for later,
-			# 3) or dropped on the floor.
+
 			if matching == Unknown:
 				r = 0, m, None
 			else:
@@ -806,16 +804,18 @@ class Buffering(Player):
 			if r is not None:
 				if seconds:
 					self.cancel(SelectTimer)
-				if qf.execution_trace and mf.execution_trace:
-					self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, a))
+				if qf.execution_trace:
+					t = portable_to_tag(r[2])
+					self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (t, a))
 				return r
 			if saving is None:
 				continue
 			if saving == Unknown or saving.find(m):
 				self.save(m)
 				continue
-			if qf.execution_trace and mf.execution_trace:
-				self.log(USER_TAG.RECEIVED, "Dropped %s from <%08x>" % (mf.name, a))
+			if qf.execution_trace:
+				t = portable_to_tag(r[2])
+				self.log(USER_TAG.RECEIVED, "Dropped %s from <%08x>" % (t, a))
 
 	def ask(self, q, r, a, saving=None, seconds=None):
 		"""Query for a response while allowing reordering, with optional timer.

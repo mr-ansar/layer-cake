@@ -31,7 +31,6 @@ __docformat__ = 'restructuredtext'
 
 import typing
 from .virtual_memory import *
-from .convert_hints import *
 from .convert_type import *
 from .virtual_runtime import *
 from .message_memory import *

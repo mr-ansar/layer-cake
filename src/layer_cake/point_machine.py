@@ -74,21 +74,12 @@ class Stateless(Machine):
 		shift, messaging = pf.value
 
 		def transition():
-			art = getattr(message, '__art__', None)
-			if art:
-				m = message
-				p = lookup_signature(art.path)
-			elif isinstance(message, tuple):
-				m = message[0]
-				p = message[1]
-			else:
-				raise ValueError(f'machine "{pf.path}" cannot identify message ({message})')
-
+			m, p, a = cast_back(message)
 			f = shift.get(id(p), None)			# Explicit match.
 			if f:
 				return m, p, f
 
-			if art:
+			if a:
 				for c, f in messaging.items():
 					if isinstance(m, c):		# Base-derived match.
 						return m, p, f
@@ -148,16 +139,7 @@ class StateMachine(Machine):
 		shift, messaging = pf.value
 
 		def transition(state):
-			art = getattr(message, '__art__', None)
-			if art:
-				m = message
-				p = lookup_signature(art.path)
-			elif isinstance(message, tuple):
-				m = message[0]
-				p = message[1]
-			else:
-				raise ValueError(f'machine "{pf.path}" cannot identify message ({message})')
-
+			m, p, a = cast_back(message)
 			shifted = shift.get(state, None)
 			if shifted is None:
 				raise ValueError(f'machine "{pf.path}" shifted to nowhere')
@@ -166,7 +148,7 @@ class StateMachine(Machine):
 			if f:
 				return m, p, f
 
-			if art:
+			if a:
 				messaged = messaging.get(state, None)
 				if messaged:
 					for c, f in messaged.items():

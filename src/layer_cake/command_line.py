@@ -73,6 +73,8 @@ class CommandLine(object):
 	:type delete_settings: bool
 	:param settings_file: use the settings in the specified file
 	:type settings_file: str
+	:param dump_types: enable output of type table
+	:type dump_types: bool
 	:param output_file: place any output in the specified file
 	:type output_file: str
 	:param group_id: process id of the parent
@@ -92,7 +94,9 @@ class CommandLine(object):
 			dump_settings: bool=False,
 			edit_settings: bool=False,
 			delete_settings: bool=False,
-			settings_file: str=None, output_file: str=None,
+			settings_file: str=None,
+			dump_types: bool=False,
+			output_file: str=None,
 			keep_logs: bool=False,
 			group_pid: int=None, group_listen: int=None):
 		self.background_daemon = background_daemon
@@ -109,6 +113,7 @@ class CommandLine(object):
 		self.edit_settings = edit_settings
 		self.delete_settings = delete_settings
 		self.settings_file = settings_file
+		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
 		self.group_pid = group_pid

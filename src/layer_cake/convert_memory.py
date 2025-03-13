@@ -48,7 +48,6 @@ import uuid
 
 from .virtual_memory import *
 from .convert_signature import *
-from .convert_hints import *
 
 __all__ = [
 	'ConversionError',
