@@ -5,40 +5,39 @@ import layer_cake as lc
 
 from test_person import *
 
-class Juggler(lc.Point, lc.Stateless):
+class Catcher(lc.Point, lc.Stateless):
 	def __init__(self, ):
 		lc.Point.__init__(self)
 		lc.Stateless.__init__(self)
 
-def Juggler_Start(self, message):
+def Catcher_Start(self, message):
 	pass
 
-def Juggler_dict_str_list_Person(self, message):
+def Catcher_dict_str_list_Person(self, message):
 	person = []
 	for v in message.values():
 		for p in v:
 			person.append(p.given_name)
 
-	# Log values.
 	csv = ','.join(person)
 	self.console(table=csv)
 
-def Juggler_int(self, message):
+def Catcher_int(self, message):
 	self.console(message=message)
 
-def Juggler_float(self, message):
+def Catcher_float(self, message):
 	self.console(message=message)
 
-def Juggler_Person(self, message):
-	pass
+def Catcher_Person(self, message):
+	self.console(person=message.given_name)
 
-def Juggler_datetime(self, message):
-	pass
+def Catcher_datetime(self, message):
+	self.console(message=message)
 
-def Juggler_UUID(self, message):
+def Catcher_UUID(self, message):
 	self.complete()
 
-lc.bind(Juggler, dispatch=(lc.Start,
+lc.bind(Catcher, dispatch=(lc.Start,
 	dict[str,list[Person]],
 	int, float,
 	Person,
@@ -62,7 +61,7 @@ class Main(lc.Point, lc.Stateless):
 		self.ratio = ratio
 
 def Main_Start(self, message):
-	j = self.create(Juggler)
+	j = self.create(Catcher)
 	self.send(table_cast(self.table), j)
 	self.send(lc.int_cast(self.count), j)
 	self.send(lc.float_cast(self.ratio), j)
