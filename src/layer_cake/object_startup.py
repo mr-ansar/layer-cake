@@ -412,7 +412,7 @@ def run_object(home, object_type, args, logs, locking):
 
 		# Exclusive access to disk-based resources.
 		if locking or isinstance(logs, RollingLog):
-			a = root.create(head_lock, home.lock.path, 'head', group_pid=CL.group_pid)
+			a = root.create(head_lock, home.lock.path, 'head')
 			root.assign(a, 1)
 			m = root.select(Ready, Returned)
 			if isinstance(m, Returned):	# Cannot lock.
