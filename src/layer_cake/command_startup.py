@@ -33,7 +33,6 @@ __all__ = [
 	'break_arguments',
 	'decode_argument',
 	'encode_argument',
-	'to_any',
 	'from_any',
 	'extract_arguments',
 	'apply_arguments',
@@ -56,7 +55,7 @@ from .file_object import *
 
 
 def process_flags(flags):
-	'''Scan a raw list of flags. Return word and flag details.'''
+	'''Scan a raw list of sys args. Divide into words and flags.'''
 	word = []
 	lf = {}		# Long form.
 	sf = {}		# Short.
@@ -86,7 +85,7 @@ def process_flags(flags):
 	return word, (lf, sf)
 
 def break_arguments(arguments):
-	'''ProcessObject a command line. Return executable, words and flags.'''
+	'''Process a command line. Return executable, words and flags.'''
 	executable = os.path.abspath(arguments[0])
 	word, flags = process_flags(arguments[1:])
 	return executable, word, flags
@@ -111,16 +110,16 @@ DEQUOTED = {
 }
 
 def decode_argument(c, s, t):
-	'''Convert the json value into python value based on type. Return decoded value.'''
+	'''Convert the json text into a python value based on type. Return decoded value.'''
 	q = DEQUOTED.get(type(t), None)
 	if q is not None:
 		d = q(c, s, t)
 	elif s is None:
-		if isinstance(t, Boolean):
+		if isinstance(t, Boolean):	# Empty bool is True.
 			return True
 		return None
 	else:
-		j = f'{{"value": {s} }}'
+		j = f'{{"value": {s} }}'	# Wrap in standard JSON.
 		d = c.decode(j, t)
 	return d
 
@@ -141,7 +140,7 @@ ENQUOTED = {
 }
 
 def encode_argument(c, p, t):
-	'''Convert the python value into a JSON representation based on type. Return encoded string.'''
+	'''Convert the python value into JSON text based on type. Return encoded string.'''
 	q = ENQUOTED.get(type(t), None)
 	if q is not None:
 		s = q(c, p, t)
@@ -257,6 +256,7 @@ def apply_arguments(target, extracted):
 			setattr(target, k, d)
 
 def command_arguments(object_type, override_arguments=None):
+	'''Process sys.argv according to schemas in CommandLine and object_type. Return decoded info.'''
 	process_schema = type_schema(CL)
 	object_schema = type_schema(object_type)
 	c = set(process_schema.keys()) & set(object_schema.keys())
@@ -279,12 +279,12 @@ def command_arguments(object_type, override_arguments=None):
 	return executable, extracted, word
 
 #
-#
 def break_table(object_table):
 	table = {t.__name__.rstrip('_'): (t, type_schema(t)) for t in object_table}
 	return table
 
 def command_sub_arguments(object_type, object_table, override_arguments=None):
+	'''Process sys.argv according to schemas in CommandLine, object_type and sub-commands. Return decoded info.'''
 	process_schema = type_schema(CL)
 	object_schema = type_schema(object_type)
 	s1 = set(process_schema.keys())
@@ -332,6 +332,7 @@ def command_sub_arguments(object_type, object_table, override_arguments=None):
 	return executable, objected, word, sub
 
 def command_variables(factory_variables):
+	'''Scan environment for values matching the given schema. Update the given values.'''
 	if factory_variables is None:
 		return
 
