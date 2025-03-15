@@ -38,11 +38,10 @@ __all__ = [
 
 #
 class CommandLine(object):
-	"""Capture the details of creating a process from an executable file.
+	"""Standard instructions to a new process.
 
-	These are the values used to implement integration between parent and child
-	processes. There are also values that are useful at the command-line, e.g.
-	debug_level and help.
+	Communicate the context for the new process, e.g. daemon, home/role,
+	settings and parent/child communications.
 
 	:param background_daemon: enable full parent-child process integration
 	:type background_daemon: bool
@@ -76,8 +75,6 @@ class CommandLine(object):
 	:type dump_types: bool
 	:param output_file: place any output in the specified file
 	:type output_file: str
-	:param group_id: process id of the parent
-	:type group_id: int
 	:param group_listen: ephemeral port opened by the parent
 	:type group_listen: int
 	"""
@@ -97,7 +94,7 @@ class CommandLine(object):
 			dump_types: bool=False,
 			output_file: str=None,
 			keep_logs: bool=False,
-			group_pid: int=None, group_listen: int=None):
+			group_listen: int=None):
 		self.background_daemon = background_daemon
 		self.child_process = child_process
 		self.full_output = full_output
@@ -115,7 +112,6 @@ class CommandLine(object):
 		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
-		self.group_pid = group_pid
 		self.group_listen = group_listen
 
 bind_message(CommandLine,
