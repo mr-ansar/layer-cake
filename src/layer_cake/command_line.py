@@ -27,7 +27,6 @@ standard processing of the command line.
 """
 __docformat__ = 'restructuredtext'
 
-from enum import Enum
 from .virtual_memory import *
 from .message_memory import *
 from .virtual_runtime import *
@@ -124,6 +123,3 @@ bind_message(CommandLine,
 )
 
 CL = CommandLine()
-
-def command_line_start():
-	return not CL.background_daemon and not CL.child_process

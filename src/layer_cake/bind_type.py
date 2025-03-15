@@ -58,8 +58,10 @@ class RoutineRuntime(Runtime):
 		:type name: str
 		:param module: the name of the module the class is located in
 		:type module: str
-		:param value: the application value, e.g. a function
-		:type value: any
+		:param schema: the application value, e.g. a function
+		:type schema: any
+		:param return_type: the type expected at the end
+		:type return_type: Portable
 		:param lifecycle: enable logging of created, destroyed
 		:type lifecycle: bool
 		:param message_trail: enable logging of sent
@@ -408,7 +410,6 @@ def bind(object_type, *args, **kw_args):
 	elif not is_message_class(object_type):
 		bind_message(object_type, *args, **kw_args)
 
-bind_point(Threaded)
 bind_point(Channel)
 
 bind_routine(threaded_object, lifecycle=False, message_trail=False, execution_trace=False, user_logs=USER_LOG.NONE)

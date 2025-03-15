@@ -59,6 +59,22 @@ class Stateless(Machine):
 	def __init__(self):
 		Machine.__init__(self)
 
+	def transition(self, message):
+		art = self.__art__
+		shift, messaging = art.value
+		m, p, a = cast_back(message)
+		f = shift.get(id(p), None)			# Explicit match.
+		if f:
+			return m, p, f
+
+		if a:
+			for c, f in messaging.items():
+				if isinstance(m, c):		# Base-derived match.
+					return m, p, f
+
+		f = shift.get(id(unknown), None)	# Catch-all.
+		return m, p, f
+
 	def received(self, queue, message, return_address):
 		"""Dispatch message to the appropriate handler.
 
@@ -70,26 +86,10 @@ class Stateless(Machine):
 		:type return_address: object address
 		:rtype: none
 		"""
-		pf = self.__art__
-		shift, messaging = pf.value
-
-		def transition():
-			m, p, a = cast_back(message)
-			f = shift.get(id(p), None)			# Explicit match.
-			if f:
-				return m, p, f
-
-			if a:
-				for c, f in messaging.items():
-					if isinstance(m, c):		# Base-derived match.
-						return m, p, f
-
-			f = shift.get(id(unknown), None)	# Catch-all.
-			return m, p, f
-
-		m, p, f = transition()
+		art = self.__art__
+		m, p, f = self.transition(message)
 		if f is None:
-			if pf.execution_trace:
+			if art.execution_trace:
 				t = portable_to_tag(p)
 				if isinstance(m, Faulted):
 					f = str(m)
@@ -98,7 +98,7 @@ class Stateless(Machine):
 					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
 			return
 
-		if pf.execution_trace:
+		if art.execution_trace:
 			t = portable_to_tag(p)
 			if isinstance(m, Faulted):
 				f = str(m)
@@ -124,6 +124,28 @@ class StateMachine(Machine):
 		Machine.__init__(self)
 		self.current_state = initial
 
+	def transition(self, state, message):
+		art = self.__art__
+		shift, messaging = art.value
+		m, p, a = cast_back(message)
+		shifted = shift.get(state, None)
+		if shifted is None:
+			raise ValueError(f'machine "{art.path}" shifted to nowhere')
+
+		f = shifted.get(id(p), None)				# Explicit match.
+		if f:
+			return m, p, f
+
+		if a:
+			messaged = messaging.get(state, None)
+			if messaged:
+				for c, f in messaged.items():
+					if isinstance(m, c):			# Base-derived match.
+						return m, p, f
+
+		f = shifted.get(id(unknown), None)			# Catch-all.
+		return m, p, f
+
 	def received(self, queue, message, return_address):
 		"""Dispatch message to the appropriate handler.
 
@@ -135,32 +157,10 @@ class StateMachine(Machine):
 		:type return_address: object address
 		:rtype: none
 		"""
-		pf = self.__art__
-		shift, messaging = pf.value
-
-		def transition(state):
-			m, p, a = cast_back(message)
-			shifted = shift.get(state, None)
-			if shifted is None:
-				raise ValueError(f'machine "{pf.path}" shifted to nowhere')
-
-			f = shifted.get(id(p), None)				# Explicit match.
-			if f:
-				return m, p, f
-
-			if a:
-				messaged = messaging.get(state, None)
-				if messaged:
-					for c, f in messaged.items():
-						if isinstance(m, c):			# Base-derived match.
-							return m, p, f
-
-			f = shifted.get(id(unknown), None)			# Catch-all.
-			return m, p, f
-
-		m, p, f = transition(self.current_state)
+		art = self.__art__
+		m, p, f = self.transition(self.current_state, message)
 		if f is None:
-			if pf.execution_trace:
+			if art.execution_trace:
 				t = portable_to_tag(p)
 				if isinstance(message, Faulted):
 					f = str(message)
@@ -169,7 +169,7 @@ class StateMachine(Machine):
 					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
 			return
 
-		if pf.execution_trace:
+		if art.execution_trace:
 			t = portable_to_tag(p)
 			if isinstance(message, Faulted):
 				f = str(message)

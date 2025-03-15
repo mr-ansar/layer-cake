@@ -37,7 +37,7 @@ lc.bind_message(Single)
 lc.bind_message(Basic)
 lc.bind_message(Array, a=lc.ArrayOf(lc.UserDefined(Basic), 8))
 
-class TestConvertHints(TestCase):
+class TestSignature(TestCase):
 	def test_bool(self):
 		schema = Basic.__art__.schema
 		a = schema.get('a', None)

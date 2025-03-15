@@ -38,16 +38,15 @@ cannot be extended to related encode-decode processes.
 
 __docformat__ = 'restructuredtext'
 
-import sys
 import time
 import datetime
-from dateutil.tz import gettz
 from enum import Enum
 import re
 import uuid
 
 from .virtual_memory import *
 from .convert_signature import *
+from .convert_type import *
 
 __all__ = [
 	'ConversionError',
@@ -68,7 +67,6 @@ __all__ = [
 	'text_to_uuid',
 	'type_to_text',
 	'text_to_type',
-	'value_to_any',
 	'clock_now',
 	'clock_at',
 	'clock_break',
@@ -465,30 +463,6 @@ def type_to_text(s):
 	"""Convert the class *c* to a dotted string representation."""
 	t = portable_to_signature(s)
 	return t
-#
-#
-AUTO_UPGRADE = {
-	bool: Boolean(),
-	int: Integer8(),
-	float: Float8(),
-	datetime.datetime: WorldTime(),
-	datetime.timedelta: TimeDelta(),
-	uuid.UUID: UUID(),
-}
-
-def value_to_any(value):
-	"""."""
-	if isinstance(value, (tuple, list)):
-		return value
-	t = type(value)
-	if hasattr(value, '__art__'):
-		if issubclass(t, Enum):
-			return [value, Enumeration(t)]
-		return [value, UserDefined(t)]
-	s = AUTO_UPGRADE.get(t, None)
-	if s is not None:
-		return [value, s]
-	return s
 
 #
 #

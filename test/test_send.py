@@ -70,6 +70,7 @@ def Main_Start(self, message):
 	self.send(lc.uuid_cast(self.unique_id), j)
 
 def Main_Returned(self, message):
+	# Catcher terminates on receiving UUID.
 	self.complete()
 
 def Main_Stop(self, message):
