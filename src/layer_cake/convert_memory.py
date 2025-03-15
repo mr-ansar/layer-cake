@@ -120,13 +120,6 @@ class ConversionEncodeError(ConversionError):
 		return 'cannot represent %s as a %s' % (
 			self.text, self.need)
 
-# SHOULD NOT EXIST. ALSO DEFINED IN message.py.
-#
-# def type_to_text(t):
-# """Convert host time value to standard clock-on-the-wall time representation. Return string."""
-# a = '%f' % (t,)
-# d = a.find('.')
-
 # Specification of time formats.
 ISO_CLOCK_RE = r'^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})[tT]([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})(\.([0-9]+))?$'
 iso_clock = re.compile(ISO_CLOCK_RE)
