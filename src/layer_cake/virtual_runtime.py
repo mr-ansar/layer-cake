@@ -109,8 +109,6 @@ class Runtime(object):
 		:type name: str
 		:param module: the name of the module the class is located in
 		:type module: str
-		:param value: the application value, e.g. a function
-		:type value: any
 		:param lifecycle: enable logging of created, destroyed
 		:type lifecycle: bool
 		:param message_trail: enable logging of sent
@@ -143,7 +141,6 @@ def type_schema(p):
 		return None
 
 #
-#
 class PointConstructionError(Exception):
 	"""Exception indicating poor construction of an async entity."""
 
@@ -155,8 +152,6 @@ class PointConstructionError(Exception):
 		"""
 		Exception.__init__(self, identify_and_help)
 
-#
-#
 class PlatformRequirementError(Exception):
 	"""Exception indicating that the underlying platform is not meeting its end of the deal."""
 
