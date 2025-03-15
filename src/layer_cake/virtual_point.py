@@ -770,13 +770,17 @@ class Buffering(Player):
 		:rtype: message object
 		"""
 		if len(matching) == 0:
-			matching = Unknown
+			if seconds:
+				matching += (Unknown, SelectTimer)
+			else:
+				matching = (Unknown,)
+			matching = select_list_adhoc(*matching)
 		elif isinstance(matching[0], SelectTable):
 			matching = matching[0]
 		else:
 			matching = select_list_adhoc(*matching)
 
-		if saving in (None, Unknown):
+		if saving is None:
 			pass
 		elif isinstance(saving, SelectTable):
 			pass
@@ -797,25 +801,22 @@ class Buffering(Player):
 			self.return_address = mtr[2]
 			a = self.return_address[-1]
 
-			if matching == Unknown:
-				r = 0, m, None
-			else:
-				r = matching.find(m)
+			r = matching.find(m)
 			if r is not None:
 				if seconds:
 					self.cancel(SelectTimer)
 				if qf.execution_trace:
 					t = portable_to_tag(r[2])
-					self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (t, a))
+					self.log(USER_TAG.RECEIVED, f'Received "{t}" from <{a}>')
 				return r
-			if saving is None:
-				continue
-			if saving == Unknown or saving.find(m):
+
+			if saving and saving.find(m):
 				self.save(m)
 				continue
+
 			if qf.execution_trace:
 				t = portable_to_tag(r[2])
-				self.log(USER_TAG.RECEIVED, "Dropped %s from <%08x>" % (t, a))
+				self.log(USER_TAG.RECEIVED, f'Dropped "{t}" from <{a}>')
 
 	def ask(self, q, r, a, saving=None, seconds=None):
 		"""Query for a response while allowing reordering, with optional timer.
