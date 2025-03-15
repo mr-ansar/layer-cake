@@ -9,6 +9,8 @@ from layer_cake.convert_type import *
 from layer_cake.virtual_runtime import *
 from layer_cake.virtual_runtime import *
 
+from test_person import *
+
 __all__ = [
 	'TestSelectList',
 ]
@@ -61,3 +63,11 @@ class TestServiceList(TestCase):
 		test(datetime_cast, lc.world_now(), 6, datetime.datetime, lc.WorldTime)
 		test(timedelta_cast, lc.text_to_delta('1:32:00'), 7, datetime.timedelta, lc.TimeDelta)
 		test(uuid_cast, uuid.uuid4(), 8, uuid.UUID, lc.UUID)
+
+	def test_empty(self):
+		p = install_type(dict[str,Person])
+		unknown = lc.select_list_adhoc(lc.Unknown, lc.Stop)
+		i, m, x = unknown.find(({}, p))
+		assert i == 0
+		assert isinstance(m, dict)
+		assert id(x) == id(p)
