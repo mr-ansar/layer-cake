@@ -21,13 +21,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Management of types - Python hints, library types and a signature set.
+"""Engine room of the type system, the confluence of Python, Portable and
+Python hints.
 
-This is partly about the conversion of Python hints into usable library types
-and partly about conversion of types to-and-from a signature representation (i.e. a
-portable string representation of a library type). At the same time there is
-a need to collapse all instances of a certain type into a single instance for
-the purposes of comparison, i.e. control flow, dispatching.
+Type information is gathered from class/func declarations in the form of
+hints. There is also an opportunity to declare type info at the point of
+registration (layer_cake.bind). This is all combined/unified into a single
+instance of Portable, stored in the SIGNATURE_TABLE using the generated
+signature as the key. THe core idea is that only one instance of any given
+type (i.e. a construction of Portables) is used within the async app.
 """
 
 import typing
@@ -44,9 +46,6 @@ __all__ = [
 	'install_type',
 	'lookup_type',
 	'install_hints',
-	'SelectTable',
-	'select_list',
-	'select_list_adhoc',
 	'type_cast',
 	'cast_back',
 	'bool_cast',
@@ -68,10 +67,10 @@ from datetime import datetime, timedelta
 import uuid
 from enum import Enum
 
-# Map of signature-to-type, ensuring the same type
+# Map of signature-to-type, ensuring the single type
 # instance is in use at runtime.
 SIGNATURE_TABLE = {
-	'boolean': Boolean(),
+	'boolean': Boolean(),		# Pre-loaded with the basic types.
 	'integer8': Integer8(),
 	'float8': Float8(),
 	'byte': Byte(),
@@ -85,24 +84,15 @@ SIGNATURE_TABLE = {
 	'world': WorldTime(),
 	'delta': TimeDelta(),
 	'uuid': UUID(),
+	'type': Type(),
+	'word': Word(),
+	'address': Address(),
+	'target': TargetAddress(),
 	'any': Any(),
 }
 
 # Direct mapping from Python hint to
 # library type.
-SIMPLE_TYPE = {
-	bool: Boolean(),
-	int: Integer8(),
-	float: Float8(),
-	str: Unicode(),
-	bytes: String(),
-	bytearray: Block(),
-	datetime: WorldTime(),
-	timedelta: TimeDelta(),
-	uuid.UUID: UUID(),
-	Any: Any(),
-}
-
 SIMPLE_TYPE = {
 	bool: Boolean(),
 	int: Integer8(),
@@ -201,7 +191,7 @@ CONVERT_PYTHON = {
 }
 
 def convert_portable(p, then, bread=None):
-	"""Promote parameter a from class to instance, as required."""
+	"""Walk the potential hierarchy of a type, patching as necessary. Return a clean Portable."""
 	if bread is None:
 		bread = {}
 
@@ -214,6 +204,8 @@ def convert_portable(p, then, bread=None):
 			return p()  # Promotion of simple type.
 		raise ValueError(f'portable class "{p.__name__}" used in type information, instance required')
 	elif hasattr(p, '__art__'):
+		if issubclass(p, Enum):
+			return Enumeration(p)
 		return UserDefined(p)
 	else:
 		# Is it one of the mapped Python classes.
@@ -291,32 +283,6 @@ def install_hints(hints):
 		named_type[k] = m
 	return named_type, return_type
 
-class SelectTable(object):
-	def __init__(self, unique, messaging):
-		self.unique = unique
-		self.messaging = messaging
-
-	def find(self, message):
-		if hasattr(message, '__art__'):
-			c = message.__class__
-			m = self.messaging.get(c, None)
-			if m is None:
-				for k, v in self.messaging.items():
-					if issubclass(c, k):
-						# Base-derived match.
-						return v[0], message, v[1]
-				return None
-			# Explicit match.
-			return m[0], message, m[1]
-		elif isinstance(message, tuple):
-			value, t = message
-			m = self.unique.get(id(t), None)
-			if m is None:
-				return None
-			return m[0], value, m[1]
-		else:
-			raise ValueError(f'cannot match {message}')
-
 def lookup_type(t):
 	"""Search the internal table for properly installed types. Return the identity type."""
 	if isinstance(t, Portable):
@@ -328,28 +294,6 @@ def install_type(t):
 	if isinstance(t, Portable):
 		return install_portable(t)
 	return install_hint(t)
-
-def select_list(*selection):
-	'''.'''
-	unique = {}
-	messaging = {}
-	for i, t in enumerate(selection):
-		p = install_type(t)
-		unique[id(p)] = (i, p)
-		if isinstance(p, UserDefined):
-			messaging[p.element] = (i, p)
-	return SelectTable(unique, messaging)
-
-def select_list_adhoc(*selection):
-	'''.'''
-	unique = {}
-	messaging = {}
-	for i, t in enumerate(selection):
-		p = lookup_type(t)
-		unique[id(p)] = (i, p)
-		if isinstance(p, UserDefined):
-			messaging[p.element] = (i, p)
-	return SelectTable(unique, messaging)
 
 def type_cast(t):
 	p = install_type(t)

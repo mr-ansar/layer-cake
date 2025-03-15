@@ -31,6 +31,7 @@
 
 from .virtual_memory import *
 from .message_memory import *
+from .convert_type import *
 
 __docformat__ = 'restructuredtext'
 
@@ -53,6 +54,9 @@ __all__ = [
 	'TemporarilyUnavailable',
 	'Overloaded',
 	'OutOfService',
+	'SelectTable',
+	'select_list',
+	'select_list_adhoc'
 ]
 
 #
@@ -220,3 +224,49 @@ bind_message(OutOfService,
 	exit_status=Integer8(),
 	request=Unicode(),
 )
+
+#
+unknown = install_hint(Unknown)
+
+class SelectTable(object):
+	def __init__(self, unique, messaging):
+		self.unique = unique
+		self.messaging = messaging
+
+	def find(self, message):
+		m, p, a = cast_back(message)
+		f = self.unique.get(id(p), None)		# Explicit match.
+		if f:
+			return f[0], m, f[1]
+
+		if a:
+			for c, f in self.messaging.items():
+				if isinstance(m, c):			# Base-derived match.
+					return f[0], m, f[1]
+
+		f = self.unique.get(id(unknown), None)	# Catch-all.
+		if f:
+			return f[0], m, p
+		return None
+
+def select_list(*selection):
+	'''.'''
+	unique = {}
+	messaging = {}
+	for i, t in enumerate(selection):
+		p = install_type(t)
+		unique[id(p)] = (i, p)
+		if isinstance(p, UserDefined):
+			messaging[p.element] = (i, p)
+	return SelectTable(unique, messaging)
+
+def select_list_adhoc(*selection):
+	'''.'''
+	unique = {}
+	messaging = {}
+	for i, t in enumerate(selection):
+		p = lookup_type(t)
+		unique[id(p)] = (i, p)
+		if isinstance(p, UserDefined):
+			messaging[p.element] = (i, p)
+	return SelectTable(unique, messaging)
