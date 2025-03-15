@@ -47,15 +47,14 @@ __all__ = [
 #
 class LockedOut(object):
 	"""Other process already working in same space."""
-	def __init__(self, path: str=None, pid: int=None, group_pid: int=None):
+	def __init__(self, path: str=None, pid: int=None):
 		self.path = path
 		self.pid = pid
-		self.group_pid = group_pid
 
 	def __str__(self):
-		if self.path is None or self.pid is None or self.group_pid is None:
+		if self.path is None or self.pid is None:
 			return 'locked out and missing details'
-		s = f'locked out of "{self.path}" by <{self.pid}>({self.group_pid})'
+		s = f'locked out of "{self.path}" by <{self.pid}>'
 		return s
 
 bind_message(LockedOut, copy_before_sending=False)
@@ -96,14 +95,13 @@ except ModuleNotFoundError:
 
 
 class LockUp:
-	def __init__(self, path, *args, group_pid=None, **kwargs):
+	def __init__(self, path, *args, **kwargs):
 		self.file = open(path, *args, **kwargs)
 		lock_file(self.file)
 		f = File(path, UserDefined(LockedOut))
 		lo = LockedOut()
 		lo.path = path
 		lo.pid = os.getpid()
-		lo.group_pid = group_pid
 		f.store(lo)
 
 	def __enter__(self, *args, **kwargs):
@@ -126,10 +124,10 @@ class LockUp:
 
 #
 #
-def head_lock(self, path, name, group_pid=None):
+def head_lock(self, path, name, ):
 	lock = os.path.join(path, name)
 	try:
-		with LockUp(lock, "w", group_pid=group_pid) as k:
+		with LockUp(lock, "w", ) as k:
 			self.send(Ready(), self.parent_address)
 			self.select(Stop)
 		return None
