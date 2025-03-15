@@ -33,7 +33,6 @@ from .convert_signature import *
 from .virtual_runtime import *
 from .virtual_point import *
 from .point_machine import *
-from .routine_point import *
 
 __all__ = [
 	'RoutineRuntime',
@@ -255,7 +254,6 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 	if dispatch is None:
 		return
 
-	select_list
 	shift = {}
 	messaging = {}
 	for s in unfold(dispatch):
