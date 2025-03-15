@@ -23,8 +23,13 @@
 
 """Use ply library to translate between Portables and a text representation.
 
-Part of the upgrade to allow passing of any type rather than exclusively
-instances of registered messages.
+Part of the upgrade to allow passing of any type, e.g. including compositions of
+list, dict etc, rather than exclusively registered messages.
+
+A portable type is presented to portable_to_signature, e.g. MapOf(Unicode(),Person)
+which generates a string like "map<unicode,module.Person>". Presenting that same
+text to signature_to_portable will recover the semantic equal of the original, i.e.
+a MapOf(etc...).
 """
 
 import sys
