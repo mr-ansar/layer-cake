@@ -145,7 +145,7 @@ bind_message(Anything, copy_before_sending=False,
 #
 class Faulted(object):
 	"""Generic error signal to interested party."""
-	def __init__(self, condition=None, explanation=None, error_code=None, exit_status=None):
+	def __init__(self, condition: str=None, explanation: str=None, error_code: int=None, exit_status: int=None):
 		self.condition = condition or 'fault'
 		self.explanation = explanation
 		self.error_code = error_code
@@ -156,12 +156,7 @@ class Faulted(object):
 			return f'{self.condition} ({self.explanation})'
 		return self.condition
 
-bind_message(Faulted,
-	condition=Unicode(),
-	explanation=Unicode(),
-	error_code=Integer8(),
-	exit_status=Integer8(),
-)
+bind_message(Faulted)
 
 class Aborted(Faulted):
 	def __init__(self):

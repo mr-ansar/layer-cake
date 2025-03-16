@@ -103,6 +103,12 @@ SIMPLE_TYPE = {
 	datetime: WorldTime(),
 	timedelta: TimeDelta(),
 	uuid.UUID: UUID(),
+	ClockTime: ClockTime(),
+	TimeSpan: TimeSpan(),
+	Address: Address(),
+	TargetAddress: TargetAddress(),
+	Type: Type(),
+	Word: Word(),
 	Any: Any(),
 }
 

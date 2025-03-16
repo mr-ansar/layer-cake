@@ -130,14 +130,14 @@ class SpecialTypes(object):
 		self.b = b or (3, 5, 7)	 # Will lose the 7.
 		self.c = c or (2, 4, 6)	 # Add the return_proxy
 		self.d = d
-		self.e = {'auto': AutoTypes(), 'plain': PlainTypes()}
+		self.e = {'auto': AutoTypes, 'plain': PlainTypes}
 
 lc.bind_message(SpecialTypes,
 	a=lc.Type(),
 	b=lc.TargetAddress(),
 	c=lc.Address(),
 	d=lc.Any(),
-	e=lc.MapOf(lc.Unicode(), lc.Any()),
+	e=lc.MapOf(lc.Unicode(), lc.Type()),
 )
 
 class TimeTypes(object):
