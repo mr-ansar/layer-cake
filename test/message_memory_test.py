@@ -454,7 +454,7 @@ class TestMessageMemory(TestCase):
 
 		a = C()
 		b = C()
-		assert not lc.equal_to(a, b, lc.PointerTo(lc.UserDefined(C)))
+		assert lc.equal_to(a, b, lc.PointerTo(lc.UserDefined(C)))
 
 		a = C()
 		b = C()
