@@ -1053,7 +1053,7 @@ def ControlChannel_ListenForStream(self, control, mr):
 
 	self.send(listening, r)
 
-def no_ending(value, parent, address):
+def no_ending(value, parent, address, object_type):
 	pass
 
 def close_ending(proxy):
@@ -1193,6 +1193,7 @@ def ControlChannel_Stop(self, control, mr):
 	for k, v in self.networking.items():
 		if isinstance(v, TcpTransport):
 			self.send(Stop(), v.proxy_address)			# Take out proxy as well.
+			#k.shutdown(socket.SHUT_RDWR)				# Direct to socket.
 		elif isinstance(v, (TcpServer, TcpClient)):
 			k.shutdown(socket.SHUT_RDWR)				# Direct to socket.
 
