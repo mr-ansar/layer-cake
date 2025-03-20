@@ -67,6 +67,7 @@ __all__ = [
 	'Machine',
 	'threaded_object',
 	'object_dispatch',
+	'no_ending',
 	'halt',
 	'AutoStop',
 ]
@@ -992,6 +993,9 @@ def object_dispatch(queue):
 	# as for any object, by sending a Stop(). The running_in_thread
 	# function concludes the protocol.
 
+def no_ending(value, parent, address, object_type):
+	pass
+
 # Object creation.
 #
 def create_a_point(object_type, object_ending, parent_address, args, kw):
@@ -1077,9 +1081,6 @@ def object_only(object_type, object_ending, parent_address, args, kw):
 		q.log(USER_TAG.CREATED, 'Created by <%08x>' % (parent_address[-1],))
 	send_a_message(Start(), a, parent_address)
 	return a
-
-def no_ending(value, parent, address):
-	pass
 
 def sync_object(object_type, parent_address, args, kw):
 	"""Create a synchronous object in the midst of async objects.

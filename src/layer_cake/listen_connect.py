@@ -24,7 +24,6 @@ __docformat__ = 'restructuredtext'
 
 import errno
 import platform
-import os
 import queue
 import threading
 import socket
@@ -56,7 +55,6 @@ __all__ = [
 	'LocalPort',
 	'ScopeOfIP',
 	'local_private_public',
-	'Blob',
 	'CreateFrame',
 	'ListenForStream',
 	'ConnectStream',
@@ -154,13 +152,6 @@ def local_private_public(ip):
 	elif b0 == 172 and (b1 > 15 and b1 < 32):
 		return ScopeOfIP.PRIVATE
 	return ScopeOfIP.PUBLIC
-
-#
-class Blob(object):
-	def __init__(self, block: bytearray=None):
-		self.block = block
-
-bind(Blob)
 
 #
 class CreateFrame(object):
@@ -519,14 +510,15 @@ class MessageStream(object):
 	def	message_to_block(self, mtr):
 		m, t, r = mtr
 		encoded_bytes = self.transport.encoded_bytes
-		f = False
+		tunnel = False
 		key_box = self.transport.key_box
 		codec = self.transport.codec
 
 		# Types significant to streaming.
 		# Be nice to move DH detection elsewhere.
-		if isinstance(m, Blob):
-			f = True
+		if isinstance(m, tuple) and isinstance(m[1], Block):
+			if m[0] is not None:
+				tunnel = True
 		elif isinstance(m, Diffie):
 			self.transport.private_key = PrivateKey.generate()
 			public_bytes = self.transport.private_key.public_key.encode()
@@ -541,14 +533,15 @@ class MessageStream(object):
 
 		# Bring the parts together.
 		# 1. Header
-		h = Header(t, r, f)
+		h = Header(t, r, tunnel)
 		e = codec.encode(h, HEADING)
 		b0 = e.encode('utf-8')
 		n0 = len(b0)
 
 		# 2. Message body - 1 of following 3.
-		if f:
-			b1 = m.block
+		if tunnel:
+			# b1 = m.block
+			b1 = m[0]
 			n1 = len(b1)
 			s = codec.encode([], SPACE)
 		elif isinstance(m, Relay):
@@ -596,7 +589,8 @@ class MessageStream(object):
 			return_address = header.return_address
 
 			if header.tunnel:					# Binary block - directly from the frame.
-				body = Blob(b_)
+				body = bytearray(b_)
+				body = bytearray_cast(body)
 
 			elif len(header.to_address) > 1:	# Passing through. Just received and headed back out.
 				body = Relay(b_, space)
@@ -976,7 +970,7 @@ class BrokenTransport: pass
 # coming across the control socket.
 def ControlChannel_ReceiveBlock(self, control, s):
 	s.recv(1)					   # Consume the bump.
-	mr = self.pending.get()	# Message and account.
+	mr = self.pending.get()
 
 	# This second jump is to simulate the common handling of control
 	# channel events and select events.
@@ -984,13 +978,13 @@ def ControlChannel_ReceiveBlock(self, control, s):
 	try:
 		f = SELECT_TABLE[(ControlChannel, c)]
 	except KeyError:
-		self.fault('Unknown signal received at control channel (%s).' % (c.__name__,))
+		self.warning(f'unknown message received on control channel ({c})')
 		return
 	f(self, control, mr)
 
 def ControlChannel_BrokenTransport(self, control, s):
-	self.fault('The control channel to the selector is broken.')
-	self.clear_out(s, ControlChannel)
+	self.fault('control channel broken')
+	self.clear_out(s)
 
 # The rest of them handle the simulated receive of the
 # actual message.
@@ -1020,13 +1014,7 @@ def ControlChannel_ListenForStream(self, control, mr):
 		server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		server.bind(requested_ipp.inet())
 		server.listen(5)
-	except socket.herror as e:
-		server_not_listening(e)
-		return
-	except socket.gaierror as e:
-		server_not_listening(e)
-		return
-	except socket.error as e:
+	except (socket.herror, socket.gaierror, socket.error) as e:
 		server_not_listening(e)
 		return
 	except OverflowError as e:
@@ -1038,10 +1026,8 @@ def ControlChannel_ListenForStream(self, control, mr):
 	hap = server.getsockname()
 	listening_ipp = HostPort(hap[0], hap[1])
 
-	if m.encrypted:
-		self.trace(f'Listening (encrypted) on "{listening_ipp}", requested "{requested_ipp}"')
-	else:
-		self.trace(f'Listening on "{listening_ipp}", requested "{requested_ipp}"')
+	note = ' (encrypted)' if m.encrypted else ''
+	self.trace(f'Listening{note} on "{listening_ipp}", requested "{requested_ipp}"')
 
 	listening = Listening(m, listening_ipp=listening_ipp, controller_address=r)
 
@@ -1053,11 +1039,8 @@ def ControlChannel_ListenForStream(self, control, mr):
 
 	self.send(listening, r)
 
-def no_ending(value, parent, address, object_type):
-	pass
-
 def close_ending(proxy):
-	def ending(value, parent, address):
+	def ending(value, parent, address, object_type):
 		send_a_message(Close(value), proxy, address)
 	return ending
 
@@ -1254,6 +1237,7 @@ def TcpServer_ReceiveBlock(self, server, s):
 		#return
 
 	if not self.running:
+		# Do not add to operational tables, i.e. networking[].
 		accepted.shutdown(socket.SHUT_RDWR)
 		accepted.close()
 		return
@@ -1287,8 +1271,7 @@ def TcpServer_BrokenTransport(self, server, s):
 	self.send(NotListening(listening.listening_ipp, 0, "signaled by networking subsystem"), server.controller_address)
 	self.clear_out(s, TcpServer)
 
-# TCP CLIENT
-# A placeholder for the eventual outbound transport.
+#
 def TcpClient_ReceiveBlock(self, selector, s):
 	client = s
 	request = selector.request
@@ -1301,9 +1284,7 @@ def TcpClient_ReceiveBlock(self, selector, s):
 		scrap = s.recv(TCP_RECV)
 
 		# No exception. New transport.
-		connected = Connected(request,
-			opened_ipp=opened_ipp,
-			opened_at=world_now())
+		connected = Connected(request, opened_ipp=opened_ipp, opened_at=world_now())
 
 		selector.connected = connected
 		transport, proxy_address = open_stream(self, selector, client, connected)
@@ -1406,6 +1387,7 @@ def TcpTransport_ReadyToSend(self, transport, s):
 		close_session(transport, value, s)
 		return
 
+	# Had nothing to send.
 	try:
 		self.sending.remove(s)
 	except ValueError:
@@ -1593,11 +1575,6 @@ def ListenConnect_Start(self, message):
 	# by application.
 	self.send(self.channel, self.parent_address)
 
-	def clean_sockets():
-		self.receiving = [s for s in self.receiving if s.fileno() > -1]
-		self.sending = [s for s in self.receiving if s.fileno() > -1]
-		self.faulting = [s for s in self.receiving if s.fileno() > -1]
-
 	while self.running or len(self.networking) > 1:
 		R, S, F = select.select(self.receiving, self.sending, self.faulting)
 
@@ -1652,29 +1629,6 @@ def stop_sockets(root):
 AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
-def connect(self, **kv):
-	"""
-	Initiates a network connection to the specified IP
-	address and port number.
-
-	:param self: async entity
-	:type self: Point
-	:param requested_ipp: host and port to connect to
-	:type requested_ipp: HostPort
-	:param encrypted: is the server encrypting
-	:type encrypted: bool
-	:param self_checking: enable periodic enquiry/ack to verify transport
-	:type self_checking: bool
-	:param api_client: leading part of the outgoing request URI
-	:type api_client: str
-	:param ansar_server: is the remote server ansar-enabled
-	:type ansar_server: bool
-	"""
-	cs = ConnectStream(**kv)
-	TS.channel.send(cs, self.object_address)
-
-#
-#
 def listen(self, **kv):
 	"""
 	Establishes a network presence at the specified IP
@@ -1698,7 +1652,26 @@ def listen(self, **kv):
 	TS.channel.send(ls, self.object_address)
 	return lid
 
-#
-#
+def connect(self, **kv):
+	"""
+	Initiates a network connection to the specified IP
+	address and port number.
+
+	:param self: async entity
+	:type self: Point
+	:param requested_ipp: host and port to connect to
+	:type requested_ipp: HostPort
+	:param encrypted: is the server encrypting
+	:type encrypted: bool
+	:param self_checking: enable periodic enquiry/ack to verify transport
+	:type self_checking: bool
+	:param api_client: leading part of the outgoing request URI
+	:type api_client: str
+	:param ansar_server: is the remote server ansar-enabled
+	:type ansar_server: bool
+	"""
+	cs = ConnectStream(**kv)
+	TS.channel.send(cs, self.object_address)
+
 def stop_listening(self, lid):
 	TS.channel.send(StopListening(lid), self.object_address)
