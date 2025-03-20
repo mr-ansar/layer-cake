@@ -666,11 +666,17 @@ def equal_to(a, b, t=None, bread=None):
 				return True
 			return False
 
-		try:
-			b = bread[id(a)]
-			return b
-		except KeyError:
-			bread[id(a)] = True
+		i = id(a)
+		f = bread.get(i, None)
+		if f is not None:
+			return True
+		bread[i] = True
+
+		i = id(b)
+		f = bread.get(i, None)
+		if f is not None:
+			return True
+		bread[i] = True
 
 		return equal_to(a, b, t.element, bread)
 	elif isinstance(t, Any):
