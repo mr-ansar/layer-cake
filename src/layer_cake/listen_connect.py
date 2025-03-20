@@ -22,24 +22,25 @@
 # SOFTWARE.
 __docformat__ = 'restructuredtext'
 
-import queue as sq
-import threading as thr
 import errno
+import platform
+import os
+import queue
+import threading
 import socket
 import select
 import re
-import platform
+import uuid
 from nacl.public import PrivateKey, PublicKey, Box
 from enum import Enum
-from datetime import datetime, timedelta
+from datetime import datetime
 
-#import ansar.create as ar
-#from .transporting_if import ts
 from .general_purpose import *
 from .object_space import *
 from .convert_memory import *
 from .virtual_memory import *
 from .message_memory import *
+from .convert_type import *
 from .virtual_codec import *
 from .json_codec import *
 from .virtual_runtime import *
@@ -57,6 +58,8 @@ __all__ = [
 	'local_private_public',
 	'Blob',
 	'CreateFrame',
+	'ListenForStream',
+	'ConnectStream',
 	'Listening',
 	'Accepted',
 	'Connected',
@@ -68,9 +71,11 @@ __all__ = [
 	'Abandoned',
 	'listen',
 	'connect',
+	'stop_listening',
 ]
 
-#
+# Platform dependent operation. Initially - windows doesnt
+# like partial socket close.
 PLATFORM_SYSTEM = platform.system()
 
 if PLATFORM_SYSTEM == 'Windows':
@@ -87,7 +92,6 @@ class NORMAL: pass
 class CHECKING: pass
 class CLEARING: pass
 
-#
 #
 LOCAL_HOST = '127.0.0.1'
 
@@ -114,7 +118,7 @@ class LocalPort(HostPort):
 		HostPort.__init__(self, LOCAL_HOST, port)
 
 bind(HostPort)
-bind(LocalPort)
+bind(LocalPort, host=Unicode())
 
 #
 #
@@ -152,14 +156,12 @@ def local_private_public(ip):
 	return ScopeOfIP.PUBLIC
 
 #
-#
 class Blob(object):
 	def __init__(self, block: bytearray=None):
 		self.block = block
 
 bind(Blob)
 
-#
 #
 class CreateFrame(object):
 	"""Capture values needed for async object creation.
@@ -179,8 +181,9 @@ class CreateFrame(object):
 # Control messages sent to the sockets thread
 # via the control channel.
 class ListenForStream(object):
-	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False,
+	def __init__(self, lid: UUID=None, requested_ipp: HostPort=None, encrypted: bool=False,
 			api_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
+		self.lid = lid
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
 		self.api_server = api_server
@@ -197,8 +200,8 @@ class ConnectStream(object):
 		self.ansar_server = ansar_server
 
 class StopListening(object):
-	def __init__(self, listening_ipp: HostPort=None):
-		self.listening_ipp = listening_ipp or HostPort()
+	def __init__(self, lid: UUID=None):
+		self.lid = lid
 
 # Update messages from sockets thread to app.
 class Listening(object):
@@ -213,30 +216,30 @@ class Listening(object):
 	"""
 	def __init__(self, request: ListenForStream=None,
 			listening_ipp: HostPort=None,
-			listening_address: Address=None):
+			controller_address: Address=None):
 		self.request = request
 		self.listening_ipp = listening_ipp or HostPort()
-		self.listening_address = listening_address or NO_SUCH_ADDRESS
+		self.controller_address = controller_address or NO_SUCH_ADDRESS
 
 class Accepted(object):
 	"""Session notification, transport to client established.
 
 	:param requested_ipp: IP and port listening at
 	:type requested_ipp: HostPort
-	:param accepted_ipp: local IP and port
-	:type accepted_ipp: HostPort
-	:param remote_address: address of SocketProxy
-	:type remote_address: async address
+	:param opened_ipp: local IP and port
+	:type opened_ipp: HostPort
+	:param proxy_address: address of SocketProxy
+	:type proxy_address: async address
 	:param opened_at: moment of acceptance
 	:type opened_at: datetime
 	"""
 	def __init__(self, listening: Listening=None,
-			accepted_ipp: HostPort=None,
-			remote_address: Address=None,
+			opened_ipp: HostPort=None,
+			proxy_address: Address=None,
 			opened_at: datetime=None):
 		self.listening = listening or Listening()
-		self.accepted_ipp = accepted_ipp or HostPort()
-		self.remote_address = remote_address or NO_SUCH_ADDRESS
+		self.opened_ipp = opened_ipp or HostPort()
+		self.proxy_address = proxy_address or NO_SUCH_ADDRESS
 		self.opened_at = opened_at
 
 class Connected(object):
@@ -244,19 +247,19 @@ class Connected(object):
 
 	:param requested_ipp: IP and port to connect to
 	:type requested_ipp: HostPort
-	:param connected_ipp: local IP and port
-	:type connected_ipp: HostPort
-	:param remote_address: address of SocketProxy
-	:type remote_address: async address
+	:param opened_ipp: local IP and port
+	:type opened_ipp: HostPort
+	:param proxy_address: address of SocketProxy
+	:type proxy_address: async address
 	:param opened_at: moment of connection
 	:type opened_at: datetime
 	"""
-	def __init__(self, request: ConnectStream=None, connected_ipp: HostPort=None,
-			remote_address: Address=None,
+	def __init__(self, request: ConnectStream=None, opened_ipp: HostPort=None,
+			proxy_address: Address=None,
 			opened_at: datetime=None):
 		self.request = request or ConnectStream()
-		self.connected_ipp = connected_ipp or HostPort()
-		self.remote_address = remote_address or NO_SUCH_ADDRESS
+		self.opened_ipp = opened_ipp or HostPort()
+		self.proxy_address = proxy_address or NO_SUCH_ADDRESS
 		self.opened_at = opened_at
 
 class NotListening(Faulted):
@@ -272,6 +275,10 @@ class NotListening(Faulted):
 	def __init__(self, request: ListenForStream=None, error_code: int=0, error_text: str=None):
 		self.request = request or ListenForStream()
 		requested_ipp = self.request.requested_ipp
+		note = '' if not error_text else f' ({error_text})'
+		if requested_ipp.host is None or requested_ipp.port is None:
+			Faulted.__init__(self, f'cannot stop listen"{note}')
+			return
 		note = '' if not error_text else f' ({error_text})'
 		Faulted.__init__(self, f'cannot listen at "{requested_ipp}"{note}', error_code=error_code)
 
@@ -392,19 +399,27 @@ class ControlChannel(object):
 		self.s = s
 
 class TcpServer(object):
-	def __init__(self, s, listening, controller_address):
+	def __init__(self, s, request, listening, controller_address):
 		self.s = s
+		self.request = request
 		self.listening = listening
 		self.controller_address = controller_address
 
+	def encrypted(self):
+		return self.request.encrypted
+
 class TcpClient(object):
-	def __init__(self, s, request, connected, controller_address, encrypted, self_checking):
+	def __init__(self, s, request, connected, controller_address):
 		self.s = s
 		self.request = request
 		self.connected = connected
 		self.controller_address = controller_address
-		self.encrypted = encrypted
-		self.self_checking = self_checking
+
+	def encrypted(self):
+		return self.request.encrypted
+
+	def self_checking(self):
+		return self.request.self_checking
 
 # Underlying network constraints.
 #
@@ -568,7 +583,7 @@ class MessageStream(object):
 	def recover_message(self, received, sockets):
 		# Need a loop here because of encryption handshaking.
 		codec = self.transport.codec
-		remote_address = self.transport.remote_address
+		proxy_address = self.transport.proxy_address
 		diffie_hellman = self.transport.diffie_hellman
 
 		for h, b_, a in self.recover_frame(received):
@@ -593,7 +608,7 @@ class MessageStream(object):
 
 				# Handling of encryption handshaking and keep-alives.
 				if isinstance(body, Diffie):
-					sockets.send(Hellman(body.public_key), remote_address)
+					sockets.send(Hellman(body.public_key), proxy_address)
 					if not diffie_hellman:
 						continue
 					h = diffie_hellman[0]
@@ -650,12 +665,12 @@ class TcpTransport(object):
 		self.controller_address = controller_address
 		self.return_proxy = None
 		self.local_termination = None
-		self.remote_address = None
+		self.proxy_address = None
 
 		self.codec = None
 
 		self.pending = []			# Messages not yet in the loop.
-		self.lock = thr.RLock()		# Safe sharing and empty detection.
+		self.lock = threading.RLock()		# Safe sharing and empty detection.
 		self.messages_to_encode = deque()
 		self.idling = False
 
@@ -669,15 +684,15 @@ class TcpTransport(object):
 		self.closing = False
 		self.value = None
 
-	def set_routing(self, return_proxy, local_termination, remote_address):
+	def set_routing(self, return_proxy, local_termination, proxy_address):
 		# Define addresses for message forwarding.
 		# return_proxy ........ address that response should go back to.
 		# local_termination ... address of default target, actor or session.
-		# remote_address ...... source address of connection updates, session or proxy.
+		# proxy_address ...... source address of connection updates, session or proxy.
 		self.codec = CodecJson(return_proxy=return_proxy, local_termination=local_termination)
 		self.return_proxy = return_proxy
 		self.local_termination = local_termination
-		self.remote_address = remote_address
+		self.proxy_address = proxy_address
 
 	# Output
 	# Application to proxy.
@@ -839,9 +854,10 @@ def SocketProxy_INITIAL_Start(self, message):
 #
 #
 def SocketProxy_NORMAL_Unknown(self, message):
+	message = cast_to(message, self.message_type)
 	empty = self.transport.put(message, self.to_address, self.return_address)
 	if empty:
-		self.channel.send(Bump(self.s), self.address)
+		self.channel.send(Bump(self.s), self.object_address)
 	return NORMAL
 
 def SocketProxy_NORMAL_TransportTick(self, message):
@@ -858,14 +874,14 @@ def SocketProxy_NORMAL_TransportTick(self, message):
 	return NORMAL
 
 def SocketProxy_NORMAL_Close(self, message):
-	self.channel.send(Shutdown(self.s, message.value), self.address)
+	self.channel.send(Shutdown(self.s, message.value), self.object_address)
 	if self.self_checking:
 		self.send(Stop(), self.keeper)
 		return CLEARING
 	self.complete()
 
 def SocketProxy_NORMAL_Stop(self, message):
-	self.channel.send(Shutdown(self.s), self.address)
+	self.channel.send(Shutdown(self.s), self.object_address)
 	if self.self_checking:
 		self.send(Stop(), self.keeper)
 		return CLEARING
@@ -876,7 +892,7 @@ def SocketProxy_NORMAL_Stop(self, message):
 def SocketProxy_CHECKING_Unknown(self, message):
 	empty = self.transport.put(message, self.to_address, self.return_address)
 	if empty:
-		self.channel.send(Bump(self.s), self.address)
+		self.channel.send(Bump(self.s), self.object_address)
 	return CHECKING
 
 def SocketProxy_CHECKING_TransportTick(self, message):
@@ -896,12 +912,12 @@ def SocketProxy_CHECKING_TransportCheck(self, message):
 	# this connection down.
 	if self.first_few():
 		self.log(USER_TAG.CONSOLE, f'Timed out, close transport')
-	self.channel.send(Shutdown(self.s, TimedOut(message)), self.address)
+	self.channel.send(Shutdown(self.s, TimedOut(message)), self.object_address)
 	self.send(Stop(), self.keeper)
 	return CLEARING
 
 def SocketProxy_CHECKING_Close(self, message):
-	self.channel.send(Shutdown(self.s, message.value), self.address)
+	self.channel.send(Shutdown(self.s, message.value), self.object_address)
 	self.send(Stop(), self.keeper)
 	return CLEARING
 
@@ -974,14 +990,19 @@ def ControlChannel_ReceiveBlock(self, control, s):
 
 def ControlChannel_BrokenTransport(self, control, s):
 	self.fault('The control channel to the selector is broken.')
-	self.clear(s, ControlChannel)
+	self.clear_out(s, ControlChannel)
 
 # The rest of them handle the simulated receive of the
 # actual message.
-ListenForStream
 def ControlChannel_ListenForStream(self, control, mr):
 	m, r = mr
 	requested_ipp = m.requested_ipp
+
+	if not self.running:
+		nl = NotListening(m, error_code=0, error_text='sockets shutting down')
+		self.send(nl, r)
+		return
+
 	try:
 		server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	except socket.error as e:
@@ -1022,11 +1043,13 @@ def ControlChannel_ListenForStream(self, control, mr):
 	else:
 		self.trace(f'Listening on "{listening_ipp}", requested "{requested_ipp}"')
 
-	listening = Listening(m, listening_ipp=listening_ipp)
+	listening = Listening(m, listening_ipp=listening_ipp, controller_address=r)
 
-	self.networking[server] = TcpServer(server, listening, r)
+	self.networking[server] = TcpServer(server, m, listening, r)
 	self.receiving.append(server)
 	self.faulting.append(server)
+
+	self.lid[m.lid] = server
 
 	self.send(listening, r)
 
@@ -1044,31 +1067,20 @@ def open_stream(self, parent, s, opened):
 	ts = MessageStream
 
 	if isinstance(parent, TcpClient):
-		self_checking = parent.self_checking
+		self_checking = parent.self_checking()
 		if parent.request.api_client:
 			ts = ApiClientStream
 	elif isinstance(parent, TcpServer):
-		if parent.listening.request.request.api_server is not None:
+		if parent.request.api_server is not None:
 			ts = ApiServerStream
 
 	transport = TcpTransport(ts, parent, controller_address, opened)
 	proxy_address = self.create(SocketProxy, s, self.channel, transport, self_checking=self_checking, object_ending=no_ending)
 
-	cs = parent.request.create_session
-	if cs:
-		# Create the ending function that swaps the Returned message to the parent for a
-		# Close message to the proxy.
-
-		ending = close_ending(proxy_address)
-		session_address = self.create(cs.object_type, *cs.args,
-			controller_address=controller_address, remote_address=proxy_address,
-			object_ending=ending,
-			**cs.kw)
-		transport.set_routing(proxy_address, session_address, session_address)
-	elif ts == ApiClientStream:
+	if ts == ApiClientStream:
 		ending = close_ending(proxy_address)
 		session_address = self.create(ApiClientSession,
-			controller_address=controller_address, remote_address=proxy_address,
+			controller_address=controller_address, proxy_address=proxy_address,
 			object_ending=ending)
 		transport.set_routing(proxy_address, session_address, session_address)
 	else:
@@ -1080,16 +1092,22 @@ def open_stream(self, parent, s, opened):
 def ControlChannel_ConnectStream(self, control, mr):
 	m, r = mr
 	requested_ipp = m.requested_ipp
+
+	if not self.running:
+		nc = NotConnected(m, 0, 'sockets shutting down')
+		self.send(nc, r)
+		return
+
 	try:
 		client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		client.setblocking(False)
 	except socket.error as e:
-		self.send(NotConnected(requested_ipp, e.errno, str(e)), r)
+		self.send(NotConnected(m, e.errno, str(e)), r)
 		return
 
 	def client_not_connected(e):
 		client.close()
-		self.send(NotConnected(requested_ipp, e.errno, str(e)), r)
+		self.send(NotConnected(m, e.errno, str(e)), r)
 
 	try:
 		e = client.connect_ex(requested_ipp.inet())
@@ -1098,14 +1116,14 @@ def ControlChannel_ConnectStream(self, control, mr):
 			# async issue. If not it's a real error.
 			if e not in (errno.EINPROGRESS, errno.EWOULDBLOCK, errno.EAGAIN):
 				client.close()
-				self.send(NotConnected(requested_ipp, e, 'Connect incomplete and no pending indication.'), r)
+				self.send(NotConnected(m, e, 'Connect incomplete and no pending indication.'), r)
 				return
 
 			# Build a transient "session" that just exists to catch
 			# an initial, either send or fault (a receive is treated
 			# as an error). True session is constructed on receiving
 			# a "normal" send event.
-			pending = TcpClient(client, m, None, r, m.encrypted, m.self_checking)
+			pending = TcpClient(client, m, None, r)
 
 			self.networking[client] = pending
 			self.receiving.append(client)
@@ -1113,30 +1131,21 @@ def ControlChannel_ConnectStream(self, control, mr):
 			self.faulting.append(client)
 			return
 
-	except socket.herror as e:
-		client_not_connected(e)
-		return
-	except socket.gaierror as e:
-		client_not_connected(e)
-		return
-	except socket.error as e:
+	except (socket.herror, socket.gaierror, socket.error) as e:
 		client_not_connected(e)
 		return
 	except OverflowError as e:
 		client.close()
-		self.send(NotConnected(requested_ipp, 0, str(e)), r)
+		self.send(NotConnected(m, 0, str(e)), r)
 		return
 
 	hap = client.getsockname()
-	connected_ipp = HostPort(hap[0], hap[1])
+	opened_ipp = HostPort(hap[0], hap[1])
+	connected = Connected(m, opened_ipp=opened_ipp, opened_at=world_now())
 
-	connected = Connected(requested_ipp=requested_ipp,
-		connected_ipp=connected_ipp,
-		opened_at=world_now())
-
-	parent = TcpClient(client, m, connected, r, m.encrypted, m.self_checking)
+	parent = TcpClient(client, m, connected, r)
 	transport, proxy_address = open_stream(self, parent, client, connected)
-	connected.remote_address = proxy_address
+	connected.proxy_address = proxy_address
 
 	self.networking[client] = transport
 	self.receiving.append(client)
@@ -1144,59 +1153,52 @@ def ControlChannel_ConnectStream(self, control, mr):
 	self.faulting.append(client)
 
 	if m.encrypted:
-		self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{connected_ipp}"')
-		not_connected = NotConnected(requested_ipp, None, None)
+		self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{opened_ipp}"')
+		not_connected = NotConnected(m, None, None)
 		transport.diffie_hellman = (
-			(connected, r, transport.remote_address),
+			(connected, r, transport.proxy_address),
 			(not_connected, r))
 		# Start the exchange. Public key filled out during
 		# streaming.
 		self.send(Diffie(), proxy_address)
 		return
-	self.trace(f'Connected to "{requested_ipp}", at local address ""{connected_ipp}"')
+	self.trace(f'Connected to "{requested_ipp}", at local address ""{opened_ipp}"')
 
-	self.forward(connected, r, transport.remote_address)
+	self.forward(connected, r, transport.proxy_address)
 
 def ControlChannel_StopListening(self, control, mr):
 	m, r = mr
-	listening_ipp = m.listening_ipp
-	def server(t):
-		if not isinstance(t, TcpServer):
-			return False
-		h = t.listening.listening_ipp.host == listening_ipp.host
-		p = t.listening.listening_ipp.port == listening_ipp.port
-		return h and p
 
-	# Find server belonging to sender
-	# and clear from engine.
-	sockets = [k for k, v in self.networking.items() if server(v)]
-	if len(sockets) == 1:
-		self.clear(sockets[0], TcpServer)
-		text = 'stopped "%s"(%d)' % (listening_ipp.host, listening_ipp.port)
-	else:
-		text = 'not listening to "%s"(%d)' % (listening_ipp.host, listening_ipp.port)
-	self.send(NotListening(listening_ipp, 0, text), r)
+	if not self.running:
+		nl = NotListening(ListenForStream(lid=m.lid), 0, 'sockets shutting down')
+		self.send(nl, r)
+		return
+
+	server = self.lid.get(m.lid, None)
+	if server is None:
+		e = f'no such entry "{m.lid}"'
+		self.warning(e)
+		not_listening = NotListening(ListenForStream(lid=m.lid), 0, e)
+		self.send(not_listening, r)
+		return
+	server.shutdown(socket.SHUT_RDWR)
 
 def ControlChannel_Stop(self, control, mr):
 	m, r = mr
-	def soc(p): # Server or client.
-		return isinstance(p, (TcpServer, TcpClient))
 
-	# Clear any servers and clients. Not
-	# accepting or connecting any more.
-	sockets = [k for k, v in self.networking.items() if soc(v)]
-	for s in sockets:
-		self.clear(s)
+	if not self.running:
+		return
 
-	# Only streams left. Except control channel. Sigh.
-	# Kick off a proper teardown and wait until the handshaking
-	# is done and there is nothing left to do.
+	# Initiate the teardown of all application sockets.
 	for k, v in self.networking.items():
 		if isinstance(v, TcpTransport):
-			# WAS Closed() but that certainly doesnt work
-			# for session-based connections.
-			self.send(Stop(), v.remote_address)
+			self.send(Stop(), v.proxy_address)			# Take out proxy as well.
+		elif isinstance(v, (TcpServer, TcpClient)):
+			k.shutdown(socket.SHUT_RDWR)				# Direct to socket.
 
+	# Mark the ListenConnect state. When the
+	# socket count drops to 0, the instance
+	# will return.
 	self.running = False
 
 def ControlChannel_Bump(self, control, mr):
@@ -1235,98 +1237,92 @@ def ControlChannel_Shutdown(self, control, mr):
 
 def TcpServer_ReceiveBlock(self, server, s):
 	listening = server.listening
-	request = listening.request
+	request = server.request
+
 	try:
 		accepted, hap = s.accept()
 		accepted.setblocking(False)
 	except socket.error as e:
-		not_accepted = NotAccepted(listening, e.errno, str(e))
-		self.send(not_accepted, server.controller_address)
+		#if e.errno == 22:
+		self.clear_out(s)
+		not_listening = NotListening(request, e.errno, str(e))
+		self.send(not_listening, server.controller_address)
 		return
+		#not_accepted = NotAccepted(listening, e.errno, str(e))
+		#self.send(not_accepted, server.controller_address)
+		#return
 
-	opened_at = world_now()
+	if not self.running:
+		accepted.shutdown(socket.SHUT_RDWR)
+		accepted.close()
+		return
+		
 	transport, proxy_address = open_stream(self, server, accepted, None)
 	self.receiving.append(accepted)
 	self.sending.append(accepted)
 	self.faulting.append(accepted)
 
-	accepted_ipp = HostPort(hap[0], hap[1])
+	opened_ipp = HostPort(hap[0], hap[1])
 
-	accepted = Accepted(listening_address=listening.listening_address, listening_ipp=listening.listening_ipp,
-		accepted_ipp=accepted_ipp, remote_address=transport.remote_address,
+	opened_at = world_now()
+	accepted = Accepted(listening=listening, opened_ipp=opened_ipp,
+		proxy_address=transport.proxy_address,
 		opened_at=opened_at)
 	transport.opened = accepted
 
 	if request.encrypted:
-		self.trace(f'Accepted (encrypted) "{accepted_ipp}", requested "{listening.listening_ipp}"')
+		self.trace(f'Accepted (encrypted) "{opened_ipp}", listening "{listening.listening_ipp}"')
 		not_accepted = NotAccepted(listening, None, None)
 		transport.diffie_hellman = (
-			(accepted, server.controller_address, transport.remote_address),
+			(accepted, server.controller_address, transport.proxy_address),
 			(not_accepted, server.controller_address))
 		return
-	self.trace(f'Accepted "{accepted_ipp}", requested "{listening.listening_ipp}"')
+	self.trace(f'Accepted "{opened_ipp}", listening "{listening.listening_ipp}"')
 
-	self.forward(accepted, server.controller_address, transport.remote_address)
+	self.forward(accepted, server.controller_address, transport.proxy_address)
 
 def TcpServer_BrokenTransport(self, server, s):
 	listening = server.listening
 	self.send(NotListening(listening.listening_ipp, 0, "signaled by networking subsystem"), server.controller_address)
-	self.clear(s, TcpServer)
+	self.clear_out(s, TcpServer)
 
 # TCP CLIENT
 # A placeholder for the eventual outbound transport.
 def TcpClient_ReceiveBlock(self, selector, s):
 	client = s
-	# NOT NEEDED IN TcpTransport_ReceiveBlock SO....
-	#self.sending.remove(client)
-
 	request = selector.request
 
 	hap = client.getsockname()
-	connected_ipp = HostPort(hap[0], hap[1])
+	opened_ipp = HostPort(hap[0], hap[1])
 	requested_ipp = request.requested_ipp
-
-	# CANNOT BUILD A STREAM AND IMMEDIATELY TEAR IT DOWN ON AN EXCEPTION.
-	# THIS WILL MAY CREATE A SESSION OBJECT WHEN THERE IS NO REMOTE AND MAY
-	# NEVER BE. DO IT AFTER A SUCCESSFUL RECV().
-	#connected = Connected(requested_ipp=request.requested_ipp,
-	#	connected_ipp=HostPort(hap[0], hap[1]),
-	#	opened_at=world_now())
-	#selector.connected = connected
-
-	#transport, proxy_address = open_stream(self, selector, client, connected.opened_at)
-	#connected.remote_address = proxy_address
 
 	try:
 		scrap = s.recv(TCP_RECV)
 
 		# No exception. New transport.
-		connected = Connected(requested_ipp=requested_ipp,
-			connected_ipp=connected_ipp,
+		connected = Connected(request,
+			opened_ipp=opened_ipp,
 			opened_at=world_now())
 
 		selector.connected = connected
 		transport, proxy_address = open_stream(self, selector, client, connected)
-		connected.remote_address = proxy_address
+		connected.proxy_address = proxy_address
 
-		self.trace(f'Connected to "{requested_ipp}", at local address "{connected_ipp}"')
+		self.trace(f'Connected to "{requested_ipp}", at local address "{opened_ipp}"')
 
-		if selector.encrypted:
-			self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{connected_ipp}"')
-			not_connected = NotConnected(requested_ipp, None, None)
+		if selector.encrypted():
+			self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{opened_ipp}"')
+			not_connected = NotConnected(request, None, None)
 			transport.diffie_hellman = (
-				(connected, transport.controller_address, transport.remote_address),
+				(connected, transport.controller_address, transport.proxy_address),
 				(not_connected, selector.controller_address))
 			self.send(Diffie(), proxy_address)
 			return
-		self.trace(f'Connected to "{requested_ipp}", at local address "{connected_ipp}"')
+		self.trace(f'Connected to "{requested_ipp}", at local address "{opened_ipp}"')
 
-		self.forward(connected, transport.controller_address, transport.remote_address)
+		self.forward(connected, transport.controller_address, transport.proxy_address)
 
 		if not scrap:
-			# Immediate shutdown. Need to
-			# generate the full set of messages.
-			#self.clear(s, TcpTransport)
 			return
 
 		try:
@@ -1338,79 +1334,66 @@ def TcpClient_ReceiveBlock(self, selector, s):
 		return
 
 	except socket.error as e:
-		self.send(NotConnected(request.requested_ipp, e.errno, str(e)), selector.controller_address)
-		self.clear(s, TcpClient)
-		#self.send(NotConnected(request.requested_ipp, e.errno, str(e)), transport.controller_address)
-		#self.send(Stop(), transport.remote_address)
-		#self.clear(s, TcpTransport)
+		self.send(NotConnected(request, e.errno, str(e)), selector.controller_address)
+		self.clear_out(s, TcpClient)
 		return
 
 def TcpClient_ReadyToSend(self, selector, s):
 	client = s
-	#self.sending.remove(client)
-
 	request = selector.request
+
 	hap = client.getsockname()
-	connected_ipp = HostPort(hap[0], hap[1])
+	opened_ipp = HostPort(hap[0], hap[1])
 	requested_ipp = request.requested_ipp
 
-	connected = Connected(requested_ipp=requested_ipp,
-		connected_ipp=connected_ipp,
-		opened_at=world_now())
+	connected = Connected(request, opened_ipp=opened_ipp, opened_at=world_now())
 	selector.connected = connected
 
 	transport, proxy_address = open_stream(self, selector, client, connected)
-	connected.remote_address = proxy_address
-	#receiving.append( client)
-	#self.faulting.append( client)
+	connected.proxy_address = proxy_address
 
-	if selector.encrypted:
-		self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{connected_ipp}"')
-		not_connected = NotConnected(requested_ipp, None, None)
+	if selector.encrypted():
+		self.trace(f'Connected (encrypted) to "{requested_ipp}", at local address "{opened_ipp}"')
+		not_connected = NotConnected(request, None, None)
 		transport.diffie_hellman = (
-			(connected, transport.controller_address, transport.remote_address),
+			(connected, transport.controller_address, transport.proxy_address),
 			(not_connected, selector.controller_address))
 		# Start the exchange of public keys.
 		self.send(Diffie(), proxy_address)
 		return
-	self.trace(f'Connected to "{requested_ipp}", at local address "{connected_ipp}"')
+	self.trace(f'Connected to "{requested_ipp}", at local address "{opened_ipp}"')
 
-	self.forward(connected, transport.controller_address, transport.remote_address)
+	self.forward(connected, transport.controller_address, transport.proxy_address)
 
 def TcpClient_BrokenTransport(self, selector, s):
 	request = selector.request
 	requested_ipp = request.requested_ipp
 
 	text = 'fault on pending connect, unreachable, no service at that address or blocked'
-	self.send(NotConnected(requested_ipp, 0, text), selector.controller_address)
-	self.clear(s, TcpClient)
+	self.send(NotConnected(request, 0, text), selector.controller_address)
+	self.clear_out(s, TcpClient)
 
-
+#
 def close_session(transport, value, s):
 	transport.closing = True
 	transport.value = value
 	s.shutdown(SHUT_SOCKET)
 
-def end_of_session(self, transport, s, reason=None):
-	if isinstance(transport.opened, Connected):
-		ipp = transport.opened.connected_ipp
-	elif isinstance(transport.opened, Accepted):
-		ipp = transport.opened.accepted_ipp
-	else:
-		ipp = None
+def clear_out_session(self, transport, s, reason=None):
+	ipp = transport.opened.opened_ipp
 
 	if transport.closing:
 		c = Closed(value=transport.value,
-			reason=reason,
+			tag=reason,
 			opened_ipp=ipp,
 			opened_at=transport.opened.opened_at)
-		self.forward(c, transport.controller_address, transport.remote_address)
+		self.forward(c, transport.controller_address, transport.proxy_address)
 	else:
-		self.send(Stop(), transport.remote_address)
+		self.send(Stop(), transport.proxy_address)
 		a = Abandoned(opened_ipp=ipp,
 			opened_at=transport.opened.opened_at)
-		self.forward(a, transport.controller_address, transport.remote_address)
-	self.clear(s, TcpTransport)
+		self.forward(a, transport.controller_address, transport.proxy_address)
+	self.clear_out(s, TcpTransport)
 
 def TcpTransport_ReadyToSend(self, transport, s):
 	try:
@@ -1434,7 +1417,7 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 	try:
 		scrap = s.recv(TCP_RECV)
 		if not scrap:
-			end_of_session(self, transport, s, 'empty socket')
+			clear_out_session(self, transport, s, 'empty socket')
 			return
 
 		try:
@@ -1450,11 +1433,11 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 			self.fault('Connection refused')
 		elif e.errno not in SOCKET_DOWN:
 			self.fault('Socket termination [%d] %s' % (e.errno, e.strerror))
-		end_of_session(self, transport, s, reason=e.strerror)
+		clear_out_session(self, transport, s, reason=e.strerror)
 		return
 
 def TcpTransport_BrokenTransport(self, selector, s):
-	end_of_session(self, selector, s, reason='broken socket')
+	clear_out_session(self, selector, s, reason='broken socket')
 
 #
 def control_channel():
@@ -1546,7 +1529,7 @@ class ListenConnect(Threaded, Stateless):
 		Stateless.__init__(self)
 
 		# Construct the control channel and access object.
-		self.pending = sq.Queue()
+		self.pending = queue.Queue()
 		self.lac = control_channel()
 		self.channel = SocketChannel(self.pending, self.lac[2])
 
@@ -1562,10 +1545,12 @@ class ListenConnect(Threaded, Stateless):
 		self.sending = []
 		self.faulting = self.receiving + self.sending
 
+		self.lid = {}
+
 		# Live.
 		self.running = True
 
-	def clear(self, s, expected=None):
+	def clear_out(self, s, expected=None):
 		# Remove the specified socket from operations.
 		try:
 			t = self.networking[s]
@@ -1576,6 +1561,15 @@ class ListenConnect(Threaded, Stateless):
 		if expected and not isinstance(t, expected):
 			self.warning('Unexpected networking object "%s" (expecting "%s")' % (t.__class__.__name__, expected.__name__))
 			return None
+
+		def find():
+			for lid, server in self.lid.items():
+				if server == s:
+					return lid
+			return None
+		f = find()
+		if f is not None:
+			del self.lid[f]
 
 		del self.networking[s]
 		try:
@@ -1640,7 +1634,7 @@ def ListenConnect_Start(self, message):
 			j(self, a, f)
 
 	control_close(self.lac)
-	self.complete()
+	self.complete(Ack())
 
 bind(ListenConnect, (Start,))
 
@@ -1676,7 +1670,7 @@ def connect(self, **kv):
 	:type ansar_server: bool
 	"""
 	cs = ConnectStream(**kv)
-	TS.channel.send(cs, self.address)
+	TS.channel.send(cs, self.object_address)
 
 #
 #
@@ -1698,10 +1692,12 @@ def listen(self, **kv):
 	:param ansar_client: is the remote client ansar-enabled
 	:type ansar_client: bool
 	"""
-	ls = ListenForStream(**kv)
+	lid = uuid.uuid4()
+	ls = ListenForStream(lid=lid, **kv)
 	TS.channel.send(ls, self.object_address)
+	return lid
 
 #
 #
-def stop_listen(self, requested_ipp):
-	TS.channel.send(StopListening(requested_ipp), self.object_address)
+def stop_listening(self, lid):
+	TS.channel.send(StopListening(lid), self.object_address)

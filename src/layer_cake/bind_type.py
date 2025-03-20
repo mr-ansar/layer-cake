@@ -258,6 +258,7 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 	messaging = {}
 	for s in unfold(dispatch):
 		p = install_type(s)
+		x = portable_to_signature(p)
 		d = isinstance(p, UserDefined)
 		if d:
 			tag = p.element.__name__
@@ -269,7 +270,7 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 		if f is None:
 			raise PointConstructionError(f'function "{name}" not found ({machine.__art__.path})')
 
-		shift[id(p)] = f
+		shift[x] = f
 		if d and s is not Unknown:
 			messaging[p.element] = f
 
@@ -331,6 +332,7 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 
 		for m in matching:
 			p = install_type(m)
+			x = portable_to_signature(p)
 			d = isinstance(p, UserDefined)
 			if d:
 				tag = p.element.__name__
@@ -345,9 +347,9 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 			if r is None:
 				r = {}
 				shift[state] = r
-			r[id(p)] = f
+			r[x] = f
 
-			if d and m is not Unknown:
+			if d:
 				r = messaging.get(state, None)
 				if r is None:
 					r = {}
@@ -356,15 +358,16 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 
 		for s in saving:
 			p = install_type(s)
+			x = portable_to_signature(p)
 			r = shift.get(state, None)
 			if r is None:
 				r = {}
 				shift[state] = r
-			if id(p) in r:
+			if x in r:
 				raise PointConstructionError(f'FSM {machine.__name__}[{state.__name__}] has "{m.__name__}" in both matching and saving')
-			r[id(p)] = statemachine_save
+			r[x] = statemachine_save
 
-			if isinstance(p, UserDefined) and s is not Unknown:
+			if isinstance(p, UserDefined):
 				r = messaging.get(state, None)
 				if r is None:
 					r = {}

@@ -59,6 +59,7 @@ from datetime import MINYEAR, datetime, timedelta
 from enum import Enum
 from .virtual_memory import *
 from .convert_memory import *
+from .convert_signature import *
 from .convert_type import *
 from .virtual_runtime import *
 
@@ -597,27 +598,36 @@ def is_message_class(c):
 	b = a is not None and a.name == c.__name__
 	return b
 
-def equal_to(a, b, t=None):
+class NotFound(object): pass
+
+def equal_to(a, b, t=None, bread=None):
+	if not bread:
+		bread = {}
 	"""Compare the two operands as instances of portable memory."""
 	if t is None:
-		if not is_message(b):
+		if is_message(b):
+			if not isinstance(a, b.__class__):
+				return False
+		elif isinstance(b, Portable):
+			a = portable_to_signature(a)
+			b = portable_to_signature(b)
 			return a == b
-		if not isinstance(a, b.__class__):
-			return False
+		else:
+			return a == b
 		t = UserDefined(b.__class__)
 
 	if isinstance(t, ArrayOf):
 		if len(a) != len(b):
 			return False
-		return all(equal_to(i, j, t.element) for i, j in zip(a, b))
+		return all(equal_to(i, j, t.element, bread) for i, j in zip(a, b))
 	elif isinstance(t, VectorOf):
 		if len(a) != len(b):
 			return False
-		return all(equal_to(i, j, t.element) for i, j in zip(a, b))
+		return all(equal_to(i, j, t.element, bread) for i, j in zip(a, b))
 	elif isinstance(t, DequeOf):
 		if len(a) != len(b):
 			return False
-		return all(equal_to(i, j, t.element) for i, j in zip(a, b))
+		return all(equal_to(i, j, t.element, bread) for i, j in zip(a, b))
 	elif isinstance(t, SetOf):
 		# if len(a) != len(b):
 		#	return False
@@ -626,7 +636,15 @@ def equal_to(a, b, t=None):
 	elif isinstance(t, MapOf):
 		if len(a) != len(b):
 			return False
-		return all(k in b and equal_to(a[k], v, t.value) for k, v in b.items())
+		#return all(k in b and equal_to(a[k], v, t.value, bread) for k, v in b.items())
+		for k, v in b.items():
+			x = a.get(k, NotFound)
+			if x is NotFound:
+				return False
+			if not equal_to(x, v, t.value, bread):
+				return False
+		return True
+
 	elif isinstance(t, UserDefined):
 		x = t.element.__art__
 		for k, v in x.schema.items():
@@ -635,22 +653,43 @@ def equal_to(a, b, t=None):
 				rhs = getattr(b, k)
 			except AttributeError:
 				return False
-			if not equal_to(lhs, rhs, v):
+			if not equal_to(lhs, rhs, v, bread):
 				return False
 		return True
+	elif isinstance(t, Type):
+		a = portable_to_signature(a)
+		b = portable_to_signature(b)
+		return a == b
 	elif isinstance(t, PointerTo):
-		# Difficult issue. Have to consider circular
-		# references and graphs, i.e. infinite loops.
-		# Its also true that its intended for comparision
-		# of messages and 2 messages should never, ever
-		# refer to common data.
-		return False
+		if a is None:
+			if b is None:
+				return True
+			return False
+
+		try:
+			b = bread[id(a)]
+			return b
+		except KeyError:
+			bread[id(a)] = True
+
+		return equal_to(a, b, t.element, bread)
 	elif isinstance(t, Any):
-		if equal_to(a, b):
+		if equal_to(a, b, bread=bread):
 			return True
 		return False
 	else:
 		return a == b
+
+'''	elif isinstance(p, PointerTo):
+		try:
+			e = bread[id(p)]
+		except KeyError:
+			e = convert_portable(p.element, then, bread)
+			bread[id(p)] = e
+		p.element = e
+		then(p.element)
+'''
+
 
 def type_equal_to(a, b):
 	"""Compare the two operands as instances of portable memory."""

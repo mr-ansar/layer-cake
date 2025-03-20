@@ -72,6 +72,7 @@ from enum import Enum
 from .virtual_memory import *
 from .convert_memory import *
 from .convert_signature import *
+from .convert_type import *
 from .virtual_runtime import *
 from .message_memory import *
 from .make_message import *
@@ -349,15 +350,12 @@ def p2w_pointer(c, p, t):
 	return a[0]
 
 def p2w_type(c, p, t):
-	if hasattr(p, '__art__'):
-		w = p.__art__.path
-	elif isinstance(p, Portable):
+	if isinstance(p, Portable):
 		w = portable_to_signature(p)
-	elif hasattr(p, '__name__'):
-		name = p.__name__
-		raise ValueError(f'nameless type "{name}"')
+	elif p is None:
+		w = None
 	else:
-		raise ValueError(f'opaque type')
+		raise ValueError(f'not a portable type')
 	return w
 
 def p2w_target(c, p, t):
@@ -405,7 +403,7 @@ def p2w_any(c, p, t):
 	elif hasattr(a, '__art__'):
 		s = c.any_stack
 		s.append(set())
-		t = python_to_word(c, a, Type())
+		t = python_to_word(c, UserDefined(a), Type())
 		w = python_to_word(c, p, UserDefined(a))
 		n = s.pop()
 		s[-1].update(n)
@@ -648,13 +646,13 @@ def w2p_message(c, w, t):
 					raise ValueError(f'null structure')
 				return
 
-			def patch(a):
+			def patch(p, k, a):
 				setattr(p, k, a)
 			try:
 				a = word_to_python(c, d, v)
 				setattr(p, k, a)
 			except CircularReferenceError:
-				c.patch_work.append([d, patch])
+				c.patch_work.append([d, p, k, patch])
 		get_put()
 
 		c.walking_stack.pop()
@@ -693,12 +691,7 @@ def w2p_pointer(c, a, t):
 	return p
 
 def w2p_type(c, w, t):
-	try:
-		p = signature_to_portable(w)
-	except ValueError:
-		return None
-	if isinstance(p, UserDefined):
-		return p.element
+	p = lookup_signature(w)
 	return p
 
 def w2p_array(c, w, t):
@@ -724,14 +717,14 @@ def w2p_array(c, w, t):
 		d = w[i]
 		c.walking_stack.append(i)
 
-		def patch(a):
+		def patch(p, i, a):
 			p[i] = a
 		try:
 			a = word_to_python(c, d, e)
 			p.append(a)
 		except CircularReferenceError:
 			p.append(None)
-			c.patch_work.append([d, patch])
+			c.patch_work.append([d, p, i, patch])
 		c.walking_stack.pop()
 
 	for i in range(x):
@@ -745,14 +738,14 @@ def w2p_vector(c, w, t):
 	for i, d in enumerate(w):
 		c.walking_stack.append(i)
 
-		def patch(a):
+		def patch(p, i, a):
 			p[i] = a
 		try:
 			a = word_to_python(c, d, e)
 			p.append(a)
 		except CircularReferenceError:
 			p.append(None)
-			c.patch_work.append([d, patch])
+			c.patch_work.append([d, p, i, patch])
 		c.walking_stack.pop()
 	return p
 
@@ -771,27 +764,27 @@ def w2p_map(c, w, t):
 	for d in w:
 		k = word_to_python(c, d[0], k_t)
 
-		def patch(a):
+		def patch(p, k, a):
 			p[k] = a
 		try:
 			v = word_to_python(c, d[1], v_t)
 			p[k] = v
 		except CircularReferenceError:
-			c.patch_work.append([d[1], patch])
+			c.patch_work.append([d[1], p, k, patch])
 	return p
 
 def w2p_deque(c, w, t):
 	e = t.element
 	p = deque()
 	for i, d in enumerate(w):
-		def patch(a):
+		def patch(p, i, a):
 			p[i] = a
 		try:
 			a = word_to_python(c, d, e)
 			p.append(a)
 		except CircularReferenceError:
 			p.append(None)
-			c.patch_work.append([d, patch])
+			c.patch_work.append([d, p, i, patch])
 	return p
 
 def w2p_target(c, w, t):
@@ -832,7 +825,12 @@ def w2p_any(c, w, t):
 	a = w[0]	# Inbound type name.
 	b = w[1]	# A generic word.
 	r = w[2]	# Pointer aliases.
-	e = word_to_python(c, a, Type())		# Signature to portable.
+
+	try:
+		e = w2p_type(c, a, Type())	# Signature to portable.
+	except (ValueError, KeyError):
+		e = None
+
 	if e is None:							# No such type.
 		y = c.portable_pointer				# Everything shipped
 		h = [x for x in r if x not in y]	# Needed for this any
@@ -840,8 +838,8 @@ def w2p_any(c, w, t):
 			raise ValueError(f'missing pointers')
 		m = {x: y[x] for x in r}			# Needed for this any
 		p = Incognito(a, b, m)
-	elif hasattr(e, '__art__'):						# Direct message type.
-		p = word_to_python(c, b, UserDefined(e))	# Need to pass back data and type.
+	elif isinstance(e, UserDefined):						# Direct message type.
+		p = word_to_python(c, b, e)	# Need to pass back data and type.
 	elif isinstance(e, Portable):
 		p = word_to_python(c, b, e)		# Need to pass back data and type.
 		p = (p, e)
@@ -1163,8 +1161,9 @@ class Codec(object):
 		p = decode(w, expression)
 		for b in self.patch_work:
 			decoded = self.decoded_pointer[b[0]]
-			f = b[1]
-			f(decoded)
+			r, k = b[1], b[2]
+			f = b[3]
+			f(r, k, decoded)
 
 		return p
 

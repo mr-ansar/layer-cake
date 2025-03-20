@@ -740,10 +740,10 @@ class INITIAL: pass
 class READY: pass
 
 class ApiClientSession(Point, StateMachine):
-	def __init__(self, remote_address=None, **kv):
+	def __init__(self, proxy_address=None, **kv):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
-		self.remote_address = remote_address
+		self.proxy_address = proxy_address
 		self.pending = deque()
 
 def ApiClientSession_INITIAL_Start(self, message):
@@ -752,13 +752,13 @@ def ApiClientSession_INITIAL_Start(self, message):
 def ApiClientSession_READY_Unknown(self, message):
 	# A message passing through, either a response from the
 	# remote end or another request from a local object.
-	if self.return_address[-1] == self.remote_address[-1]:	# Response from remote.
+	if self.return_address[-1] == self.proxy_address[-1]:	# Response from remote.
 		if self.pending:									# Yes there is a matching request.
 			m, r = self.pending.popleft()
 			self.send(message, r)							# Send response to original client.
 			if self.pending:								# A waiting request?
 				m, r = self.pending[0]
-				self.send(m, self.remote_address)
+				self.send(m, self.proxy_address)
 		else:
 			#t = tof(message)
 			self.warning(f'message "tof" from HTTP server has no matching request')
@@ -768,7 +768,7 @@ def ApiClientSession_READY_Unknown(self, message):
 		mr = (message, self.return_address)				# Request from local client.
 		self.pending.append(mr)							# Remember.
 		if len(self.pending) == 1:						# Nothing pending.
-			self.send(message, self.remote_address)
+			self.send(message, self.proxy_address)
 	return READY
 
 def ApiClientSession_READY_Stop(self, message):

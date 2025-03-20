@@ -328,14 +328,19 @@ class Point(object):
 		:type return_address: ansar address
 		"""
 		pf = self.__art__
-		mf = m.__art__
-		xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
-		if pf.message_trail and xf.message_trail:
-			self.log(USER_TAG.SENT, 'Forward %s to <%08x> (from <%08x>)' % (mf.name, to[-1], return_address[-1]))
-		if mf.copy_before_sending:
-			c = deepcopy(m)
-			send_a_message(c, to, return_address)
-			return
+		try:
+			mf = getattr(m, '__art__')
+			xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
+		except AttributeError:
+			mf = None
+
+		if mf:
+			if pf.message_trail and xf.message_trail:
+				self.log(USER_TAG.SENT, 'Forward %s to <%08x> (from <%08x>)' % (mf.name, to[-1], return_address[-1]))
+			if mf.copy_before_sending:
+				c = deepcopy(m)
+				send_a_message(c, to, return_address)
+				return
 		send_a_message(m, to, return_address)
 
 	def start(self, timer, seconds, repeating=False):

@@ -48,6 +48,7 @@ __all__ = [
 	'install_hints',
 	'type_cast',
 	'cast_back',
+	'cast_to',
 	'bool_cast',
 	'int_cast',
 	'float_cast',
@@ -107,6 +108,7 @@ SIMPLE_TYPE = {
 	TimeSpan: TimeSpan(),
 	Address: Address(),
 	TargetAddress: TargetAddress(),
+	UUID: UUID(),
 	Type: Type(),
 	Word: Word(),
 	Any: Any(),
@@ -328,3 +330,8 @@ def cast_back(message):
 	else:
 		raise ValueError(f'cannot unroll {message}')
 	return m, p, art
+
+def cast_to(message, message_type):
+	if isinstance(message_type, UserDefined):
+		return message
+	return (message, message_type)

@@ -31,6 +31,7 @@
 
 from .virtual_memory import *
 from .message_memory import *
+from .convert_signature import *
 from .convert_type import *
 
 __docformat__ = 'restructuredtext'
@@ -221,7 +222,7 @@ bind_message(OutOfService,
 )
 
 #
-unknown = install_hint(Unknown)
+unknown = portable_to_signature(UserDefined(Unknown))
 
 class SelectTable(object):
 	def __init__(self, unique, messaging):
@@ -230,7 +231,8 @@ class SelectTable(object):
 
 	def find(self, message):
 		m, p, a = cast_back(message)
-		f = self.unique.get(id(p), None)		# Explicit match.
+		s = portable_to_signature(p)
+		f = self.unique.get(s, None)		# Explicit match.
 		if f:
 			return f[0], m, f[1]
 
@@ -239,7 +241,7 @@ class SelectTable(object):
 				if isinstance(m, c):			# Base-derived match.
 					return f[0], m, f[1]
 
-		f = self.unique.get(id(unknown), None)	# Catch-all.
+		f = self.unique.get(unknown, None)	# Catch-all.
 		if f:
 			return f[0], m, p
 		return None
@@ -250,7 +252,8 @@ def select_list(*selection):
 	messaging = {}
 	for i, t in enumerate(selection):
 		p = install_type(t)
-		unique[id(p)] = (i, p)
+		s = portable_to_signature(p)
+		unique[s] = (i, p)
 		if isinstance(p, UserDefined):
 			messaging[p.element] = (i, p)
 	return SelectTable(unique, messaging)
@@ -261,7 +264,8 @@ def select_list_adhoc(*selection):
 	messaging = {}
 	for i, t in enumerate(selection):
 		p = lookup_type(t)
-		unique[id(p)] = (i, p)
+		s = portable_to_signature(p)
+		unique[s] = (i, p)
 		if isinstance(p, UserDefined):
 			messaging[p.element] = (i, p)
 	return SelectTable(unique, messaging)

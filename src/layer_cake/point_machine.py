@@ -48,7 +48,7 @@ class DEFAULT: pass
 # Find the state and message embedded within a function name.
 state_message = re.compile('(?P<state>[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)_(?P<message>[A-Z][A-Za-z0-9]*)')
 
-unknown = install_hint(Unknown)
+unknown = portable_to_signature(UserDefined(Unknown))
 
 class Stateless(Machine):
 	"""Base for simple machines that maintain no formal state.
@@ -63,7 +63,8 @@ class Stateless(Machine):
 		art = self.__art__
 		shift, messaging = art.value
 		m, p, a = cast_back(message)
-		f = shift.get(id(p), None)			# Explicit match.
+		s = portable_to_signature(p)
+		f = shift.get(s, None)			# Explicit match.
 		if f:
 			return m, p, f
 
@@ -72,7 +73,7 @@ class Stateless(Machine):
 				if isinstance(m, c):		# Base-derived match.
 					return m, p, f
 
-		f = shift.get(id(unknown), None)	# Catch-all.
+		f = shift.get(unknown, None)	# Catch-all.
 		return m, p, f
 
 	def received(self, queue, message, return_address):
@@ -128,11 +129,12 @@ class StateMachine(Machine):
 		art = self.__art__
 		shift, messaging = art.value
 		m, p, a = cast_back(message)
+		s = portable_to_signature(p)
 		shifted = shift.get(state, None)
 		if shifted is None:
 			raise ValueError(f'machine "{art.path}" shifted to nowhere')
 
-		f = shifted.get(id(p), None)				# Explicit match.
+		f = shifted.get(s, None)				# Explicit match.
 		if f:
 			return m, p, f
 
@@ -143,7 +145,7 @@ class StateMachine(Machine):
 					if isinstance(m, c):			# Base-derived match.
 						return m, p, f
 
-		f = shifted.get(id(unknown), None)			# Catch-all.
+		f = shifted.get(unknown, None)			# Catch-all.
 		return m, p, f
 
 	def received(self, queue, message, return_address):
