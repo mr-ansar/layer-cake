@@ -821,7 +821,10 @@ class Buffering(Player):
 				continue
 
 			if qf.execution_trace:
-				t = portable_to_tag(r[2])
+				if r:
+					t = portable_to_tag(r[2])
+				else:
+					t = type(m)
 				self.log(USER_TAG.RECEIVED, f'Dropped "{t}" from <{a}>')
 
 	def ask(self, q, r, a, saving=None, seconds=None):

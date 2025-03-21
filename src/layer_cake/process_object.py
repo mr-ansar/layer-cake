@@ -51,6 +51,7 @@ __docformat__ = 'restructuredtext'
 #
 import sys
 import os
+import threading
 import signal
 from subprocess import Popen, PIPE
 import shutil
@@ -72,10 +73,12 @@ from .virtual_codec import *
 from .json_codec import *
 from .noop_codec import *
 from .point_machine import *
+from .object_runtime import *
 from .command_line import *
 from .command_startup import *
 from .home_role import *
 from .bind_type import *
+from .object_collector import *
 
 __all__ = [
 	'ProcessObject',
@@ -84,6 +87,18 @@ __all__ = [
 	'process_args',
 	'CodecArgs'
 ]
+
+PO = Gas(collector=None)
+
+# Managed creation of socket engine.
+def create_processes(root):
+	PO.collector = root.create(ObjectCollector)
+
+def stop_processes(root):
+	root.send(Stop(), PO.collector)
+	root.select()
+
+AddOn(create_processes, stop_processes)
 
 # A thread dedicated to the blocking task of
 # waiting for termination of a process.
@@ -249,20 +264,18 @@ def ProcessObject_INITIAL_Start(self, message):
 	#	return EXECUTING
 
 	self.create(wait, self.p, True)
+
+	self.send(AddObject(self.object_address), PO.collector)
 	return EXECUTING
 
 def ProcessObject_EXECUTING_Returned(self, message):
+	self.send(RemoveObject(self.object_address), PO.collector)
+
 	# Wait thread has returned
 	# Forward the result.
 	code, out = message.value
 
-	self.log(USER_TAG.ENDED, 'ProcessObject ({pid}) ended with {code}'.format(pid=self.p.pid, code=code))
-
-	#if not self.output:	# The client is not interested in any result.
-	#	# Shortcut around decoding. Discard the output.
-	#	# Could verify that Ack was sent from sub-component?
-	#	self.complete(None)
-
+	self.log(USER_TAG.ENDED, f'ProcessObject ({self.p.pid}) ended with {code}')
 	if not out:
 		self.complete(None)
 
@@ -270,18 +283,17 @@ def ProcessObject_EXECUTING_Returned(self, message):
 	try:
 		output = encoding.decode(out, Any())
 	except CodecError as e:
-		f = Faulted(output_decode=(e, 'not a standard executable?'))
-		self.complete(f)
+		s = str(e)
+		self.complete(Faulted(f'cannot decode output ({s}) not a standard executable?'))
 
 	self.complete(output)
 
 def ProcessObject_EXECUTING_Stop(self, message):
 	pid = self.p.pid
-	self.trace(f'Relaying local Stop to remote <{pid}> as SIGINT')
 	try:
-		os.kill(self.p.pid, signal.SIGINT)
+		os.kill(pid, signal.SIGINT)
 	except OSError as e:
-		self.complete(Faulted(process_kill=(e, f'cannot relay local Stop as SIGINT')))
+		self.complete(Faulted(f'cannot relay local Stop to "{pid}" as SIGINT'))
 	return CLEARING
 
 def ProcessObject_CLEARING_Returned(self, message):

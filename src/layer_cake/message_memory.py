@@ -601,7 +601,7 @@ def is_message_class(c):
 class NotFound(object): pass
 
 def equal_to(a, b, t=None, bread=None):
-	if not bread:
+	if bread is None:
 		bread = {}
 	"""Compare the two operands as instances of portable memory."""
 	if t is None:

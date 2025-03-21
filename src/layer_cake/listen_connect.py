@@ -50,6 +50,17 @@ from .object_runtime import *
 from .bind_type import *
 from .http import ApiServerStream, ApiClientSession, ApiClientStream
 
+from .convert_signature import *
+from .object_logs import *
+from .object_runtime import *
+from .routine_point import *
+from .file_object import *
+from .folder_object import *
+from .object_startup import *
+from .process_object import *
+from .edit_settings import *
+
+
 __all__ = [
 	'HostPort',
 	'LocalPort',
@@ -177,7 +188,7 @@ class ListenForStream(object):
 		self.lid = lid
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
-		self.api_server = api_server
+		self.api_server = api_server or []
 		self.default_to_request = default_to_request
 		self.ansar_client = ansar_client
 
@@ -1054,7 +1065,7 @@ def open_stream(self, parent, s, opened):
 		if parent.request.api_client:
 			ts = ApiClientStream
 	elif isinstance(parent, TcpServer):
-		if parent.request.api_server is not None:
+		if len(parent.request.api_server) > 0:
 			ts = ApiServerStream
 
 	transport = TcpTransport(ts, parent, controller_address, opened)
@@ -1250,8 +1261,8 @@ def TcpServer_ReceiveBlock(self, server, s):
 	opened_ipp = HostPort(hap[0], hap[1])
 
 	opened_at = world_now()
-	accepted = Accepted(listening=listening, opened_ipp=opened_ipp,
-		proxy_address=transport.proxy_address,
+	accepted = Accepted(listening=listening,
+		opened_ipp=opened_ipp, proxy_address=transport.proxy_address,
 		opened_at=opened_at)
 	transport.opened = accepted
 
@@ -1542,7 +1553,7 @@ class ListenConnect(Threaded, Stateless):
 			return None
 
 		if expected and not isinstance(t, expected):
-			self.warning('Unexpected networking object "%s" (expecting "%s")' % (t.__class__.__name__, expected.__name__))
+			self.warning(f'unexpected networking object {t} (expecting {expected})')
 			return None
 
 		def find():
