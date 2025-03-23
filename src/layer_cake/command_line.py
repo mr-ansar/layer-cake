@@ -27,14 +27,24 @@ standard processing of the command line.
 """
 __docformat__ = 'restructuredtext'
 
+from enum import Enum
+from .ip_networking import *
 from .virtual_memory import *
 from .message_memory import *
 from .virtual_runtime import *
 
 __all__ = [
+	'SCOPE_OF_DIRECTORY',
 	'CommandLine',
 	'CL',
 ]
+
+class SCOPE_OF_DIRECTORY(Enum):
+	WAN=1
+	LAN=2
+	HOST=3
+	GROUP=4
+	PROCESS=5
 
 #
 class CommandLine(object):
@@ -94,7 +104,9 @@ class CommandLine(object):
 			dump_types: bool=False,
 			output_file: str=None,
 			keep_logs: bool=False,
-			group_listen: int=None):
+			directory_scope: SCOPE_OF_DIRECTORY=None,
+			connect_to_directory: HostPort=None,
+			accept_directories_at: HostPort=None):
 		self.background_daemon = background_daemon
 		self.child_process = child_process
 		self.full_output = full_output
@@ -112,7 +124,8 @@ class CommandLine(object):
 		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
-		self.group_listen = group_listen
+		self.connect_to_directory = connect_to_directory
+		self.accept_directories_at = accept_directories_at
 
 bind_message(CommandLine,
 	debug_level=Enumeration(USER_LOG),

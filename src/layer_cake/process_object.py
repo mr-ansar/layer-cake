@@ -90,7 +90,7 @@ __all__ = [
 
 PO = Gas(collector=None)
 
-# Managed creation of socket engine.
+# Managed creation of processes.
 def create_processes(root):
 	PO.collector = root.create(ObjectCollector)
 
@@ -110,28 +110,7 @@ def wait(self, p, piping):
 		code = p.wait()
 		return code, None
 
-bind_routine(wait)
-
-# A thread dedicated to the blocking task of
-# waiting for feedback from a child process.
-# The parent process needs an output message
-# to indicate that the daemon started correctly
-# else some details on why it failed.
-def collect_output(self, p, piping):
-	out = None
-	if piping:
-		out = ''
-		while True:
-			line = p.stdout.readline()
-			out += line
-			if line is None or line == '}\n' or line == '':
-				break
-		if out == '':
-			out = None
-	#p.stdout.close()
-	return 0, out
-
-bind_routine(collect_output)
+bind(wait)
 
 # The ProcessObject class
 # A platform process that accepts a set of fully-typed arguments
@@ -253,18 +232,9 @@ def ProcessObject_INITIAL_Start(self, message):
 		self.complete(f)
 
 	self.log(USER_TAG.STARTED, f'Started process ({self.p.pid})')
-
-	# piping = stdin == PIPE or stdout == PIPE
-	# daemon = CL.background_daemon and not CL.child_process
-	# if daemon:		 # Start
-	#	self.create(collect_output, self.p, piping)
-	#	if input:
-	#		self.p.stdin.write(input)
-	#	#self.p.stdin.close()
-	#	return EXECUTING
-
 	self.create(wait, self.p, True)
 
+	# Good to go. Next event should be Returned.
 	self.send(AddObject(self.object_address), PO.collector)
 	return EXECUTING
 

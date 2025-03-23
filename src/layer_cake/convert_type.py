@@ -123,6 +123,8 @@ def convert_hint(hint, then):
 
 	if hasattr(hint, '__art__'):
 		return UserDefined(hint)
+	elif issubclass(hint, Enum):
+		return Enumeration(hint)
 
 	if isinstance(hint, types.GenericAlias):
 		c = hint.__origin__

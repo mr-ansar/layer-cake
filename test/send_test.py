@@ -26,9 +26,9 @@ class TestSend(TestCase):
 
 	def test_send_ack(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -43,9 +43,9 @@ class TestSend(TestCase):
 
 	def test_send_ack_reply(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -62,9 +62,9 @@ class TestSend(TestCase):
 
 	def test_send_ack_forward(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -81,9 +81,9 @@ class TestSend(TestCase):
 
 	def test_send_cast(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -154,9 +154,9 @@ class TestSend(TestCase):
 
 	def test_send_cast_extra(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -220,9 +220,9 @@ class TestSend(TestCase):
 
 	def test_send_container(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -252,9 +252,9 @@ class TestSend(TestCase):
 
 	def test_send_message(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):

@@ -20,59 +20,29 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""The directory built in to every process. Default is inactive.
 
-"""Any general-purpose class or function that does not belong elsewhere.
-
+.
 """
-
 __docformat__ = 'restructuredtext'
 
-import os
-import re
 from enum import Enum
+from collections import deque
 
-from .virtual_memory import *
-from .message_memory import *
+from .general_purpose import *
+from .point_runtime import *
+from .object_runtime import *
+from .listen_connect import *
+from .object_directory import *
 
-__all__ = [
-	'Gas',
-	'breakpath',
-	'CreateFrame',
-]
+PD = Gas(directory=None)
 
-#
-#
-class Gas(object):
-	"""Build an object from the specified k-v args, suitable as a global context.
+# Managed creation of the builtin directory.
+def create_directory(root):
+	PD.directory = root.create(ObjectDirectory)
 
-	:param kv: map of names and value
-	:type path: dict
-	"""
-	def __init__(self, **kv):
-		"""Convert the named values into object attributes."""
-		for k, v in kv.items():
-			setattr(self, k, v)
+def stop_directory(root):
+	root.send(Stop(), PD.directory)
+	root.select()
 
-#
-#
-def breakpath(p):
-	"""Break apart the full path into folder, file and extent (3-tuple)."""
-	p, f = os.path.split(p)
-	name, e = os.path.splitext(f)
-	return p, name, e
-
-#
-class CreateFrame(object):
-	"""Capture values needed for async object creation.
-
-	:param object_type: type to be created
-	:type object_type: function or Point-based class
-	:param args: positional parameters
-	:type args: tuple
-	:param kw: named parameters
-	:type kw: dict
-	"""
-	def __init__(self, object_type, *args, **kw):
-		self.object_type = object_type
-		self.args = args
-		self.kw = kw
+AddOn(create_directory, stop_directory)

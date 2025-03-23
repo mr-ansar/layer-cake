@@ -34,7 +34,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select()
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, m, p = ch.select()
 			assert isinstance(m, Connected)
 			server = ch.return_address
@@ -57,7 +57,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select()
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, m, p = ch.select()
 			assert isinstance(m, Connected)
 			server = ch.return_address
@@ -73,7 +73,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select(lc.T1)
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
@@ -146,7 +146,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select(lc.T1)
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
@@ -211,7 +211,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select(lc.T1)
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
@@ -242,7 +242,7 @@ class TestSendProcess(TestCase):
 			ch.start(lc.T1, 2.0)
 			ch.select(lc.T1)
 
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5010))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address

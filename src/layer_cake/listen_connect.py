@@ -35,6 +35,7 @@ from enum import Enum
 from datetime import datetime
 
 from .general_purpose import *
+from .ip_networking import *
 from .object_space import *
 from .convert_memory import *
 from .virtual_memory import *
@@ -62,11 +63,6 @@ from .edit_settings import *
 
 
 __all__ = [
-	'HostPort',
-	'LocalPort',
-	'ScopeOfIP',
-	'local_private_public',
-	'CreateFrame',
 	'ListenForStream',
 	'ConnectStream',
 	'Listening',
@@ -100,85 +96,6 @@ class PENDING: pass
 class NORMAL: pass
 class CHECKING: pass
 class CLEARING: pass
-
-#
-LOCAL_HOST = '127.0.0.1'
-
-class HostPort(object):
-	"""Combination of an IP address or name, and a port number.
-
-	:param host: IP address or name
-	:type host: str
-	:param port: network port
-	:type port: int
-	"""
-	def __init__(self, host: str=None, port: int=None):
-		self.host = host
-		self.port = port
-	
-	def __str__(self):
-		return f'{self.host}:{self.port}'
-
-	def inet(self):
-		return (self.host, self.port)
-
-class LocalPort(HostPort):
-	def __init__(self, port: int=None):
-		HostPort.__init__(self, LOCAL_HOST, port)
-
-bind(HostPort)
-bind(LocalPort, host=Unicode())
-
-#
-#
-DOTTED_IP = re.compile(r'(\d+)\.(\d+)\.(\d+)\.(\d+)')
-
-class ScopeOfIP(Enum):
-	OTHER=0
-	LOCAL=1
-	PRIVATE=2
-	PUBLIC=3
-
-def local_private_public(ip):
-	m = DOTTED_IP.match(ip)
-	if m is None:
-		return ScopeOfIP.OTHER
-	# Have complete verification of dotted layout
-	b0 = int(m.groups()[0])
-	b1 = int(m.groups()[1])
-
-	# Not dotted -------- None
-	# 127.x.x.x --------- 0, localhost
-	# 10.x.x.x ---------- 1, private
-	# 192.168.x.x ------- 1, private
-	# 172.[16-31].x.x --- 1, private
-	# else -------------- 2, public
-
-	if b0 == 127:
-		return ScopeOfIP.LOCAL
-	elif b0 == 10:
-		return ScopeOfIP.PRIVATE
-	elif b0 == 192 and b1 == 168:
-		return ScopeOfIP.PRIVATE
-	elif b0 == 172 and (b1 > 15 and b1 < 32):
-		return ScopeOfIP.PRIVATE
-	return ScopeOfIP.PUBLIC
-
-#
-class CreateFrame(object):
-	"""Capture values needed for async object creation.
-
-	:param object_type: type to be created
-	:type object_type: function or Point-based class
-	:param args: positional parameters
-	:type args: tuple
-	:param kw: named parameters
-	:type kw: dict
-	"""
-	def __init__(self, object_type, *args, **kw):
-		self.object_type = object_type
-		self.args = args
-		self.kw = kw
 
 # Control messages sent to the sockets thread
 # via the control channel.

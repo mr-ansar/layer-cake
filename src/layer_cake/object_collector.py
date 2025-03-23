@@ -20,9 +20,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-""".
+""" Dedicated collector for objects.
 
-.
+Objects register themselves with a collector during their start process
+and deregister during teardown. Addresses still in the collector at
+termination are signaled directly - the collector waits for all objects
+to clear themselves.
+
+Originally developed for garbage collection of ProcessObjects.
 """
 __docformat__ = 'restructuredtext'
 
@@ -43,8 +48,7 @@ __all__ = [
 	'ObjectCollector',
 ]
 
-#
-#
+# Register and deregister.
 class AddObject(object):
 	def __init__(self, address: Address=None):
 		self.address = address or NO_SUCH_ADDRESS
@@ -60,9 +64,9 @@ class INITIAL: pass
 class READY: pass
 class CLEARING: pass
 
-class ObjectCollector(Point, StateMachine):
+class ObjectCollector(Threaded, StateMachine):
 	def __init__(self, grace: float=10.0):
-		Point.__init__(self)
+		Threaded.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.grace = grace
 		self.collected = set()

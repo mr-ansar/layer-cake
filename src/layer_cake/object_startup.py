@@ -433,6 +433,11 @@ def run_object(home, object_type, args, logs, locking):
 			object_encode(CommandResponse('background-daemon'))
 			sys.stdout.close()
 			os.close(1)
+		
+		#if CL.connect_to_directory.host is not None:
+		#	pass
+		#if CL.accept_directories.host is not None:
+		#	pass
 
 		# Write partial record to disk.
 		home.starting()

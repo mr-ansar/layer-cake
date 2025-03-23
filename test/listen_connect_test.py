@@ -21,15 +21,15 @@ class TestListenConnect(TestCase):
 
 	def test_listen(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected, p = ch.select()
 		assert isinstance(selected, Listening)
 
 	def test_listen_duplicate(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected, p = ch.select()
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected, p = ch.select()
 		assert isinstance(selected, NotListening)
 		e = str(selected)
@@ -37,13 +37,13 @@ class TestListenConnect(TestCase):
 
 	def test_no_listen(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 90050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 90050))
 			i, selected, p = ch.select()
 		assert isinstance(selected, NotListening)
 
 	def test_listen_and_stop(self):
 		with lc.channel() as ch:
-			lid = listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			lid = listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected, p = ch.select()
 			stop_listening(ch, lid)
 			i, selected, p = ch.select()
@@ -58,9 +58,9 @@ class TestListenConnect(TestCase):
 
 	def test_listen_and_connect(self):
 		with lc.channel() as ch:
-			lid = listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			lid = listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, listening, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
 			i, selected, p = ch.select()
 			if isinstance(selected, Connected):
@@ -82,15 +82,15 @@ class TestListenConnect(TestCase):
 
 	def test_listen_and_multi_connect(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected1, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected2, p = ch.select()
 			i, selected3, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected4, p = ch.select()
 			i, selected5, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected6, p = ch.select()
 			i, selected7, p = ch.select()
 		assert isinstance(selected2, (Accepted, Connected))
@@ -102,7 +102,7 @@ class TestListenConnect(TestCase):
 
 	def test_no_connect(self):
 		with lc.channel() as ch:
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5051))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5051))
 			i, selected, p = ch.select()
 		assert isinstance(selected, NotConnected)
 		e = str(selected)
@@ -110,9 +110,9 @@ class TestListenConnect(TestCase):
 
 	def test_send(self):
 		with lc.channel() as ch:
-			listen(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected1, p = ch.select()
-			connect(ch, requested_ipp=HostPort('127.0.0.1', 5050))
+			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			i, selected2, p = ch.select()
 			if isinstance(selected2, Connected):
 				server = ch.return_address
