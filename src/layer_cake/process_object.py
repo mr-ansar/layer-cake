@@ -79,6 +79,7 @@ from .command_startup import *
 from .home_role import *
 from .bind_type import *
 from .object_collector import *
+from .process_directory import *
 
 __all__ = [
 	'ProcessObject',
@@ -116,6 +117,7 @@ bind(wait)
 # A platform process that accepts a set of fully-typed arguments
 # and returns a fully-typed result.
 class INITIAL: pass
+class PENDING: pass
 class EXECUTING: pass
 class CLEARING: pass
 

@@ -84,7 +84,7 @@ def ObjectCollector_READY_RemoveObject(self, message):
 
 def ObjectCollector_READY_Stop(self, message):
 	if len(self.collected) < 1:
-		self.completed()
+		self.complete()
 	for c in self.collected:
 		self.send(message, c)
 	self.start(T1, self.grace)
@@ -102,7 +102,7 @@ def ObjectCollector_CLEARING_RemoveObject(self, message):
 	return READY
 
 def ObjectCollector_CLEARING_T1(self, message):
-	self.completed()
+	self.complete()
 
 OBJECT_COLLECTOR_DISPATCH = {
 	INITIAL: (

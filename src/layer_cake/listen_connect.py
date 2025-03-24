@@ -1557,7 +1557,8 @@ def stop_sockets(root):
 AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
-def listen(self, **kv):
+def listen(self, requested_ipp, encrypted: bool=False,
+			api_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number.
@@ -1576,11 +1577,12 @@ def listen(self, **kv):
 	:type ansar_client: bool
 	"""
 	lid = uuid.uuid4()
-	ls = ListenForStream(lid=lid, **kv)
+	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, api_server=api_server, default_to_request=default_to_request, ansar_client=ansar_client)
 	TS.channel.send(ls, self.object_address)
 	return lid
 
-def connect(self, **kv):
+def connect(self, requested_ipp, encrypted: bool=False, self_checking: bool=False,
+			api_client: str=None, ansar_server: bool=False):
 	"""
 	Initiates a network connection to the specified IP
 	address and port number.
@@ -1598,7 +1600,7 @@ def connect(self, **kv):
 	:param ansar_server: is the remote server ansar-enabled
 	:type ansar_server: bool
 	"""
-	cs = ConnectStream(**kv)
+	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, self_checking=self_checking, api_client=api_client, ansar_server=ansar_server)
 	TS.channel.send(cs, self.object_address)
 
 def stop_listening(self, lid):

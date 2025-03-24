@@ -93,8 +93,8 @@ class Stateless(Machine):
 			if art.execution_trace:
 				t = portable_to_tag(p)
 				if isinstance(m, Faulted):
-					f = str(m)
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], f))
+					e = str(m)
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], e))
 				else:
 					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
 			return
@@ -102,8 +102,8 @@ class Stateless(Machine):
 		if art.execution_trace:
 			t = portable_to_tag(p)
 			if isinstance(m, Faulted):
-				f = str(m)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], f))
+				e = str(m)
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], e))
 			else:
 				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
 

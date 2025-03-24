@@ -40,6 +40,7 @@ PD = Gas(directory=None)
 # Managed creation of the builtin directory.
 def create_directory(root):
 	PD.directory = root.create(ObjectDirectory)
+	x = 1
 
 def stop_directory(root):
 	root.send(Stop(), PD.directory)

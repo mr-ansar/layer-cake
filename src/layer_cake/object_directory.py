@@ -91,17 +91,23 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.directory_scope = directory_scope or SCOPE_OF_DIRECTORY.PROCESS
 		self.accept_directories_at = accept_directories_at or HostPort()
 		self.connect_to_directory = connect_to_directory or HostPort()
+		self.listening = None
+		self.connected = None
+		self.pending = set()
 
 def ObjectDirectory_INITIAL_Start(self, message):
 	if self.connect_to_directory.host is not None:
-		connect(self, self.connect_to_directory)
+		connect(self, requested_ipp=self.connect_to_directory)
 	if self.accept_directories_at.host is not None:
-		listen(self, self.accept_directories_at)
+		listen(self, requested_ipp=self.accept_directories_at)
 	return READY
 
 #
 def ObjectDirectory_READY_Listening(self, message):
 	self.listening = message
+	for p in self.pending:
+		self.send(message.listening_ipp, p)
+	self.pending = set()
 	return READY
 
 def ObjectDirectory_READY_NotListening(self, message):
@@ -131,23 +137,36 @@ def ObjectDirectory_READY_Abandoned(self, message):
 
 #
 def ObjectDirectory_READY_ConnectTo(self, message):
-	if self.connect_to.host is not None:
+	if self.connect_to_directory.host is not None:
 		if isinstance(self.connected, Connected):
 			self.send(Close(), self.connected.proxy_address)
 		# Could be a Connected in the queue.
 	else:
-		connect(self, message.ipp)
-	self.connect_to = message.ipp
+		connect(self, requested_ipp=message.ipp)
+	self.connect_to_directory = message.ipp
 	return READY
 
 def ObjectDirectory_READY_AcceptAt(self, message):
-	if self.accept_at.host is not None:
+	if self.accept_directories_at.host is not None:
 		if isinstance(self.listening, Listening):
 			stop_listening(self, self.listening.lid)
 		# Could be a Listening in the queue.
 	else:
-		listen(self, message.ipp)
-	self.accept_at = message.ipp
+		listen(self, requested_ipp=message.ipp)
+	self.accept_directories_at = message.ipp
+	return READY
+
+def ObjectDirectory_READY_Enquiry(self, message):
+	if self.accept_directories_at.host is None:
+		self.accept_directories_at = HostPort('127.0.0.1', 0)
+		listen(self, requested_ipp=self.accept_directories_at)
+		self.pending.add(self.return_address)
+		return READY
+
+	if not isinstance(self.listening, Listening):
+		self.pending.add(self.return_address)
+		return READY
+
 	return READY
 
 # PublishAsName/SubscribeToName
@@ -177,6 +196,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 		Connected, NotConnected,
 		Closed, Abandoned,
 		ConnectTo, AcceptAt,
+		Enquiry,
 		PublishAsName, SubscribeToName,
 		Stop,),
 		()
