@@ -35,7 +35,6 @@ from .virtual_point import *
 from .point_machine import *
 
 __all__ = [
-	'RoutineRuntime',
 	'PointRuntime',
 	'bind_routine',
 	'bind_point',
@@ -44,84 +43,12 @@ __all__ = [
 	'bind',
 ]
 
-
-class RoutineRuntime(Runtime):
-	"""Settings to control logging and other behaviour, for objects and messages."""
-
-	def __init__(self,
-			name, module, schema, return_type,
-			**flags):
-		"""Construct the settings.
-
-		:param name: the name of the class being registered
-		:type name: str
-		:param module: the name of the module the class is located in
-		:type module: str
-		:param schema: the application value, e.g. a function
-		:type schema: any
-		:param return_type: the type expected at the end
-		:type return_type: Portable
-		:param lifecycle: enable logging of created, destroyed
-		:type lifecycle: bool
-		:param message_trail: enable logging of sent
-		:type message_trail: bool
-		:param execution_trace: enable logging of received
-		:type execution_trace: bool
-		:param copy_before_sending: enable auto-copy before send
-		:type copy_before_sending: bool
-		:param not_portable: prevent inappropriate send
-		:type not_portable: bool
-		:param user_logs: log level
-		:type user_logs: int
-		"""
-		super().__init__(name, module, **flags)
-		self.schema = schema
-		self.return_type = return_type
-
-#
-def bind_routine(routine, return_type=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
-	"""Set the runtime flags for the given async function.
-
-	:param routine: an async function.
-	:type routine: function
-	:param lifecycle: log all create() and complete() events
-	:type lifecycle: bool
-	:param message_trail: log all send() events
-	:type message_trail: bool
-	:param execution_trace: log all receive events
-	:type execution_trace: bool
-	:param user_logs: the logging level for this object type
-	:type user_logs: enumeration
-	"""
-	rt = RoutineRuntime(routine.__name__, routine.__module__, None, None,
-		lifecycle=lifecycle,
-		message_trail=message_trail,
-		execution_trace=execution_trace,
-		user_logs=user_logs)
-
-	setattr(routine, '__art__', rt)
-
-	# Replace with identity object, installing as required.
-	explicit_schema = {k: install_portable(v) for k, v in explicit_schema.items()}
-
-	hints = typing.get_type_hints(routine)
-	routine_hints, routine_return = install_hints(hints)
-
-	if return_type:
-		routine_return = install_portable(return_type)
-
-	r = {}
-	for k, a in explicit_schema.items():
-		routine_hints[k] = a	# Add or override existing.
-
-	rt.schema, rt.return_type = routine_hints, routine_return
-
 #
 class PointRuntime(Runtime):
 	"""Settings to control logging and other behaviour, for a Point."""
 
 	def __init__(self,
-			name, module, schema, return_type,
+			name, module, return_type=None, api=None,
 			**flags):
 		"""Construct the settings.
 
@@ -145,10 +72,54 @@ class PointRuntime(Runtime):
 		:type user_logs: int
 		"""
 		super().__init__(name, module, **flags)
-		self.schema = schema
 		self.return_type = return_type
+		self.api = api
+		self.value = None
 
-def bind_point(point, return_type=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
+#
+def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
+	"""Set the runtime flags for the given async function.
+
+	:param routine: an async function.
+	:type routine: function
+	:param lifecycle: log all create() and complete() events
+	:type lifecycle: bool
+	:param message_trail: log all send() events
+	:type message_trail: bool
+	:param execution_trace: log all receive events
+	:type execution_trace: bool
+	:param user_logs: the logging level for this object type
+	:type user_logs: enumeration
+	"""
+	rt = PointRuntime(routine.__name__, routine.__module__,
+		lifecycle=lifecycle,
+		message_trail=message_trail,
+		execution_trace=execution_trace,
+		user_logs=user_logs)
+
+	setattr(routine, '__art__', rt)
+
+	# Replace with identity object, installing as required.
+	explicit_schema = {k: install_portable(v) for k, v in explicit_schema.items()}
+
+	hints = typing.get_type_hints(routine)
+	routine_hints, routine_return = install_hints(hints)
+
+	if return_type:
+		routine_return = install_portable(return_type)
+
+	r = {}
+	for k, a in explicit_schema.items():
+		routine_hints[k] = a	# Add or override existing.
+
+	if api is not None:
+		api = [install_hint(a) for a in api]
+
+	rt.schema = routine_hints
+	rt.return_type = routine_return
+	rt.api = api
+
+def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
 	"""Set the runtime flags for the given async object type.
 
 	:param point: a class derived from ``Point``.
@@ -162,7 +133,7 @@ def bind_point(point, return_type=None, thread=None, lifecycle=True, message_tra
 	:param user_logs: the logging level for this object type
 	:type user_logs: enumeration
 	"""
-	rt = PointRuntime(point.__name__, point.__module__, None, None,
+	rt = PointRuntime(point.__name__, point.__module__,
 		lifecycle=lifecycle,
 		message_trail=message_trail,
 		execution_trace=execution_trace,
@@ -182,7 +153,12 @@ def bind_point(point, return_type=None, thread=None, lifecycle=True, message_tra
 	for k, a in explicit_schema.items():
 		point_hints[k] = a	# Add or override existing.
 
-	rt.schema, rt.return_type = point_hints, return_type
+	if api is not None:
+		api = [install_hint(a) for a in api]
+
+	rt.schema = point_hints
+	rt.return_type = return_type
+	rt.api = api
 
 	if thread:
 		try:
@@ -218,7 +194,7 @@ def unfold(folded):
 		else:
 			yield f
 
-def bind_stateless(machine, dispatch, *args, **kw_args):
+def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
 	"""Sets the runtime environment for the given stateless machine. Returns nothing.
 
 	This function (optionally) auto-constructs the message
@@ -250,7 +226,7 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 	:param kw_args: the named arguments to be forwarded
 	:type kw_args: a dict
 	"""
-	bind_point(machine, *args, **kw_args)
+	bind_point(machine, return_type=return_type, api=api, **kw_args)
 	if dispatch is None:
 		return
 
@@ -276,7 +252,7 @@ def bind_stateless(machine, dispatch, *args, **kw_args):
 
 	machine.__art__.value = (shift, messaging)
 
-def bind_statemachine(machine, dispatch, *args, **kw_args):
+def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
 	"""Sets the runtime environment for the given FSM. Returns nothing.
 
 	This function (optionally) auto-constructs the message
@@ -315,7 +291,7 @@ def bind_statemachine(machine, dispatch, *args, **kw_args):
 	:param kw_args: the named arguments to be forwarded
 	:type kw_args: a dict
 	"""
-	bind_point(machine, *args, **kw_args)
+	bind_point(machine, return_type=return_type, api=api, **kw_args)
 	if dispatch is None:
 		return
 	shift = {}

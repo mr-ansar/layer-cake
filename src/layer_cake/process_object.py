@@ -65,6 +65,7 @@ from .general_purpose import *
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
+from .convert_type import *
 from .virtual_runtime import *
 from .virtual_point import *
 from .point_runtime import *
@@ -79,7 +80,9 @@ from .command_startup import *
 from .home_role import *
 from .bind_type import *
 from .object_collector import *
+from .object_directory import *
 from .process_directory import *
+from .ip_networking import *
 
 __all__ = [
 	'ProcessObject',
@@ -174,8 +177,14 @@ class ProcessObject(Point, StateMachine):
 		self.settings = settings
 		self.p = None
 
+		self.published = None
+		self.queue = deque()
 
 def ProcessObject_INITIAL_Start(self, message):
+	rt = getattr(self.object_type, '__art__', None)
+	if rt and rt.api is not None and len(rt.api) > 0:
+		self.send(Enquiry(), PD.directory)
+		return PENDING
 	executable = sys.executable
 
 	# Build the sub-process command line.
@@ -201,7 +210,7 @@ def ProcessObject_INITIAL_Start(self, message):
 	#	command.append(arg)
 
 	rt = self.object_type.__art__
-	if isinstance(rt, (RoutineRuntime, PointRuntime)):
+	if isinstance(rt, PointRuntime):
 		schema = rt.schema | CommandLine.__art__.schema
 
 		try:
@@ -240,6 +249,97 @@ def ProcessObject_INITIAL_Start(self, message):
 	self.send(AddObject(self.object_address), PO.collector)
 	return EXECUTING
 
+def ProcessObject_PENDING_Unknown(self, message):
+	message = cast_to(message, self.message_type)
+	q = (message, self.return_address)
+	self.queue.append(q)
+	return PENDING
+
+def ProcessObject_PENDING_HostPort(self, message):
+	executable = sys.executable
+
+	# Build the sub-process command line.
+	command = [executable, self.module_path]
+
+	command.append(f'--child-process')
+	command.append(f'--full-output')
+	if CL.background_daemon:
+		command.append(f'--background-daemon')
+
+	command.append(f'--home-path={self.home_path}')
+	command.append(f'--role-name={self.role_name}')
+
+	if CL.debug_level is not None:
+		command.append(f'--debug-level={CL.debug_level.name}')
+
+	if CL.keep_logs:
+		command.append(f'--keep-logs')
+
+	#self.group_pid = self.group_pid or CL.group_pid
+	#if self.group_pid:
+	#	arg = f'--group-pid={self.group_pid}'
+	#	command.append(arg)
+
+	rt = self.object_type.__art__
+	if isinstance(rt, PointRuntime):
+		schema = rt.schema | CommandLine.__art__.schema
+		try:
+			c = CodecNoop()
+			v = encode_argument(c, message, UserDefined(HostPort))
+			command.append(f'--connect-to-directory={v}')
+
+			subscribe(self, self.role_name)
+
+			for k, v in self.settings.items():
+				name = k
+				e = schema[k]
+				k = k.replace('_', '-')
+				v = encode_argument(c, v, e)
+				command.append(f'--{k}={v}')
+		except KeyError as e:
+			self.complete(Faulted(f'cannot encode value for "{self.role_name}" ({e.args[0]} does not exist)'))
+		except CodecError as e:
+			e = str(e)
+			s = e.replace('cannot encode', f'cannot encode value for "{self.role_name}.{name}"')
+			self.complete(Faulted(s))
+
+	# Force the details of the I/O streams.
+	try:
+		start_new_session = CL.background_daemon and not CL.child_process
+		self.p = Popen(command,
+			start_new_session=start_new_session,
+			stdin=None, stdout=PIPE, stderr=sys.stderr,
+			text=True, encoding='utf-8', errors='strict')
+			#env=hb.bin_env,
+			#**self.kw)
+	except OSError as e:
+		f = Faulted(process_start=(e, None))
+		self.warning(str(f))
+		self.complete(f)
+
+	self.log(USER_TAG.STARTED, f'Started process ({self.p.pid})')
+	self.create(wait, self.p, True)
+
+	# Good to go. Next event should be Returned.
+	self.send(AddObject(self.object_address), PO.collector)
+	return EXECUTING
+
+def ProcessObject_EXECUTING_PublishAsName(self, message):
+	self.published = message
+	for q in self.queue:
+		self.forward(q[0], self.published.address, q[1])
+	self.queue = deque()
+	return EXECUTING
+
+def ProcessObject_EXECUTING_Unknown(self, message):
+	if self.published is None:
+		message = cast_to(message, self.message_type)
+		q = (message, self.return_address)
+		self.queue.append(q)
+		return EXECUTING
+	self.forward(message, self.published.address, self.return_address)
+	return EXECUTING
+
 def ProcessObject_EXECUTING_Returned(self, message):
 	self.send(RemoveObject(self.object_address), PO.collector)
 
@@ -276,8 +376,12 @@ PROCESS_DISPATCH = {
 		(Start,),
 		()
 	),
+	PENDING: (
+		(HostPort, Unknown),
+		()
+	),
 	EXECUTING: (
-		(Returned, Stop),
+		(PublishAsName, Unknown, Returned, Stop),
 		()
 	),
 	CLEARING: (

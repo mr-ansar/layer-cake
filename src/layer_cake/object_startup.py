@@ -60,6 +60,8 @@ from .platform_system import *
 from .head_lock import *
 from .home_role import *
 from .bind_type import *
+from .object_directory import *
+from .process_directory import *
 
 __all__ = [
 	'FAULTY_EXIT',
@@ -369,8 +371,12 @@ def open_logs(home_role, storage, recording):
 #	self.trace('Running object "%s"' % (object_type.__art__.path,))
 #	self.trace('Class threads (%d) %s' % (len(pt.thread_classes), ','.join(name_counts)))
 
-def start_vector(self, object_type, args):
+def start_vector(self, object_type, connecting_to_directory, args):
 	a = self.create(object_type, **args)
+
+	if connecting_to_directory:
+		pn = PublishAsName(CL.role_name, a)
+		self.send(pn, PD.directory)
 
 	while True:
 		i, m, t = self.select(Returned, Stop)
@@ -433,9 +439,11 @@ def run_object(home, object_type, args, logs, locking):
 			object_encode(CommandResponse('background-daemon'))
 			sys.stdout.close()
 			os.close(1)
-		
-		#if CL.connect_to_directory.host is not None:
-		#	pass
+
+		connecting_to_directory = CL.connect_to_directory.host is not None
+		if connecting_to_directory:
+			ct = ConnectTo(CL.connect_to_directory)
+			root.send(ct, PD.directory)
 		#if CL.accept_directories.host is not None:
 		#	pass
 
@@ -444,7 +452,7 @@ def run_object(home, object_type, args, logs, locking):
 
 		# Create the async object. Need to wrap in another object
 		# to facilitate the control-c handling.
-		a = root.create(start_vector, object_type, args)
+		a = root.create(start_vector, object_type, connecting_to_directory, args)
 
 		# Termination of this function is
 		# either by SIGINT (control-c) or assignment by object_vector.

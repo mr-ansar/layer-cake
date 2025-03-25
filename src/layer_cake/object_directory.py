@@ -34,6 +34,7 @@ from .command_line import *
 from .ip_networking import *
 from .virtual_memory import *
 from .message_memory import *
+from .convert_type import *
 from .virtual_runtime import *
 from .point_runtime import *
 from .virtual_point import *
@@ -42,6 +43,8 @@ from .bind_type import *
 from .listen_connect import *
 
 __all__ = [
+	'ConnectTo',
+	'AcceptAt',
 	'PublishAsName',
 	'SubscribeToName',
 	'DirectoryMatch',
@@ -57,12 +60,16 @@ class SubscribeToName(object):
 class PublishAsName(object):
 	def __init__(self, name: str=None, address: Address=None):
 		self.name = name
-		self.address = address or NO_SUCH_ADDRESS
+		if address is None:
+			address = NO_SUCH_ADDRESS
+		self.address = address
 
 class DirectoryMatch(object):
 	def __init__(self, matched: str=None, address: Address=None):
 		self.matched = matched
-		self.address = address or NO_SUCH_ADDRESS
+		if address is None:
+			address = NO_SUCH_ADDRESS
+		self.address = address
 
 bind(PublishAsName)
 bind(SubscribeToName)
@@ -93,21 +100,23 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.connect_to_directory = connect_to_directory or HostPort()
 		self.listening = None
 		self.connected = None
-		self.pending = set()
+		self.pending_enquiry = set()
+		self.published = {}
+		self.subscribed = {}
 
 def ObjectDirectory_INITIAL_Start(self, message):
 	if self.connect_to_directory.host is not None:
-		connect(self, requested_ipp=self.connect_to_directory)
+		connect(self, self.connect_to_directory)
 	if self.accept_directories_at.host is not None:
-		listen(self, requested_ipp=self.accept_directories_at)
+		listen(self, self.accept_directories_at)
 	return READY
 
 #
 def ObjectDirectory_READY_Listening(self, message):
 	self.listening = message
-	for p in self.pending:
+	for p in self.pending_enquiry:
 		self.send(message.listening_ipp, p)
-	self.pending = set()
+	self.pending_enquiry = set()
 	return READY
 
 def ObjectDirectory_READY_NotListening(self, message):
@@ -115,8 +124,15 @@ def ObjectDirectory_READY_NotListening(self, message):
 	# Schedule a retry.
 	return READY
 
+published_cast = type_cast(dict[str, PublishAsName])
+subscribed_cast = type_cast(dict[str, list[SubscribeToName]])
+
 def ObjectDirectory_READY_Connected(self, message):
 	self.connected = message
+	if self.published:
+		self.send(published_cast(self.published), self.connected.proxy_address)
+	if self.subscribed:
+		self.send(subscribed_cast(self.subscribed), self.connected.proxy_address)
 	return READY
 
 def ObjectDirectory_READY_NotConnected(self, message):
@@ -142,7 +158,7 @@ def ObjectDirectory_READY_ConnectTo(self, message):
 			self.send(Close(), self.connected.proxy_address)
 		# Could be a Connected in the queue.
 	else:
-		connect(self, requested_ipp=message.ipp)
+		connect(self, message.ipp)
 	self.connect_to_directory = message.ipp
 	return READY
 
@@ -152,19 +168,19 @@ def ObjectDirectory_READY_AcceptAt(self, message):
 			stop_listening(self, self.listening.lid)
 		# Could be a Listening in the queue.
 	else:
-		listen(self, requested_ipp=message.ipp)
+		listen(self, message.ipp)
 	self.accept_directories_at = message.ipp
 	return READY
 
 def ObjectDirectory_READY_Enquiry(self, message):
 	if self.accept_directories_at.host is None:
 		self.accept_directories_at = HostPort('127.0.0.1', 0)
-		listen(self, requested_ipp=self.accept_directories_at)
-		self.pending.add(self.return_address)
+		listen(self, self.accept_directories_at)
+		self.pending_enquiry.add(self.return_address)
 		return READY
 
 	if not isinstance(self.listening, Listening):
-		self.pending.add(self.return_address)
+		self.pending_enquiry.add(self.return_address)
 		return READY
 
 	return READY
@@ -175,9 +191,49 @@ def ObjectDirectory_READY_Enquiry(self, message):
 # NippedOff/
 
 def ObjectDirectory_READY_PublishAsName(self, message):
+	self.published[message.name] = message
+
+	if isinstance(self.connected, Connected):
+		self.send(message, self.connected.proxy_address)
 	return READY
 
 def ObjectDirectory_READY_SubscribeToName(self, message):
+	s = self.subscribed.get(message.search, None)
+	if s is None:
+		s = []
+		self.subscribed[message.search] = s
+	s.append(message)
+
+	if isinstance(self.connected, Connected):
+		self.send(message, self.connected.proxy_address)
+	return READY
+
+def ObjectDirectory_READY_dict_str_PublishAsName(self, message):
+	for k, v in message.items():
+		self.console(publish=k)
+		self.published[k] = v
+		s = self.subscribed.get(k, None)
+		if s is None:
+			self.console(subscribed='not found')
+			continue
+		for m in s:
+			self.console(subscribed=m.address)
+			self.send(v, m.address)
+	return READY
+
+def ObjectDirectory_READY_dict_str_list_SubscribeToName(self, message):
+	for k, v in message.items():
+		s = self.subscribed.get(k, None)
+		if s is None:
+			s = []
+			self.subscribed[k] = s
+		for m in v:
+			s.append(m)
+		p = self.published.get(k, None)
+		if p is None:
+			continue
+		self.send(Nak(), p.address)
+		
 	return READY
 
 def ObjectDirectory_READY_Stop(self, message):
@@ -198,6 +254,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 		ConnectTo, AcceptAt,
 		Enquiry,
 		PublishAsName, SubscribeToName,
+		dict[str,PublishAsName], dict[str,list[SubscribeToName]],
 		Stop,),
 		()
 	),

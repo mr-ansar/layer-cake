@@ -124,8 +124,9 @@ class CommandLine(object):
 		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
-		self.connect_to_directory = connect_to_directory
-		self.accept_directories_at = accept_directories_at
+		self.directory_scope = directory_scope or SCOPE_OF_DIRECTORY.PROCESS
+		self.connect_to_directory = connect_to_directory or HostPort()
+		self.accept_directories_at = accept_directories_at or HostPort()
 
 bind_message(CommandLine,
 	debug_level=Enumeration(USER_LOG),

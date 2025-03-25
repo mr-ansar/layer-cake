@@ -31,9 +31,15 @@ from collections import deque
 
 from .general_purpose import *
 from .point_runtime import *
+from .virtual_point import *
 from .object_runtime import *
-from .listen_connect import *
 from .object_directory import *
+
+__all__ = [
+	'PD',
+	'publish',
+	'subscribe',
+]
 
 PD = Gas(directory=None)
 
@@ -47,3 +53,12 @@ def stop_directory(root):
 	root.select()
 
 AddOn(create_directory, stop_directory)
+
+#
+def publish(self, name):
+	p = PublishAsName(name, self.object_address)
+	self.send(p, PD.directory)
+
+def subscribe(self, name):
+	p = SubscribeToName(name, self.object_address)
+	self.send(p, PD.directory)

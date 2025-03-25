@@ -124,6 +124,7 @@ class Runtime(object):
 		"""
 		self.name = name		# Last component of dotted name.
 		self.module = module	# Full path up to the name.
+		self.schema = None
 
 		self.lifecycle = lifecycle			  # Create, destroy objects
 		self.message_trail = message_trail	  # Sending
@@ -132,7 +133,7 @@ class Runtime(object):
 		self.not_portable = not_portable
 		self.user_logs = user_logs			  # Object trace, warning...
 
-		self.path = '%s.%s' % (module, name)
+		self.path = f'{module}.{name}'
 
 def type_schema(p):
 	try:

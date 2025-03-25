@@ -165,8 +165,8 @@ class StateMachine(Machine):
 			if art.execution_trace:
 				t = portable_to_tag(p)
 				if isinstance(message, Faulted):
-					f = str(message)
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], f))
+					e = str(message)
+					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], e))
 				else:
 					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
 			return
@@ -174,8 +174,8 @@ class StateMachine(Machine):
 		if art.execution_trace:
 			t = portable_to_tag(p)
 			if isinstance(message, Faulted):
-				f = str(message)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], f))
+				e = str(message)
+				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], e))
 			else:
 				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
 

@@ -108,7 +108,6 @@ __all__ = [
 	'is_message_class',
 	'compile_schema',
 
-	'MessageRuntime',
 	'bind_message',
 	'equal_to',
 ]
@@ -500,37 +499,6 @@ def compile_schema(message, explicit_schema):
 	return r
 
 #
-#
-class MessageRuntime(Runtime):
-	"""Settings to control logging and other behaviour, for objects and messages."""
-
-	def __init__(self,
-			name, module, schema,
-			**flags):
-		"""Construct the settings.
-
-		:param name: the name of the class being registered
-		:type name: str
-		:param module: the name of the module the class is located in
-		:type module: str
-		:param value: the application value, e.g. a function
-		:type value: any
-		:param lifecycle: enable logging of created, destroyed
-		:type lifecycle: bool
-		:param message_trail: enable logging of sent
-		:type message_trail: bool
-		:param execution_trace: enable logging of received
-		:type execution_trace: bool
-		:param copy_before_sending: enable auto-copy before send
-		:type copy_before_sending: bool
-		:param not_portable: prevent inappropriate send
-		:type not_portable: bool
-		:param user_logs: log level
-		:type user_logs: int
-		"""
-		super().__init__(name, module, **flags)
-		self.schema = schema
-
 def bind_message(message,
 		message_trail=True, execution_trace=True,
 		copy_before_sending=True, not_portable=False,
@@ -556,7 +524,7 @@ def bind_message(message,
 	Values assigned in this function affect the behaviour for all instances of
 	the given type.
 	"""
-	rt = MessageRuntime(message.__name__, message.__module__, None,
+	rt = Runtime(message.__name__, message.__module__,
 		message_trail=message_trail,
 		execution_trace=execution_trace,
 		copy_before_sending=copy_before_sending,

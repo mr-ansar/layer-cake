@@ -7,6 +7,7 @@ from collections import deque
 
 import layer_cake as lc
 from layer_cake.listen_connect import *
+from layer_cake.object_directory import *
 
 from test_message import *
 
@@ -28,34 +29,43 @@ class TestSendProcess(TestCase):
 		return super().tearDown()
 
 	def test_self_cleaned(self):
+		# Start a channel, create a server as a child,
+		# connect to it, complete an Ack handshake,
+		# terminate the connection and end the
+		# child process, i.e. do our own housekeeping.
 		with lc.channel() as ch:
 			echo = ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select()
+			i, m, p = ch.select(lc.T1, lc.Faulted, lc.Stop)
+			assert isinstance(m, lc.T1)
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, m, p = ch.select()
+			i, m, p = ch.select(Connected, lc.Faulted, lc.Stop)
 			assert isinstance(m, Connected)
 			server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, selected, p = ch.select()
-			assert isinstance(selected, lc.Ack)
+			i, m, p = ch.select(lc.Ack, lc.Faulted, lc.Stop)
+			assert isinstance(m, lc.Ack)
 
 			ch.send(Close(), server)
-			i, selected, p = ch.select()
-			assert isinstance(selected, Closed)
+			i, m, p = ch.select(Closed, lc.Faulted, lc.Stop)
+			assert isinstance(m, Closed)
+
 			ch.send(lc.Stop(), echo)
-			i, selected, p = ch.select()
-			assert isinstance(selected, lc.Returned)
+			i, m, p = ch.select(lc.Returned, lc.Faulted, lc.Stop)
+			assert isinstance(m, lc.Returned)
 
 	def test_collected(self):
+		# As above but do zero housekeeping. Connection should
+		# be closed automatically and the child process
+		# auto-terminated.
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select()
+			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, m, p = ch.select()
@@ -71,7 +81,7 @@ class TestSendProcess(TestCase):
 			ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select(lc.T1)
+			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
@@ -144,7 +154,7 @@ class TestSendProcess(TestCase):
 			ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select(lc.T1)
+			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
@@ -209,7 +219,7 @@ class TestSendProcess(TestCase):
 			ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select(lc.T1)
+			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
@@ -221,26 +231,28 @@ class TestSendProcess(TestCase):
 				i, selected, p = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
-					assert selected == original
+					assert lc.equal_to(selected, original)
 
 			v3ct0r = [True, True, False, True]
 			arr4y = [1, 2, 3, 4]
 			d3qu3 = deque([0.124, 2.48, 24.89])
 			s3t = set(['sue', 'tez', 'mia', 'scott', 'bee'])
 			d1ct = {uuid.uuid4(): 0.1, uuid.uuid4(): 0.2, uuid.uuid4(): 0.3, uuid.uuid4(): 0.4, uuid.uuid4(): 0.5}
+			publ1sh3d = {'scott': PublishAsName('scott', (1,))}
 
 			send_check(vector_cast(v3ct0r), list, v3ct0r)
 			send_check(array_cast(arr4y), list, arr4y)
 			send_check(deque_cast(d3qu3), deque, d3qu3)
 			send_check(set_cast(s3t), set, s3t)
 			send_check(dict_cast(d1ct), dict, d1ct)
+			send_check(published_cast(publ1sh3d), dict)
 
 	def test_send_message(self):
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			ch.select(lc.T1)
+			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
 			i, selected, p = ch.select()
@@ -348,3 +360,5 @@ array_cast = lc.type_cast(lc.ArrayOf(int,4))
 deque_cast = lc.type_cast(deque[float])
 set_cast = lc.type_cast(set[str])
 dict_cast = lc.type_cast(dict[uuid.UUID,float])
+published_cast = lc.type_cast(dict[str, PublishAsName])
+
