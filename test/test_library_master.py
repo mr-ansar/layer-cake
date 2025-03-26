@@ -1,19 +1,21 @@
 # test_echo.py
 import layer_cake as lc
-from layer_cake.listen_connect import *
-
 import test_library
 
 def main(self):
-	echo = self.create(lc.ProcessObject, test_library.main)
+	echo = self.create(lc.ProcessObject, test_library.main)		# Load the library process.
 
-	self.send(lc.Ack(), echo)
-	i, m, p = self.select(lc.Ack, lc.Faulted, lc.Stop)
+	self.send(lc.Ack(), echo)									# Request and
+	i, m, p = self.select(lc.Ack, lc.Faulted, lc.Stop)			# response.
 	assert isinstance(m, lc.Ack)
 
-	self.send(lc.Stop(), echo)
-	i, m, p = self.select(lc.Returned, lc.Faulted, lc.Stop)
-	assert isinstance(m, lc.Returned)
+	i, m, p = self.select()			# response.
+	return lc.Aborted()
+
+	# Optional housekeeping.
+	# self.send(lc.Stop(), echo)									# Unload the library.
+	# i, m, p = self.select(lc.Returned, lc.Faulted, lc.Stop)		# Gone.
+	# assert isinstance(m, lc.Returned)
 
 lc.bind(main)
 

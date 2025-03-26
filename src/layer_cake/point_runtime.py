@@ -75,6 +75,10 @@ class Returned(object):
 	def __init__(self, value=None, created_type=None):
 		self.value = value
 		self.created_type = created_type
+	
+	def original(self):
+		m, p, a = cast_back(self.value)
+		return m
 
 bind_message(Start)
 bind_message(Returned, value=Any(), created_type=Type())
