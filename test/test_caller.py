@@ -1,18 +1,21 @@
 # test_caller.py
 # Demonstration of the different calling conventions
 # available to the developer.
+from enum import Enum
 import layer_cake as lc
-
 from test_function import function
 
-def caller(self, choice: int=0) -> list[list[float]]:
-	if choice < 0 or choice > 2:
-		return lc.Faulted(f'input out of range ({choice})')
+class CallingConvention(Enum):
+	TRADITIONAL=1
+	THREAD=2
+	PROCESS=3
 
-	# Traditional function call.
+DEFAULT = CallingConvention.TRADITIONAL
+
+def caller(self, convention: CallingConvention=DEFAULT) -> list[list[float]]:
+	'''Apply the different calling conventions. Return the selected matrix of floats'''
 	direct_call = function(self)
 
-	# Multi-threaded.
 	a = self.create(function, x=2, y=2)
 	i, separate_thread, p = self.select(lc.Returned)
 
@@ -20,17 +23,19 @@ def caller(self, choice: int=0) -> list[list[float]]:
 	a = self.create(lc.ProcessObject, function, x=16, y=16)
 	i, separate_process, p = self.select(lc.Returned)
 
-	# Full set of results.
-	returned = (
+	# Gather the 3 results.
+	collated = (
 		direct_call,					# Straight from the call.
-		separate_thread.original(),		# Extract from Returned.
-		separate_process.original(),
+		separate_thread.normalize(),	# Extract from Returned.
+		separate_process.normalize(),
 	)
 	# Return one of them.
-	m = returned[choice]
+	m = collated[convention.value - 1]
 	return m
 
+# Register with runtime.
 lc.bind(caller)
 
+# Optional process entry-point.
 if __name__ == '__main__':
 	lc.create(caller)
