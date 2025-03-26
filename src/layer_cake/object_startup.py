@@ -385,21 +385,15 @@ def start_vector(self, object_type, connecting_to_directory, args):
 			# Do a "fake" signaling. Sidestep all the platform machinery
 			# and just set a global. It does avoid any complexities
 			PS.signal_received = PS.platform_kill
-			if isinstance(t, UserDefined):
-				return m.value
-			return (m.value, t)
 		elif i == 1:
 			self.send(m, a)
 			i, m, t = self.select(Returned)
-			if isinstance(t, UserDefined):
-				return m.value
-			return (m.value, t)
 
-		self.send(m, a)
+		if isinstance(t, UserDefined):
+			return m.value
+		return (m.value, t)
 
-bind_routine(start_vector, lifecycle=True, message_trail=True, execution_trace=True,
-	object_type=Type(),
-	argument=MapOf(Unicode(), Any()))
+bind_routine(start_vector)
 
 def run_object(home, object_type, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''

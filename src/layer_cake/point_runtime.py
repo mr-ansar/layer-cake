@@ -76,7 +76,7 @@ class Returned(object):
 		self.value = value
 		self.created_type = created_type
 	
-	def original(self):
+	def normalize(self):
 		m, p, a = cast_back(self.value)
 		return m
 
