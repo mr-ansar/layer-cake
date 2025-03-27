@@ -107,9 +107,8 @@ class Stateless(Machine):
 			else:
 				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
 
-		self.message_type = p
+		self.received_type = p
 		f(self, m)
-		self.previous_message = m
 
 class StateMachine(Machine):
 	"""Base for machines that maintain a formal state.
@@ -179,6 +178,5 @@ class StateMachine(Machine):
 			else:
 				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
 
-		self.message_type = p
+		self.received_type = p
 		self.current_state = f(self, m)
-		self.previous_message = m

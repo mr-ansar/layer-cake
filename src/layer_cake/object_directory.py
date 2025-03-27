@@ -124,15 +124,15 @@ def ObjectDirectory_READY_NotListening(self, message):
 	# Schedule a retry.
 	return READY
 
-published_cast = type_cast(dict[str, PublishAsName])
-subscribed_cast = type_cast(dict[str, list[SubscribeToName]])
+published_type = def_type(dict[str, PublishAsName])
+subscribed_type = def_type(dict[str, list[SubscribeToName]])
 
 def ObjectDirectory_READY_Connected(self, message):
 	self.connected = message
 	if self.published:
-		self.send(published_cast(self.published), self.connected.proxy_address)
+		self.send(cast_to(self.published, published_type), self.connected.proxy_address)
 	if self.subscribed:
-		self.send(subscribed_cast(self.subscribed), self.connected.proxy_address)
+		self.send(cast_to(self.subscribed, subscribed_type), self.connected.proxy_address)
 	return READY
 
 def ObjectDirectory_READY_NotConnected(self, message):

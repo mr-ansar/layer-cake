@@ -250,7 +250,7 @@ def ProcessObject_INITIAL_Start(self, message):
 	return EXECUTING
 
 def ProcessObject_PENDING_Unknown(self, message):
-	message = cast_to(message, self.message_type)
+	message = cast_to(message, self.received_type)
 	q = (message, self.return_address)
 	self.queue.append(q)
 	return PENDING
@@ -333,7 +333,7 @@ def ProcessObject_EXECUTING_PublishAsName(self, message):
 
 def ProcessObject_EXECUTING_Unknown(self, message):
 	if self.published is None:
-		message = cast_to(message, self.message_type)
+		message = cast_to(message, self.received_type)
 		q = (message, self.return_address)
 		self.queue.append(q)
 		return EXECUTING

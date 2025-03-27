@@ -76,9 +76,13 @@ class Returned(object):
 		self.value = value
 		self.created_type = created_type
 	
-	def normalize(self):
+	def value_only(self):
 		m, p, a = cast_back(self.value)
 		return m
+	
+	def value_and_type(self):
+		m, p, a = cast_back(self.value)
+		return m, p
 
 bind_message(Start)
 bind_message(Returned, value=Any(), created_type=Type())

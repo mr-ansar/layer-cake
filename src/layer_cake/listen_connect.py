@@ -507,7 +507,7 @@ class MessageStream(object):
 
 			if header.tunnel:					# Binary block - directly from the frame.
 				body = bytearray(b_)
-				body = bytearray_cast(body)
+				body = cast_to(body, bytearray_type)
 
 			elif len(header.to_address) > 1:	# Passing through. Just received and headed back out.
 				body = Relay(b_, space)
@@ -765,7 +765,7 @@ def SocketProxy_INITIAL_Start(self, message):
 #
 #
 def SocketProxy_NORMAL_Unknown(self, message):
-	message = cast_to(message, self.message_type)
+	message = cast_to(message, self.received_type)
 	empty = self.transport.put(message, self.to_address, self.return_address)
 	if empty:
 		self.channel.send(Bump(self.s), self.object_address)

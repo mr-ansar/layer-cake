@@ -38,7 +38,7 @@ containers = lc.select_list(list[bool], dict[int, float], set[str], deque[bytes]
 
 class TestServiceList(TestCase):
 	def test_list(self):
-		b = lc.bool_cast(True)
+		b = lc.cast_to(True, bool_type)
 		i, m, t = truth.find(b)
 
 		assert i == 0
@@ -47,22 +47,22 @@ class TestServiceList(TestCase):
 
 	def test_basic(self):
 		def test(cast, value, is_i, is_m, is_t):
-			b = cast(value)
+			b = cast_to(value, cast)
 			i, m, t = basic.find(b)
 
 			assert i == is_i
 			assert isinstance(m, is_m)
 			assert isinstance(t, is_t)
 
-		test(bool_cast, True, 0, bool, lc.Boolean)
-		test(int_cast, 42, 1, int, lc.Integer8)
-		test(float_cast, 1.0125, 2, float, lc.Float8)
-		test(str_cast, 'hello', 3, str, lc.Unicode)
-		test(bytes_cast, b'hello', 4, bytes, lc.String)
-		test(bytearray_cast, bytearray(b'hello'), 5, bytearray, lc.Block)
-		test(datetime_cast, lc.world_now(), 6, datetime.datetime, lc.WorldTime)
-		test(timedelta_cast, lc.text_to_delta('1:32:00'), 7, datetime.timedelta, lc.TimeDelta)
-		test(uuid_cast, uuid.uuid4(), 8, uuid.UUID, lc.UUID)
+		test(bool_type, True, 0, bool, lc.Boolean)
+		test(int_type, 42, 1, int, lc.Integer8)
+		test(float_type, 1.0125, 2, float, lc.Float8)
+		test(str_type, 'hello', 3, str, lc.Unicode)
+		test(bytes_type, b'hello', 4, bytes, lc.String)
+		test(bytearray_type, bytearray(b'hello'), 5, bytearray, lc.Block)
+		test(datetime_type, lc.world_now(), 6, datetime.datetime, lc.WorldTime)
+		test(timedelta_type, lc.text_to_delta('1:32:00'), 7, datetime.timedelta, lc.TimeDelta)
+		test(uuid_type, uuid.uuid4(), 8, uuid.UUID, lc.UUID)
 
 	def test_empty(self):
 		p = install_type(dict[str,Person])

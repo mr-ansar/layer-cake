@@ -95,44 +95,44 @@ class TestSendProcess(TestCase):
 				if original is not None:
 					assert selected == original
 			
-			send_check(lc.bool_cast(True), bool, True)
-			send_check(lc.bool_cast(False), bool, False)
-			send_check(lc.bool_cast(None), types.NoneType)
-			send_check(lc.int_cast(0), int, 0)
-			send_check(lc.int_cast(-1), int, -1)
-			send_check(lc.int_cast(1), int, 1)
-			send_check(lc.int_cast(42), int, 42)
-			send_check(lc.int_cast(42007), int, 42007)
-			send_check(lc.int_cast(None), types.NoneType)
+			send_check(lc.cast_to(True, lc.bool_type), bool, True)
+			send_check(lc.cast_to(False, lc.bool_type), bool, False)
+			send_check(lc.cast_to(None, lc.bool_type), types.NoneType)
+			send_check(lc.cast_to(0, lc.int_type), int, 0)
+			send_check(lc.cast_to(-1, lc.int_type), int, -1)
+			send_check(lc.cast_to(1, lc.int_type), int, 1)
+			send_check(lc.cast_to(42, lc.int_type), int, 42)
+			send_check(lc.cast_to(42007, lc.int_type), int, 42007)
+			send_check(lc.cast_to(None, lc.int_type), types.NoneType)
 
-			send_check(lc.float_cast(0.0), float, 0.0)
-			send_check(lc.float_cast(-1.0), float, -1.0)
-			send_check(lc.float_cast(1.0), float, 1.0)
-			send_check(lc.float_cast(42.0), float, 42.0)
-			send_check(lc.float_cast(42007.0), float, 42007.0)
-			send_check(lc.float_cast(0.1), float, 0.1)
-			send_check(lc.float_cast(0.01), float, 0.01)
-			send_check(lc.float_cast(0.0001), float, 0.0001)
-			send_check(lc.float_cast(-0.1), float, -0.1)
-			send_check(lc.float_cast(-0.01), float, -0.01)
-			send_check(lc.float_cast(-0.0001), float, -0.0001)
-			send_check(lc.float_cast(None), types.NoneType)
+			send_check(lc.cast_to(0.0, lc.float_type), float, 0.0)
+			send_check(lc.cast_to(-1.0, lc.float_type), float, -1.0)
+			send_check(lc.cast_to(1.0, lc.float_type), float, 1.0)
+			send_check(lc.cast_to(42.0, lc.float_type), float, 42.0)
+			send_check(lc.cast_to(42007.0, lc.float_type), float, 42007.0)
+			send_check(lc.cast_to(0.1, lc.float_type), float, 0.1)
+			send_check(lc.cast_to(0.01, lc.float_type), float, 0.01)
+			send_check(lc.cast_to(0.0001, lc.float_type), float, 0.0001)
+			send_check(lc.cast_to(-0.1, lc.float_type), float, -0.1)
+			send_check(lc.cast_to(-0.01, lc.float_type), float, -0.01)
+			send_check(lc.cast_to(-0.0001, lc.float_type), float, -0.0001)
+			send_check(lc.cast_to(None, lc.float_type), types.NoneType)
 
-			send_check(lc.str_cast('hello world'), str, 'hello world')
-			send_check(lc.str_cast(''), str, '')
-			send_check(lc.str_cast('\t\r\n\f'), str, '\t\r\n\f')
-			send_check(lc.str_cast('\00'), str, '\0')
-			send_check(lc.str_cast('Fichier non trouvé'), str, 'Fichier non trouvé')
-			send_check(lc.str_cast('Gürzenichstraße'), str, 'Gürzenichstraße')
-			send_check(lc.str_cast(None), types.NoneType)
+			send_check(lc.cast_to('hello world', lc.str_type), str, 'hello world')
+			send_check(lc.cast_to('', lc.str_type), str, '')
+			send_check(lc.cast_to('\t\r\n\f', lc.str_type), str, '\t\r\n\f')
+			send_check(lc.cast_to('\00', lc.str_type), str, '\0')
+			send_check(lc.cast_to('Fichier non trouvé', lc.str_type), str, 'Fichier non trouvé')
+			send_check(lc.cast_to('Gürzenichstraße', lc.str_type), str, 'Gürzenichstraße')
+			send_check(lc.cast_to(None, lc.str_type), types.NoneType)
 
-			send_check(lc.bytes_cast(b'hello world'), bytes, b'hello world')
-			send_check(lc.bytes_cast(b''), bytes, b'')
-			send_check(lc.bytes_cast(b'\t\r\n\f'), bytes, b'\t\r\n\f')
-			send_check(lc.bytes_cast(b'\00'), bytes, b'\0')
-			send_check(lc.bytes_cast(b'Fichier non trouvee'), bytes, b'Fichier non trouvee')
-			send_check(lc.bytes_cast(b'GuurzenichstraBe'), bytes, b'GuurzenichstraBe')
-			send_check(lc.bytes_cast(None), types.NoneType)
+			send_check(lc.cast_to(b'hello world', lc.bytes_type), bytes, b'hello world')
+			send_check(lc.cast_to(b'', lc.bytes_type), bytes, b'')
+			send_check(lc.cast_to(b'\t\r\n\f', lc.bytes_type), bytes, b'\t\r\n\f')
+			send_check(lc.cast_to(b'\00', lc.bytes_type), bytes, b'\0')
+			send_check(lc.cast_to(b'Fichier non trouvee', lc.bytes_type), bytes, b'Fichier non trouvee')
+			send_check(lc.cast_to(b'GuurzenichstraBe', lc.bytes_type), bytes, b'GuurzenichstraBe')
+			send_check(lc.cast_to(None, lc.bytes_type), types.NoneType)
 
 			hello_world = bytearray(b'hello world')
 			empty = bytearray(b'')
@@ -141,13 +141,13 @@ class TestSendProcess(TestCase):
 			vee = bytearray(b'Fichier non trouvee')
 			abe = bytearray(b'GuurzenichstraBe')
 
-			send_check(lc.bytearray_cast(hello_world), bytearray, hello_world)
-			send_check(lc.bytearray_cast(empty), bytearray, empty)
-			send_check(lc.bytearray_cast(slashed), bytearray, slashed)
-			send_check(lc.bytearray_cast(bin), bytearray, bin)
-			send_check(lc.bytearray_cast(vee), bytearray, vee)
-			send_check(lc.bytearray_cast(abe), bytearray, abe)
-			send_check(lc.bytearray_cast(None), types.NoneType)
+			send_check(lc.cast_to(hello_world, lc.bytearray_type), bytearray, hello_world)
+			send_check(lc.cast_to(empty, lc.bytearray_type), bytearray, empty)
+			send_check(lc.cast_to(slashed, lc.bytearray_type), bytearray, slashed)
+			send_check(lc.cast_to(bin, lc.bytearray_type), bytearray, bin)
+			send_check(lc.cast_to(vee, lc.bytearray_type), bytearray, vee)
+			send_check(lc.cast_to(abe, lc.bytearray_type), bytearray, abe)
+			send_check(lc.cast_to(None, lc.bytearray_type), types.NoneType)
 
 	def test_send_cast_extra(self):
 		with lc.channel() as ch:
@@ -173,10 +173,10 @@ class TestSendProcess(TestCase):
 			mia = lc.text_to_world('2007-09-18T14:24:16')
 			revolution = lc.text_to_world('1789-01-01')
 
-			send_check(lc.datetime_cast(birthday), datetime, birthday)
-			send_check(lc.datetime_cast(now), datetime, now)
-			send_check(lc.datetime_cast(mia), datetime, mia)
-			send_check(lc.datetime_cast(revolution), datetime, revolution)
+			send_check(lc.cast_to(birthday, lc.datetime_type), datetime, birthday)
+			send_check(lc.cast_to(now, lc.datetime_type), datetime, now)
+			send_check(lc.cast_to(mia, lc.datetime_type), datetime, mia)
+			send_check(lc.cast_to(revolution, lc.datetime_type), datetime, revolution)
 
 			days = lc.text_to_delta('1:0:0:0')
 			hours = lc.text_to_delta('1:0:0')
@@ -186,13 +186,13 @@ class TestSendProcess(TestCase):
 			hundredth = lc.text_to_delta('0:0:0.01')
 			fraction = lc.text_to_delta('0:0:0.700252')
 
-			send_check(lc.timedelta_cast(days), timedelta, days)
-			send_check(lc.timedelta_cast(hours), timedelta, hours)
-			send_check(lc.timedelta_cast(minutes), timedelta, minutes)
-			send_check(lc.timedelta_cast(seconds), timedelta, seconds)
-			send_check(lc.timedelta_cast(tenth), timedelta, tenth)
-			send_check(lc.timedelta_cast(hundredth), timedelta, hundredth)
-			send_check(lc.timedelta_cast(fraction), timedelta, fraction)
+			send_check(lc.cast_to(days, lc.timedelta_type), timedelta, days)
+			send_check(lc.cast_to(hours, lc.timedelta_type), timedelta, hours)
+			send_check(lc.cast_to(minutes, lc.timedelta_type), timedelta, minutes)
+			send_check(lc.cast_to(seconds, lc.timedelta_type), timedelta, seconds)
+			send_check(lc.cast_to(tenth, lc.timedelta_type), timedelta, tenth)
+			send_check(lc.cast_to(hundredth, lc.timedelta_type), timedelta, hundredth)
+			send_check(lc.cast_to(fraction, lc.timedelta_type), timedelta, fraction)
 
 			days = lc.text_to_delta('-1:0:0:0')
 			hours = lc.text_to_delta('-1:0:0')
@@ -202,17 +202,17 @@ class TestSendProcess(TestCase):
 			hundredth = lc.text_to_delta('-0:0:0.01')
 			fraction = lc.text_to_delta('-0:0:0.700252')
 
-			send_check(lc.timedelta_cast(days), timedelta, days)
-			send_check(lc.timedelta_cast(hours), timedelta, hours)
-			send_check(lc.timedelta_cast(minutes), timedelta, minutes)
-			send_check(lc.timedelta_cast(seconds), timedelta, seconds)
-			send_check(lc.timedelta_cast(tenth), timedelta, tenth)
-			send_check(lc.timedelta_cast(hundredth), timedelta, hundredth)
-			send_check(lc.timedelta_cast(fraction), timedelta, fraction)
+			send_check(lc.cast_to(days, lc.timedelta_type), timedelta, days)
+			send_check(lc.cast_to(hours, lc.timedelta_type), timedelta, hours)
+			send_check(lc.cast_to(minutes, lc.timedelta_type), timedelta, minutes)
+			send_check(lc.cast_to(seconds, lc.timedelta_type), timedelta, seconds)
+			send_check(lc.cast_to(tenth, lc.timedelta_type), timedelta, tenth)
+			send_check(lc.cast_to(hundredth, lc.timedelta_type), timedelta, hundredth)
+			send_check(lc.cast_to(fraction, lc.timedelta_type), timedelta, fraction)
 
 			magic = uuid.uuid4()
 
-			send_check(lc.uuid_cast(magic), uuid.UUID, magic)
+			send_check(lc.cast_to(magic, lc.uuid_type), uuid.UUID, magic)
 
 	def test_send_container(self):
 		with lc.channel() as ch:
@@ -240,12 +240,12 @@ class TestSendProcess(TestCase):
 			d1ct = {uuid.uuid4(): 0.1, uuid.uuid4(): 0.2, uuid.uuid4(): 0.3, uuid.uuid4(): 0.4, uuid.uuid4(): 0.5}
 			publ1sh3d = {'scott': PublishAsName('scott', (1,))}
 
-			send_check(vector_cast(v3ct0r), list, v3ct0r)
-			send_check(array_cast(arr4y), list, arr4y)
-			send_check(deque_cast(d3qu3), deque, d3qu3)
-			send_check(set_cast(s3t), set, s3t)
-			send_check(dict_cast(d1ct), dict, d1ct)
-			send_check(published_cast(publ1sh3d), dict)
+			send_check(lc.cast_to(v3ct0r, vector_type), list, v3ct0r)
+			send_check(lc.cast_to(arr4y, array_type), list, arr4y)
+			send_check(lc.cast_to(d3qu3, deque_type), deque, d3qu3)
+			send_check(lc.cast_to(s3t, set_type), set, s3t)
+			send_check(lc.cast_to(d1ct, dict_type), dict, d1ct)
+			send_check(lc.cast_to(publ1sh3d, published_type), dict)
 
 	def test_send_message(self):
 		with lc.channel() as ch:
@@ -279,25 +279,25 @@ class TestSendProcess(TestCase):
 			#send_check(stx, SpecialTypes)			# Equality check fails on changing addresses.
 			send_check(ttx, TimeTypes, ttx)
 
-			send_check(pointer_cast(accept), State, accept)
-			send_check(pointer_cast(line_3), State, line_3)
-			send_check(pointer_cast(line_2), State, line_2)
-			send_check(pointer_cast(line_1), State, line_1)
-			send_check(pointer_cast(line_0), State, line_0)
+			send_check(lc.cast_to(accept, pointer_type), State, accept)
+			send_check(lc.cast_to(line_3, pointer_type), State, line_3)
+			send_check(lc.cast_to(line_2, pointer_type), State, line_2)
+			send_check(lc.cast_to(line_1, pointer_type), State, line_1)
+			send_check(lc.cast_to(line_0, pointer_type), State, line_0)
 
-			send_check(pointer_cast(tree_3), State, tree_3)
-			send_check(pointer_cast(tree_2), State, tree_2)
-			send_check(pointer_cast(tree_1), State, tree_1)
-			send_check(pointer_cast(tree_0), State, tree_0)
+			send_check(lc.cast_to(tree_3, pointer_type), State, tree_3)
+			send_check(lc.cast_to(tree_2, pointer_type), State, tree_2)
+			send_check(lc.cast_to(tree_1, pointer_type), State, tree_1)
+			send_check(lc.cast_to(tree_0, pointer_type), State, tree_0)
 
-			send_check(pointer_cast(graph_3), State, graph_3)
-			send_check(pointer_cast(graph_2), State, graph_2)
-			send_check(pointer_cast(graph_1), State, graph_1)
-			send_check(pointer_cast(graph_0), State, graph_0)
+			send_check(lc.cast_to(graph_3, pointer_type), State, graph_3)
+			send_check(lc.cast_to(graph_2, pointer_type), State, graph_2)
+			send_check(lc.cast_to(graph_1, pointer_type), State, graph_1)
+			send_check(lc.cast_to(graph_0, pointer_type), State, graph_0)
 
 			send_check(Ptx, PointerTypes, Ptx)
 
-			send_check(pointer_cast(quick_0), State, quick_0)
+			send_check(lc.cast_to(quick_0, pointer_type), State, quick_0)
 
 # End of chain.
 accept = State()
@@ -353,12 +353,12 @@ quick_0.edge['1'].edge['6'] = quick_3
 quick_0.edge['5'] = quick_2
 
 #
-pointer_cast = lc.type_cast(lc.PointerTo(lc.UserDefined(State)))
+pointer_type = lc.def_type(lc.PointerTo(lc.UserDefined(State)))
 
-vector_cast = lc.type_cast(list[bool])
-array_cast = lc.type_cast(lc.ArrayOf(int,4))
-deque_cast = lc.type_cast(deque[float])
-set_cast = lc.type_cast(set[str])
-dict_cast = lc.type_cast(dict[uuid.UUID,float])
-published_cast = lc.type_cast(dict[str, PublishAsName])
+vector_type = lc.def_type(list[bool])
+array_type = lc.def_type(lc.ArrayOf(int,4))
+deque_type = lc.def_type(deque[float])
+set_type = lc.def_type(set[str])
+dict_type = lc.def_type(dict[uuid.UUID,float])
+published_type = lc.def_type(dict[str, PublishAsName])
 

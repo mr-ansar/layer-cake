@@ -119,12 +119,12 @@ class TestListenConnect(TestCase):
 			i, selected3, p = ch.select()
 			if isinstance(selected3, Connected):
 				server = ch.return_address
-			ch.send(lc.int_cast(42), server)
+			ch.send(lc.cast_to(42, lc.int_type), server)
 			i, selected, p = ch.select()
-			ch.send(table_cast([[0.125, 30.02],[0.5, 2.5],[1.1, 2.2, 3.3]]), server)
+			ch.send(lc.cast_to([[0.125, 30.02],[0.5, 2.5],[1.1, 2.2, 3.3]], table_type), server)
 			i, selected, p = ch.select()
 			ch.send(lc.Ack(), server)
 			i, selected, p = ch.select()
 		assert isinstance(selected, lc.Ack)
 
-table_cast = lc.type_cast(list[list[float]])
+table_type = lc.def_type(list[list[float]])

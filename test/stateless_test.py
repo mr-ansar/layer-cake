@@ -16,8 +16,8 @@ __all__ = [
 	'TestStateless',
 ]
 
-list_int_cast = lc.type_cast(list[int])
-dict_UUID_Person_cast = lc.type_cast(dict[uuid.UUID, Person])
+list_int_type = lc.def_type(list[int])
+dict_UUID_Person_type = lc.def_type(dict[uuid.UUID, Person])
 
 #
 class TestStateless(TestCase):
@@ -25,14 +25,14 @@ class TestStateless(TestCase):
 		stateless = Main()
 		m, p, f = stateless.transition(lc.Start())
 		assert f == Main_Start
-		m, p, f = stateless.transition(lc.int_cast(42))
+		m, p, f = stateless.transition(lc.cast_to(42, lc.int_type))
 		assert f == Main_int
-		m, p, f = stateless.transition(list_int_cast([42,21]))
+		m, p, f = stateless.transition(lc.cast_to([42,21], list_int_type))
 		assert f == Main_list_int
 		m, p, f = stateless.transition(Person('Gwendoline'))
 		assert f == Main_Person
 		d = {uuid.uuid4(): Person('Hieronymus')}
-		m, p, f = stateless.transition(dict_UUID_Person_cast(d))
+		m, p, f = stateless.transition(lc.cast_to(d, dict_UUID_Person_type))
 		assert f == Main_dict_UUID_Person
 		m, p, f = stateless.transition(lc.Stop())
 		assert f == Main_Stop

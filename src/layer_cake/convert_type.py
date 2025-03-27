@@ -46,18 +46,18 @@ __all__ = [
 	'install_type',
 	'lookup_type',
 	'install_hints',
-	'type_cast',
-	'cast_back',
+	'def_type',
 	'cast_to',
-	'bool_cast',
-	'int_cast',
-	'float_cast',
-	'str_cast',
-	'bytes_cast',
-	'bytearray_cast',
-	'datetime_cast',
-	'timedelta_cast',
-	'uuid_cast',
+	'cast_back',
+	'bool_type',
+	'int_type',
+	'float_type',
+	'str_type',
+	'bytes_type',
+	'bytearray_type',
+	'datetime_type',
+	'timedelta_type',
+	'uuid_type',
 ]
 
 from .virtual_memory import *
@@ -305,21 +305,14 @@ def install_type(t):
 		return install_portable(t)
 	return install_hint(t)
 
-def type_cast(t):
+def def_type(t):
 	p = install_type(t)
-	def any(value):
-		return (value, p)
-	return any
+	return p
 
-bool_cast = type_cast(Boolean())
-int_cast = type_cast(Integer8())
-float_cast = type_cast(Float8())
-str_cast = type_cast(Unicode())
-bytes_cast = type_cast(String())
-bytearray_cast = type_cast(Block())
-datetime_cast = type_cast(WorldTime())
-timedelta_cast = type_cast(TimeDelta())
-uuid_cast = type_cast(UUID())
+def cast_to(message, p):
+	if isinstance(p, UserDefined):
+		return message
+	return (message, p)
 
 def cast_back(message):
 	art = getattr(message, '__art__', None)
@@ -333,7 +326,12 @@ def cast_back(message):
 		raise ValueError(f'cannot unroll {message}')
 	return m, p, art
 
-def cast_to(message, message_type):
-	if isinstance(message_type, UserDefined):
-		return message
-	return (message, message_type)
+bool_type = def_type(Boolean())
+int_type = def_type(Integer8())
+float_type = def_type(Float8())
+str_type = def_type(Unicode())
+bytes_type = def_type(String())
+bytearray_type = def_type(Block())
+datetime_type = def_type(WorldTime())
+timedelta_type = def_type(TimeDelta())
+uuid_type = def_type(UUID())

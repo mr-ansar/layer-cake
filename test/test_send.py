@@ -44,7 +44,7 @@ lc.bind(Catcher, dispatch=(lc.Start,
 	datetime.datetime,uuid.UUID))
 
 #
-table_cast = lc.type_cast(dict[str,list[Person]])
+table_type = lc.def_type(dict[str,list[Person]])
 
 class Main(lc.Point, lc.Stateless):
 	def __init__(self, table: dict[str,list[Person]]=None,
@@ -62,12 +62,12 @@ class Main(lc.Point, lc.Stateless):
 
 def Main_Start(self, message):
 	j = self.create(Catcher)
-	self.send(table_cast(self.table), j)
-	self.send(lc.int_cast(self.count), j)
-	self.send(lc.float_cast(self.ratio), j)
+	self.send(lc.cast_to(self.table, table_type), j)
+	self.send(lc.cast_to(self.count, lc.int_type), j)
+	self.send(lc.cast_to(self.ratio, lc.float_type), j)
 	self.send(self.who, j)
-	self.send(lc.datetime_cast(self.when), j)
-	self.send(lc.uuid_cast(self.unique_id), j)
+	self.send(lc.cast_to(self.when, lc.datetime_type), j)
+	self.send(lc.cast_to(self.unique_id, lc.uuid_type), j)
 
 def Main_Returned(self, message):
 	# Catcher terminates on receiving UUID.

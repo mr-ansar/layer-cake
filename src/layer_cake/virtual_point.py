@@ -242,7 +242,7 @@ class Point(object):
 		self.assigned_queue = None				# Parent queue for non-threaded machine.
 		self.object_ending = None
 
-		self.message_type = None
+		self.received_type = None
 		self.current_state = None
 
 		self.address_job = {}
@@ -682,7 +682,7 @@ class Player(object):
 						other.append(p)
 				self.pending = other
 		self.get_frame = mtr
-		return mtr
+		return mtr[0], mtr[1], mtr[2]
 
 	def pushback(self, m):
 		"""Retain the [message, to, return] triplet for later replay."""
@@ -730,7 +730,9 @@ class Dispatching(Player):
 		mf = m.__art__
 		if self.__art__.execution_trace and mf.execution_trace:
 			self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, r[-1]))
-		return m, t, r
+		m, p, a = cast_back(m)
+		self.received_type = p
+		return m
 
 	def undo(self, m):
 		"""Retain the [message, to, return] triplet, using values saved during input."""
@@ -762,6 +764,8 @@ class Buffering(Player):
 		mf = m.__art__
 		if self.__art__.execution_trace and mf.execution_trace:
 			self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, r[-1]))
+		m, p, a = cast_back(m)
+		self.received_type = p
 		return m
 
 	def select(self, *matching, saving=None, seconds=0):

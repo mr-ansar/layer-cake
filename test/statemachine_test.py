@@ -16,8 +16,8 @@ __all__ = [
 	'TestStateMachine',
 ]
 
-list_int_cast = lc.type_cast(list[int])
-dict_UUID_Person_cast = lc.type_cast(dict[uuid.UUID, Person])
+list_int_type = lc.def_type(list[int])
+dict_UUID_Person_type = lc.def_type(dict[uuid.UUID, Person])
 
 #
 class TestStateMachine(TestCase):
@@ -28,14 +28,14 @@ class TestStateMachine(TestCase):
 		m, p, f = statemachine.transition(INITIAL, Person())
 		assert f == Main_INITIAL_Unknown
 
-		m, p, f = statemachine.transition(READY, lc.int_cast(42))
+		m, p, f = statemachine.transition(READY, lc.cast_to(42, lc.int_type))
 		assert f == Main_READY_int
-		m, p, f = statemachine.transition(READY, list_int_cast([42,21]))
+		m, p, f = statemachine.transition(READY, lc.cast_to([42,21], list_int_type))
 		assert f == Main_READY_list_int
 		m, p, f = statemachine.transition(READY, Person('Gwendoline'))
 		assert f == Main_READY_Person
 		d = {uuid.uuid4(): Person('Hieronymus')}
-		m, p, f = statemachine.transition(READY, dict_UUID_Person_cast(d))
+		m, p, f = statemachine.transition(READY, lc.cast_to(d, dict_UUID_Person_type))
 		assert f == Main_READY_dict_UUID_Person
 		m, p, f = statemachine.transition(READY, lc.Stop())
 		assert f == Main_READY_Stop
