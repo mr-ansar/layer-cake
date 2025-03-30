@@ -106,14 +106,14 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	routine_hints, routine_return = install_hints(hints)
 
 	if return_type:
-		routine_return = install_portable(return_type)
+		routine_return = install_type(return_type)
 
 	r = {}
 	for k, a in explicit_schema.items():
 		routine_hints[k] = a	# Add or override existing.
 
 	if api is not None:
-		api = [install_hint(a) for a in api]
+		api = [install_type(a) for a in api]
 
 	rt.schema = routine_hints
 	rt.return_type = routine_return

@@ -28,8 +28,10 @@ __docformat__ = 'restructuredtext'
 
 from enum import Enum
 from collections import deque
+from uuid import uuid4
 
 from .general_purpose import *
+from .command_line import *
 from .point_runtime import *
 from .virtual_point import *
 from .object_runtime import *
@@ -45,8 +47,12 @@ PD = Gas(directory=None)
 
 # Managed creation of the builtin directory.
 def create_directory(root):
-	PD.directory = root.create(ObjectDirectory)
-	x = 1
+	directory_scope = CL.directory_scope or ScopeOfDirectory.PROCESS
+	connect_to_directory = CL.connect_to_directory or HostPort()
+	accept_directories_at = CL.accept_directories_at or HostPort()
+	PD.directory = root.create(ObjectDirectory, directory_scope=directory_scope,
+		connect_to_directory=connect_to_directory,
+		accept_directories_at=accept_directories_at)
 
 def stop_directory(root):
 	root.send(Stop(), PD.directory)
@@ -55,10 +61,12 @@ def stop_directory(root):
 AddOn(create_directory, stop_directory)
 
 #
-def publish(self, name):
-	p = PublishAsName(name, self.object_address)
+def publish(self, name, scope=ScopeOfDirectory.WAN):
+	device_id = uuid4()
+	p = PublishAs(name=name, scope=scope, address=self.object_address, device_id=device_id)
 	self.send(p, PD.directory)
 
-def subscribe(self, name):
-	p = SubscribeToName(name, self.object_address)
+def subscribe(self, search, scope=ScopeOfDirectory.WAN):
+	device_id = uuid4()
+	p = SubscribeTo(search=search, scope=scope, address=self.object_address, device_id=device_id)
 	self.send(p, PD.directory)

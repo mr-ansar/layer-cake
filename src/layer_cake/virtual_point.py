@@ -727,10 +727,10 @@ class Dispatching(Player):
 		m, t, r = self.pull()
 		self.to_address = t
 		self.return_address = r
-		mf = m.__art__
-		if self.__art__.execution_trace and mf.execution_trace:
-			self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, r[-1]))
 		m, p, a = cast_back(m)
+		if a:
+			if self.__art__.execution_trace and a.execution_trace:
+				self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (a.name, r[-1]))
 		self.received_type = p
 		return m
 
@@ -761,10 +761,10 @@ class Buffering(Player):
 		m, t, r = self.pull()
 		self.to_address = t
 		self.return_address = r
-		mf = m.__art__
-		if self.__art__.execution_trace and mf.execution_trace:
-			self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (mf.name, r[-1]))
 		m, p, a = cast_back(m)
+		if a:
+			if self.__art__.execution_trace and a.execution_trace:
+				self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (a.name, r[-1]))
 		self.received_type = p
 		return m
 

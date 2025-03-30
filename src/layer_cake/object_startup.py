@@ -371,11 +371,11 @@ def open_logs(home_role, storage, recording):
 #	self.trace('Running object "%s"' % (object_type.__art__.path,))
 #	self.trace('Class threads (%d) %s' % (len(pt.thread_classes), ','.join(name_counts)))
 
-def start_vector(self, object_type, connecting_to_directory, args):
+def start_vector(self, object_type, args):
 	a = self.create(object_type, **args)
 
-	if connecting_to_directory:
-		pn = PublishAsName(CL.role_name, a)
+	if CL.directory_scope == ScopeOfDirectory.LIBRARY:
+		pn = PublishAs(name=CL.role_name, scope=ScopeOfDirectory.PROCESS, address=a)
 		self.send(pn, PD.directory)
 
 	while True:
@@ -434,19 +434,12 @@ def run_object(home, object_type, args, logs, locking):
 			sys.stdout.close()
 			os.close(1)
 
-		connecting_to_directory = CL.connect_to_directory.host is not None
-		if connecting_to_directory:
-			ct = ConnectTo(CL.connect_to_directory)
-			root.send(ct, PD.directory)
-		#if CL.accept_directories.host is not None:
-		#	pass
-
 		# Write partial record to disk.
 		home.starting()
 
 		# Create the async object. Need to wrap in another object
 		# to facilitate the control-c handling.
-		a = root.create(start_vector, object_type, connecting_to_directory, args)
+		a = root.create(start_vector, object_type, args)
 
 		# Termination of this function is
 		# either by SIGINT (control-c) or assignment by object_vector.

@@ -2,39 +2,34 @@
 # Demonstration of the different calling conventions
 # available to the developer.
 import layer_cake as lc
+from test_api import *
+from test_function import *
 
-from enum import Enum
-from test_function import function
 
-class CallingConvention(Enum):
-	INSTRUCTION=1
-	THREAD=2
-	PROCESS=3
-
-DEFAULT = CallingConvention.INSTRUCTION
-
-def caller(self, convention: CallingConvention=DEFAULT) -> list[list[float]]:
+def caller(self, convention: CallingConvention=None) -> list[list[float]]:
 	'''Apply the selected calling convention. Return a matrix of floats'''
+	convention = convention or DEFAULT_CONVENTION
 
 	# Use python calling mechanism.
-	if convention == CallingConvention.INSTRUCTION:
-		value = function(self, x=2, y=2)
+	if convention == CallingConvention.CALL:
+		response = function(self, x=2, y=2)
 
-	# Wrap the function in its own thread.
+	# Wrap the function in a dedicated thread.
 	elif convention == CallingConvention.THREAD:
-		a = self.create(function, x=4, y=4)
-		r = self.input()
-		assert isinstance(r, lc.Returned)
-		value = r.value_only()
+		self.create(function, x=4, y=4)
+		returned = self.input()
+		response = returned.value_only()
 
-	# Wrap the function in its own process.
+	# Wrap the function in a process.
+	elif convention == CallingConvention.PROCESS:
+		self.create(lc.ProcessObject, function, x=16, y=16)
+		returned = self.input()
+		response = returned.value_only()
+
 	else:
-		a = self.create(lc.ProcessObject, function, x=16, y=16)
-		r = self.input()
-		assert isinstance(r, lc.Returned)
-		value = r.value_only()
+		response = lc.Faulted(f'unexpected calling convention "{convention}"')
 
-	return value
+	return response
 
 # Register with runtime.
 lc.bind(caller)

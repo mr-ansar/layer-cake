@@ -46,6 +46,8 @@ __all__ = [
 	'NotReady',
 	'Ping',
 	'Enquiry',
+	'Discover',
+	'Inspect',
 	'Ack',
 	'Nak',
 	'Anything',
@@ -121,11 +123,19 @@ bind_message(NotReady, copy_before_sending=False)
 #
 #
 class Ping(object):
-	"""Test for reachability."""
+	"""Test for reachability and presence."""
 	pass
 
 class Enquiry(object):
 	"""Prompt an action from receiver."""
+	pass
+
+class Discover(object):
+	"""Request for capabilities."""
+	pass
+
+class Inspect(object):
+	"""Request for operational status."""
 	pass
 
 class Ack(object):
@@ -138,6 +148,8 @@ class Nak(object):
 
 bind_message(Ping, copy_before_sending=False)
 bind_message(Enquiry, copy_before_sending=False)
+bind_message(Discover, copy_before_sending=False)
+bind_message(Inspect, copy_before_sending=False)
 bind_message(Ack, copy_before_sending=False)
 bind_message(Nak, copy_before_sending=False)
 

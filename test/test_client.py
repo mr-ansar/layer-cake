@@ -1,44 +1,43 @@
 # test_client.py
 # Demonstrate the client side of traditional
 # client-server networking.
-
+from enum import Enum
 import layer_cake as lc
+from test_api import *
 
 DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
 
-def client(self, server_address: lc.HostPort=None):
-	'''Establish a network connection and respond to API messages. Return nothing.'''
+def client(self, server_address: lc.HostPort=None, convention: CallingConvention=None, x: int=1, y: int=1):
+	'''Make a connection, send a request and expect a response. Return a table of floats.'''
+
 	server_address = server_address or DEFAULT_ADDRESS
+	convention = convention or DEFAULT_CONVENTION
 
 	# Initiate a network connection.
 	lc.connect(self, server_address)
 	i, m, p = self.select(lc.Connected, lc.Faulted, lc.Stop)
-	if i == 1:
+
+	if isinstance(m, lc.Faulted):	# No connection.
 		return m
-	elif i == 2:
+	elif isinstance(m, lc.Stop):	# As advised - abort.
 		return lc.Aborted()
 	server = self.return_address	# Remember where Connected came from.
 
-	# A few request/response exchanges.
-	self.send(lc.Ack(), server)
-	m = self.input()
-	assert isinstance(m, lc.Nak)
-
-	self.send(lc.Nak(), server)
-	m = self.input()
-	assert isinstance(m, lc.Ack)
+	self.send(CreateTable(x=x, y=y, convention=convention), server)
+	response = self.input()
 
 	# Explicit close of the connection.
 	self.send(lc.Close(), server)
-	i, m, p = self.select(lc.Closed, lc.Faulted, lc.Stop)
-	if i == 1:
+	m = self.select(lc.Closed, lc.Faulted, lc.Stop)
+	if isinstance(m, lc.Faulted):
 		return m
-	elif i == 2:
+	elif isinstance(m, lc.Stop):
 		return lc.Aborted()
-	return None
+
+	return response
 
 # Register with runtime.
-lc.bind(client, api=(lc.Ack, lc.Nak))
+lc.bind(client, return_type=table_type)
 
 # Optional process entry-point.
 if __name__ == '__main__':

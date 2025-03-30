@@ -238,7 +238,7 @@ class TestSendProcess(TestCase):
 			d3qu3 = deque([0.124, 2.48, 24.89])
 			s3t = set(['sue', 'tez', 'mia', 'scott', 'bee'])
 			d1ct = {uuid.uuid4(): 0.1, uuid.uuid4(): 0.2, uuid.uuid4(): 0.3, uuid.uuid4(): 0.4, uuid.uuid4(): 0.5}
-			publ1sh3d = {'scott': PublishAsName('scott', (1,))}
+			publ1sh3d = {'scott': PublishAs(name='scott', address=(1,))}
 
 			send_check(lc.cast_to(v3ct0r, vector_type), list, v3ct0r)
 			send_check(lc.cast_to(arr4y, array_type), list, arr4y)
@@ -360,5 +360,5 @@ array_type = lc.def_type(lc.ArrayOf(int,4))
 deque_type = lc.def_type(deque[float])
 set_type = lc.def_type(set[str])
 dict_type = lc.def_type(dict[uuid.UUID,float])
-published_type = lc.def_type(dict[str, PublishAsName])
+published_type = lc.def_type(dict[str, PublishAs])
 

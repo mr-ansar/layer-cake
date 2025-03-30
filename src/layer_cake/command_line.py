@@ -34,17 +34,19 @@ from .message_memory import *
 from .virtual_runtime import *
 
 __all__ = [
-	'SCOPE_OF_DIRECTORY',
+	'ScopeOfDirectory',
 	'CommandLine',
 	'CL',
 ]
 
-class SCOPE_OF_DIRECTORY(Enum):
+# Register service or interest in service.
+class ScopeOfDirectory(Enum):
 	WAN=1
 	LAN=2
 	HOST=3
 	GROUP=4
 	PROCESS=5
+	LIBRARY=6
 
 #
 class CommandLine(object):
@@ -104,7 +106,7 @@ class CommandLine(object):
 			dump_types: bool=False,
 			output_file: str=None,
 			keep_logs: bool=False,
-			directory_scope: SCOPE_OF_DIRECTORY=None,
+			directory_scope: ScopeOfDirectory=None,
 			connect_to_directory: HostPort=None,
 			accept_directories_at: HostPort=None):
 		self.background_daemon = background_daemon
@@ -124,7 +126,7 @@ class CommandLine(object):
 		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
-		self.directory_scope = directory_scope or SCOPE_OF_DIRECTORY.PROCESS
+		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
 		self.accept_directories_at = accept_directories_at or HostPort()
 

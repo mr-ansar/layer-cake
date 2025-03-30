@@ -1,27 +1,21 @@
 # test_library.py
 import layer_cake as lc
-import test_caller
-
+import test_api
+import test_function
 
 def library(self):
-	# Errors, sessions and inbound client messages.
 	while True:
-		i, m, p = self.select(lc.Faulted,	# Something went wrong.
-			lc.Stop,						# Intervention.
-			bool,							# API.
-		)
+		m = self.input()
 
-		if i == 0:					# Terminate with the error.
+		if isinstance(m, lc.Faulted):
 			return m
-		elif i == 1:				# Terminate as requested.
+		elif isinstance(m, lc.Stop):
 			return lc.Aborted()
 
-		if m == True:
-			self.reply(lc.Ack())
-		else:
-			self.reply(lc.Nak())
+		table = test_function.function(self, x=m.x, y=m.y)
+		self.send(lc.cast_to(table, test_api.table_type), self.return_address)
 
-lc.bind(library, api=(bool,))
+lc.bind(library, api=(test_api.CreateTable,))
 
 if __name__ == '__main__':
 	lc.create(library)

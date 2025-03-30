@@ -287,8 +287,9 @@ def ProcessObject_PENDING_HostPort(self, message):
 			c = CodecNoop()
 			v = encode_argument(c, message, UserDefined(HostPort))
 			command.append(f'--connect-to-directory={v}')
+			command.append(f'--directory-scope=LIBRARY')
 
-			subscribe(self, self.role_name)
+			subscribe(self, self.role_name, ScopeOfDirectory.PROCESS)
 
 			for k, v in self.settings.items():
 				name = k
@@ -324,7 +325,7 @@ def ProcessObject_PENDING_HostPort(self, message):
 	self.send(AddObject(self.object_address), PO.collector)
 	return EXECUTING
 
-def ProcessObject_EXECUTING_PublishAsName(self, message):
+def ProcessObject_EXECUTING_PublishAs(self, message):
 	self.published = message
 	for q in self.queue:
 		self.forward(q[0], self.published.address, q[1])
@@ -381,7 +382,7 @@ PROCESS_DISPATCH = {
 		()
 	),
 	EXECUTING: (
-		(PublishAsName, Unknown, Returned, Stop),
+		(PublishAs, Unknown, Returned, Stop),
 		()
 	),
 	CLEARING: (
