@@ -28,9 +28,9 @@ __docformat__ = 'restructuredtext'
 
 from enum import Enum
 from collections import deque
-from uuid import uuid4
 
 from .general_purpose import *
+from .ip_networking import *
 from .command_line import *
 from .point_runtime import *
 from .virtual_point import *
@@ -62,11 +62,9 @@ AddOn(create_directory, stop_directory)
 
 #
 def publish(self, name, scope=ScopeOfDirectory.WAN):
-	device_id = uuid4()
-	p = PublishAs(name=name, scope=scope, address=self.object_address, device_id=device_id)
+	p = PublishAs(name=name, scope=scope, address=self.object_address)
 	self.send(p, PD.directory)
 
 def subscribe(self, search, scope=ScopeOfDirectory.WAN):
-	device_id = uuid4()
-	p = SubscribeTo(search=search, scope=scope, address=self.object_address, device_id=device_id)
+	p = SubscribeTo(search=search, scope=scope, address=self.object_address)
 	self.send(p, PD.directory)
