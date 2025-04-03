@@ -26,6 +26,7 @@ Version: 0.1.1
 
 from .general_purpose import *
 from .ip_networking import *
+from .command_line import *
 from .virtual_memory import *
 from .convert_memory import *
 from .convert_signature import *
@@ -46,5 +47,7 @@ from .object_startup import *
 from .process_object import *
 from .edit_settings import *
 from .bind_type import *
+from .object_directory import *
 from .process_directory import *
 from .listen_connect import *
+from .get_response import *

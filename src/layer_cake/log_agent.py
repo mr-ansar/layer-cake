@@ -32,10 +32,6 @@ from .point_machine import *
 from .bind_type import *
 
 __all__ = [
-	'LogAgent',
-]
-
-__all__ = [
 	'PEAK_BEFORE_BLOCKING',
 	'LogAgent',
 ]
