@@ -332,6 +332,10 @@ def ProcessObject_EXECUTING_Available(self, message):
 	self.queue = deque()
 	return EXECUTING
 
+def ProcessObject_EXECUTING_Subscribed(self, message):
+	# Ignore.
+	return EXECUTING
+
 def ProcessObject_EXECUTING_Unknown(self, message):
 	if self.published is None:
 		message = cast_to(message, self.received_type)
@@ -382,7 +386,7 @@ PROCESS_DISPATCH = {
 		()
 	),
 	EXECUTING: (
-		(Available, Unknown, Returned, Stop),
+		(Available, Subscribed, Unknown, Returned, Stop),
 		()
 	),
 	CLEARING: (
