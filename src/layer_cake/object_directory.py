@@ -160,24 +160,33 @@ bind(ResolveLibrary)
 # receivers of another routing option.
 # Base class for all.
 class SubscriberRoute(object):
-	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscriber_id: UUID=None, publisher_id: UUID=None, name: str=None):
+	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, published_id: UUID=None, name: str=None):
 		self.route_id = route_id
 		self.scope = scope
-		self.subscriber_id = subscriber_id
-		self.publisher_id = publisher_id
+		self.subscribed_id = subscribed_id
+		self.published_id = published_id
 		self.name = name
 
 # Derived class for RouteOverConnect.
 class RouteOverLoop(SubscriberRoute):
-	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscriber_id: UUID=None, publisher_id: UUID=None, ipp: HostPort=None, name: str=None):
+	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, published_id: UUID=None, ipp: HostPort=None, name: str=None):
 		# Base members.
 		self.route_id = route_id
 		self.scope = scope
-		self.subscriber_id = subscriber_id
-		self.publisher_id = publisher_id
+		self.subscribed_id = subscribed_id
+		self.published_id = published_id
 		self.name = name
 		# Specialized members.
 		self.ipp = ipp
+
+class RouteToAddress(SubscriberRoute):
+	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, published_id: UUID=None, name: str=None):
+		# Base members.
+		self.route_id = route_id
+		self.scope = scope
+		self.subscribed_id = subscribed_id
+		self.published_id = published_id
+		self.name = name
 
 # Messages from route to pub/sub host processes, to delete the given route.
 class ClearSubscriberRoute(object):
@@ -194,8 +203,8 @@ class ClearPublisherRoute(object):
 
 # To prompt the directory into choosing another route.
 class RerouteSubscriber(object):
-	def __init__(self, subscriber_id: UUID=None, name: str=None):
-		self.subscriber_id = subscriber_id
+	def __init__(self, subscribed_id: UUID=None, name: str=None):
+		self.subscribed_id = subscribed_id
 		self.name = name
 
 bind(SubscriberRoute)
@@ -206,18 +215,18 @@ bind(RerouteSubscriber)
 
 # From directory to connector
 class RequestLoop(object):
-	def __init__(self, subscriber_id: UUID=None, name: str=None, subscriber_address: Address=None, publisher_id: UUID=None, route_id: UUID=None):
-		self.subscriber_id = subscriber_id
+	def __init__(self, subscribed_id: UUID=None, name: str=None, subscriber_address: Address=None, published_id: UUID=None, route_id: UUID=None):
+		self.subscribed_id = subscribed_id
 		self.name = name
 		self.subscriber_address = subscriber_address
-		self.publisher_id = publisher_id
+		self.published_id = published_id
 		self.route_id = route_id
 
 # Connector to remote, i.e. ListenForPeer.
 class OpenLoop(object):
-	def __init__(self, route_id: UUID=None, publisher_id: UUID=None, address: Address=None):
+	def __init__(self, route_id: UUID=None, published_id: UUID=None, address: Address=None):
 		self.route_id = route_id
-		self.publisher_id = publisher_id
+		self.published_id = published_id
 		self.address = address
 
 # Reply from remote ListenToPeer.
@@ -232,10 +241,15 @@ class CloseLoop(object):
 		self.route_id = route_id
 		self.address = address
 
+class LoopClosed(object):
+	def __init__(self, address: Address=None):
+		self.address = address
+
 bind(RequestLoop)
 bind(OpenLoop)
 bind(LoopOpened)
 bind(CloseLoop)
+bind(LoopClosed)
 
 #
 class Available(object):
@@ -268,10 +282,10 @@ class CLEARING: pass
 
 #
 class ScheduledReroute(Point, Stateless):
-	def __init__(self, subscriber_id: UUID=None, name: str=None, seconds: float=2.0):
+	def __init__(self, subscribed_id: UUID=None, name: str=None, seconds: float=2.0):
 		Point.__init__(self)
 		Stateless.__init__(self)
-		self.subscriber_id = subscriber_id
+		self.subscribed_id = subscribed_id
 		self.name = name
 		self.seconds = seconds
 
@@ -279,7 +293,7 @@ def ScheduledReroute_Start(self, message):
 	self.start(T1, self.seconds)
 
 def ScheduledReroute_T1(self, message):
-	self.send(RerouteSubscriber(subscriber_id=self.subscriber_id, name=self.name), self.parent_address)
+	self.send(RerouteSubscriber(subscribed_id=self.subscribed_id, name=self.name), self.parent_address)
 	self.complete()
 
 bind(ScheduledReroute, (Start, T1))
@@ -335,7 +349,16 @@ def ListeningForPeer_READY_OpenLoop(self, message):
 	self.accepted[self.return_address[-1]][message.address] = message
 
 	self.send(LoopOpened(self.address), self.return_address)
-	self.forward(Delivered(), self.address, message.address)
+	d = Delivered(route_id=message.route_id, address=message.address, opened_at=world_now())
+	self.forward(d, self.address, message.address)
+	return READY
+
+def ListeningForPeer_READY_CloseLoop(self, message):
+	self.accepted[self.return_address[-1]].pop(message.address, None)
+
+	self.send(LoopClosed(self.address), self.return_address)
+	d = Dropped(route_id=message.route_id, address=message.address, closed_at=world_now())
+	self.forward(d, self.address, message.address)
 	return READY
 
 def ListeningForPeer_READY_Stop(self, message):
@@ -396,7 +419,7 @@ def ConnectToPeer_PENDING_Connected(self, message):
 	# Send OpenLoop on behalf of each client.
 	for r in self.request:
 		address = r.subscriber_address
-		open = OpenLoop(route_id=r.route_id, publisher_id=r.publisher_id, address=address)
+		open = OpenLoop(route_id=r.route_id, published_id=r.published_id, address=address)
 		a = self.create(GetResponse, open, self.connected.proxy_address, seconds=CONNECT_GRACE)
 		self.begin(a, looped, route_id=r.route_id, address=address)
 	return READY
@@ -421,41 +444,42 @@ def ConnectToPeer_READY_RequestLoop(self, message):
 		self.complete(self.request)
 
 	address = message.subscriber_address
-	open = OpenLoop(route_id=message.route_id, publisher_id=message.publisher_id, address=address)
+	open = OpenLoop(route_id=message.route_id, published_id=message.published_id, address=address)
 	a = self.create(GetResponse, open, self.connected.proxy_address, seconds=CONNECT_GRACE)
 	self.begin(a, looped, route_id=message.route_id, address=address)
 	return READY
 
 def ConnectToPeer_PENDING_CloseLoop(self, message):
+	self.reply(LoopClosed())
 	if not delete_route(message.route_id, self.request):
-		return READY
-	d = None
-	for i, a in enumerate(self.available):
-		if a[0].route_id == message.route_id:
-			d = i
-			break
-	if d is not None:
-		self.forward(Dropped(route_id=a[0].route_id, address=a[2]), a[1], a[2])
-		self.available.pop(d)
+		return PENDING
 
 	if len(self.request) == 0:
 		self.start(T1, 30.0)
 	return PENDING
 
 def ConnectToPeer_READY_CloseLoop(self, message):
-	if not delete_route(message.route_id, self.request):
-		return READY
-	d = None
-	for i, a in enumerate(self.available):
-		if a[0].route_id == message.route_id:
-			d = i
-			break
-	if d is not None:
-		self.forward(Dropped(route_id=a[0].route_id, address=a[2]), a[1], a[2])
-		self.available.pop(d)
+	def closed(value, kv):
+		if not isinstance(value, LoopClosed):
+			self.warning(f'Unexpected close response ({value})')
+			return
+		message = kv.message
+		if not delete_route(message.route_id, self.request):
+			return READY
+		d = None
+		for i, a in enumerate(self.available):
+			if a[0].route_id == message.route_id:
+				d = i
+				break
+		if d is not None:
+			self.forward(Dropped(route_id=a[0].route_id, address=a[2], closed_at=world_now()), a[1], a[2])
+			self.available.pop(d)
 
-	if len(self.request) == 0:
-		self.start(T1, DEFERRED_CHECK_FOR_UNUSED)
+		if len(self.request) == 0:
+			self.start(T1, 30.0)
+	
+	a = self.create(GetResponse, message, self.connected.proxy_address, seconds=CONNECT_GRACE)
+	self.begin(a, closed, message=message)
 	return READY
 
 def ConnectToPeer_READY_T1(self, message):
@@ -512,7 +536,7 @@ class RouteOverConnect(Point, StateMachine):
 
 def RouteOverConnect_INITIAL_Start(self, message):
 	r = RouteOverLoop(route_id=self.route_id, scope=self.scope,
-		subscriber_id=self.subscriber.subscribed_id, publisher_id=self.publisher.published_id,
+		subscribed_id=self.subscriber.subscribed_id, published_id=self.publisher.published_id,
 		ipp=self.publisher.listening_ipp, name=self.publisher.name)
 
 	self.send(r, self.subscriber.home_address)
@@ -521,8 +545,8 @@ def RouteOverConnect_INITIAL_Start(self, message):
 def RouteOverConnect_READY_Stop(self, message):
 	s = self.subscriber
 	p = self.publisher
-	self.send(ClearSubscriberRoute(subscribed_id=s.subscribed_id, name=self.publisher.name, route_id=self.route_id), self.subscriber.home_address)
-	self.send(ClearPublisherRoute(published_id=p.published_id, name=self.publisher.name, route_id=self.route_id), self.publisher.home_address)
+	self.send(ClearSubscriberRoute(subscribed_id=s.subscribed_id, name=p.name, route_id=self.route_id), s.home_address)
+	self.send(ClearPublisherRoute(published_id=p.published_id, name=p.name, route_id=self.route_id), p.home_address)
 	self.complete(Aborted())
 
 ROUTE_OVER_PEER_DISPATCH = {
@@ -539,23 +563,35 @@ ROUTE_OVER_PEER_DISPATCH = {
 bind(RouteOverConnect, ROUTE_OVER_PEER_DISPATCH)
 
 #
-class RouteToLibrary(Point, StateMachine):
-	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscriber: SubscribeTo=None, publisher: Published=None):
+class RouteInProcess(Point, StateMachine):
+	def __init__(self, route_id: UUID=None, subscriber: Subscribed=None, publisher: Published=None, subscriber_address: Address=None, publish_as: PublishAs=None):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.route_id = route_id
-		self.scope = scope
 		self.subscriber = subscriber
 		self.publisher = publisher
+		self.subscriber_address = subscriber_address
+		self.publish_as = publish_as
 
-def RouteToLibrary_INITIAL_Start(self, message):
-	self.forward(ResolveLibrary(self.publisher.name), self.publisher.home_address, self.subscriber.address)
+def RouteInProcess_INITIAL_Start(self, message):
+	if self.publish_as is None:
+		self.forward(ResolveLibrary(self.publisher.name), self.publisher.home_address, self.subscriber_address)
+		return READY
+
+	r = RouteToAddress(route_id=self.route_id, scope=ScopeOfDirectory.PROCESS,
+		subscribed_id=self.subscribed_id, published_id=self.published_id, name=self.name)
+
+	self.send(r, self.subscriber.home_address)
 	return READY
 
-def RouteToLibrary_READY_Stop(self, message):
+def RouteInProcess_READY_Stop(self, message):
+	s = self.subscriber
+	p = self.publisher
+	self.send(ClearSubscriberRoute(subscribed_id=s.subscribed_id, name=p.name, route_id=self.route_id), s.home_address)
+	self.send(ClearPublisherRoute(published_id=p.published_id, name=p.name, route_id=self.route_id), p.home_address)
 	self.complete(Aborted())
 
-ROUTE_TO_LIBRARY_DISPATCH = {
+ROUTE_IN_PROCESS_DISPATCH = {
 	INITIAL: (
 		(Start,),
 		()
@@ -566,7 +602,7 @@ ROUTE_TO_LIBRARY_DISPATCH = {
 	),
 }
 
-bind(RouteToLibrary, ROUTE_TO_LIBRARY_DISPATCH)
+bind(RouteInProcess, ROUTE_IN_PROCESS_DISPATCH)
 
 #
 REROUTE_AFTER_ABANDONED = 30.0		# Reroute after disconnect but give opportunity for recovery, i.e. FALLBACK
@@ -587,7 +623,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.accepted = {}				# Remember who connects from below.
 		self.pending_enquiry = set()
 
-		self.unique_publish = {}		# name -> publisher_id
+		self.unique_publish = {}		# name -> published_id
 		self.listed_publish = {}		# request id -> listing, publish
 		self.routed_publish = {}		# route id -> listing, address
 
@@ -617,7 +653,8 @@ class ObjectDirectory(Threaded, StateMachine):
 			return False
 
 		if publish:
-			# This process is publishing an object. Use this 
+			# Publishing to external processes. Need a unique port
+			# for this object.
 			if scope.value < ScopeOfDirectory.PROCESS.value:
 				a = self.create(ListeningForPeer, name, scope, publish.address)
 				self.assign(a, (listing, publish))
@@ -696,13 +733,19 @@ class ObjectDirectory(Threaded, StateMachine):
 	def create_route(self, subscriber, publisher):
 		self.console(f'Route[{self.directory_scope}]', name=publisher.name)
 		route_id = uuid.uuid4()
+
 		if self.directory_scope in (ScopeOfDirectory.LAN, ScopeOfDirectory.HOST, ScopeOfDirectory.GROUP):
 			r = self.create(RouteOverConnect, route_id=route_id, scope=self.directory_scope, subscriber=subscriber, publisher=publisher)
-		elif self.directory_scope in (ScopeOfDirectory.PROCESS,):
-			l, s = self.listed_subscribe[subscriber.subscribed_id]
-			r = self.create(RouteToLibrary, route_id=route_id, scope=self.directory_scope, subscriber=s, publisher=publisher)
+
+		elif self.directory_scope == ScopeOfDirectory.PROCESS:
+			s = self.listed_subscribe[subscriber.subscribed_id][1]
+			p = self.listed_publish[publisher.published_id][1]
+			r = self.create(RouteInProcess, route_id=route_id,
+				subscriber=subscriber, publisher=publisher,
+				subscriber_address=s.address, publish_as=p)
+
 		else:
-			self.warning(f'Cannot route at [{self.directory_scope}]')
+			self.warning(f'Cannot route "{publisher.name}" at [{self.directory_scope}]')
 			return
 
 		p = self.routed_publish.get(publisher.published_id, None)
@@ -772,7 +815,7 @@ class ObjectDirectory(Threaded, StateMachine):
 
 			for r in requested:
 				try:
-					routing = self.subscriber_routing[r.subscriber_id][r.name]
+					routing = self.subscriber_routing[r.subscribed_id][r.name]
 				except (KeyError, IndexError):
 					continue
 
@@ -780,33 +823,49 @@ class ObjectDirectory(Threaded, StateMachine):
 					continue
 				if r.route_id == routing[0].route_id:
 					routing[0] = None
-					self.create(ScheduledReroute, r.subscriber_id, r.name, seconds=REROUTE_AFTER_ABANDONED)
+					self.create(ScheduledReroute, r.subscribed_id, r.name, seconds=REROUTE_AFTER_ABANDONED)
 
 		# Per route type.
 		if isinstance(route, RouteOverLoop):
-			listing = self.listed_subscribe.get(route.subscriber_id, None)
+			listing = self.listed_subscribe.get(route.subscribed_id, None)
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
 				c = self.create(ConnectToPeer, route.ipp)
 				self.begin(c, clear_ipp, ipp=route.ipp)
 				self.peer_connect[route.ipp] = c
 			address = listing[1].address
-			r = RequestLoop(subscriber_id=route.subscriber_id, name=route.name, subscriber_address=address,
-				publisher_id=route.publisher_id,
+			r = RequestLoop(subscribed_id=route.subscribed_id, name=route.name, subscriber_address=address,
+				published_id=route.published_id,
 				route_id=route.route_id)
 			self.forward(r, c, address)
+
+		elif isinstance(route, RouteToAddress):
+			s = self.listed_subscribe.get(route.subscribed_id, None)
+			p = self.listed_publish.get(route.published_id, None)
+			opened_at = world_now()
+			a = Available(route_id=self.route_id, address=p[1].address, opened_at=opened_at)
+			d = Delivered(route_id=self.route_id, address=s[1].address, opened_at=opened_at)
+			self.forward(a, s[1].address, p[1].address)
+			self.forward(d, p[1].address, s[1].address)
 		else:
 			self.warning('not implemented')
 
 	def drop_route(self, listing, route):
-		if isinstance(route, RouteOverConnect):
+		if isinstance(route, RouteOverLoop):
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
 				return
 			self.send(CloseLoop(route_id=route.route_id, address=listing[1].address), c)
 
+		elif isinstance(route, RouteToAddress):
+			closed_at = world_now()
+			s = Dropped(route_id=self.route_id, address=self.publisher[1].address, closed_at=closed_at)
+			p = Dropped(route_id=self.route_id, address=self.subscriber[1].address, closed_at=closed_at)
+			self.forward(s, self.subscriber[1].address, self.publisher[1].address)
+			self.forward(p, self.publisher[1].address, self.subscriber[1].address)
+
 		# For all types of dropped route.
-		self.create(ScheduledReroute, route.subscriber_id, route.name, REROUTE_AFTER_UPGRADE)
+		self.create(ScheduledReroute, route.subscribed_id, route.name, REROUTE_AFTER_UPGRADE)
 
 	def send_up(self, listing):
 		if isinstance(self.connected, Connected):
@@ -926,7 +985,8 @@ def ObjectDirectory_READY_PublishAs(self, message):
 	if not self.add_publisher(listing, None, message):
 		return READY
 	self.unique_publish[unique_publish] = published_id
-	self.send(listing, message.address)
+	if self.directory_scope.value < ScopeOfDirectory.LIBRARY.value:
+		self.send(listing, message.address)
 
 	for s in self.find_subscribers(listing):
 		self.create_route(s, listing)
@@ -1097,21 +1157,21 @@ def delete_route(route_id, routing):
 	return None
 
 def ObjectDirectory_READY_SubscriberRoute(self, message):
-	subscriber_id = message.subscriber_id
+	subscribed_id = message.subscribed_id
 
 	# Add the route to the routing[subscriber][name] table.
 	# Evaluate the (changed) routing options.
 	# If no current loop, initiate the best option.
-	listing = self.listed_subscribe.get(subscriber_id, None)
+	listing = self.listed_subscribe.get(subscribed_id, None)
 	if listing is None or listing[1] is None:
 		self.warning('No such subscription or not the home directory')
 		return READY
 
 	# Routing per listing
-	subscriber = self.subscriber_routing.get(subscriber_id, None)
+	subscriber = self.subscriber_routing.get(subscribed_id, None)
 	if subscriber is None:
 		subscriber = {}
-		self.subscriber_routing[subscriber_id] = subscriber
+		self.subscriber_routing[subscribed_id] = subscriber
 
 	# Per matched name
 	routing = subscriber.get(message.name, None)
@@ -1133,8 +1193,9 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 	elif before is None:	# Table had been emptied.
 		pass
 	elif shortest.scope.value > before.scope.value:
+		r = routing[0]
 		routing[0] = None
-		self.drop_route(listing, before)
+		self.drop_route(listing, r)
 		return READY
 	else:
 		# Longer route was added.
@@ -1145,11 +1206,11 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 	return READY
 
 def ObjectDirectory_READY_RerouteSubscriber(self, message):
-	subscriber_id = message.subscriber_id
+	subscribed_id = message.subscribed_id
 	name = message.name
 
 	try:
-		routing = self.subscriber_routing[subscriber_id][name]
+		routing = self.subscriber_routing[subscribed_id][name]
 	except (KeyError, IndexError):
 		return READY
 
