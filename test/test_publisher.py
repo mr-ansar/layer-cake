@@ -9,22 +9,26 @@ import layer_cake as lc
 def publisher(self, name: str=None):
 	'''Establish a named service, wait for clients and their enquiries. Return nothing.'''
 	name = name or 'abc'
+	published = None
 
 	# Declare the service.
 	lc.publish(self, name)
 
 	while True:
 		m = self.input()
-		if isinstance(m, (lc.Delivered, lc.Dropped)):	# Session notifications.
+		if isinstance(m, lc.Published):	# Search registered with directory.
+			published = m
+		elif isinstance(m, (lc.Delivered, lc.Dropped)):	# Session notifications.
 			continue
 		if isinstance(m, lc.Enquiry):		# Client-service exchange.
 			self.reply(lc.Ack())
 		elif isinstance(m, lc.Stop):		# Intervention.
+			#self.stop_publish(published)
 			self.complete(lc.Aborted())
 
 # Register with runtime.
 lc.bind(publisher)
 
-# Optional process entry-point.
+# Process entry-point.
 if __name__ == '__main__':
 	lc.create(publisher)
