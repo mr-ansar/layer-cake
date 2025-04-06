@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""A hierarchical directory of named addresses.
+"""A hierarchical directory of named addresses, expressions of interest and matches.
 
 .
 """
@@ -236,6 +236,15 @@ class LoopOpened(object):
 
 # A nudge to push the subscriber off the current routing
 # and on to a better one, i.e. an upgrade.
+class DropLoop(object):
+	def __init__(self, route_id: UUID=None, address: Address=None):
+		self.route_id = route_id
+		self.address = address
+
+class LoopDropped(object):
+	def __init__(self, address: Address=None):
+		self.address = address
+
 class CloseLoop(object):
 	def __init__(self, route_id: UUID=None, address: Address=None):
 		self.route_id = route_id
@@ -248,6 +257,8 @@ class LoopClosed(object):
 bind(RequestLoop)
 bind(OpenLoop)
 bind(LoopOpened)
+bind(DropLoop)
+bind(LoopDropped)
 bind(CloseLoop)
 bind(LoopClosed)
 
@@ -449,14 +460,22 @@ def ConnectToPeer_READY_RequestLoop(self, message):
 	self.begin(a, looped, route_id=message.route_id, address=address)
 	return READY
 
-def ConnectToPeer_PENDING_CloseLoop(self, message):
-	self.reply(LoopClosed())
-	if not delete_route(message.route_id, self.request):
-		return PENDING
+def ConnectToPeer_READY_DropLoop(self, message):
+	def closed(loop, kv):
+		if isinstance(loop, LoopClosed):
+			a = Dropped(route_id=kv.route_id, address=kv.address, closed_at=world_now())
+			self.forward(a, kv.address, loop.address)
+			self.send(LoopDropped(), self.parent_address)
+			return READY
+		if isinstance(self.connected, Connected):
+			self.send(Close(), self.connected.proxy_address)
+		self.complete(self.request)
 
-	if len(self.request) == 0:
-		self.start(T1, 30.0)
-	return PENDING
+	address = message.subscriber_address
+	open = CloseLoop(route_id=message.route_id, published_id=message.published_id, address=address)
+	a = self.create(GetResponse, open, self.connected.proxy_address, seconds=CONNECT_GRACE)
+	self.begin(a, closed, route_id=message.route_id, address=address)
+	return READY
 
 def ConnectToPeer_READY_CloseLoop(self, message):
 	def closed(value, kv):
@@ -481,6 +500,15 @@ def ConnectToPeer_READY_CloseLoop(self, message):
 	a = self.create(GetResponse, message, self.connected.proxy_address, seconds=CONNECT_GRACE)
 	self.begin(a, closed, message=message)
 	return READY
+
+def ConnectToPeer_PENDING_CloseLoop(self, message):
+	self.reply(LoopClosed())
+	if not delete_route(message.route_id, self.request):
+		return PENDING
+
+	if len(self.request) == 0:
+		self.start(T1, 30.0)
+	return PENDING
 
 def ConnectToPeer_READY_T1(self, message):
 	if len(self.request) == 0:
@@ -618,60 +646,80 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.connect_to_directory = connect_to_directory or HostPort()
 		self.accept_directories_at = accept_directories_at or HostPort()
 
-		self.connected = None			# Upward, downward directory connections.
+		# Links to the upper and lower parts of the hierarchy.
+		self.connected = None
 		self.listening = None
-		self.accepted = {}				# Remember who connects from below.
+		self.accepted = {}				# Remember who connects from below and what they provide.
 		self.pending_enquiry = set()
 
-		self.unique_publish = {}		# name -> published_id
-		self.listed_publish = {}		# request id -> listing, publish
-		self.routed_publish = {}		# route id -> listing, address
+		# Keep the db clean.
+		self.unique_publish = {}
+		self.unique_subscribe = {}
 
-		self.unique_subscribe = {}		# search, address -> request id
-		self.listed_subscribe = {}		# request id -> listing, subscribe
-		self.routed_subscribe = {}		# route id -> listing, address
+		# For quick lookup and distribution.
+		self.listed_publish = {}
+		self.listed_subscribe = {}
+
+		# For quick matching.
+		self.published = {}
+		self.subscribed = {}
+
+		# Routed listings.
+		self.routed_publish = {}
+		self.routed_subscribe = {}
+
+		# Routing tables for active loops.
 		self.subscriber_routing = {}
 
-		self.published = {}		# name -> listing, publish
-		self.subscribed = {}	# search -> listings, machine
-
+		# Connections across group, host and lan domains.
 		self.peer_connect = {}
 
 	def add_publisher(self, listing, origin, publish):
 		name = listing.name
 		scope = listing.scope
 
-		# Existence.
-		r = self.listed_publish.get(listing.published_id, None)
-		if r is not None:
+		# Existence - by id.
+		lp = self.listed_publish.get(listing.published_id, None)
+		if lp is not None:
 			self.warning(f'cannot publish "{name}" (already listed)')
 			return False
 
-		p = self.published.get(name, None)
-		if p is not None:
+		# And search name.
+		lp = self.published.get(name, None)
+		if lp is not None:
 			self.warning(f'cannot publish "{name}" (already matching)')
 			return False
 
 		if publish:
-			# Publishing to external processes. Need a unique port
-			# for this object.
+			# Publishing object is in this process. Is an
+			# access point required.
 			if scope.value < ScopeOfDirectory.PROCESS.value:
 				a = self.create(ListeningForPeer, name, scope, publish.address)
 				self.assign(a, (listing, publish))
 				return False
 
 		elif self.directory_scope == ScopeOfDirectory.LAN:
-			# Overwrite the listening ip (0.0.0.0) with the ip from sockets.
+			# This directory overlooks a LAN. Overwrite the given
+			# listening ip (0.0.0.0) with the ip provided by sockets.
 			a, sub, pub = self.accepted.get(self.return_address[-1])
 			listing.listening_ipp = HostPort(a.opened_ipp.host, listing.listening_ipp.port)
 
 		elif self.directory_scope in (ScopeOfDirectory.HOST, ScopeOfDirectory.GROUP):
-			# Force the use of the loopback interface.
+			# This directory overlooks a HOST or GROUP. Overwrite whatever
+			# was provided with the loopback address.
 			listing.listening_ipp = HostPort('127.0.0.1', listing.listening_ipp.port)
+		elif self.directory_scope in (ScopeOfDirectory.PROCESS, ScopeOfDirectory.LIBRARY):
+			pass
+		else:
+			self.warning(f'Scope [{self.directory_scope}] not implemented')
+			return False
 
 		self.console(f'Published[{self.directory_scope}]', name=name, listening=listing.listening_ipp)
-		self.published[name] = (listing, publish)
-		self.listed_publish[listing.published_id] = (listing, publish)
+
+		lp = (listing, publish)
+		self.published[name] = lp
+		self.listed_publish[listing.published_id] = lp
+
 		if origin is not None:
 			origin.add(listing.published_id)
 		return True
@@ -681,39 +729,45 @@ class ObjectDirectory(Threaded, StateMachine):
 		scope = listing.scope
 		subscribed_id = listing.subscribed_id
 
-		# Existence of search.
-		r = self.listed_subscribe.get(listing.subscribed_id, None)
-		if r is not None:
-			self.warning(f'cannot subscribe "{search}" (id already listed)')
+		# Existence - by id.
+		ls = self.listed_subscribe.get(listing.subscribed_id, None)
+		if ls is not None:
+			self.warning(f'Cannot subscribe "{search}" (id already listed)')
 			return False
 
-		s = self.subscribed.get(search, None)
-		if s is None:
+		# and search. Build out required structure.
+		sr = self.subscribed.get(search, None)
+		if sr is None:
 			try:
+				# Keep a single pre-compiled search machine.
 				r = re.compile(listing.search)
 			except re.error as e:
 				t = str(e)
-				self.warning(f'cannot subscribe to {search}[{scope}] ({t})')
+				self.warning(f'Cannot subscribe to {search}[{scope}] ({t})')
 				return False
-			a = {}
-			s = [a, r]
-			self.subscribed[search] = s
+			s = {}
+			sr = [s, r]
+			self.subscribed[search] = sr
 		else:
-			a = s[0]
+			s = sr[0]
 
 		# Existence of subscriber.
-		if subscribed_id in a:
-			self.warning(f'cannot subscribe {search}[{scope}] (already listed)')
+		if subscribed_id in s:
+			self.warning(f'Cannot subscribe {search}[{scope}] (already listed)')
 			return False
 
 		self.console(f'Subscribed[{self.directory_scope}]', search=search)
-		a[subscribed_id] = (listing, subscribe)
-		self.listed_subscribe[subscribed_id] = (listing, subscribe)
+
+		ls = (listing, subscribe)
+		s[subscribed_id] = ls
+		self.listed_subscribe[subscribed_id] = ls
+
 		if origin is not None:
 			origin.add(listing.subscribed_id)
 		return True
 
 	def find_subscribers(self, published):
+		# Turn a search into a flat list of matching subscribers.
 		for k, v in self.subscribed.items():
 			m = v[1].match(published.name)
 			if m:
@@ -721,25 +775,30 @@ class ObjectDirectory(Threaded, StateMachine):
 					yield s[0]
 
 	def find_publishers(self, subscribed):
-		s = self.subscribed.get(subscribed.search, None)
-		if s is None:
+		# Turn a search into a flat list of matching publishers.
+		sr = self.subscribed.get(subscribed.search, None)
+		if sr is None:
 			return
-		machine = s[1]
-		for k, v in self.published.items():
+		machine = sr[1]
+		for k, lp in self.published.items():
 			m = machine.match(k)
 			if m:
-				yield v[0]
+				yield lp[0]
 
 	def create_route(self, subscriber, publisher):
 		self.console(f'Route[{self.directory_scope}]', name=publisher.name)
-		route_id = uuid.uuid4()
+		# There is a match at this scope between given sub and pub.
+		# Create the appropriate route object and record its existence.
+		# Communication with relevant directories is up to the route.
 
+		route_id = uuid.uuid4()
 		if self.directory_scope in (ScopeOfDirectory.LAN, ScopeOfDirectory.HOST, ScopeOfDirectory.GROUP):
 			r = self.create(RouteOverConnect, route_id=route_id, scope=self.directory_scope, subscriber=subscriber, publisher=publisher)
 
 		elif self.directory_scope == ScopeOfDirectory.PROCESS:
 			s = self.listed_subscribe[subscriber.subscribed_id][1]
 			p = self.listed_publish[publisher.published_id][1]
+
 			r = self.create(RouteInProcess, route_id=route_id,
 				subscriber=subscriber, publisher=publisher,
 				subscriber_address=s.address, publish_as=p)
@@ -748,26 +807,29 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.warning(f'Cannot route "{publisher.name}" at [{self.directory_scope}]')
 			return
 
-		p = self.routed_publish.get(publisher.published_id, None)
-		if p is None:
-			p = [publisher, set()]
-			self.routed_publish[publisher.published_id] = p
-		p[1].add(r)
+		# When this publisher is cleared, nudge this route.
+		pr = self.routed_publish.get(publisher.published_id, None)
+		if pr is None:
+			pr = [publisher, set()]
+			self.routed_publish[publisher.published_id] = pr
+		pr[1].add(r)
 
-		s = self.routed_subscribe.get(subscriber.subscribed_id, None)
-		if s is None:
-			s = [subscriber, set()]
-			self.routed_subscribe[subscriber.subscribed_id] = s
-		s[1].add(r)
+		# When this subscriber is cleared, nudge this route.
+		sr = self.routed_subscribe.get(subscriber.subscribed_id, None)
+		if sr is None:
+			sr = [subscriber, set()]
+			self.routed_subscribe[subscriber.subscribed_id] = sr
+		sr[1].add(r)
 
+		# When the route terminates, clear out the links.
 		def clear(value, kv):
-			p = self.routed_publish.get(kv.published_id)
-			if p is not None:
-				p[1].discard(kv.route)
+			pr = self.routed_publish.get(kv.published_id)
+			if pr is not None:
+				pr[1].discard(kv.route)
 
-			s = self.routed_subscribe.get(kv.subscribed_id)
-			if s is not None:
-				s[1].discard(kv.route)
+			sr = self.routed_subscribe.get(kv.subscribed_id)
+			if sr is not None:
+				sr[1].discard(kv.route)
 
 		self.begin(r, clear, subscribed_id=subscriber.subscribed_id, published_id=publisher.published_id, route=r)
 
@@ -1029,6 +1091,7 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 	subscribed_id = uuid.uuid4()
 	listing = Subscribed(search=search, scope=scope, subscribed_id=subscribed_id, home_address=self.object_address)
 	if not self.add_subscriber(listing, None, message):
+		self.reply(NotSubscribed(search=search, scope=scope, note=f'duplicates/search expression'))
 		return READY
 	self.unique_subscribe[unique_subscribe] = subscribed_id
 	self.send(listing, message.address)
