@@ -835,60 +835,90 @@ class ObjectDirectory(Threaded, StateMachine):
 
 	def clear_listings(self, subscribers, publishers):
 		stop = Stop()
+		# Remove the listed subscriber ids from this directory.
+		# Routing, listings and searching maps need to be popped.
 		for s in subscribers:
-			r = self.routed_subscribe.get(s, None)
-			if r:
-				for a in r[1]:
+			# Terminate all routes involving this subscriber.
+			routed_subscribe = self.routed_subscribe.get(s, None)
+			if routed_subscribe:
+				for a in routed_subscribe[1]:
+					# Entry cleared by termination of route.
 					self.send(stop, a)
-			p = self.listed_subscribe.pop(s, None)
-			if p is None:
+
+			# Remove from the listings.
+			listed_subscribe = self.listed_subscribe.pop(s, None)
+			if listed_subscribe is None:
 				continue
-			g = self.subscribed.get(p[0].search, None)
-			if g is None:
+
+			# Remove from the matching machinery.
+			subscribed = self.subscribed.get(listed_subscribe[0].search, None)
+			if subscribed is None:
 				continue
-			a, sub = g
+			a, m = subscribed
 			a.pop(s, None)
-			if p[1] is not None:
-				unique_subscribe = (p[1].search, p[1].address)
+
+			# If this is the home directory, remove from uniqueness check.
+			if listed_subscribe[1] is not None:
+				unique_subscribe = (listed_subscribe[1].search, listed_subscribe[1].address)
 				self.unique_subscribe.pop(unique_subscribe, None)
 
+		# Remove the listed publisher ids from this directory.
 		for p in publishers:
-			r = self.routed_publish.get(p, None)
-			if r:
-				for a in r[1]:
+			# Terminate all routes involving this publisher.
+			routed_publish = self.routed_publish.get(p, None)
+			if routed_publish:
+				for a in routed_publish[1]:
+					# Entry cleared by termination of route.
 					self.send(stop, a)
-			p = self.listed_publish.pop(p, None)
-			if p is None:
+
+			# Remove from the listings.
+			listed_publish = self.listed_publish.pop(p, None)
+			if listed_publish is None:
 				continue
-			self.published.pop(p[0].name, None)
-			if p[1] is not None:
-				unique_publish = p[1].name
+
+			# Remove from the matching machinery.
+			self.published.pop(listed_publish[0].name, None)
+
+			# If this is the home directory, remove from uniqueness check.
+			if listed_publish[1] is not None:
+				unique_publish = listed_publish[1].name
 				self.unique_publish.pop(unique_publish, None)
 
 	def open_route(self, route):
-		# Initiate the given route.
-		# Housekeeping for RouteOverLoop.
+		# Callback on loss of ConnectToPeer.
 		def clear_ipp(value, kv):
 			requested, p, a = cast_back(value)
 			self.console('Clearing peer connection', ipp=kv.ipp, requests=len(requested))
-			p = self.peer_connect.pop(kv.ipp, None)
-			if p is None:
+			peer_connect = self.peer_connect.pop(kv.ipp, None)
+			if peer_connect is None:
 				return
 
+			# List of the RequestLoops that were sent to this ConnectToPeer.
 			for r in requested:
 				try:
+					# Live routing info.
 					routing = self.subscriber_routing[r.subscribed_id][r.name]
 				except (KeyError, IndexError):
 					continue
 
+				# No active route.
 				if routing[0] is None:
 					continue
+
+				# This was the selected route for this subscriber/name relation.
 				if r.route_id == routing[0].route_id:
+					# Clear from routing info.
+					# Notification sent by ConnectToPeer.
 					routing[0] = None
+					# Allow new route info to arrive before a fresh attempt at
+					# sub/name comms, i.e. a delayed fallback.
 					self.create(ScheduledReroute, r.subscribed_id, r.name, seconds=REROUTE_AFTER_ABANDONED)
 
-		# Per route type.
+		# Initiate the given route. This is on a per-type basis.
+		# Should be a virtual method.
 		if isinstance(route, RouteOverLoop):
+			# Comms is over a standard message connection between this process
+			# and the process at the given network address.
 			listing = self.listed_subscribe.get(route.subscribed_id, None)
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
@@ -896,12 +926,15 @@ class ObjectDirectory(Threaded, StateMachine):
 				self.begin(c, clear_ipp, ipp=route.ipp)
 				self.peer_connect[route.ipp] = c
 			address = listing[1].address
+
+			# Initiate loop over this connection for subscriber/name relation.
 			r = RequestLoop(subscribed_id=route.subscribed_id, name=route.name, subscriber_address=address,
 				published_id=route.published_id,
 				route_id=route.route_id)
 			self.forward(r, c, address)
 
 		elif isinstance(route, RouteToAddress):
+			# Comms is between objects within this process.
 			s = self.listed_subscribe.get(route.subscribed_id, None)
 			p = self.listed_publish.get(route.published_id, None)
 			opened_at = world_now()
@@ -910,10 +943,12 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.forward(a, s[1].address, p[1].address)
 			self.forward(d, p[1].address, s[1].address)
 		else:
-			self.warning('not implemented')
+			self.warning(f'Routing by {route} not implemented')
 
 	def drop_route(self, listing, route):
+		# Teardown the associated comms.
 		if isinstance(route, RouteOverLoop):
+			# Comms is being handles
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
 				return
