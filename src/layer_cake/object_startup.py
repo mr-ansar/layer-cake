@@ -375,7 +375,7 @@ def start_vector(self, object_type, args):
 	a = self.create(object_type, **args)
 
 	if CL.directory_scope == ScopeOfDirectory.LIBRARY:
-		pn = PublishAs(name=CL.role_name, scope=ScopeOfDirectory.PROCESS, address=a)
+		pn = PublishAs(name=CL.role_name, scope=ScopeOfDirectory.PROCESS, publisher_address=a)
 		self.send(pn, PD.directory)
 
 	while True:

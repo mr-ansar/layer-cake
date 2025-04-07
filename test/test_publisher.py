@@ -6,22 +6,30 @@
 # notifications at each end, i.e. Delivered.
 import layer_cake as lc
 
-def publisher(self, name: str=None):
+def publisher(self, name: str=None, scope: lc.ScopeOfDirectory=None):
 	'''Establish a named service, wait for clients and their enquiries. Return nothing.'''
 	name = name or 'abc'
+	scope = scope or lc.ScopeOfDirectory.WAN
 	published = None
 
 	# Declare the service.
-	lc.publish(self, name)
+	lc.publish(self, name, scope=scope)
 
 	while True:
 		m = self.input()
 		if isinstance(m, lc.Published):	# Search registered with directory.
 			published = m
-		elif isinstance(m, (lc.Delivered, lc.Dropped)):	# Session notifications.
+			self.console(f'Published', published_id=published.published_id)
+
+		elif isinstance(m, lc.Delivered):
+			self.console(f'Delivered', route_id=m.route_id)
+			continue
+		elif isinstance(m, lc.Dropped):	
+			self.console(f'Dropped', route_id=m.route_id)
 			continue
 		if isinstance(m, lc.Enquiry):		# Client-service exchange.
 			self.reply(lc.Ack())
+
 		elif isinstance(m, lc.Stop):		# Intervention.
 			#self.stop_publish(published)
 			self.complete(lc.Aborted())

@@ -62,9 +62,9 @@ AddOn(create_directory, stop_directory)
 
 #
 def publish(self, name, scope=ScopeOfDirectory.WAN):
-	p = PublishAs(name=name, scope=scope, address=self.object_address)
+	p = PublishAs(name=name, scope=scope, publisher_address=self.object_address)
 	self.send(p, PD.directory)
 
 def subscribe(self, search, scope=ScopeOfDirectory.WAN):
-	p = SubscribeTo(search=search, scope=scope, address=self.object_address)
+	p = SubscribeTo(search=search, scope=scope, subscriber_address=self.object_address)
 	self.send(p, PD.directory)

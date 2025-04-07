@@ -328,7 +328,7 @@ def ProcessObject_PENDING_HostPort(self, message):
 def ProcessObject_EXECUTING_Available(self, message):
 	self.published = self.return_address
 	for q in self.queue:
-		self.forward(q[0], self.return_address, q[1])
+		self.forward(q[0], self.published, q[1])
 	self.queue = deque()
 	return EXECUTING
 
