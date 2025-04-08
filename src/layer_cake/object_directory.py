@@ -26,11 +26,9 @@
 """
 __docformat__ = 'restructuredtext'
 
-from enum import Enum
 from datetime import datetime
 import uuid
 import re
-from collections import deque
 
 from .general_purpose import *
 from .command_line import *
@@ -62,6 +60,7 @@ __all__ = [
 	'Dropped',
 ]
 
+# Time required for request/response sequence across peer connection.
 COMPLETE_A_LOOP = 3.0
 
 # Activate/update the directory-to-directory connections.
@@ -183,6 +182,7 @@ class RouteOverLoop(SubscriberRoute):
 		# Specialized members.
 		self.ipp = ipp
 
+# Derived class for RouteInProcess.
 class RouteToAddress(SubscriberRoute):
 	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -194,7 +194,7 @@ class RouteToAddress(SubscriberRoute):
 		self.published_id = published_id
 		self.name = name
 
-# Messages from route to pub/sub host processes, to delete the given route.
+# Messages from route to pub/sub home processes, to delete the given route.
 class ClearSubscriberRoute(object):
 	def __init__(self, subscribed_id: UUID=None, name: str=None, route_id: UUID=None):
 		self.subscribed_id = subscribed_id
@@ -207,17 +207,11 @@ class ClearPublisherRoute(object):
 		self.name = name
 		self.route_id = route_id
 
-# To prompt the directory into choosing another route.
-class RerouteSubscriber(object):
-	def __init__(self, subscribed_id: UUID=None, name: str=None):
-		self.subscribed_id = subscribed_id
-		self.name = name
-
 bind(SubscriberRoute)
 bind(RouteOverLoop)
+bind(RouteToAddress)
 bind(ClearSubscriberRoute)
 bind(ClearPublisherRoute)
-bind(RerouteSubscriber)
 
 # From directory to connector
 class RequestLoop(object):
@@ -272,10 +266,10 @@ class LoopDropped(object):
 bind(RequestLoop)
 bind(OpenLoop)
 bind(LoopOpened)
-bind(DropLoop)
-bind(LoopDropped)
 bind(CloseLoop)
 bind(LoopClosed)
+bind(DropLoop)
+bind(LoopDropped)
 
 #
 class Available(object):
@@ -313,27 +307,9 @@ bind(Dropped)
 class INITIAL: pass
 class PENDING: pass
 class READY: pass
-class CLEARING: pass
 
-#
-class ScheduledReroute(Point, Stateless):
-	def __init__(self, subscribed_id: UUID=None, name: str=None, seconds: float=2.0):
-		Point.__init__(self)
-		Stateless.__init__(self)
-		self.subscribed_id = subscribed_id
-		self.name = name
-		self.seconds = seconds
-
-def ScheduledReroute_Start(self, message):
-	self.start(T1, self.seconds)
-
-def ScheduledReroute_T1(self, message):
-	self.send(RerouteSubscriber(subscribed_id=self.subscribed_id, name=self.name), self.parent_address)
-	self.complete()
-
-bind(ScheduledReroute, (Start, T1))
-
-#
+# A managed listen. One required for every publish beyond
+# the process scope.
 class ListeningForPeer(Point, StateMachine):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, address: Address=None):
 		Point.__init__(self)
@@ -345,6 +321,9 @@ class ListeningForPeer(Point, StateMachine):
 		self.accepted = {}
 
 def ListeningForPeer_INITIAL_Start(self, message):
+	# Tune the listen address according to the scope of the publish. Host
+	# portion is overruled where the publish is listed in higher scopes,
+	# e.g. LAN. All use ephemeral ports.
 	if self.scope.value < ScopeOfDirectory.HOST.value:
 		ipp = HostPort('0.0.0.0', 0)
 	elif self.scope.value < ScopeOfDirectory.PROCESS.value:
@@ -363,14 +342,18 @@ def ListeningForPeer_PENDING_NotListening(self, message):
 	self.complete(message)
 
 def ListeningForPeer_READY_Accepted(self, message):
+	# Tracking of open loops.
 	self.accepted[self.return_address[-1]] = {}
 	return READY
 
 def ListeningForPeer_READY_Closed(self, message):
 	p = self.accepted.pop(self.return_address[-1], None)
+	# Going down. Send out the end-of-session notifications
+	# to those that received the start-of-session.
 	if p is not None:
 		for k, v in p.items():
-			d = Dropped(subscribed_id=v.subscribed_id, name=v.name, route_id=v.route_id,
+			d = Dropped(subscribed_id=v.subscribed_id, name=v.name,
+				route_id=v.route_id, published_id=v.published_id,
 				remote_address=k, closed_at=world_now())
 			self.forward(d, self.address, k)
 	return READY
@@ -379,7 +362,8 @@ def ListeningForPeer_READY_Abandoned(self, message):
 	p = self.accepted.pop(self.return_address[-1], None)
 	if p is not None:
 		for k, v in p.items():
-			d = Dropped(subscribed_id=v.subscribed_id, name=v.name, route_id=v.route_id,
+			d = Dropped(subscribed_id=v.subscribed_id, name=v.name,
+				route_id=v.route_id, published_id=v.published_id,
 				remote_address=k, closed_at=world_now())
 			self.forward(d, self.address, k)
 	return READY
@@ -389,9 +373,9 @@ def ListeningForPeer_READY_OpenLoop(self, message):
 
 	self.reply(LoopOpened(publisher_address=self.address))
 
-	d = Delivered(subscribed_id=message.subscribed_id, name=message.name, route_id=message.route_id,
-		published_id=message.published_id, subscriber_address=message.subscriber_address,
-		opened_at=world_now())
+	d = Delivered(subscribed_id=message.subscribed_id, name=message.name,
+		route_id=message.route_id, published_id=message.published_id,
+		subscriber_address=message.subscriber_address, opened_at=world_now())
 
 	self.forward(d, self.address, message.subscriber_address)
 	return READY
@@ -400,7 +384,8 @@ def ListeningForPeer_READY_CloseLoop(self, message):
 	self.accepted[self.return_address[-1]].pop(message.subscriber_address, None)
 
 	self.reply(LoopClosed(publisher_address=self.address))
-	d = Dropped(subscribed_id=message.subscribed_id, name=message.name, route_id=message.route_id,
+	d = Dropped(subscribed_id=message.subscribed_id, name=message.name,
+		route_id=message.route_id, published_id=message.published_id,
 		remote_address=message.subscriber_address, closed_at=world_now())
 	self.forward(d, self.address, message.subscriber_address)
 	return READY
@@ -427,9 +412,8 @@ LISTENING_FOR_PEER_DISPATCH = {
 
 bind(ListeningForPeer, LISTENING_FOR_PEER_DISPATCH)
 
-#
-request_table_type = def_type(list[RequestLoop])
-
+# A managed connect. One required for every outbound route
+# on a unique ip+port.
 class ConnectToPeer(Point, StateMachine):
 	def __init__(self, ipp: HostPort=None):
 		Point.__init__(self)
@@ -465,8 +449,9 @@ class ConnectToPeer(Point, StateMachine):
 			d = LoopDropped(subscribed_id=a.subscribed_id, name=a.name, route_id=a.route_id)
 			self.send(d, self.parent_address)
 
-			d = Dropped(subscribed_id=a.subscribed_id, name=a.name, route_id=a.route_id,
-				published_id=a.published_id, remote_address=a.publisher_address, closed_at=world_now())
+			d = Dropped(subscribed_id=a.subscribed_id, name=a.name,
+				route_id=a.route_id, published_id=a.published_id,
+				remote_address=a.publisher_address, closed_at=world_now())
 			self.forward(d, s, p)
 
 def ConnectToPeer_INITIAL_Start(self, message):
@@ -499,16 +484,16 @@ def ConnectToPeer_PENDING_Connected(self, message):
 	return READY
 
 def ConnectToPeer_PENDING_NotConnected(self, message):
-	self.complete(self.request)
+	self.complete()
 
 def ConnectToPeer_PENDING_RequestLoop(self, message):
 	self.request.append(message)
 	return PENDING
 
 def ConnectToPeer_PENDING_DropLoop(self, message):
-	self.delete_request(message.route_id)
-	d = LoopDropped(subscribed_id=message.subscribed_id, name=message.name, route_id=message.route_id)
-	self.reply(d)
+	if self.delete_request(message.route_id):
+		d = LoopDropped(subscribed_id=message.subscribed_id, name=message.name, route_id=message.route_id)
+		self.reply(d)
 	return PENDING
 
 def ConnectToPeer_READY_RequestLoop(self, message):
@@ -556,11 +541,11 @@ def ConnectToPeer_READY_DropLoop(self, message):
 			self.send(d, return_address)
 
 			if len(self.request) == 0:
-				self.start(T1, 30.0)
+				self.start(T1, GRACE_BEFORE_CLEARANCE)
 			return
 		if isinstance(self.connected, Connected):
 			self.send(Close(), self.connected.proxy_address)
-		self.complete(self.request)
+		self.complete()
 
 	address = message.subscriber_address
 	close = CloseLoop(subscribed_id=message.subscribed_id, name=message.name, route_id=message.route_id,
@@ -582,14 +567,14 @@ def ConnectToPeer_READY_Returned(self, message):
 
 def ConnectToPeer_READY_Closed(self, message):
 	self.not_available()
-	self.complete(self.request)
+	self.complete()
 
 def ConnectToPeer_READY_Abandoned(self, message):
 	self.not_available()
-	self.complete(self.request)
+	self.complete()
 
 def ConnectToPeer_READY_Stop(self, message):
-	self.complete(self.request)
+	self.complete()
 
 CONNECT_TO_PEER_DISPATCH = {
 	INITIAL: (
@@ -611,7 +596,7 @@ CONNECT_TO_PEER_DISPATCH = {
 	),
 }
 
-bind(ConnectToPeer, CONNECT_TO_PEER_DISPATCH, return_type=request_table_type)
+bind(ConnectToPeer, CONNECT_TO_PEER_DISPATCH)
 
 #
 class RouteOverConnect(Point, StateMachine):
@@ -694,10 +679,44 @@ ROUTE_IN_PROCESS_DISPATCH = {
 bind(RouteInProcess, ROUTE_IN_PROCESS_DISPATCH)
 
 #
-REROUTE_FOR_FALLBACK = 30.0		# Reroute after disconnect but give opportunity for recovery, i.e. FALLBACK
-REROUTE_AFTER_UPGRADE = 2.0			# Reroute due to arrival of a better routing option, i.e. UPGRADE
+def find_route(route, routing):
+	for r in routing:
+		if r.scope == route.scope or r.route_id == route.route_id:
+			return True
+	return False
 
-DEFERRED_CHECK_FOR_UNUSED = 30.0	# Route removed from ConnectToPeer. See if its empty for this long.
+def scope_route(route, routing):
+	for i, r in enumerate(routing):
+		if r.scope == route.scope:
+			return i
+	return None
+
+def shortest_route(routing, excluding=None):
+	best = None
+	for r in routing:
+		if r.route_id == excluding:
+			continue
+		if best is None or r.scope.value > best.scope.value:
+			best = r
+	return best
+
+def add_route(route, routing):
+	routing.append(route)
+	shortest = shortest_route(routing)
+	return shortest
+
+def delete_route(route_id, routing):
+	d = None
+	for i, r in enumerate(routing):
+		if r.route_id == route_id:
+			d = i
+	if d is not None:
+		r = routing.pop(d)
+		return r
+	return None
+
+RECONNECT_DELAY = [1.0, 8.0, 32.0, 120.0]	# 1-based indexing from enum, i.e. [0] is not used.
+GRACE_BEFORE_CLEARANCE = 3.0
 
 class ObjectDirectory(Threaded, StateMachine):
 	def __init__(self, directory_scope: ScopeOfDirectory=None, connect_to_directory: HostPort=None, accept_directories_at: HostPort=None):
@@ -706,6 +725,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
 		self.accept_directories_at = accept_directories_at or HostPort()
+		self.reconnect_delay = None
 
 		# Links to the upper and lower parts of the hierarchy.
 		self.connected = None
@@ -734,6 +754,11 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		# Connections across group, host and lan domains.
 		self.peer_connect = {}
+
+	def calculate_reconnect(self, host):
+		s = local_private_other(host)
+		self.reconnect_delay = RECONNECT_DELAY[s.value]
+		self.console(f'Update parameter', reconnect_delay=self.reconnect_delay)
 
 	def add_publisher(self, listing, origin, publish):
 		name = listing.name
@@ -948,25 +973,8 @@ class ObjectDirectory(Threaded, StateMachine):
 	def open_route(self, route):
 		# Callback on loss of ConnectToPeer.
 		def clear_ipp(value, kv):
-			requested, p, a = cast_back(value)
-			self.console('Clearing peer connection', ipp=kv.ipp, requests=len(requested))
-			peer_connect = self.peer_connect.pop(kv.ipp, None)
-			if peer_connect is None:
-				return
-
-			# List of the RequestLoops that were sent to this ConnectToPeer.
-			for r in requested:
-				try:
-					# Live routing info.
-					routing = self.subscriber_routing[r.subscribed_id][r.name]
-				except (KeyError, IndexError):
-					continue
-
-				# This was the active loop for this route.
-				if routing[0] is not None and r.route_id == routing[0].route_id:
-					pass
-					#routing[0] = None
-					#self.create(ScheduledReroute, r.subscribed_id, r.name, seconds=REROUTE_FOR_FALLBACK)
+			self.console(f'Clearing peer connection {kv.ipp}')
+			self.peer_connect.pop(kv.ipp, None)
 
 		# Initiate the given route. This is on a per-type basis.
 		# Should be a virtual method.
@@ -993,15 +1001,19 @@ class ObjectDirectory(Threaded, StateMachine):
 			# Comms is between objects within this process.
 			ls = self.listed_subscribe.get(route.subscribed_id, None)
 			lp = self.listed_publish.get(route.published_id, None)
+
 			opened_at = world_now()
-			a = Available(subscribed_id=route.subscribed_id, name=route.name, route_id=route.route_id,
-				published_id=route.published_id, publisher_address=lp[1].publisher_address, opened_at=opened_at)
-			d = Delivered(subscribed_id=route.subscribed_id, name=route.name, route_id=route.route_id,
-				published_id=route.published_id, subscriber_address=ls[1].subscriber_address, opened_at=opened_at)
+			a = Available(subscribed_id=route.subscribed_id, name=route.name,
+				route_id=route.route_id, published_id=route.published_id,
+				publisher_address=lp[1].publisher_address, opened_at=opened_at)
+			d = Delivered(subscribed_id=route.subscribed_id, name=route.name,
+				route_id=route.route_id, published_id=route.published_id,
+				subscriber_address=ls[1].subscriber_address, opened_at=opened_at)
+
 			self.forward(a, ls[1].subscriber_address, lp[1].publisher_address)
 			self.forward(d, lp[1].publisher_address, ls[1].subscriber_address)
 		else:
-			self.warning(f'Routing by {route} not implemented')
+			self.warning(f'Routing by {type(route)} not implemented')
 
 	def drop_route(self, ls, route):
 		self.trace(f'Dropping route "{route.name}"[{route.scope}]')
@@ -1046,9 +1058,6 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.forward(s, self.subscriber[1].subscriber_address, self.publisher[1].publisher_address)
 			self.forward(p, self.publisher[1].publisher_address, self.subscriber[1].subscriber_address)
 
-		# For all types of dropped route.
-		#self.create(ScheduledReroute, route.subscribed_id, route.name, REROUTE_AFTER_UPGRADE)
-
 	def send_up(self, listing):
 		if isinstance(self.connected, Connected):
 			if listing.scope.value < self.directory_scope.value:
@@ -1065,6 +1074,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.send(PublishedDirectory(published, subscribed), self.connected.proxy_address)
 
 def ObjectDirectory_INITIAL_Start(self, message):
+	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
 		connect(self, self.connect_to_directory)
 	if self.accept_directories_at.host is not None:
@@ -1091,8 +1101,12 @@ def ObjectDirectory_READY_Connected(self, message):
 
 def ObjectDirectory_READY_NotConnected(self, message):
 	self.connected = message
-	# Schedule a retry.
-	# Different scheduling to close/abandon.
+	self.start(T1, self.reconnect_delay)
+	return READY
+
+def ObjectDirectory_READY_T1(self, message):
+	if self.connect_to_directory.host is not None:
+		connect(self, self.connect_to_directory)
 	return READY
 
 def ObjectDirectory_READY_Accepted(self, message):
@@ -1100,6 +1114,13 @@ def ObjectDirectory_READY_Accepted(self, message):
 	return READY
 
 def ObjectDirectory_READY_Closed(self, message):
+	if isinstance(self.connected, Connected):
+		if self.return_address == self.connected.proxy_address:
+			self.connected = message
+			self.start(T1, self.reconnect_delay)
+			self.connected = message
+			return READY
+
 	p = self.accepted.pop(self.return_address[-1], None)
 	if p is None:
 		return READY
@@ -1109,6 +1130,13 @@ def ObjectDirectory_READY_Closed(self, message):
 	return READY
 
 def ObjectDirectory_READY_Abandoned(self, message):
+	if isinstance(self.connected, Connected):
+		if self.return_address == self.connected.proxy_address:
+			self.connected = message
+			self.start(T1, self.reconnect_delay)
+			self.connected = message
+			return READY
+
 	p = self.accepted.pop(self.return_address[-1], None)
 	if p is None:
 		return READY
@@ -1126,6 +1154,7 @@ def ObjectDirectory_READY_ConnectTo(self, message):
 	else:
 		connect(self, message.ipp)
 	self.connect_to_directory = message.ipp
+	self.calculate_reconnect(message.ipp.host)
 	return READY
 
 def ObjectDirectory_READY_AcceptAt(self, message):
@@ -1318,36 +1347,6 @@ def ObjectDirectory_READY_ResolveLibrary(self, message):
 	self.forward(Available(publisher_address=address), self.return_address, address)
 	return READY
 
-def find_route(route, routing):
-	for r in routing:
-		if r.scope == route.scope or r.route_id == route.route_id:
-			return True
-	return False
-
-def shortest_route(routing, excluding=None):
-	best = None
-	for r in routing:
-		if r.route_id == excluding:
-			continue
-		if best is None or r.scope.value > best.scope.value:
-			best = r
-	return best
-
-def add_route(route, routing):
-	routing.append(route)
-	shortest = shortest_route(routing)
-	return shortest
-
-def delete_route(route_id, routing):
-	d = None
-	for i, r in enumerate(routing):
-		if r.route_id == route_id:
-			d = i
-	if d is not None:
-		r = routing.pop(d)
-		return r
-	return None
-
 def ObjectDirectory_READY_SubscriberRoute(self, message):
 	subscribed_id = message.subscribed_id
 
@@ -1372,8 +1371,17 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 		subscriber[message.name] = routing
 
 	# Final checks.
-	if find_route(message, routing[1]):
-		self.warning(f'Duplicate route at [{message.scope}]')
+	i = scope_route(message, routing[1])
+	if i is not None:
+		if isinstance(message, RouteOverLoop):
+			if equal_ipp(message.ipp, routing[1][i].ipp):
+				self.trace(f'Replacement route at [{message.scope}]')
+				routing[1][i] = message
+				# Cant do this - would invalidate session notifications.
+				#if routing[0].scope == message.scope:
+				#	routing[0] = message
+				return READY
+			self.trace(f'Duplicate route at [{message.scope}]')
 		return READY
 
 	# Evaluate what affect the addition of this route will
@@ -1407,27 +1415,6 @@ def ObjectDirectory_READY_LoopDropped(self, message):
 		self.open_route(shortest)
 	return READY
 
-def ObjectDirectory_READY_RerouteSubscriber(self, message):
-	subscribed_id = message.subscribed_id
-	name = message.name
-
-	try:
-		routing = self.subscriber_routing[subscribed_id][name]
-	except (KeyError, IndexError):
-		self.trace(f'Subscriber no longer routing to "{name}"')
-		return READY
-
-	if routing[0] is not None:		# Routed by some other means.
-		self.trace(f'Subscriber already routed to "{name}"[{routing[0].scope}]')
-		return READY
-
-	shortest = shortest_route(routing[1])	# Get the best.
-	if shortest is None:					# Nothing there.
-		return READY
-	routing[0] = shortest
-	self.open_route(shortest)
-	return READY
-
 def ObjectDirectory_READY_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
@@ -1445,6 +1432,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 	READY: (
 		(Listening, NotListening,
 		Connected, NotConnected,
+		T1,
 		Accepted, Closed, Abandoned,
 		ConnectTo, AcceptAt,
 		Enquiry,
@@ -1454,7 +1442,6 @@ OBJECT_DIRECTORY_DISPATCH = {
 		ClearListings,
 		ClearSubscriberRoute, ClearPublisherRoute,
 		LoopDropped,
-		RerouteSubscriber,
 		ResolveLibrary,
 		SubscriberRoute,
 		Returned,
