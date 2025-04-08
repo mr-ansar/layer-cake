@@ -60,9 +60,9 @@ __all__ = [
 	'NotListening',
 	'NotAccepted',
 	'NotConnected',
+	'ReasonForClose',
 	'Close',
 	'Closed',
-	'Abandoned',
 	'listen',
 	'connect',
 	'stop_listening',
@@ -234,14 +234,26 @@ bind(NotConnected, explanation=Unicode(), exit_status=Integer8())
 
 # Session termination messages. Handshake between app
 # and sockets thread to cleanly terminate a connection.
+
+class ReasonForClose(Enum):
+	ON_REQUEST=1
+	ABANDONED_BY_REMOTE=2
+	WENT_STALE=3
+	OUTBOUND_FAULT=4
+	INBOUND_FAULT=5
+	STOP_FROM_SELECT=6
+
 class Close(object):
 	"""Session control, terminate the messaging transport.
 
 	:param value: completion value for the session
 	:type value: any
 	"""
-	def __init__(self, value: Any=None):
+	def __init__(self, value: Any=None, reason: ReasonForClose=None, note: str=None, error_code: int=None):
 		self.value = value
+		self.reason = reason or ReasonForClose.ON_REQUEST
+		self.note = note
+		self.error_code = error_code
 
 class Closed(Faulted):
 	"""Session notification, local termination of the messaging transport.
@@ -255,39 +267,26 @@ class Closed(Faulted):
 	:param opened_at: moment of termination
 	:type opened_at: datetime
 	"""
-	def __init__(self, value: Any=None, tag: str=None, opened_ipp: HostPort=None, opened_at: datetime=None):
+	def __init__(self, value: Any=None, reason: ReasonForClose=None,
+			note: str=None, error_code: int=None,
+			opened_ipp: HostPort=None, opened_at: datetime=None):
 		self.value = value
-		self.tag = tag
+		self.reason = reason or ReasonForClose.ON_REQUEST
+		self.note = note
+		self.error_code = error_code
 		self.opened_ipp = opened_ipp or HostPort()
 		self.opened_at = opened_at
-		note = f'' if not tag else f' ({tag})'
-		Faulted.__init__(self, f'closed {opened_ipp}{note}')
-
-class Abandoned(Faulted):
-	"""Session notification, remote termination of the messaging transport.
-
-	:param opened_ipp: local IP address and port number
-	:type opened_ipp: HostPort
-	:param opened_at: moment of termination
-	:type opened_at: datetime
-	"""
-	def __init__(self, tag: str=None, opened_ipp: HostPort=None, opened_at: datetime=None):
-		self.tag = tag
-		self.opened_ipp = opened_ipp or HostPort()
-		self.opened_at = opened_at
-		note = f'' if not tag else f' ({tag})'
-		Faulted.__init__(self, f'abandoned by {opened_ipp}{note}')
+		Faulted.__init__(self, condition=f'closed {opened_ipp}[{self.reason}]', explanation=note)
 
 bind(Close, copy_before_sending=False)
 bind(Closed, explanation=Unicode(), error_code=Integer8(), exit_status=Integer8(), copy_before_sending=False)
-bind(Abandoned, explanation=Unicode(), error_code=Integer8(), exit_status=Integer8(), copy_before_sending=False)
 
 #
 #
 class Shutdown(object):
-	def __init__(self, s=None, value=False):
+	def __init__(self, s=None, close: Close=None):
 		self.s = s
-		self.value = value
+		self.close = close or Close()
 
 class Bump(object):
 	def __init__(self, s=None):
@@ -592,8 +591,7 @@ class TcpTransport(object):
 		self.key_box = None
 
 		self.opened = opened
-		self.closing = False
-		self.value = None
+		self.closing = None
 
 	def set_routing(self, return_proxy, local_termination, proxy_address):
 		# Define addresses for message forwarding.
@@ -785,13 +783,14 @@ def SocketProxy_NORMAL_TransportTick(self, message):
 	return NORMAL
 
 def SocketProxy_NORMAL_Close(self, message):
-	self.channel.send(Shutdown(self.s, message.value), self.object_address)
+	self.channel.send(Shutdown(self.s, message), self.object_address)
 	if self.self_checking:
 		self.send(Stop(), self.keeper)
 		return CLEARING
 	self.complete()
 
 def SocketProxy_NORMAL_Stop(self, message):
+	# Close created internally by ListenConnect.
 	self.channel.send(Shutdown(self.s), self.object_address)
 	if self.self_checking:
 		self.send(Stop(), self.keeper)
@@ -823,12 +822,13 @@ def SocketProxy_CHECKING_TransportCheck(self, message):
 	# this connection down.
 	if self.first_few():
 		self.log(USER_TAG.CONSOLE, f'Timed out, close transport')
-	self.channel.send(Shutdown(self.s, TimedOut(message)), self.object_address)
+	c = Close(value=None, reason=ReasonForClose.WENT_STALE, note='keep-alive timeout')
+	self.channel.send(Shutdown(self.s, c), self.object_address)
 	self.send(Stop(), self.keeper)
 	return CLEARING
 
 def SocketProxy_CHECKING_Close(self, message):
-	self.channel.send(Shutdown(self.s, message.value), self.object_address)
+	self.channel.send(Shutdown(self.s, message), self.object_address)
 	self.send(Stop(), self.keeper)
 	return CLEARING
 
@@ -1123,8 +1123,7 @@ def ControlChannel_Shutdown(self, control, mr):
 	except KeyError:
 		# Already cleared by Abandoned codepath.
 		return
-	transport.closing = True
-	transport.value = m.value
+	transport.closing = m.close
 	m.s.shutdown(SHUT_SOCKET)
 
 # Dispatch of socket signals;
@@ -1227,9 +1226,9 @@ def TcpClient_ReceiveBlock(self, selector, s):
 		try:
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
-			value = Faulted(condition='cannot stream inbound', explanation=str(e))
-			self.warning(str(value))
-			close_session(transport, value, s)
+			self.warning(f'cannot receive_a_message ({e})')
+			c = Close(value=None, reason=ReasonForClose.INBOUND_FAULT, note=str(e))
+			close_by_socket(transport, c, s)
 		return
 
 	except socket.error as e:
@@ -1273,25 +1272,31 @@ def TcpClient_BrokenTransport(self, selector, s):
 	self.clear_out(s, TcpClient)
 
 #
-def close_session(transport, value, s):
-	transport.closing = True
-	transport.value = value
+def close_by_socket(transport, close, s):
+	transport.closing = close
 	s.shutdown(SHUT_SOCKET)
 
-def clear_out_session(self, transport, s, reason=None):
+def clear_out_session(self, transport, s, reason=None, note=None, error_code=None):
 	ipp = transport.opened.opened_ipp
 
 	if transport.closing:
-		c = Closed(value=transport.value,
-			tag=reason,
+		close = transport.closing
+		c = Closed(value=close.value,
+			reason=close.reason,
+			note=close.note,
+			error_code=close.error_code,
 			opened_ipp=ipp,
 			opened_at=transport.opened.opened_at)
-		self.forward(c, transport.controller_address, transport.proxy_address)
 	else:
 		self.send(Stop(), transport.proxy_address)
-		a = Abandoned(opened_ipp=ipp,
+		c = Closed(value=None,
+			reason=reason,
+			note=note,
+			error_code=error_code,
+			opened_ipp=ipp,
 			opened_at=transport.opened.opened_at)
-		self.forward(a, transport.controller_address, transport.proxy_address)
+
+	self.forward(c, transport.controller_address, transport.proxy_address)
 	self.clear_out(s, TcpTransport)
 
 def TcpTransport_ReadyToSend(self, transport, s):
@@ -1299,9 +1304,9 @@ def TcpTransport_ReadyToSend(self, transport, s):
 		if transport.send_a_block(s):
 			return
 	except (CodecError, OverflowError, ValueError) as e:
-		value = Faulted(condition='cannot stream outbound', explanation=str(e))
-		self.warning(str(value))
-		close_session(transport, value, s)
+		self.warning(f'cannot send_a_block ({e})')
+		c = Close(value=None, reason=ReasonForClose.OUTBOUND_FAULT, note=str(e))
+		close_by_socket(transport, c, s)
 		return
 
 	# Had nothing to send.
@@ -1317,27 +1322,27 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 	try:
 		scrap = s.recv(TCP_RECV)
 		if not scrap:
-			clear_out_session(self, transport, s, 'empty socket')
+			clear_out_session(self, transport, s, reason=ReasonForClose.ABANDONED_BY_REMOTE)
 			return
 
 		try:
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
-			value = Faulted(condition='cannot stream inbound', explanation=str(e))
-			self.warning(str(value))
-			close_session(transport, value, s)
+			self.warning(f'Cannot receive_a_message ({e})')
+			c = Close(value=None, reason=ReasonForClose.INBOUND_FAULT, note=str(e))
+			close_by_socket(transport, c, s)
 		return
 
 	except socket.error as e:
-		if e.errno == errno.ECONNREFUSED:
-			self.fault('Connection refused')
-		elif e.errno not in SOCKET_DOWN:
-			self.fault('Socket termination [%d] %s' % (e.errno, e.strerror))
-		clear_out_session(self, transport, s, reason=e.strerror)
+		# if e.errno == errno.ECONNREFUSED:
+		#	self.warning('Connection refused')
+		# elif e.errno not in SOCKET_DOWN:
+		#	self.fault(f'Socket termination ({e})')
+		clear_out_session(self, transport, s, reason=ReasonForClose.INBOUND_FAULT, note=str(e), error_code=e.errno)
 		return
 
 def TcpTransport_BrokenTransport(self, selector, s):
-	clear_out_session(self, selector, s, reason='broken socket')
+	clear_out_session(self, selector, s, reason=ReasonForClose.INBOUND_FAULT, note='broken transport')
 
 #
 def control_channel():

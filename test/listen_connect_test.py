@@ -76,8 +76,8 @@ class TestListenConnect(TestCase):
 			stop_listening(ch, lid)
 			i, selected3, p = ch.select()
 
-		assert isinstance(selected1, (Closed, Abandoned))
-		assert isinstance(selected2, (Closed, Abandoned))
+		assert isinstance(selected1, Closed)
+		assert isinstance(selected2, Closed)
 		assert isinstance(selected3, NotListening)
 
 	def test_listen_and_multi_connect(self):

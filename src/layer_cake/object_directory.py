@@ -358,16 +358,6 @@ def ListeningForPeer_READY_Closed(self, message):
 			self.forward(d, self.address, k)
 	return READY
 
-def ListeningForPeer_READY_Abandoned(self, message):
-	p = self.accepted.pop(self.return_address[-1], None)
-	if p is not None:
-		for k, v in p.items():
-			d = Dropped(subscribed_id=v.subscribed_id, name=v.name,
-				route_id=v.route_id, published_id=v.published_id,
-				remote_address=k, closed_at=world_now())
-			self.forward(d, self.address, k)
-	return READY
-
 def ListeningForPeer_READY_OpenLoop(self, message):
 	self.accepted[self.return_address[-1]][message.subscriber_address] = message
 
@@ -403,7 +393,7 @@ LISTENING_FOR_PEER_DISPATCH = {
 		()
 	),
 	READY: (
-		(Accepted, Closed, Abandoned,
+		(Accepted, Closed,
 		OpenLoop, CloseLoop,
 		Stop),
 		()
@@ -569,10 +559,6 @@ def ConnectToPeer_READY_Closed(self, message):
 	self.not_available()
 	self.complete()
 
-def ConnectToPeer_READY_Abandoned(self, message):
-	self.not_available()
-	self.complete()
-
 def ConnectToPeer_READY_Stop(self, message):
 	self.complete()
 
@@ -590,7 +576,7 @@ CONNECT_TO_PEER_DISPATCH = {
 		(RequestLoop, DropLoop,
 		T1,
 		Returned,
-		Closed, Abandoned,
+		Closed,
 		Stop),
 		()
 	),
@@ -1129,22 +1115,6 @@ def ObjectDirectory_READY_Closed(self, message):
 		self.send(ClearListings(p[1], p[2]), self.connected.proxy_address)
 	return READY
 
-def ObjectDirectory_READY_Abandoned(self, message):
-	if isinstance(self.connected, Connected):
-		if self.return_address == self.connected.proxy_address:
-			self.connected = message
-			self.start(T1, self.reconnect_delay)
-			self.connected = message
-			return READY
-
-	p = self.accepted.pop(self.return_address[-1], None)
-	if p is None:
-		return READY
-	self.clear_listings(p[1], p[2])
-	if isinstance(self.connected, Connected) and (p[1] or p[2]):
-		self.send(ClearListings(p[1], p[2]), self.connected.proxy_address)
-	return READY
-
 #
 def ObjectDirectory_READY_ConnectTo(self, message):
 	if self.connect_to_directory.host is not None:
@@ -1404,13 +1374,13 @@ def ObjectDirectory_READY_LoopDropped(self, message):
 	try:
 		routing = self.subscriber_routing[message.subscribed_id][message.name]
 	except (KeyError, IndexError):
-		return
+		return READY
 
 	if routing[0] and routing[0].route_id == message.route_id:
 		routing[0] = None
 		shortest = shortest_route(routing[1], excluding=message.route_id)
 		if shortest is None:
-			return
+			return READY
 		routing[0] = shortest
 		self.open_route(shortest)
 	return READY
@@ -1433,7 +1403,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 		(Listening, NotListening,
 		Connected, NotConnected,
 		T1,
-		Accepted, Closed, Abandoned,
+		Accepted, Closed,
 		ConnectTo, AcceptAt,
 		Enquiry,
 		PublishAs, SubscribeTo, HostPort,

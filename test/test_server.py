@@ -29,7 +29,7 @@ def server(self, server_address: lc.HostPort=None):
 	while True:
 		m = self.input()
 
-		if isinstance(m, (lc.Accepted, lc.Closed, lc.Abandoned)):
+		if isinstance(m, (lc.Accepted, lc.Closed)):
 			continue
 		elif isinstance(m, lc.Faulted):
 			return m

@@ -18,7 +18,7 @@ def main(self, requested_ipp: lc.HostPort=None):
 	# Errors, sessions and inbound client messages.
 	while True:
 		i, m, p = self.select(NotListening,		# Listen failed.
-			Accepted, Closed, Abandoned,		# Session notifications.
+			Accepted, Closed,					# Session notifications.
 			lc.Stop,							# Intervention.
 			lc.Unknown)							# An inbound message.
 
