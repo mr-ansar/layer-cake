@@ -35,9 +35,10 @@ from .message_memory import *
 __all__ = [
 	'LOCAL_HOST',
 	'HostPort',
+	'equal_ipp',
 	'LocalPort',
-	'ScopeOfIP',
-	'local_private_public',
+	'ScopeOfHost',
+	'local_private_other',
 ]
 
 #
@@ -54,12 +55,15 @@ class HostPort(object):
 	def __init__(self, host: str=None, port: int=None):
 		self.host = host
 		self.port = port
-	
+
 	def __str__(self):
 		return f'{self.host}:{self.port}'
 
 	def inet(self):
 		return (self.host, self.port)
+
+def equal_ipp(lhs, rhs):
+	return lhs.host == rhs.host and lhs.port == rhs.port
 
 class LocalPort(HostPort):
 	def __init__(self, port: int=None):
@@ -72,16 +76,17 @@ bind_message(LocalPort, host=Unicode())
 #
 DOTTED_IP = re.compile(r'(\d+)\.(\d+)\.(\d+)\.(\d+)')
 
-class ScopeOfIP(Enum):
-	OTHER=0
+class ScopeOfHost(Enum):
 	LOCAL=1
 	PRIVATE=2
-	PUBLIC=3
+	OTHER=3
 
-def local_private_public(ip):
+def local_private_other(ip):
+	if ip is None:
+		return ScopeOfHost.OTHER
 	m = DOTTED_IP.match(ip)
 	if m is None:
-		return ScopeOfIP.OTHER
+		return ScopeOfHost.OTHER
 	# Have complete verification of dotted layout
 	b0 = int(m.groups()[0])
 	b1 = int(m.groups()[1])
@@ -94,11 +99,11 @@ def local_private_public(ip):
 	# else -------------- 2, public
 
 	if b0 == 127:
-		return ScopeOfIP.LOCAL
+		return ScopeOfHost.LOCAL
 	elif b0 == 10:
-		return ScopeOfIP.PRIVATE
+		return ScopeOfHost.PRIVATE
 	elif b0 == 192 and b1 == 168:
-		return ScopeOfIP.PRIVATE
+		return ScopeOfHost.PRIVATE
 	elif b0 == 172 and (b1 > 15 and b1 < 32):
-		return ScopeOfIP.PRIVATE
-	return ScopeOfIP.PUBLIC
+		return ScopeOfHost.PRIVATE
+	return ScopeOfHost.OTHER
