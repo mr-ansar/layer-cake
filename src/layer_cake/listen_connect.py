@@ -60,7 +60,7 @@ __all__ = [
 	'NotListening',
 	'NotAccepted',
 	'NotConnected',
-	'ReasonForClose',
+	'EndOfTransport',
 	'Close',
 	'Closed',
 	'listen',
@@ -235,13 +235,12 @@ bind(NotConnected, explanation=Unicode(), exit_status=Integer8())
 # Session termination messages. Handshake between app
 # and sockets thread to cleanly terminate a connection.
 
-class ReasonForClose(Enum):
+class EndOfTransport(Enum):
 	ON_REQUEST=1
 	ABANDONED_BY_REMOTE=2
 	WENT_STALE=3
-	OUTBOUND_FAULT=4
-	INBOUND_FAULT=5
-	STOP_FROM_SELECT=6
+	OUTBOUND_STREAMING=4
+	INBOUND_STREAMING=5
 
 class Close(object):
 	"""Session control, terminate the messaging transport.
@@ -249,9 +248,9 @@ class Close(object):
 	:param value: completion value for the session
 	:type value: any
 	"""
-	def __init__(self, value: Any=None, reason: ReasonForClose=None, note: str=None, error_code: int=None):
+	def __init__(self, value: Any=None, reason: EndOfTransport=None, note: str=None, error_code: int=None):
 		self.value = value
-		self.reason = reason or ReasonForClose.ON_REQUEST
+		self.reason = reason or EndOfTransport.ON_REQUEST
 		self.note = note
 		self.error_code = error_code
 
@@ -267,11 +266,11 @@ class Closed(Faulted):
 	:param opened_at: moment of termination
 	:type opened_at: datetime
 	"""
-	def __init__(self, value: Any=None, reason: ReasonForClose=None,
+	def __init__(self, value: Any=None, reason: EndOfTransport=None,
 			note: str=None, error_code: int=None,
 			opened_ipp: HostPort=None, opened_at: datetime=None):
 		self.value = value
-		self.reason = reason or ReasonForClose.ON_REQUEST
+		self.reason = reason or EndOfTransport.ON_REQUEST
 		self.note = note
 		self.error_code = error_code
 		self.opened_ipp = opened_ipp or HostPort()
@@ -822,7 +821,7 @@ def SocketProxy_CHECKING_TransportCheck(self, message):
 	# this connection down.
 	if self.first_few():
 		self.log(USER_TAG.CONSOLE, f'Timed out, close transport')
-	c = Close(value=None, reason=ReasonForClose.WENT_STALE, note='keep-alive timeout')
+	c = Close(value=None, reason=EndOfTransport.WENT_STALE, note='keep-alive timeout')
 	self.channel.send(Shutdown(self.s, c), self.object_address)
 	self.send(Stop(), self.keeper)
 	return CLEARING
@@ -1227,7 +1226,7 @@ def TcpClient_ReceiveBlock(self, selector, s):
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
 			self.warning(f'cannot receive_a_message ({e})')
-			c = Close(value=None, reason=ReasonForClose.INBOUND_FAULT, note=str(e))
+			c = Close(value=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
 			close_by_socket(transport, c, s)
 		return
 
@@ -1305,7 +1304,7 @@ def TcpTransport_ReadyToSend(self, transport, s):
 			return
 	except (CodecError, OverflowError, ValueError) as e:
 		self.warning(f'cannot send_a_block ({e})')
-		c = Close(value=None, reason=ReasonForClose.OUTBOUND_FAULT, note=str(e))
+		c = Close(value=None, reason=EndOfTransport.OUTBOUND_STREAMING, note=str(e))
 		close_by_socket(transport, c, s)
 		return
 
@@ -1322,14 +1321,14 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 	try:
 		scrap = s.recv(TCP_RECV)
 		if not scrap:
-			clear_out_session(self, transport, s, reason=ReasonForClose.ABANDONED_BY_REMOTE)
+			clear_out_session(self, transport, s, reason=EndOfTransport.ABANDONED_BY_REMOTE)
 			return
 
 		try:
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
 			self.warning(f'Cannot receive_a_message ({e})')
-			c = Close(value=None, reason=ReasonForClose.INBOUND_FAULT, note=str(e))
+			c = Close(value=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
 			close_by_socket(transport, c, s)
 		return
 
@@ -1338,11 +1337,11 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 		#	self.warning('Connection refused')
 		# elif e.errno not in SOCKET_DOWN:
 		#	self.fault(f'Socket termination ({e})')
-		clear_out_session(self, transport, s, reason=ReasonForClose.INBOUND_FAULT, note=str(e), error_code=e.errno)
+		clear_out_session(self, transport, s, reason=EndOfTransport.INBOUND_STREAMING, note=str(e), error_code=e.errno)
 		return
 
 def TcpTransport_BrokenTransport(self, selector, s):
-	clear_out_session(self, selector, s, reason=ReasonForClose.INBOUND_FAULT, note='broken transport')
+	clear_out_session(self, selector, s, reason=EndOfTransport.INBOUND_STREAMING, note='broken transport')
 
 #
 def control_channel():

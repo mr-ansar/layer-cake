@@ -21,6 +21,9 @@ def publisher(self, name: str=None, scope: lc.ScopeOfDirectory=None):
 			published = m
 			self.console(f'Published', published_id=published.published_id)
 
+		elif isinstance(m, lc.NotPublished):	# Search rejected.
+			self.complete(m)
+
 		elif isinstance(m, lc.Delivered):
 			self.console(f'Delivered', route_id=m.route_id)
 			continue
@@ -31,7 +34,9 @@ def publisher(self, name: str=None, scope: lc.ScopeOfDirectory=None):
 			self.reply(lc.Ack())
 
 		elif isinstance(m, lc.Stop):		# Intervention.
-			#self.stop_publish(published)
+			lc.clear_published(self, published)
+
+		elif isinstance(m, lc.PublishedCleared):
 			self.complete(lc.Aborted())
 
 # Register with runtime.

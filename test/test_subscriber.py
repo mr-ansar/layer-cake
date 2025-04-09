@@ -21,6 +21,9 @@ def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
 			subscribed = m
 			self.console(f'Subscribed', subscribed_id=subscribed.subscribed_id)
 
+		elif isinstance(m, lc.NotSubscribed):
+			self.complete(m)
+
 		elif isinstance(m, lc.Available):	# Session notificaton and initiate exchange.
 			self.console(f'Available at "{m.name}"', route_id=m.route_id)
 			self.send(lc.Enquiry(), self.return_address)
@@ -33,7 +36,9 @@ def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
 			continue
 
 		elif isinstance(m, lc.Stop):		# Intervention.
-			#lc.stop_subscribe(subscribed)
+			lc.clear_subscribed(self, subscribed)
+
+		elif isinstance(m, lc.SubscribedCleared):		# Intervention.
 			self.complete(lc.Aborted())
 
 # Register with runtime.

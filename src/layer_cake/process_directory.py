@@ -41,6 +41,8 @@ __all__ = [
 	'PD',
 	'publish',
 	'subscribe',
+	'clear_published',
+	'clear_subscribed',
 ]
 
 PD = Gas(directory=None)
@@ -68,3 +70,11 @@ def publish(self, name, scope=ScopeOfDirectory.WAN):
 def subscribe(self, search, scope=ScopeOfDirectory.WAN):
 	p = SubscribeTo(search=search, scope=scope, subscriber_address=self.object_address)
 	self.send(p, PD.directory)
+
+def clear_published(self, published, note=None):
+	p = ClearPublished(name=published.name, scope=published.scope, published_id=published.published_id, note=note)
+	self.send(p, PD.directory)
+
+def clear_subscribed(self, subscribed, note=None):
+	s = ClearSubscribed(search=subscribed.search, scope=subscribed.scope, subscribed_id=subscribed.subscribed_id, note=note)
+	self.send(s, PD.directory)

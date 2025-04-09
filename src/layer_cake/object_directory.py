@@ -52,6 +52,10 @@ __all__ = [
 	'SubscribeTo',
 	'Published',
 	'Subscribed',
+	'ClearPublished',
+	'ClearSubscribed',
+	'PublishedCleared',
+	'SubscribedCleared',
 	'NotPublished',
 	'NotSubscribed',
 	'ObjectDirectory',
@@ -111,6 +115,39 @@ class Subscribed(object):
 
 bind(Published)
 bind(Subscribed)
+
+class ClearPublished(object):
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None, note: str=None):
+		self.name = name
+		self.scope = scope
+		self.published_id = published_id
+		self.note = note
+
+class ClearSubscribed(object):
+	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, note: str=None):
+		self.search = search
+		self.scope = scope
+		self.subscribed_id = subscribed_id
+		self.note = note
+
+class PublishedCleared(object):
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None, note: str=None):
+		self.name = name
+		self.scope = scope
+		self.published_id = published_id
+		self.note = note
+
+class SubscribedCleared(object):
+	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, note: str=None):
+		self.search = search
+		self.scope = scope
+		self.subscribed_id = subscribed_id
+		self.note = note
+
+bind(ClearPublished)
+bind(ClearSubscribed)
+bind(PublishedCleared)
+bind(SubscribedCleared)
 
 # When pub/sub fails.
 class NotPublished(Faulted):
@@ -383,6 +420,9 @@ def ListeningForPeer_READY_CloseLoop(self, message):
 def ListeningForPeer_READY_Stop(self, message):
 	self.complete(Aborted())
 
+def ListeningForPeer_READY_NotListening(self, message):
+	self.complete(Aborted())
+
 LISTENING_FOR_PEER_DISPATCH = {
 	INITIAL: (
 		(Start,),
@@ -395,7 +435,8 @@ LISTENING_FOR_PEER_DISPATCH = {
 	READY: (
 		(Accepted, Closed,
 		OpenLoop, CloseLoop,
-		Stop),
+		Stop,
+		NotListening),
 		()
 	),
 }
@@ -1272,6 +1313,24 @@ def ObjectDirectory_READY_ClearListings(self, message):
 		self.send(message, self.connected.proxy_address)
 	return READY
 
+def ObjectDirectory_READY_ClearPublished(self, message):
+	subscribers = set()
+	publishers = set([message.published_id])
+	self.clear_listings(subscribers, publishers)
+	self.reply(PublishedCleared(name=message.name, scope=message.scope, published_id=message.published_id, note=message.note))
+	if isinstance(self.connected, Connected):
+		self.send(ClearListings(subscribers, publishers), self.connected.proxy_address)
+	return READY
+
+def ObjectDirectory_READY_ClearSubscribed(self, message):
+	subscribers = set([message.subscribed_id])
+	publishers = set()
+	self.clear_listings(subscribers, publishers)
+	self.reply(SubscribedCleared(search=message.search, scope=message.scope, subscribed_id=message.subscribed_id, note=message.note))
+	if isinstance(self.connected, Connected):
+		self.send(ClearListings(subscribers, publishers), self.connected.proxy_address)
+	return READY
+
 def ObjectDirectory_READY_ClearSubscriberRoute(self, message):
 	subscribed_id = message.subscribed_id
 	listing = self.listed_subscribe.get(subscribed_id, None)
@@ -1351,7 +1410,7 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 				#if routing[0].scope == message.scope:
 				#	routing[0] = message
 				return READY
-			self.trace(f'Duplicate route at [{message.scope}]')
+		self.trace(f'Duplicate route at [{message.scope}]')
 		return READY
 
 	# Evaluate what affect the addition of this route will
@@ -1410,6 +1469,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 		Published, Subscribed,
 		PublishedDirectory,
 		ClearListings,
+		ClearPublished, ClearSubscribed,
 		ClearSubscriberRoute, ClearPublisherRoute,
 		LoopDropped,
 		ResolveLibrary,
