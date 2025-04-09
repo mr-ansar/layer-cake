@@ -191,7 +191,7 @@ class String(Portable):
 class Unicode(Portable):
 	"""A sequence of Rune."""
 
-class Enumeration(Container):
+class Enumeration(Portable):
 	"""Names for integers.
 
 	:param element: entry in the type system.
