@@ -8,11 +8,11 @@ import layer_cake as lc
 
 def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
 	'''Open communications with a named service and exchange messages. Return nothing.'''
-	search = search or 'abc'
+	search = search or 'acme'
 	scope = scope or lc.ScopeOfDirectory.WAN
 	subscribed = None
 
-	# Declare the search.
+	# Declare the search for the matching publish.
 	lc.subscribe(self, search, scope=scope)
 
 	while True:
@@ -21,24 +21,31 @@ def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
 			subscribed = m
 			self.console(f'Subscribed', subscribed_id=subscribed.subscribed_id)
 
-		elif isinstance(m, lc.NotSubscribed):
+		elif isinstance(m, lc.NotSubscribed):	# Faulted.
 			self.complete(m)
 
-		elif isinstance(m, lc.Available):	# Session notificaton and initiate exchange.
-			self.console(f'Available at "{m.name}"', route_id=m.route_id)
+		# Start of a session with a matching publisher.
+		# Send an Enquiry to open an exchange.
+		elif isinstance(m, lc.Available):
+			self.console(f'Available', route_id=m.route_id, published_id=m.published_id)
+
 			self.send(lc.Enquiry(), self.return_address)
 
-		elif isinstance(m, lc.Ack):
+		elif isinstance(m, lc.Ack):		# Completed handshake.
 			continue
 
-		elif isinstance(m, lc.Dropped):		# End of session.
-			self.console(f'Dropped by "{m.name}"', route_id=m.route_id)
+		# End of a session. Publisher has cleared, process has terminated
+		# or the network connection was lost.
+		elif isinstance(m, lc.Dropped):
+			self.console(f'Dropped', route_id=m.route_id, published_id=m.published_id)
 			continue
 
-		elif isinstance(m, lc.Stop):		# Intervention.
-			lc.clear_subscribed(self, subscribed)
+		# Intervention, e.g. control-c or inter-process signaling.
+		# Delete the search and wait for confirmation.
+		elif isinstance(m, lc.Stop):
+			lc.clear_subscribed(self, subscribed)	# Start a teardown.
 
-		elif isinstance(m, lc.SubscribedCleared):		# Intervention.
+		elif isinstance(m, lc.SubscribedCleared):	# Completed teardown.
 			self.complete(lc.Aborted())
 
 # Register with runtime.

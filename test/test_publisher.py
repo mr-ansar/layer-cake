@@ -8,32 +8,40 @@ import layer_cake as lc
 
 def publisher(self, name: str=None, scope: lc.ScopeOfDirectory=None):
 	'''Establish a named service, wait for clients and their enquiries. Return nothing.'''
-	name = name or 'abc'
+	name = name or 'acme'
 	scope = scope or lc.ScopeOfDirectory.WAN
 	published = None
 
-	# Declare the service.
+	# Declare the name for matching subscribers.
 	lc.publish(self, name, scope=scope)
 
 	while True:
 		m = self.input()
-		if isinstance(m, lc.Published):	# Search registered with directory.
+		if isinstance(m, lc.Published):		# Name registered with directory.
 			published = m
 			self.console(f'Published', published_id=published.published_id)
 
-		elif isinstance(m, lc.NotPublished):	# Search rejected.
+		elif isinstance(m, lc.NotPublished):	# Faulted.
 			self.complete(m)
 
+		# Start of a session with a matching subscriber.
+		# Expect an Enquiry to open an exchange.
 		elif isinstance(m, lc.Delivered):
-			self.console(f'Delivered', route_id=m.route_id)
+			self.console(f'Delivered', route_id=m.route_id, subscribed_id=m.subscribed_id)
 			continue
-		elif isinstance(m, lc.Dropped):	
-			self.console(f'Dropped', route_id=m.route_id)
-			continue
-		if isinstance(m, lc.Enquiry):		# Client-service exchange.
-			self.reply(lc.Ack())
 
-		elif isinstance(m, lc.Stop):		# Intervention.
+		elif isinstance(m, lc.Enquiry):		# Opening.
+			self.reply(lc.Ack())			# Complete the exchange.
+
+		# End of a session. Subscriber has cleared, process has terminated
+		# or the network connection was lost.
+		elif isinstance(m, lc.Dropped):
+			self.console(f'Dropped', route_id=m.route_id, subscribed_id=m.subscribed_id)
+			continue
+
+		# Intervention, e.g. control-c or inter-process signaling.
+		# Delete the name and wait for confirmation.
+		elif isinstance(m, lc.Stop):
 			lc.clear_published(self, published)
 
 		elif isinstance(m, lc.PublishedCleared):
