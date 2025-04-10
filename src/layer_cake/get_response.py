@@ -139,7 +139,7 @@ def Concurrently_Stop(self, message):
 def Concurrently_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message.value)
+		d(message)
 		return
 	
 	self.complete(Faulted(f'unexpected get completion'))
@@ -208,7 +208,7 @@ def Sequentially_Stop(self, message):
 def Sequentially_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message.value)
+		d(message)
 		return
 
 	self.complete(Faulted(f'unexpected sequence completion'))
