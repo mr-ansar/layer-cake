@@ -106,13 +106,20 @@ AddOn(create_processes, stop_processes)
 
 # A thread dedicated to the blocking task of
 # waiting for termination of a process.
+class CodePage(object):
+	def __init__(self, code: int=None, page: str=None):
+		self.code = code
+		self.page = page
+
+bind(CodePage)
+
 def wait(self, p, piping):
 	if piping:
 		out, err = p.communicate()
-		return p.returncode, out
+		return CodePage(p.returncode, out)
 	else:
 		code = p.wait()
-		return code, None
+		return CodePage(code, None)
 
 bind(wait)
 
@@ -350,19 +357,20 @@ def ProcessObject_EXECUTING_Returned(self, message):
 
 	# Wait thread has returned
 	# Forward the result.
-	code, out = message.value
+	code, page = message.value.code, message.value.page
 
-	self.log(USER_TAG.ENDED, f'ProcessObject ({self.p.pid}) ended with {code}')
-	if not out:
+	self.log(USER_TAG.ENDED, f'Process ({self.p.pid}) ended with {code}')
+	if not page:
 		self.complete(None)
 
 	encoding = CodecJson()
 	try:
-		output = encoding.decode(out, Any())
+		output = encoding.decode(page, Any())
 	except CodecError as e:
 		s = str(e)
 		self.complete(Faulted(f'cannot decode output ({s}) not a standard executable?'))
 
+	# As returned by the child process.
 	self.complete(output)
 
 def ProcessObject_EXECUTING_Stop(self, message):
@@ -395,7 +403,7 @@ PROCESS_DISPATCH = {
 	),
 }
 
-bind_statemachine(ProcessObject, dispatch=PROCESS_DISPATCH)
+bind_statemachine(ProcessObject, dispatch=PROCESS_DISPATCH, thread='process-object')
 
 #
 #
