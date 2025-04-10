@@ -67,7 +67,8 @@ __all__ = [
 # Time required for request/response sequence across peer connection.
 COMPLETE_A_LOOP = 3.0
 
-# Activate/update the directory-to-directory connections.
+# Activate/update the directory-to-directory connections. See
+# also ObjectDirectory_READY_Enquiry (support for library processes).
 class ConnectTo(object):
 	def __init__(self, ipp: HostPort=None):
 		self.ipp = ipp or HostPort()
@@ -97,9 +98,13 @@ bind(PublishAs)
 bind(SubscribeTo)
 
 # Internal record of pub/subs held within each directory in the tree.
+# Also sent to subscribers/publishers as confirmation of sub/pub and
+# expected as the arg to clear_published, et al.
 # Propagated up the hierarchy.
 class Published(object):
-	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None, listening_ipp: HostPort=None, home_address: Address=None):
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None,
+			published_id: UUID=None, listening_ipp: HostPort=None,
+			home_address: Address=None):
 		self.name = name
 		self.scope = scope
 		self.published_id = published_id
@@ -107,7 +112,8 @@ class Published(object):
 		self.home_address = home_address
 
 class Subscribed(object):
-	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, home_address: Address=None):
+	def __init__(self, search: str=None, scope: ScopeOfDirectory=None,
+			subscribed_id: UUID=None, home_address: Address=None):
 		self.search = search
 		self.scope = scope
 		self.subscribed_id = subscribed_id
@@ -116,21 +122,17 @@ class Subscribed(object):
 bind(Published)
 bind(Subscribed)
 
-
-class LookupPublished(object):
-	def __init__(self, name: str=None, scope: ScopeOfDirectory=None):
+class Advisory(object):
+	"""A warning to the receiving directory, that there is a collision at a higher level."""
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None):
 		self.name = name
 		self.scope = scope
+		self.published_id = published_id
 
-class LookupCompleted(object):
-	def __init__(self, name: str=None, directory_scope: ScopeOfDirectory=None, matched_at: str=None):
-		self.name = name
-		self.directory_scope = directory_scope
-		self.matched_at = matched_at
+bind(Advisory)
 
-bind(LookupPublished)
-bind(LookupCompleted)
-
+# Instructions and confirmations from the application to retract
+# the specified pub/sub.
 class ClearPublished(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None, note: str=None):
 		self.name = name
@@ -265,7 +267,8 @@ bind(RouteToAddress)
 bind(ClearSubscriberRoute)
 bind(ClearPublisherRoute)
 
-# From directory to connector
+# From directory to connector. Pass the baton for establishing
+# communications.
 class RequestLoop(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -277,7 +280,8 @@ class RequestLoop(object):
 		self.published_id = published_id
 		self.subscriber_address = subscriber_address
 
-# Connector to remote, i.e. ListenForPeer.
+# From ConnectToPeer to ListenForPeer. Establish
+# a virtual circuit.
 class OpenLoop(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None, subscribed_id: UUID=None, published_id: UUID=None, subscriber_address: Address=None):
 		self.name = name
@@ -287,11 +291,13 @@ class OpenLoop(object):
 		self.published_id = published_id
 		self.subscriber_address = subscriber_address
 
-# Reply from remote ListenToPeer.
+# Response to OpenLoop.
 class LoopOpened(object):
 	def __init__(self, publisher_address: Address=None):
 		self.publisher_address = publisher_address
 
+# From ConnectToPeer to ListenForPeer. Clear the
+# virtual cicuit.
 class CloseLoop(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None, subscribed_id: UUID=None, published_id: UUID=None, subscriber_address: Address=None):
 		self.name = name
@@ -301,11 +307,13 @@ class CloseLoop(object):
 		self.published_id = published_id
 		self.subscriber_address = subscriber_address
 
+# Response to CloseLoop.
 class LoopClosed(object):
 	def __init__(self, publisher_address: Address=None):
 		self.publisher_address = publisher_address
 
-# Subscriber is rerouting to a better route.
+# From directory to connector. Subscriber is rerouting,
+# e.g. upgrading.
 class DropLoop(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None, subscribed_id: UUID=None, published_id: UUID=None, subscriber_address: Address=None):
 		self.name = name
@@ -315,6 +323,8 @@ class DropLoop(object):
 		self.published_id = published_id
 		self.subscriber_address = subscriber_address
 
+# Response to DropLoop and also when remote object
+# clears a pub/sub.
 class LoopDropped(object):
 	def __init__(self, subscribed_id: UUID=None, name: str=None, route_id: UUID=None):
 		self.subscribed_id = subscribed_id
@@ -329,7 +339,8 @@ bind(LoopClosed)
 bind(DropLoop)
 bind(LoopDropped)
 
-#
+# Notifications from directory to pub/sub regarding presence of virtual circuit.
+# A publisher is available at self.return_address.
 class Available(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -342,6 +353,7 @@ class Available(object):
 		self.publisher_address = publisher_address
 		self.opened_at = opened_at
 
+# A subscriber is at self.return_address.
 class Delivered(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -354,6 +366,7 @@ class Delivered(object):
 		self.subscriber_address = subscriber_address
 		self.opened_at = opened_at
 
+# An existing circuit has been cleared.
 class Dropped(object):
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -393,10 +406,13 @@ def ListeningForPeer_INITIAL_Start(self, message):
 	# e.g. LAN. All use ephemeral ports.
 	if self.scope.value < ScopeOfDirectory.HOST.value:
 		ipp = HostPort('0.0.0.0', 0)
+
 	elif self.scope.value < ScopeOfDirectory.PROCESS.value:
 		ipp = HostPort('127.0.0.1', 0)
+
 	else:
 		self.complete(Faulted(f'Cannot peer for scope [{self.scope}]'))
+
 	listen(self, ipp)
 	return PENDING
 
@@ -419,32 +435,34 @@ def ListeningForPeer_READY_Closed(self, message):
 	# to those that received the start-of-session.
 	if p is not None:
 		for k, v in p.items():
-			d = Dropped(name=v.name, scope=v.scope, route_id=v.route_id,
-				subscribed_id=v.subscribed_id, published_id=v.published_id,
-				remote_address=k, opened_at=world_now())
+			a, opened_at = v
+			d = Dropped(name=a.name, scope=a.scope, route_id=a.route_id,
+				subscribed_id=a.subscribed_id, published_id=a.published_id,
+				remote_address=k, opened_at=opened_at)
 			self.forward(d, self.address, k)
 	return READY
 
 def ListeningForPeer_READY_OpenLoop(self, message):
-	self.accepted[self.return_address[-1]][message.subscriber_address] = message
+	opened_at=world_now()
+	self.accepted[self.return_address[-1]][message.subscriber_address] = [message, opened_at]
 
 	self.reply(LoopOpened(publisher_address=self.address))
 
 	d = Delivered(name=message.name, scope=message.scope, route_id=message.route_id,
 		subscribed_id=message.subscribed_id, published_id=message.published_id,
-		subscriber_address=message.subscriber_address, opened_at=world_now())
+		subscriber_address=message.subscriber_address, opened_at=opened_at)
 
 	self.forward(d, self.address, message.subscriber_address)
 	return READY
 
 def ListeningForPeer_READY_CloseLoop(self, message):
-	self.accepted[self.return_address[-1]].pop(message.subscriber_address, None)
+	p, opened_at = self.accepted[self.return_address[-1]].pop(message.subscriber_address, None)
 
 	self.reply(LoopClosed(publisher_address=self.address))
 
 	d = Dropped(name=message.name, scope=message.scope, route_id=message.route_id,
 		subscribed_id=message.subscribed_id, published_id=message.published_id,
-		remote_address=message.subscriber_address, opened_at=world_now())
+		remote_address=message.subscriber_address, opened_at=opened_at)
 
 	self.forward(d, self.address, message.subscriber_address)
 	return READY
@@ -514,7 +532,7 @@ class ConnectToPeer(Point, StateMachine):
 
 			d = Dropped(name=a.name, scope=a.scope, route_id=a.route_id,
 				subscribed_id=a.subscribed_id, published_id=a.published_id,
-				remote_address=a.publisher_address, opened_at=world_now())
+				remote_address=a.publisher_address, opened_at=a.opened_at)
 
 			self.forward(d, s, p)
 
@@ -525,12 +543,12 @@ def ConnectToPeer_INITIAL_Start(self, message):
 def ConnectToPeer_PENDING_Connected(self, message):
 	self.connected = message
 
-	def opened(loop, kv):
+	def opened(loop, args):
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
 			return
-		request = kv.request
+		request = args.request
 
 		a = Available(name=request.name, scope=request.scope, route_id=request.route_id,
 			published_id=request.published_id, subscribed_id=request.subscribed_id,
@@ -565,12 +583,12 @@ def ConnectToPeer_PENDING_DropLoop(self, message):
 def ConnectToPeer_READY_RequestLoop(self, message):
 	self.request.append(message)
 
-	def opened(loop, kv):
+	def opened(loop, args):
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
 			return
-		request = kv.request
+		request = args.request
 
 		a = Available(name=request.name, scope=request.scope, route_id=request.route_id,
 			published_id=request.published_id, subscribed_id=request.subscribed_id,
@@ -596,12 +614,12 @@ def ConnectToPeer_READY_DropLoop(self, message):
 		self.reply(d)
 		return READY
 
-	def closed(loop, kv):
-		request, available, return_address = kv.request, kv.available, kv.return_address
+	def closed(loop, args):
+		request, available, return_address = args.request, args.available, args.return_address
 		if isinstance(loop, LoopClosed):
 			d = Dropped(name=request.name, scope=request.scope, route_id=request.route_id,
 				subscribed_id=request.subscribed_id, published_id=request.published_id,
-				remote_address=available[2], opened_at=world_now())
+				remote_address=available[2], opened_at=available[0].opened_at)
 			self.forward(d, available[1], available[2])
 
 			d = LoopDropped(subscribed_id=request.subscribed_id, name=request.name, route_id=request.route_id)
@@ -663,7 +681,8 @@ CONNECT_TO_PEER_DISPATCH = {
 
 bind(ConnectToPeer, CONNECT_TO_PEER_DISPATCH)
 
-#
+# A route is available that would require a peer connection
+# from subscriber to publisher.
 class RouteOverConnect(Point, StateMachine):
 	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscriber: Subscribed=None, publisher: Published=None):
 		Point.__init__(self)
@@ -701,7 +720,8 @@ ROUTE_OVER_PEER_DISPATCH = {
 
 bind(RouteOverConnect, ROUTE_OVER_PEER_DISPATCH)
 
-#
+# A match has been found between two objects within a process.
+# This also covers the process-to-library scenario.
 class RouteInProcess(Point, StateMachine):
 	def __init__(self, route_id: UUID=None, subscriber: Subscribed=None, publisher: Published=None, subscriber_address: Address=None, publish_as: PublishAs=None):
 		Point.__init__(self)
@@ -973,14 +993,14 @@ class ObjectDirectory(Threaded, StateMachine):
 		sr[1].add(r)
 
 		# When the route terminates, clear out the links.
-		def clear(value, kv):
-			pr = self.routed_publish.get(kv.published_id)
+		def clear(value, args):
+			pr = self.routed_publish.get(args.published_id)
 			if pr is not None:
-				pr[1].discard(kv.route)
+				pr[1].discard(args.route)
 
-			sr = self.routed_subscribe.get(kv.subscribed_id)
+			sr = self.routed_subscribe.get(args.subscribed_id)
 			if sr is not None:
-				sr[1].discard(kv.route)
+				sr[1].discard(args.route)
 
 		self.begin(r, clear, subscribed_id=subscriber.subscribed_id, published_id=publisher.published_id, route=r)
 
@@ -1037,9 +1057,9 @@ class ObjectDirectory(Threaded, StateMachine):
 
 	def open_route(self, route):
 		# Callback on loss of ConnectToPeer.
-		def clear_ipp(value, kv):
-			self.console(f'Clearing peer connection {kv.ipp}')
-			self.peer_connect.pop(kv.ipp, None)
+		def clear_ipp(value, args):
+			self.console(f'Clearing peer connection {args.ipp}')
+			self.peer_connect.pop(args.ipp, None)
 
 		# Initiate the given route. This is on a per-type basis.
 		# Should be a virtual method.
@@ -1091,10 +1111,10 @@ class ObjectDirectory(Threaded, StateMachine):
 			if c is None:
 				return
 
-			def dropped(value, kv):
+			def dropped(value, args):
 				if not isinstance(value, LoopDropped):
 					self.warning(f'Unexpected response to drop of loop ({value})')
-				route = kv.route
+				route = args.route
 				try:
 					routing = self.subscriber_routing[route.subscribed_id][route.name]
 				except (KeyError, IndexError):
@@ -1239,19 +1259,6 @@ def ObjectDirectory_READY_Enquiry(self, message):
 
 	return READY
 
-def ObjectDirectory_READY_LookupPublished(self, message):
-	p = self.listed_publish.get(message.name, None)
-	if p is not None:
-		self.reply(LookupCompleted(matched_at='here'))
-		return READY
-
-	if isinstance(self.connected, Connected) and message.scope.value < self.directory_scope.value:
-		self.forward(message, self.connected.proxy_address, self.return_address)
-		return READY
-
-	self.reply(LookupCompleted(matched_at=None))
-	return READY
-
 def ObjectDirectory_READY_PublishAs(self, message):
 	name = message.name
 	scope = message.scope
@@ -1265,33 +1272,16 @@ def ObjectDirectory_READY_PublishAs(self, message):
 	published_id = uuid.uuid4()
 	listing = Published(name=name, scope=scope, published_id=published_id, home_address=self.object_address)
 
-	def matching(value, kv):
-		request = kv.request
-		return_address = kv.return_address
+	if not self.add_publisher(listing, None, message):
+		return READY
+	self.unique_publish[unique_publish] = published_id
+	if self.directory_scope.value < ScopeOfDirectory.LIBRARY.value:
+		self.send(listing, message.publisher_address)
 
-		if not isinstance(value, LookupCompleted):
-			self.send(NotPublished(name=request.name, scope=self.directory_scope, note='lookup incomplete'), return_address)
-			return
+	for s in self.find_subscribers(listing):
+		self.create_route(s, listing)
+	self.send_up(listing)
 
-		if value.matched_at:
-			self.send(NotPublished(name=request.name, scope=self.directory_scope, note=value.matched_at), return_address)
-			return
-
-		if not self.add_publisher(listing, None, message):
-			return
-		self.unique_publish[unique_publish] = published_id
-		if self.directory_scope.value < ScopeOfDirectory.LIBRARY.value:
-			self.send(listing, message.publisher_address)
-
-		for s in self.find_subscribers(listing):
-			self.create_route(s, listing)
-		self.send_up(listing)
-
-	if isinstance(self.connected, Connected) and message.scope.value < self.directory_scope.value:
-		a = self.create(GetResponse, LookupPublished(name=message.name, scope=message.scope), self.connected.proxy_address, seconds=3.0)
-		self.begin(a, matching, request=message, return_address=self.return_address)
-	else:
-		matching(LookupCompleted(matched_at=None), Gas(request=message, return_address=self.return_address))
 	return READY
 
 def ObjectDirectory_READY_HostPort(self, message):
@@ -1344,21 +1334,30 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 def ObjectDirectory_READY_Published(self, message):
 	if message.scope.value > self.directory_scope.value:
 		return READY
+
 	a, sub, pub = self.accepted[self.return_address[-1]]
 	if not self.add_publisher(message, pub, None):
+		self.send(Advisory(name=message.name, scope=self.directory_scope, published_id=message.published_id), message.home_address)
 		return READY
+
 	for s in self.find_subscribers(message):
 		self.create_route(s, message)
 	self.send_up(message)
 
 	return READY
 
+def ObjectDirectory_READY_Advisory(self, message):
+	self.warning(f'Cannot publish "{message.name}" at [{message.scope}]')
+	return READY
+
 def ObjectDirectory_READY_Subscribed(self, message):
 	if message.scope.value > self.directory_scope.value:
 		return READY
+
 	a, sub, pub = self.accepted[self.return_address[-1]]
 	if not self.add_subscriber(message, sub, None):
 		return READY
+
 	for p in self.find_publishers(message):
 		self.create_route(message, p)
 	self.send_up(message)
@@ -1544,9 +1543,9 @@ OBJECT_DIRECTORY_DISPATCH = {
 		Accepted, Closed,
 		ConnectTo, AcceptAt,
 		Enquiry,
-		LookupPublished,
 		PublishAs, SubscribeTo, HostPort,
 		Published, Subscribed,
+		Advisory,
 		PublishedDirectory,
 		ClearListings,
 		ClearPublished, ClearSubscribed,
