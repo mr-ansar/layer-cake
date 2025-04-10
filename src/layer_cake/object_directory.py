@@ -649,7 +649,7 @@ def ConnectToPeer_READY_T1(self, message):
 def ConnectToPeer_READY_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message)
+		d(message, self)
 	return READY
 
 def ConnectToPeer_READY_Closed(self, message):
@@ -1525,7 +1525,7 @@ def ObjectDirectory_READY_LoopDropped(self, message):
 def ObjectDirectory_READY_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message)
+		d(message, self)
 	return READY
 
 def ObjectDirectory_READY_Stop(self, message):

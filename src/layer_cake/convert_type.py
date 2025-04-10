@@ -315,6 +315,8 @@ def cast_to(message, p):
 	return (message, p)
 
 def cast_back(message):
+	if message is None:
+		return None, None, None
 	art = getattr(message, '__art__', None)
 	if art:
 		m = message

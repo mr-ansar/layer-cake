@@ -21,7 +21,7 @@ def Main_Start(self, message):
 def Main_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnReturned):
-		d(message)
+		d(message, self)
 
 def Main_Stop(self, message):
 	self.abort()

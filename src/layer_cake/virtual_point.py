@@ -220,8 +220,10 @@ class OnReturned(object):
 		self.routine = routine
 		self.args = args
 
-	def __call__(self, returned):
-		return self.routine(returned.value, self.args)	# Make the call.
+	def __call__(self, returned, point):
+		m, p, a = cast_back(returned.value)
+		point.returned_type = p
+		return self.routine(m, self.args)	# Make the call.
 
 #
 #
