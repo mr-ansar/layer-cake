@@ -389,9 +389,7 @@ def start_vector(self, object_type, args):
 			self.send(m, a)
 			i, m, t = self.select(Returned)
 
-		if isinstance(t, UserDefined):
-			return m.value
-		return (m.value, t)
+		return m.value
 
 bind_routine(start_vector)
 
