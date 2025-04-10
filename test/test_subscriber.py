@@ -6,29 +6,32 @@
 # notifications at each end, i.e. Available.
 import layer_cake as lc
 
-def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
+def subscriber(self, search: str=None):
 	'''Open communications with a named service and exchange messages. Return nothing.'''
 	search = search or 'acme'
-	scope = scope or lc.ScopeOfDirectory.WAN
 	subscribed = None
 
 	# Declare the search for the matching publish.
-	lc.subscribe(self, search, scope=scope)
+	lc.subscribe(self, search)
 
+	m = self.input()
+	if isinstance(m, lc.Subscribed):		# Search registered with directory.
+		subscribed = m
+		self.console(f'Subscribed', subscribed_id=subscribed.subscribed_id)
+
+	elif isinstance(m, lc.NotSubscribed):	# Faulted.
+		self.complete(m)
+
+	# Now a part of the pub/sub framework. Wait for session notifications
+	# and application messages.
 	while True:
 		m = self.input()
-		if isinstance(m, lc.Subscribed):	# Search registered with directory.
-			subscribed = m
-			self.console(f'Subscribed', subscribed_id=subscribed.subscribed_id)
 
-		elif isinstance(m, lc.NotSubscribed):	# Faulted.
-			self.complete(m)
-
-		# Start of a session with a matching publisher.
-		# Send an Enquiry to open an exchange.
-		elif isinstance(m, lc.Available):
+		# Start of a session.
+		if isinstance(m, lc.Available):
 			self.console(f'Available', route_id=m.route_id, published_id=m.published_id)
 
+			# Start an exchange.
 			self.send(lc.Enquiry(), self.return_address)
 
 		elif isinstance(m, lc.Ack):		# Completed handshake.
@@ -44,9 +47,12 @@ def subscriber(self, search: str=None, scope: lc.ScopeOfDirectory=None):
 		# Delete the search and wait for confirmation.
 		elif isinstance(m, lc.Stop):
 			lc.clear_subscribed(self, subscribed)	# Start a teardown.
+			break
 
-		elif isinstance(m, lc.SubscribedCleared):	# Completed teardown.
-			self.complete(lc.Aborted())
+	m = self.input()
+	if not isinstance(m, lc.SubscribedCleared):	# Completed teardown.
+		self.complete(m)
+	self.complete(lc.Aborted())
 
 # Register with runtime.
 lc.bind(subscriber)

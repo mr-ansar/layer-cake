@@ -6,13 +6,14 @@
 # notifications at each end, i.e. Delivered.
 import layer_cake as lc
 
-def publisher(self, name: str=None):
+def publisher(self, name: str=None, scope: lc.ScopeOfDirectory=None):
 	'''Establish a named service, wait for clients and their enquiries. Return nothing.'''
 	name = name or 'acme'
+	scope = scope or lc.ScopeOfDirectory.GROUP
 	published = None
 
 	# Declare the name for matching subscribers.
-	lc.publish(self, name)
+	lc.publish(self, name, scope=scope)
 
 	m = self.input()
 	if isinstance(m, lc.Published):			# Name registered with directory.
