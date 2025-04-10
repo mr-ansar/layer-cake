@@ -6,15 +6,15 @@ def main(self):
 	echo = self.create(lc.ProcessObject, test_library.main)		# Load the library process.
 
 	self.send(lc.Ack(), echo)									# Request and
-	i, m, p = self.select(lc.Ack, lc.Faulted, lc.Stop)			# response.
+	m, i = self.select(lc.Ack, lc.Faulted, lc.Stop)			# response.
 	assert isinstance(m, lc.Ack)
 
-	i, m, p = self.select()			# response.
+	m, i = self.select()			# response.
 	return lc.Aborted()
 
 	# Optional housekeeping.
 	# self.send(lc.Stop(), echo)									# Unload the library.
-	# i, m, p = self.select(lc.Returned, lc.Faulted, lc.Stop)		# Gone.
+	# m, i = self.select(lc.Returned, lc.Faulted, lc.Stop)		# Gone.
 	# assert isinstance(m, lc.Returned)
 
 lc.bind(main)

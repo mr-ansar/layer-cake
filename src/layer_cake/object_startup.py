@@ -379,7 +379,7 @@ def start_vector(self, object_type, args):
 		self.send(pn, PD.directory)
 
 	while True:
-		i, m, t = self.select(Returned, Stop)
+		m, i = self.select(Returned, Stop)
 
 		if i == 0:
 			# Do a "fake" signaling. Sidestep all the platform machinery
@@ -387,7 +387,7 @@ def start_vector(self, object_type, args):
 			PS.signal_received = PS.platform_kill
 		elif i == 1:
 			self.send(m, a)
-			i, m, t = self.select(Returned)
+			m, i = self.select(Returned)
 
 		return m.value
 
@@ -412,7 +412,7 @@ def run_object(home, object_type, args, logs, locking):
 		if locking or isinstance(logs, RollingLog):
 			a = root.create(head_lock, home.lock.path, 'head')
 			root.assign(a, 1)
-			m = root.select(Ready, Returned)
+			m, i = root.select(Ready, Returned)
 			if isinstance(m, Returned):	# Cannot lock.
 				root.debrief()
 				c = Faulted(f'role {home.lock.path} is running')
@@ -456,13 +456,13 @@ def run_object(home, object_type, args, logs, locking):
 				root.send(Stop(), a)
 				running = False
 
-		i, m, t = root.select(Returned)		# End of start_vector.
+		m, i = root.select(Returned)		# End of start_vector.
 		output = m.value
 
 	finally:
 		root.abort()					# Stop the lock if present.
 		while root.working():
-			m = root.select(Returned)
+			root.select(Returned)
 			root.debrief()
 
 		home.stopped(output)

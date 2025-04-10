@@ -1540,7 +1540,7 @@ bind(ListenConnect, (Start,))
 # Managed creation of socket engine.
 def create_sockets(root):
 	TS.sockets = root.create(ListenConnect)
-	i, m, p = root.select(SocketChannel)
+	m, i = root.select(SocketChannel)
 	TS.channel = m
 
 def stop_sockets(root):

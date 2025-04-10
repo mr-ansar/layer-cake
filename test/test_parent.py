@@ -5,7 +5,7 @@ import test_main
 def main(self):
 	t = lc.text_to_world('1963-03-26T02:24')
 	a = self.create(lc.ProcessObject, test_main.main, b=32, c=99, t=t)
-	i, m, t = self.select(lc.Returned, lc.Stop)
+	m, i = self.select(lc.Returned, lc.Stop)
 	if isinstance(m, lc.Returned):
 		if m.created_type not in (lc.ProcessObject, test_main.main):
 			return lc.Faulted(f'not the expected source type ({m.created_type})')

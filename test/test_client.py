@@ -15,7 +15,7 @@ def client(self, server_address: lc.HostPort=None, convention: CallingConvention
 
 	# Initiate a network connection.
 	lc.connect(self, server_address)
-	i, m, p = self.select(lc.Connected, lc.Faulted, lc.Stop)
+	m, i = self.select(lc.Connected, lc.Faulted, lc.Stop)
 
 	if isinstance(m, lc.Faulted):	# No connection.
 		return m
@@ -28,8 +28,10 @@ def client(self, server_address: lc.HostPort=None, convention: CallingConvention
 
 	# Explicit close of the connection.
 	self.send(lc.Close(), server)
-	m = self.select(lc.Closed, lc.Faulted, lc.Stop)
-	if isinstance(m, lc.Faulted):
+	m, i = self.select(lc.Closed, lc.Faulted, lc.Stop)
+	if isinstance(m, lc.Closed):
+		pass
+	elif isinstance(m, lc.Faulted):
 		return m
 	elif isinstance(m, lc.Stop):
 		return lc.Aborted()

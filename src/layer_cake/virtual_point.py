@@ -69,7 +69,6 @@ __all__ = [
 	'object_dispatch',
 	'no_ending',
 	'halt',
-	'AutoStop',
 ]
 
 # Point Runtime Addresses
@@ -242,6 +241,7 @@ class Point(object):
 		self.assigned_queue = None				# Parent queue for non-threaded machine.
 		self.object_ending = None
 
+		self.returned_type = None
 		self.received_type = None
 		self.current_state = None
 
@@ -787,7 +787,8 @@ class Buffering(Player):
 				if qf.execution_trace:
 					t = portable_to_tag(r[2])
 					self.log(USER_TAG.RECEIVED, f'Received "{t}" from <{a}>')
-				return r
+				self.received_type = r[2]
+				return r[1], r[0]
 
 			if saving and saving.find(m):
 				self.save(m)
@@ -1076,37 +1077,3 @@ def sync_object(object_type, parent_address, args, kw):
 	if q.__art__.lifecycle:
 		q.log(USER_TAG.CREATED, 'Created by <%08x>' % (parent_address[-1],))
 	return q
-
-#
-#
-class AutoStop(object):
-	"""Context to automate clearance of pending objects.
-
-	:param point: parent of the pending objects
-	:type point: async object
-	:param completed: map of values returned by objects
-	:type completed: dict
-	"""
-	def __init__(self, point, completed=None):
-		self.point = point
-		self.completed = completed
-
-	def __enter__(self):
-		return self.point
-
-	def __exit__(self, exc_type=None, exc_value=None, traceback=None):
-		point = self.point
-		completed = self.completed
-
-		point.abort()
-		while point.working():
-			c = point.select(Returned)
-			k = point.debrief()
-			if completed is not None:
-				completed[k] = c.value
-
-		# Handle exceptions that may have come up during execution, by
-		# default any exceptions are raised to the user.
-		if exc_type is not None:
-			return False
-		return True

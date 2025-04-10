@@ -9,7 +9,7 @@ def main(self, requested_ipp: lc.HostPort=None):
 
 	# Establish the network listen.
 	listen(self, requested_ipp=requested_ipp)
-	i, m, p = self.select(Listening, NotListening, lc.Stop)
+	m, i = self.select(Listening, NotListening, lc.Stop)
 	if i == 1:
 		return m
 	if i == 2:
@@ -17,7 +17,7 @@ def main(self, requested_ipp: lc.HostPort=None):
 
 	# Errors, sessions and inbound client messages.
 	while True:
-		i, m, p = self.select(NotListening,		# Listen failed.
+		m, i = self.select(NotListening,		# Listen failed.
 			Accepted, Closed,					# Session notifications.
 			lc.Stop,							# Intervention.
 			lc.Unknown)							# An inbound message.

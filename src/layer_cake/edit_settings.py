@@ -56,7 +56,7 @@ def edit_settings(self, home):
 		# Run the editor.
 		a = self.create(Utility, editor, name)
 		self.assign(a, editor)
-		i, m, t = self.select(Returned, Faulted, Stop)
+		m, i = self.select(Returned, Faulted, Stop)
 		if isinstance(m, Faulted):
 			return m
 		e = self.debrief()
