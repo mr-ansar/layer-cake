@@ -125,7 +125,7 @@ def Concurrently_Start(self, message):
 		else:
 			self.complete(Faulted(f'unexpected collective item [{i}]'))
 
-		self.begin(a, collate, i=i)
+		self.callback(a, collate, i=i)
 
 	if self.seconds is not None:
 		self.start(T1, self.seconds)
