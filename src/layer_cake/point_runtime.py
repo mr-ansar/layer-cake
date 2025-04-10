@@ -50,7 +50,6 @@ __all__ = [
 	'Inspect',
 	'Ack',
 	'Nak',
-	'Advisory',
 	'Anything',
 	'Faulted',
 	'Aborted',
@@ -241,13 +240,6 @@ bind_message(OutOfService,
 	exit_status=Integer8(),
 	request=Unicode(),
 )
-
-class Advisory(Faulted):
-	"""A warning to the receiver, that something in the wider system is amiss."""
-	def __init__(self, condition: str=None, explanation: str=None):
-		Faulted.__init__(self, condition, explanation)
-
-bind_message(Advisory, error_code=int, exit_status=int)
 
 #
 unknown = portable_to_signature(UserDefined(Unknown))
