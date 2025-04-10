@@ -221,8 +221,8 @@ class OnReturned(object):
 		self.routine = routine
 		self.args = args
 
-	def __call__(self, completed):
-		return self.routine(completed.value, self.args)	# Make the call.
+	def __call__(self, returned):
+		return self.routine(returned.value, self.args)	# Make the call.
 
 #
 #
