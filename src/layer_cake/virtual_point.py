@@ -447,31 +447,43 @@ class Point(object):
 		c = self.address_job.pop(a, None)
 		return c
 
-	def begin(self, a, f, **kw):
+	def callback(self, a, f, **kw):
 		c = OnReturned(f, Gas(**kw))
 		self.assign(a, c)
 
-	def then(self, a, f, g):
+	def continuation(self, a, f, g):
 		c = OnReturned(f, g)
 		self.assign(a, c)
 
-	def log(self, tag, a):
+	def a_kv(self, a, kv):
+		if len(a) > 0:
+			note = ' '.join(a)
+			if len(kv) > 0:
+				eq = [f'{k}={v}'for k, v in kv.items()]
+				t = ','.join(eq)
+				text = f'{note} ({t})'
+			else:
+				text = note
+		elif len(kv) > 0:
+			eq = [f'{k}={v}'for k, v in kv.items()]
+			text = ','.join(eq)
+		else:
+			text = None
+		return text
+
+	def log(self, tag, text):
 		"""Generate a PointLog object at the specified level.
 
 		This an internal function that should rarely be used directly
 		by an application. Use debug(), trace(), etc instead.
 
 		Forms a standard logging object and sends it to the logging
-		service within the ansar runtime. The message to include
-		is passed as either a str or a tuple of strings and objects,
-		i.e. the tuple of positional arguments. Encoding and decoding
-		is performed to ensure a single line log. Non ASCII characters
-		are escaped with a backslash.
+		service within the ansar runtime.
 
-		:param tag: one of the logging single-character tags
-		:type tag: str
-		:param a: the message to log
-		:type text: str or tuple
+		:param tag: one of the logging enumerations
+		:type tag: USER_LOG
+		:param text: the message to log
+		:type text: str
 		"""
 		e = PointLog()
 		e.stamp = time()
@@ -485,27 +497,7 @@ class Point(object):
 		else:
 			e.state = self.current_state.__name__
 
-		if isinstance(a, str):
-			e.text = a
-			send_a_message(e, VP.log_address, self.object_address)
-			return
-
-		b, first = bytearray(), True
-		for t in a:
-			if first:
-				first = False
-			else:
-				b += b' '
-
-			if isinstance(t, str):
-				x = t.encode('utf-8')
-			elif isinstance(t, (bytes, bytearray)):
-				x = t
-			else:
-				s = str(t)
-				x = s.encode('utf-8')
-			b += x
-		e.text = b.decode('ascii', 'backslashreplace')
+		e.text = text
 		send_a_message(e, VP.log_address, self.object_address)
 
 	def pass_fail(self, condition, source, line, text):
@@ -522,7 +514,7 @@ class Point(object):
 		p.text = decoded
 		send_a_message(p, VP.test_address, self.object_address)
 
-	def debug(self, *a):
+	def debug(self, *a, **kv):
 		"""Generate a log at level DEBUG.
 
 		:param a: the message to log
@@ -530,9 +522,11 @@ class Point(object):
 		"""
 		if self.__art__.user_logs.value > USER_LOG.DEBUG.value:
 			return
-		self.log(USER_LOG.DEBUG, a)
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_LOG.DEBUG, text)
 
-	def trace(self, *a):
+	def trace(self, *a, **kv):
 		"""Generate a log at level TRACE.
 
 		:param a: the message to log
@@ -540,7 +534,9 @@ class Point(object):
 		"""
 		if self.__art__.user_logs.value > USER_LOG.TRACE.value:
 			return
-		self.log(USER_TAG.TRACE, a)
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_TAG.TRACE, text)
 
 	def console(self, *a, **kv):
 		"""Generate a log at level CONSOLE.
@@ -551,21 +547,9 @@ class Point(object):
 		if self.__art__.user_logs.value > USER_LOG.CONSOLE.value:
 			return
 
-		if len(a) > 0:
-			note = ' '.join(a)
-			if len(kv) > 0:
-				eq = [f'{k}={v}'for k, v in kv.items()]
-				t = ','.join(eq)
-				a = f'{note} ({t})'
-			else:
-				a = note
-		elif len(kv) > 0:
-			eq = [f'{k}={v}'for k, v in kv.items()]
-			a = ','.join(eq)
-		else:
-			return
-
-		self.log(USER_TAG.CONSOLE, a)
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_TAG.CONSOLE, text)
 
 	def sample(self, **kv):
 		"""Generate a log at level TRACE.
@@ -577,31 +561,12 @@ class Point(object):
 		:param kv: the named arguments
 		:type a: dict
 		"""
-		b, first = bytearray(), True
-		for k, v in kv.items():
-			if first:
-				first = False
-			else:
-				b += b':'
-			x = k.encode('utf-8')		# Name
-			b += x
-			b += b'='					# =
-			if isinstance(v, tuple) and len(v) == 2:
-				x = 'STREAM-WORD'		# stream_word(v[0], v[1]).encode('utf-8')
-			elif isinstance(v, str):	# Value
-				x = v.encode('utf-8')
-			elif isinstance(v, (bytes, bytearray)):
-				x = v
-			else:
-				s = str(v)
-				x = s.encode('utf-8')
-			x = x.replace(b':', b'_')
-			x = x.replace(b'=', b'_')
-			b += x
-		text = b.decode('ascii', 'backslashreplace')
-		self.log(USER_TAG.SAMPLE, text)
+		a = ()
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_TAG.SAMPLE, text)
 
-	def warning(self, *a):
+	def warning(self, *a, **kv):
 		"""Generate a log at level WARNING.
 
 		:param a: the message to log
@@ -609,9 +574,11 @@ class Point(object):
 		"""
 		if self.__art__.user_logs.value > USER_LOG.WARNING.value:
 			return
-		self.log(USER_TAG.WARNING, a)
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_TAG.WARNING, text)
 
-	def fault(self, *a):
+	def fault(self, *a, **kv):
 		"""Generate a log at level FAULT.
 
 		:param a: the message to log
@@ -619,7 +586,9 @@ class Point(object):
 		"""
 		if self.__art__.user_logs.value > USER_LOG.FAULT.value:
 			return
-		self.log(USER_TAG.FAULT, a)
+		text = self.a_kv(a, kv)
+		if text:
+			self.log(USER_TAG.FAULT, text)
 
 	def test(self, condition, note):
 		"""Generate a log at level WARNING, dependent on the condition.
