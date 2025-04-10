@@ -16,7 +16,7 @@ def Main_Start(self, message):
 	def test_main_complete(value, _):
 		self.complete(value)
 
-	self.begin(a, test_main_complete)
+	self.callback(a, test_main_complete)
 
 def Main_Returned(self, message):
 	d = self.debrief()
