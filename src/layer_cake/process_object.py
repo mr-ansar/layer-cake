@@ -296,7 +296,7 @@ def ProcessObject_PENDING_HostPort(self, message):
 			command.append(f'--directory-scope=LIBRARY')
 			command.append(f'--connect-to-directory={v}')
 
-			subscribe(self, self.role_name, ScopeOfDirectory.PROCESS)
+			subscribe(self, self.role_name, scope=ScopeOfDirectory.PROCESS)
 
 			for k, v in self.settings.items():
 				name = k

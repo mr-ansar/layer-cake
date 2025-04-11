@@ -797,9 +797,6 @@ def w2p_target(c, w, t):
 	return p
 
 def w2p_address(c, w, t):
-	if c.space is not None:
-		p = c.space[w]
-		return p
 	if c.return_proxy is not None:
 		# Clean out any trombone detected
 		# in the remote. See p2w_address.
@@ -816,6 +813,12 @@ def w2p_address(c, w, t):
 			w.append(c.return_proxy)
 	p = tuple(w)	# Now convert.
 	return p
+
+def w2p_address_int(c, w, t):
+	if c.space:
+		p = c.space[w]
+		return p
+	raise ValueError('address-by-index but no space available')
 
 def w2p_null_pointer(c, w, t):
 	return [0, None]
@@ -880,7 +883,7 @@ w2p = {
 	(list, DequeOf): w2p_deque,
 	(list, TargetAddress): w2p_target,
 	(list, Address): w2p_address,
-	(int, Address): w2p_address,
+	(int, Address): w2p_address_int,
 	(str, PointerTo): w2p_pointer,
 
 	# Two mechanisms for including messages

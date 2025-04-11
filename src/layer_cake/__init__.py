@@ -36,6 +36,7 @@ from .make_message import *
 from .virtual_codec import *
 from .json_codec import *
 from .object_logs import *
+from .virtual_runtime import *
 from .object_runtime import *
 from .virtual_point import *
 from .point_runtime import *
