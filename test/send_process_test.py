@@ -37,24 +37,24 @@ class TestSendProcess(TestCase):
 			echo = ch.create(lc.ProcessObject, test_echo.main)
 
 			ch.start(lc.T1, 2.0)
-			i, m, p = ch.select(lc.T1, lc.Faulted, lc.Stop)
+			m, i = ch.select(lc.T1, lc.Faulted, lc.Stop)
 			assert isinstance(m, lc.T1)
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, m, p = ch.select(Connected, lc.Faulted, lc.Stop)
+			m, i = ch.select(Connected, lc.Faulted, lc.Stop)
 			assert isinstance(m, Connected)
 			server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, m, p = ch.select(lc.Ack, lc.Faulted, lc.Stop)
+			m, i = ch.select(lc.Ack, lc.Faulted, lc.Stop)
 			assert isinstance(m, lc.Ack)
 
 			ch.send(Close(), server)
-			i, m, p = ch.select(Closed, lc.Faulted, lc.Stop)
+			m, i = ch.select(Closed, lc.Faulted, lc.Stop)
 			assert isinstance(m, Closed)
 
 			ch.send(lc.Stop(), echo)
-			i, m, p = ch.select(lc.Returned, lc.Faulted, lc.Stop)
+			m, i = ch.select(lc.Returned, lc.Faulted, lc.Stop)
 			assert isinstance(m, lc.Returned)
 
 	def test_collected(self):
@@ -68,12 +68,12 @@ class TestSendProcess(TestCase):
 			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, m, p = ch.select()
+			m, i = ch.select()
 			assert isinstance(m, Connected)
 			server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			assert isinstance(selected, lc.Ack)
 
 	def test_send_cast(self):
@@ -84,13 +84,13 @@ class TestSendProcess(TestCase):
 			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert selected == original
@@ -157,13 +157,13 @@ class TestSendProcess(TestCase):
 			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert selected == original
@@ -222,13 +222,13 @@ class TestSendProcess(TestCase):
 			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert lc.equal_to(selected, original)
@@ -247,6 +247,9 @@ class TestSendProcess(TestCase):
 			send_check(lc.cast_to(d1ct, dict_type), dict, d1ct)
 			send_check(lc.cast_to(publ1sh3d, published_type), dict)
 
+			ch.start(lc.T1, 1.0)
+			ch.input()
+
 	def test_send_message(self):
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_echo.main)
@@ -255,13 +258,13 @@ class TestSendProcess(TestCase):
 			ch.select(lc.T1, saving=(Connected,))
 
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5010))
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			assert isinstance(selected, Connected)
 			server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert lc.equal_to(selected, original)

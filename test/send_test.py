@@ -27,74 +27,74 @@ class TestSend(TestCase):
 	def test_send_ack(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 		assert isinstance(selected, lc.Ack)
 
 	def test_send_ack_reply(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			ch.reply(selected)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 		assert isinstance(selected, lc.Ack)
 
 	def test_send_ack_forward(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			ch.send(lc.Ack(), server)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			ch.forward(selected, ch.return_address, ch.object_address)
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 		assert isinstance(selected, lc.Ack)
 
 	def test_send_cast(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert selected == original
@@ -155,19 +155,19 @@ class TestSend(TestCase):
 	def test_send_cast_extra(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert selected == original
@@ -221,19 +221,19 @@ class TestSend(TestCase):
 	def test_send_container(self):
 		with lc.channel() as ch:
 			listen(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, requested_ipp=lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert selected == original
@@ -253,19 +253,19 @@ class TestSend(TestCase):
 	def test_send_message(self):
 		with lc.channel() as ch:
 			listen(ch, lc.HostPort('127.0.0.1', 5050))
-			i, listening, p = ch.select()
+			listening, i = ch.select()
 			connect(ch, lc.HostPort('127.0.0.1', 5050))
 			# Expect Connected and Accepted.
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
-			i, selected, p = ch.select()
+			selected, i = ch.select()
 			if isinstance(selected, Connected):
 				server = ch.return_address
 
 			def send_check(value, check, original=None):
 				ch.send(value, server)
-				i, selected, p = ch.select()
+				selected, i = ch.select()
 				assert isinstance(selected, check)
 				if original is not None:
 					assert lc.equal_to(selected, original)
