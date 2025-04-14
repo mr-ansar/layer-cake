@@ -396,17 +396,17 @@ def p2w_address(c, p, t):
 
 def p2w_any(c, p, t):
 	if isinstance(p, Incognito):			# Created during a previous decoding operation.
-		type_name = p.type_name				# Global identifier
-		encoded_word = p.decoded_word		# Generic body
+		type_name = p.type_name				# Just need to put the same materials back on
+		encoded_word = p.decoded_word		# the wire.
 		if p.saved_pointers:
-			c.portable_pointer.update(p.saved_pointers)	 # Include upstream pointer materials.
-			saved_pointers = [k for k in p.saved_pointers.keys()]		# List of pointers.
+			c.portable_pointer.update(p.saved_pointers)				# Include upstream pointer materials.
+			saved_pointers = [k for k in p.saved_pointers.keys()]	# List of pointers.
 		else:
 			saved_pointers = []
 		if c.address_book is not None:
-			c.address_book.update(p.address_book)
+			c.address_book.update(p.address_book)	# Drop the decoded addresses into the outgoing book.
 
-	elif hasattr(p, '__art__'):
+	elif hasattr(p, '__art__'):				# A message is outbound.
 		s = c.any_stack
 		s.append(set())
 		u = UserDefined(type(p))
@@ -416,7 +416,7 @@ def p2w_any(c, p, t):
 		s[-1].update(n)
 		saved_pointers = [x for x in n]
 
-	elif isinstance(p, tuple) and len(p) == 2 and isinstance(p[1], Portable):
+	elif isinstance(p, tuple) and len(p) == 2 and isinstance(p[1], Portable):	# An anonymous type.
 		s = c.any_stack
 		s.append(set())
 		type_name = python_to_word(c, p[1], Type())
@@ -425,11 +425,8 @@ def p2w_any(c, p, t):
 		s[-1].update(n)
 		saved_pointers = [x for x in n]
 
-	elif hasattr(p, '__class__'):
-		name = p.__class__.__name__
-		raise ValueError(f'unexpected any value "{name}"')
 	else:
-		raise ValueError(f'opaque any value')
+		raise ValueError(f'unexpected any value {p}')
 
 	return [type_name, encoded_word, saved_pointers]
 
@@ -832,29 +829,25 @@ def w2p_null_pointer(c, w, t):
 
 # Covert inbound 3-word tuple into the original object
 def w2p_any(c, w, t):
-	a = w[0]	# Inbound type name.
-	b = w[1]	# A generic word.
-	r = w[2]	# Pointer aliases.
+	type_name		= w[0]
+	decoded_word	= w[1]
+	saved_pointers	= w[2]
 
-	try:
-		e = w2p_type(c, a, Type())	# Signature to portable.
-	except (ValueError, KeyError):
-		e = None
-
-	if e is None:							# No such type.
-		y = c.portable_pointer				# Everything shipped
-		h = [x for x in r if x not in y]	# Needed for this any
+	s = lookup_signature(type_name)
+	if s is None:
+		y = c.portable_pointer
+		h = [x for x in saved_pointers if x not in y]
 		if h:
 			raise ValueError(f'missing pointers')
-		m = {x: y[x] for x in r}
-		p = Incognito(a, b, m, c.address_book)
+		m = {x: y[x] for x in saved_pointers}
+		p = Incognito(type_name, decoded_word, m, c.address_book)
 
-	elif isinstance(e, UserDefined):						# Direct message type.
-		p = word_to_python(c, b, e)	# Need to pass back data and type.
+	elif isinstance(s, UserDefined):
+		p = word_to_python(c, decoded_word, s)
 
-	elif isinstance(e, Portable):
-		p = word_to_python(c, b, e)		# Need to pass back data and type.
-		p = (p, e)
+	else:
+		p = word_to_python(c, decoded_word, s)
+		p = (p, s)
 
 	return p
 
