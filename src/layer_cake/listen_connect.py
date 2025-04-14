@@ -350,16 +350,16 @@ class Header(object):
 bind(Header, to_address=TargetAddress(), return_address=Address())
 
 HEADING = UserDefined(Header)
-SPACE = VectorOf(Address())
+BOOK = MapOf(Unicode(),Address())
 
 #
 #
 class Relay(object):
-	def __init__(self, block: bytearray=None, space=None):
+	def __init__(self, block: bytearray=None, address_book: dict[str, Address]=None):
 		self.block = block
-		self.space = space
+		self.address_book = address_book
 
-bind(Relay, space=VectorOf(Address()))
+bind(Relay)
 
 # Conversion of messages to on-the-wire blocks, and back again.
 # The default, fully typed, async, bidirectional messaging.
@@ -458,17 +458,17 @@ class MessageStream(object):
 			# b1 = m.block
 			b1 = m[0]
 			n1 = len(b1)
-			s = codec.encode([], SPACE)
+			s = codec.encode({}, BOOK)
 		elif isinstance(m, Relay):
 			b1 = m.block
 			n1 = len(b1)
-			s = codec.encode(m.space, SPACE)
+			s = codec.encode(m.address_book, BOOK)
 		else:
-			space = []
-			e = codec.encode(m, Any(), space=space)
+			address_book = {}
+			e = codec.encode(m, Any(), address_book=address_book)
 			b1 = e.encode('utf-8')
 			n1 = len(b1)
-			s = codec.encode(space, SPACE)
+			s = codec.encode(address_book, BOOK)
 
 		# 3. Mutated addresses.
 		b2 = s.encode('utf-8')
@@ -498,7 +498,7 @@ class MessageStream(object):
 			s = h.decode('utf-8')
 			header = codec.decode(s, HEADING)
 			s = a.decode('utf-8')
-			space = codec.decode(s, SPACE)
+			address_book = codec.decode(s, BOOK)
 
 			to_address = header.to_address
 			return_address = header.return_address
@@ -508,12 +508,15 @@ class MessageStream(object):
 				body = cast_to(body, bytearray_type)
 
 			elif len(header.to_address) > 1:	# Passing through. Just received and headed back out.
-				body = Relay(b_, space)
+				body = Relay(b_, address_book)
 
 			else:
 				# Need to recover the fully-typed message.
 				s = b_.decode('utf-8')
-				body = codec.decode(s, Any(), space=space)
+				body = codec.decode(s, Any(), address_book=address_book)
+
+				#for address, path in space:
+				#	poke(body, address, path)
 
 				# Handling of encryption handshaking and keep-alives.
 				if isinstance(body, Diffie):

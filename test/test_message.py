@@ -124,8 +124,8 @@ lc.bind_message(ContainerTypes,
 
 #
 #
-auto_types = lc.lookup_signature(AutoTypes.__art__.path)
-plain_types = lc.lookup_signature(PlainTypes.__art__.path)
+auto_types = lc.def_type(AutoTypes)
+plain_types = lc.def_type(PlainTypes)
 
 class SpecialTypes(object):
 	def __init__(self, a=None, b=None, c=None, d=None, e=None):

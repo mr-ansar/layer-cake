@@ -129,14 +129,14 @@ class TestCodecNoop(TestCase):
 
 		# Generate the shipment, i.e. a value, an optional
 		# version tag and an optional dict of pointer values.
-		space = []
+		address_book = []
 		try:
-			s = c.encode(r, t, space=space)
+			s = c.encode(r, t, address_book=address_book)
 		except lc.CodecError as e:
 			assert False
 
 		try:
-			s = c.decode(s, t, space)
+			s = c.decode(s, t, address_book)
 			assert True
 		except lc.CodecError as e:
 			assert False
@@ -148,14 +148,14 @@ class TestCodecNoop(TestCase):
 
 		# Generate the shipment, i.e. a value, an optional
 		# version tag and an optional dict of pointer values.
-		space = []
+		address_book = {}
 		try:
-			s = c.encode(r, t, space=space)
+			s = c.encode(r, t, address_book=address_book)
 		except lc.CodecError as e:
 			assert False
 
 		try:
-			s = c.decode(s, t, space)
+			s = c.decode(s, t, address_book)
 			assert True
 		except lc.CodecError as e:
 			assert False

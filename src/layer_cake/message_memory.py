@@ -173,11 +173,12 @@ class Incognito(object):
 	:type decoded_word: word
 	"""
 
-	def __init__(self, type_name=None, decoded_word=None, saved_pointers=None):
+	def __init__(self, type_name=None, decoded_word=None, saved_pointers=None, address_book=None):
 		"""Refer to class."""
 		self.type_name = type_name
 		self.decoded_word = decoded_word
 		self.saved_pointers = saved_pointers
+		self.address_book = address_book or {}
 
 # A group of functions that exist to allow type descriptions for
 # messages to make use of *classes* rather than *instances* of those
@@ -543,7 +544,8 @@ bind_message(Unknown)
 bind_message(Incognito,
 	type_name=Unicode,
 	decoded_word=Word,
-	saved_pointers=MapOf(Unicode, Word))
+	saved_pointers=MapOf(Unicode, Word),
+	address_book=MapOf(Unicode,Address))
 
 #
 #

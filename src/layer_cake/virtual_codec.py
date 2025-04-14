@@ -366,63 +366,72 @@ def p2w_target(c, p, t):
 	w = list(p)
 	return w
 
+def unique_key(c, i):
+	k = f'{c.opcode}:{i}'		# Every address is unique to a call to
+	return k					# encode() and an instance of Address within
+								# that operation.
 def p2w_address(c, p, t):
-	if c.space is not None:
-		i = len(c.space)
-		c.space.append(p)
-		return i
-	# Check to see if an address is being
-	# passed back over the connection it
-	# arrived on. Prevents trombone behaviour.
-	# Detection happens *here* at the remote
-	# end of the trombone because this codec
-	# knows it is sending an address back to
-	# where it came from. Add the invalid point
-	# id. See w2p_address.
+	if c.address_book is not None:
+		# External addressing enabled. Add the address to
+		# the book and return the key.
+		i = len(c.address_book)
+		k = unique_key(c, i)
+		c.address_book[k] = p
+		return k
+	# Check to see if an address is being passed back over the
+	# connection it arrived on. Prevents trombone behaviour.
+	# Detection happens *here* at the remote end of the trombone
+	# because this codec knows it is sending an address back to
+	# where it came from. Add the invalid point id. See w2p_address.
 	if c.return_proxy is not None:
 		a = c.return_proxy
 		if p[-1] == a:
 			# Need to advise remote that address
 			# is returning to where it came from.
 			w = list(p[:-1])	# DROP THIS PROXY
-			w.append(0)		 # SPECIAL MARK
+			w.append(0)			# SPECIAL MARK
 			return w
 	w = list(p)
 	return w
 
 def p2w_any(c, p, t):
-	a = type(p)
-	if a == Incognito:	# Created during a previous decoding operation.
-		t = p.type_name				# Global identifier
-		w = p.decoded_word			# Generic body
+	if isinstance(p, Incognito):			# Created during a previous decoding operation.
+		type_name = p.type_name				# Global identifier
+		encoded_word = p.decoded_word		# Generic body
 		if p.saved_pointers:
 			c.portable_pointer.update(p.saved_pointers)	 # Include upstream pointer materials.
-			r = [k for k in p.saved_pointers.keys()]		# List of pointers.
+			saved_pointers = [k for k in p.saved_pointers.keys()]		# List of pointers.
 		else:
-			r = []
-	elif hasattr(a, '__art__'):
+			saved_pointers = []
+		if c.address_book is not None:
+			c.address_book.update(p.address_book)
+
+	elif hasattr(p, '__art__'):
 		s = c.any_stack
 		s.append(set())
-		t = python_to_word(c, UserDefined(a), Type())
-		w = python_to_word(c, p, UserDefined(a))
+		u = UserDefined(type(p))
+		type_name = python_to_word(c, u, Type())
+		encoded_word = python_to_word(c, p, u)
 		n = s.pop()
 		s[-1].update(n)
-		r = [x for x in n]
+		saved_pointers = [x for x in n]
+
 	elif isinstance(p, tuple) and len(p) == 2 and isinstance(p[1], Portable):
 		s = c.any_stack
 		s.append(set())
-		t = python_to_word(c, p[1], Type())
-		w = python_to_word(c, p[0], p[1])
+		type_name = python_to_word(c, p[1], Type())
+		encoded_word = python_to_word(c, p[0], p[1])
 		n = s.pop()
 		s[-1].update(n)
-		r = [x for x in n]
+		saved_pointers = [x for x in n]
+
 	elif hasattr(p, '__class__'):
 		name = p.__class__.__name__
 		raise ValueError(f'unexpected any value "{name}"')
 	else:
 		raise ValueError(f'opaque any value')
 
-	return [t, w, r]
+	return [type_name, encoded_word, saved_pointers]
 
 # Map the python+portable pair to a dedicated
 # transform function.
@@ -797,6 +806,10 @@ def w2p_target(c, w, t):
 	return p
 
 def w2p_address(c, w, t):
+	if c.address_book is not None:
+		p = c.address_book[w]
+		return p
+
 	if c.return_proxy is not None:
 		# Clean out any trombone detected
 		# in the remote. See p2w_address.
@@ -813,12 +826,6 @@ def w2p_address(c, w, t):
 			w.append(c.return_proxy)
 	p = tuple(w)	# Now convert.
 	return p
-
-def w2p_address_int(c, w, t):
-	if c.space:
-		p = c.space[w]
-		return p
-	raise ValueError('address-by-index but no space available')
 
 def w2p_null_pointer(c, w, t):
 	return [0, None]
@@ -839,13 +846,16 @@ def w2p_any(c, w, t):
 		h = [x for x in r if x not in y]	# Needed for this any
 		if h:
 			raise ValueError(f'missing pointers')
-		m = {x: y[x] for x in r}			# Needed for this any
-		p = Incognito(a, b, m)
+		m = {x: y[x] for x in r}
+		p = Incognito(a, b, m, c.address_book)
+
 	elif isinstance(e, UserDefined):						# Direct message type.
 		p = word_to_python(c, b, e)	# Need to pass back data and type.
+
 	elif isinstance(e, Portable):
 		p = word_to_python(c, b, e)		# Need to pass back data and type.
 		p = (p, e)
+
 	return p
 
 #
@@ -883,7 +893,7 @@ w2p = {
 	(list, DequeOf): w2p_deque,
 	(list, TargetAddress): w2p_target,
 	(list, Address): w2p_address,
-	(int, Address): w2p_address_int,
+	(str, Address): w2p_address,
 	(str, PointerTo): w2p_pointer,
 
 	# Two mechanisms for including messages
@@ -1033,7 +1043,7 @@ class Codec(object):
 		self.pretty_format = pretty_format
 		self.decorate_names = decorate_names
 
-		self.space = None
+		self.address_book = None
 
 		# Encode/decode collections
 		self.walking_stack = []
@@ -1045,7 +1055,7 @@ class Codec(object):
 		self.pointer_alias = STARTING_ALIAS
 		self.alias_space = 'default'
 
-	def encode(self, value, expression, space=None):
+	def encode(self, value, expression, address_book=None):
 		"""Encode an application value to its portable representation.
 
 		:param value: a runtime application value
@@ -1057,15 +1067,16 @@ class Codec(object):
 		:return: a portable representation of the `value`
 		:rtype: str
 		"""
-		self.space = space
-		self.walking_stack = []		 # Breadcrumbs for m.a[0].f.c[1] tracking.
-		self.aliased_pointer = {}	   # Pointers encountered in value.
-		self.portable_pointer = {}	  # Pointers accumulated from Incognitos.
+		self.address_book = address_book
+		self.walking_stack = []				# Breadcrumbs for m.a[0].f.c[1] tracking.
+		self.aliased_pointer = {}			# Pointers encountered in value.
+		self.portable_pointer = {}			# Pointers accumulated from Incognitos.
 		self.any_stack = [set()]
 		self.pointer_alias = STARTING_ALIAS
 
 		u4 = uuid.uuid4()
 		self.alias_space = str(u4)
+		self.opcode = str(u4)
 
 		try:
 			# Convert the value to a generic intermediate
@@ -1102,7 +1113,7 @@ class Codec(object):
 			raise CodecRuntimeError(f'cannot encode ({e})')
 		return s
 
-	def decode(self, representation, expression, space=None):
+	def decode(self, representation, expression, address_book=None):
 		"""Decode a representation to its final application form.
 
 		:param representation: the result of a previous encode operation
@@ -1111,7 +1122,7 @@ class Codec(object):
 		:type expression: a :ref:`type expression<type-expressions>`
 		:return: an application value
 		"""
-		self.space = space
+		self.address_book = address_book
 
 		self.walking_stack = []		 # Breadcrumbs for m.a[0].f.c[1] tracking.
 		self.portable_pointer = {}	  # Shipped pointer materials.
