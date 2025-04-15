@@ -63,11 +63,11 @@ def stop_directory(root):
 AddOn(create_directory, stop_directory)
 
 #
-def publish(self, name, scope=ScopeOfDirectory.WAN):
+def publish(self, name, scope=ScopeOfDirectory.HOST):
 	p = PublishAs(name=name, scope=scope, publisher_address=self.object_address)
 	self.send(p, PD.directory)
 
-def subscribe(self, search, scope=ScopeOfDirectory.WAN):
+def subscribe(self, search, scope=ScopeOfDirectory.HOST):
 	p = SubscribeTo(search=search, scope=scope, subscriber_address=self.object_address)
 	self.send(p, PD.directory)
 
