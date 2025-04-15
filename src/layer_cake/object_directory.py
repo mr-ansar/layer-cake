@@ -387,6 +387,24 @@ bind(Dropped)
 class INITIAL: pass
 class PENDING: pass
 class READY: pass
+class CONNECTING: pass
+
+DIRECTORY_AT_HOST = LocalPort(9090)
+
+# Represent the list of requests to the directory (i.e. the parent_address)
+# after an attempt to auto-connect to a HOST directory.
+class Resubmit(Point, Stateless):
+	def __init__(self, to_do=None):
+		Point.__init__(self)
+		Stateless.__init__(self)
+		self.to_do = to_do
+
+def Resubmit_Start(self, message):
+	for r, a in self.to_do:
+		self.forward(r, self.parent_address, a)
+	self.complete()
+
+bind(Resubmit, (Start,))
 
 # A managed listen. One required for every publish beyond
 # the process scope.
@@ -817,6 +835,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.listening = None
 		self.accepted = {}				# Remember who connects from below and what they provide.
 		self.pending_enquiry = set()
+		self.to_be_completed = []
 
 		# Keep the db clean.
 		self.unique_publish = {}
@@ -1269,6 +1288,15 @@ def ObjectDirectory_READY_PublishAs(self, message):
 		self.reply(NotPublished(name=name, scope=scope, note=f'already published'))
 		return READY
 
+	not_parented = self.connect_to_directory.host is None
+	in_process = self.directory_scope == ScopeOfDirectory.PROCESS
+	will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
+	if not_parented and in_process and will_be_pushed:
+		self.to_be_completed.append((message, self.return_address))
+		self.connect_to_directory = DIRECTORY_AT_HOST
+		connect(self, self.connect_to_directory)
+		return CONNECTING
+
 	published_id = uuid.uuid4()
 	listing = Published(name=name, scope=scope, published_id=published_id, home_address=self.object_address)
 
@@ -1317,6 +1345,15 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.reply(NotSubscribed(search=search, scope=scope, note=f'already subscribed'))
 		return READY
 
+	not_parented = self.connect_to_directory.host is None
+	in_process = self.directory_scope == ScopeOfDirectory.PROCESS
+	will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
+	if not_parented and in_process and will_be_pushed:
+		self.to_be_completed.append((message, self.return_address))
+		self.connect_to_directory = DIRECTORY_AT_HOST
+		connect(self, self.connect_to_directory)
+		return CONNECTING
+
 	subscribed_id = uuid.uuid4()
 	listing = Subscribed(search=search, scope=scope, subscribed_id=subscribed_id, home_address=self.object_address)
 	if not self.add_subscriber(listing, None, message):
@@ -1329,6 +1366,20 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.create_route(listing, p)
 	self.send_up(listing)
 
+	return READY
+
+def ObjectDirectory_CONNECTING_Connected(self, message):
+	self.connected = message
+	self.push_up()
+	self.create(Resubmit, self.to_be_completed)
+	self.to_be_completed = []
+	return READY
+
+def ObjectDirectory_CONNECTING_NotConnected(self, message):
+	self.connected = message
+	self.create(Resubmit, self.to_be_completed)		# Force a negative outcome.
+	self.to_be_completed = []
+	self.start(T1, self.reconnect_delay)
 	return READY
 
 def ObjectDirectory_READY_Published(self, message):
@@ -1535,6 +1586,10 @@ OBJECT_DIRECTORY_DISPATCH = {
 	INITIAL: (
 		(Start,),
 		()
+	),
+	CONNECTING: (
+		(Connected, NotConnected),
+		(Listening, NotListening, HostPort)
 	),
 	READY: (
 		(Listening, NotListening,
