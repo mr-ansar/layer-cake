@@ -146,6 +146,8 @@ class ProcessObject(Point, StateMachine):
 		self.settings = settings
 
 		self.module_path = None
+		self.script_path = None
+		self.origin_path = None
 		self.p = None
 
 		self.published = None
@@ -202,14 +204,31 @@ class ProcessObject(Point, StateMachine):
 			s = e.replace('cannot encode', f'cannot encode value for argument "{name}", {self.module_path}')
 			self.complete(Faulted(s))
 
-		# Force the details of the I/O streams.
+
+		if self.script_path or self.origin_path:
+			environ = os.environ.copy()
+			existing_path = environ.get('PYTHONPATH', None)
+
+			path = []
+			if self.script_path:
+				path.append(self.script_path)
+			if self.origin_path:
+				path.append(self.origin_path)
+			if existing_path:
+				path.append(existing_path)
+
+			python_path = path.join(':')
+			environ['PYTHONPATH'] = python_path
+		else:
+			environ = None
+
 		try:
 			start_new_session = CL.background_daemon and not CL.child_process
 			self.p = Popen(command,
 				start_new_session=start_new_session,
 				stdin=None, stdout=PIPE, stderr=sys.stderr,
-				text=True, encoding='utf-8', errors='strict')
-				#env=hb.bin_env,
+				text=True, encoding='utf-8', errors='strict',
+				env=environ)
 				#**self.kw)
 		except OSError as e:
 			s = f'Cannot start process "{self.module_path}" ({e})'
@@ -249,9 +268,12 @@ def find_module(name):
 	return None
 
 def find_role(executable_file, home_path):
-	# Deployed script.
+
 	split = os.path.split(executable_file)
-	candidate = os.path.join(home_path, 'script', split[1])
+	origin_path = split[0]
+	script_path = os.path.join(home_path, 'script')
+
+	candidate = os.path.join(script_path, split[1])
 	if os.path.isfile(candidate):
 		return candidate
 
@@ -277,6 +299,14 @@ def ProcessObject_INITIAL_Start(self, message):
 		self.module_path = find_role(executable_file, self.home_path)
 		if self.module_path is None:
 			self.complete(Faulted(f'Cannot execute {executable_file} (no role script)'))
+
+		split = os.path.split(executable_file)
+		origin_path = split[0]
+		script_path = os.path.join(self.home_path, 'script')
+		if os.path.isdir(origin_path):
+			self.origin_path = origin_path
+		if os.path.isdir(script_path):
+			self.script_path = script_path
 
 	else:
 		rt = getattr(self.object_or_name, '__art__', None)
