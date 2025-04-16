@@ -169,7 +169,8 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		s = str(m.value)
-		assert 'out of bounds' in s
+		assert 'non-zero' in s
+		assert '71' in s
 
 	def test_return_any_person(self):
 		name = 'Gerald'
@@ -254,7 +255,8 @@ class TestProcessObject(TestCase):
 		s = str(m.value)
 		# None in message is cos of test framework.
 		assert 'cannot encode' in s
-		assert 'test_main_args.table' in s
+		assert 'argument "table"' in s
+		assert 'datetime/MapOf' in s
 
 	def test_create_settings_empty(self):
 		# Watch out for materials left in "../layer-cake/test/.layer-cake/test_main_args"
