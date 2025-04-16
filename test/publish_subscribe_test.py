@@ -11,13 +11,20 @@ __all__ = [
 
 class TestPublishSubscribe(TestCase):
 	def setUp(self):
+		# Use explicit teardown, i.e. disable the atexit mechanism.
+		# Create a channel for every test.
+		# Start a host directory and give it a chance to setup listen.
 		lc.PB.tear_down_atexit = False
 		self.ch = lc.open_channel()
-		#self.directory = self.ch.create(lc.ProcessObject, test_directory.directory)
+		self.directory = self.ch.create(lc.ProcessObject, test_directory.directory, accept_directories_at=lc.DIRECTORY_AT_HOST)
+		self.ch.start(lc.T1, 1.0)
+		self.ch.select()
 		super().__init__()
 
 	def tearDown(self):
 		lc.PB.exit_status = None
+		self.ch.send(lc.Stop(), self.directory)
+		self.ch.select()
 		lc.drop_channel(self.ch)
 		lc.tear_down()
 		return super().tearDown()
