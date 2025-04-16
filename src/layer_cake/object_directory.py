@@ -46,6 +46,7 @@ from .listen_connect import *
 from .get_response import *
 
 __all__ = [
+	'DIRECTORY_AT_HOST',
 	'ConnectTo',
 	'AcceptAt',
 	'PublishAs',
@@ -63,6 +64,7 @@ __all__ = [
 	'Delivered',
 	'Dropped',
 ]
+
 
 # Time required for request/response sequence across peer connection.
 COMPLETE_A_LOOP = 3.0
