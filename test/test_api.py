@@ -16,6 +16,8 @@ class CallingConvention(Enum):
 	THREAD=2
 	PROCESS=3
 	LIBRARY=4
+	SPOOL=5
+	FLOOD=6
 
 DEFAULT_CONVENTION = CallingConvention.CALL
 
