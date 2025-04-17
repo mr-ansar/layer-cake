@@ -26,6 +26,16 @@
 The ProcessObject machine creates and manages a platform process. Arguments
 are passed to the new process and a value extracted from standard output is
 repurposed as the return value.
+
+If an API is defined for the object, a listen port is provided to the new
+process as an argument and the framework arranges for a connection from the
+ProcessObject to the object created inside the sub-process (see publish() and
+subscribe()).
+
+The ProcessObjectSpool creates and manages 1 or more instances of ProcessObject.
+Messages sent to the spool are forwarded to one of the sub-processes. Distribution
+is round-robin. The spool also implements queueing, i.e. a spool with one process
+and a queue size of one is still (minimally) useful.
 """
 __docformat__ = 'restructuredtext'
 
@@ -39,6 +49,7 @@ from .general_purpose import *
 from .virtual_memory import *
 from .convert_memory import *
 from .message_memory import *
+from .convert_signature import *
 from .convert_type import *
 from .virtual_runtime import *
 from .virtual_point import *
@@ -58,9 +69,11 @@ from .object_collector import *
 from .object_directory import *
 from .process_directory import *
 from .ip_networking import *
+from .get_response import *
 
 __all__ = [
 	'ProcessObject',
+	'ProcessObjectSpool',
 ]
 
 PO = Gas(collector=None)
@@ -101,6 +114,7 @@ class INITIAL: pass
 class PENDING: pass
 class EXECUTING: pass
 class CLEARING: pass
+class SPOOLING: pass
 
 # Control over the family of processes that can result from the initiation
 # of a single one. This was quite difficult to get right and requires the
@@ -148,6 +162,7 @@ class ProcessObject(Point, StateMachine):
 		self.module_path = None
 		self.script_path = None
 		self.origin_path = None
+		self.listening_for_directories = None
 		self.p = None
 
 		self.published = None
@@ -190,6 +205,13 @@ class ProcessObject(Point, StateMachine):
 
 		try:
 			c = CodecNoop()
+			if self.listening_for_directories:
+				v = encode_argument(c, self.listening_for_directories, UserDefined(HostPort))
+				command.append(f'--directory-scope=LIBRARY')
+				command.append(f'--connect-to-directory={v}')
+
+				subscribe(self, self.role_name, scope=ScopeOfDirectory.PROCESS)
+
 			for k, v in self.settings.items():
 				name = k
 				e = schema.get(k, None)
@@ -332,6 +354,7 @@ def ProcessObject_PENDING_Unknown(self, message):
 	return PENDING
 
 def ProcessObject_PENDING_HostPort(self, message):
+	self.listening_for_directories = message
 	rt = getattr(self.object_or_name, '__art__', None)
 	self.fork_exec(rt)
 	return EXECUTING
@@ -364,8 +387,6 @@ def ProcessObject_EXECUTING_Returned(self, message):
 	code, page = message.value.code, message.value.page
 
 	self.log(USER_TAG.ENDED, f'Process ({self.p.pid}) ended with {code}')
-	if code:
-		self.complete(Faulted(f'Process ended with non-zero code ({code})'))
 
 	if not page:
 		self.complete(None)
@@ -378,6 +399,8 @@ def ProcessObject_EXECUTING_Returned(self, message):
 		self.complete(Faulted(f'cannot decode output ({s}) not a standard executable?'))
 
 	# As returned by the child process.
+	if code:
+		self.trace(f'Process ended with non-zero code ({code})')
 	self.complete(output)
 
 def ProcessObject_EXECUTING_Stop(self, message):
@@ -388,8 +411,19 @@ def ProcessObject_EXECUTING_Stop(self, message):
 		self.complete(Faulted(f'cannot relay local Stop to "{pid}" as SIGINT'))
 	return CLEARING
 
+def ProcessObject_CLEARING_Stop(self, message):
+	# Additional redundant hint. Ignored.
+	return CLEARING
+
 def ProcessObject_CLEARING_Returned(self, message):
-	ProcessObject_EXECUTING_Returned(self, message)
+	self.send(RemoveObject(self.object_address), PO.collector)
+
+	# Wait thread has returned
+	# Forward the result.
+	code, page = message.value.code, message.value.page
+
+	self.log(USER_TAG.ENDED, f'Process aborted [{self.p.pid}] (code {code})')
+	self.complete(Aborted())
 
 PROCESS_DISPATCH = {
 	INITIAL: (
@@ -405,9 +439,153 @@ PROCESS_DISPATCH = {
 		()
 	),
 	CLEARING: (
-		(Returned,),
+		(Returned, Stop),
 		()
 	),
 }
 
 bind_statemachine(ProcessObject, dispatch=PROCESS_DISPATCH, thread='process-object')
+
+#
+#
+SPOOL_SPAN = 32
+
+class ProcessObjectSpool(Point, StateMachine):
+	"""An async proxy object that starts and manages one or more standard sub-process.
+
+	:param name: name of the executable file
+	:type name: str
+	"""
+	def __init__(self, object_or_name, role_name=None, process_count=8, size_of_spool=512, responsiveness=None, **settings):
+		Point.__init__(self)
+		StateMachine.__init__(self, INITIAL)
+		self.object_or_name = object_or_name
+		self.role_name = role_name
+		self.process_count = process_count
+		self.size_of_spool = size_of_spool
+		self.responsiveness = responsiveness
+		self.settings = settings
+
+		self.idle_process = deque()
+		self.pending_request = deque()
+		self.span = deque()
+		self.total_span = 0.0
+		self.average = 0.0
+		self.boundary_1 = 0.0
+		self.boundary_2 = 0.0
+		self.shard = 0
+
+	def submit_request(self, message, forward_response, return_address):
+		if self.responsiveness is None:
+			pass
+		elif self.average < self.boundary_1:
+			pass
+		else:
+			self.shard += 1
+			divisor = 4 if self.average < self.boundary_2 else 10
+			if self.shard % divisor == 0:
+				self.send(Overloaded('Reduced responsiveness from spool processes'), return_address)
+				return
+
+		idle = self.idle_process.popleft()
+		r = self.create(GetResponse, message, idle)
+		self.callback(r, forward_response, idle=idle, return_address=return_address, started=clock_now())
+
+def ProcessObjectSpool_INITIAL_Start(self, message):
+	if self.responsiveness is not None:
+		self.boundary_1 = self.responsiveness % 0.75
+		self.boundary_2 = self.responsiveness % 0.9
+
+	pc = self.process_count
+	sos = self.size_of_spool
+	r = self.responsiveness
+
+	if pc < 1 or sos < 1 or (r is not None and r < 0.5):
+		self.complete(Faulted(f'Cannot start the spool with the given parameters (count={pc}, size={sos}, responsiveness={r})'))
+	
+	role_name = self.role_name or 'spool'
+
+	for i in range(pc):
+		r = f'{role_name}-{i}'
+		a = self.create(ProcessObject, self.object_or_name, role_name=r, **self.settings)
+		self.assign(a, i)
+		self.idle_process.append(a)
+
+	return SPOOLING
+
+def ProcessObjectSpool_SPOOLING_Unknown(self, message):
+	m = cast_to(message, self.received_type)
+	if not self.idle_process:
+		if len(self.pending_request) < self.size_of_spool:
+			self.pending_request.append((m, self.return_address))
+			return SPOOLING
+		request = portable_to_signature(self.received_type)
+		self.reply(Overloaded('Process resources busy and spool full', request=request))
+		return SPOOLING
+
+	def forward_response(value, kv):
+		# Completion of a request/responsesequence.
+		# Record the idle process.
+		self.idle_process.append(kv.idle)
+
+		# Update the performance metric.
+		span = clock_now() - kv.started
+		self.total_span += span
+		self.span.append(span)
+		while len(self.span) > SPOOL_SPAN:
+			s = self.span.popleft()
+			self.total_span -= s
+		self.average = self.total_span / len(self.span)
+
+		# Deliver reponse to the original client.
+		m = cast_to(value, self.returned_type)
+		self.send(m, kv.return_address)
+		if not self.pending_request:
+			return
+		message, return_address = self.pending_request.popleft()
+
+		# There is a request-to-go and an available process.
+		self.submit_request(message, forward_response, return_address)
+		return
+
+	# There is a request-to-go and an available process.
+	self.submit_request(m, forward_response, self.return_address)
+	return SPOOLING
+
+def ProcessObjectSpool_SPOOLING_Returned(self, message):
+	d = self.debrief()
+	if isinstance(d, OnReturned):
+		d(message, self)
+		return SPOOLING
+
+	if self.working():
+		self.abort()
+		return CLEARING
+	self.complete(Aborted())
+
+def ProcessObjectSpool_SPOOLING_Stop(self, message):
+	self.abort()
+	return CLEARING
+
+def ProcessObjectSpool_CLEARING_Returned(self, message):
+	d = self.debrief()
+	if self.working():
+		return CLEARING
+	self.complete(Aborted())
+
+OBJECT_SPOOL_DISPATCH = {
+	INITIAL: (
+		(Start,),
+		()
+	),
+	SPOOLING: (
+		(Unknown, Returned, Stop,),
+		()
+	),
+	CLEARING: (
+		(Returned,),
+		()
+	),
+}
+
+bind_statemachine(ProcessObjectSpool, dispatch=OBJECT_SPOOL_DISPATCH, thread='process-object-spool')
