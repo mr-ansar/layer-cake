@@ -10,7 +10,7 @@ import test_library
 DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
 
 
-def server(self, server_address: lc.HostPort=None):
+def server(self, server_address: lc.HostPort=None, flooding: int=64):
 	'''Establish a network listen and process API requests. Return nothing.'''
 	server_address = server_address or DEFAULT_ADDRESS
 
@@ -24,6 +24,9 @@ def server(self, server_address: lc.HostPort=None):
 
 	# Manage a private server, i.e. library.
 	library = self.create(lc.ProcessObject, test_library.library)
+
+	# Manage a job spool, i.e. a cluster of libraries.
+	spool = self.create(lc.ProcessObjectSpool, test_library.library, responsiveness=0.5)
 
 	# Listening.
 	while True:
@@ -62,8 +65,19 @@ def server(self, server_address: lc.HostPort=None):
 			self.send(request, library)
 			response = self.input()
 
+		elif convention == CallingConvention.SPOOL:
+			self.send(request, spool)
+			response = self.input()
+
+		elif convention == CallingConvention.FLOOD:
+			for i in range(flooding):
+				self.send(request, spool)
+			for i in range(flooding):
+				response = self.input()
+
 		else:
 			response = lc.Faulted('no such calling convention')
+			self.send(response, return_address)
 			continue
 
 		self.send(lc.cast_to(response, table_type), return_address)
