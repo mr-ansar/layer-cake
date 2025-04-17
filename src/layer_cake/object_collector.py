@@ -93,13 +93,13 @@ def ObjectCollector_READY_Stop(self, message):
 def ObjectCollector_CLEARING_AddObject(self, message):
 	self.collected.add(message.address)
 	self.send(Stop(), message.address)
-	return READY
+	return CLEARING
 
 def ObjectCollector_CLEARING_RemoveObject(self, message):
 	self.collected.discard(message.address)
 	if len(self.collected) < 1:
 		self.complete()
-	return READY
+	return CLEARING
 
 def ObjectCollector_CLEARING_T1(self, message):
 	self.complete()
