@@ -149,13 +149,13 @@ class ProcessObject(Point, StateMachine):
 	:param kw: addition args passed to Popen
 	:type kw: named args dict
 	"""
-	def __init__(self, object_or_name, home_path=None, role_name=None, api=None, extra_types=None, **settings):
+	def __init__(self, object_or_name, home_path=None, role_name=None, object_api=None, extra_types=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_or_name = object_or_name
 		self.home_path = home_path
 		self.role_name = role_name
-		self.api = api
+		self.object_api = object_api
 		self.extra_types = extra_types
 		self.settings = settings
 
@@ -172,11 +172,10 @@ class ProcessObject(Point, StateMachine):
 		# Start the new process.
 		# Derive the home/role context using the globals defined for
 		# this process, plus the values describing the new process.
-		if HR.home_path:
-			self.role_name = self.role_name or breakpath(self.module_path)[1]
-			if HR.role_name:
-				self.role_name = f'{HR.role_name}.{self.role_name}'
-			self.home_path = self.home_path or HR.home_path
+		self.role_name = self.role_name or breakpath(self.module_path)[1]
+		self.home_path = self.home_path or CL.home_path
+		if CL.role_name:
+			self.role_name = f'{CL.role_name}.{self.role_name}'
 
 		# Build the command line.
 		interpreter = sys.executable
@@ -187,9 +186,9 @@ class ProcessObject(Point, StateMachine):
 		if CL.background_daemon:
 			command.append(f'--background-daemon')
 
-		if self.home_path:
+		if CL.home_path:
 			command.append(f'--home-path={self.home_path}')
-			command.append(f'--role-name={self.role_name}')
+		command.append(f'--role-name={self.role_name}')
 
 		if CL.debug_level is not None:
 			command.append(f'--debug-level={CL.debug_level.name}')
@@ -266,14 +265,14 @@ def find_module(name):
 	name_py = f'{name}.py'
 
 	# Executing within a role-process.
-	if HR.home_path and HR.role_name:
+	if CL.home_path and CL.role_name:
 		# Deployed script.
-		candidate = os.path.join(HR.home_path, 'script', name_py)
+		candidate = os.path.join(CL.home_path, 'script', name_py)
 		if os.path.isfile(candidate):
 			return candidate
 
-		# Last chance - common ancestry.
-		home_role = os.path.join(HR.home_path, HR.role_name)
+		# Common ancestry.
+		home_role = os.path.join(CL.home_path, CL.role_name)
 		role = open_role(home_role)
 		if role:
 			executable_file = role.executable_file()
@@ -282,19 +281,17 @@ def find_module(name):
 				candidate = os.path.join(split[0], name_py)
 				if os.path.isfile(candidate):
 					return candidate
-	else:
-		candidate = os.path.join('.', name_py)
-		if os.path.isfile(candidate):
-			return candidate
+
+	candidate = os.path.join('.', name_py)
+	if os.path.isfile(candidate):
+		return candidate
 
 	return None
 
 def find_role(executable_file, home_path):
-
-	split = os.path.split(executable_file)
-	origin_path = split[0]
 	script_path = os.path.join(home_path, 'script')
 
+	split = os.path.split(executable_file)
 	candidate = os.path.join(script_path, split[1])
 	if os.path.isfile(candidate):
 		return candidate
@@ -312,6 +309,11 @@ def ProcessObject_INITIAL_Start(self, message):
 		self.module_path = find_module(self.object_or_name)
 		if self.module_path is None:
 			self.complete(Faulted(f'Cannot execute {self.object_or_name} (not found)'))
+
+		if self.object_api is not None and len(self.object_api) > 0:
+			self.api = self.object_api
+			self.send(Enquiry(), PD.directory)
+			return PENDING
 
 	elif isinstance(self.object_or_name, HomeRole):
 		executable_file = self.object_or_name.executable_file()
@@ -389,19 +391,25 @@ def ProcessObject_EXECUTING_Returned(self, message):
 	self.log(USER_TAG.ENDED, f'Process ({self.p.pid}) ended with {code}')
 
 	if not page:
-		self.complete(None)
+		output = None
+	else:
+		encoding = CodecJson()
+		try:
+			output = encoding.decode(page, Any())
+		except CodecError as e:
+			s = str(e)
+			self.complete(Faulted(f'cannot decode output ({s}) not a standard executable?'))
 
-	encoding = CodecJson()
-	try:
-		output = encoding.decode(page, Any())
-	except CodecError as e:
-		s = str(e)
-		self.complete(Faulted(f'cannot decode output ({s}) not a standard executable?'))
+	# If 0 then everything working according to plans. Also
+	# catch the case where the framework sets a special non-zero
+	# exit status for faults in CLI scenarios.
+	if code == 0 or (code == FAULTY_EXIT and isinstance(output, Faulted)):
+		self.complete(output)
 
-	# As returned by the child process.
-	if code:
-		self.trace(f'Process ended with non-zero code ({code})')
-	self.complete(output)
+	# This is outside normal framework operation.
+	t = '<empty>' if output is None else output.__class__.__name__
+	p = '<empty>' if len(page) < 1 else page[:32]
+	self.complete(Faulted(f'Non-standard process exit - code={code}, output={t}, page="{p}..."'))
 
 def ProcessObject_EXECUTING_Stop(self, message):
 	pid = self.p.pid
@@ -500,7 +508,7 @@ def ProcessObjectSpool_INITIAL_Start(self, message):
 	sos = self.size_of_spool
 	r = self.responsiveness
 
-	if pc < 1 or sos < 1 or (r is not None and r < 0.5):
+	if pc < 1 or (sos is not None and sos < 1) or (r is not None and r < 0.5):
 		self.complete(Faulted(f'Cannot start the spool with the given parameters (count={pc}, size={sos}, responsiveness={r})'))
 	
 	role_name = self.role_name or 'spool'
@@ -516,7 +524,7 @@ def ProcessObjectSpool_INITIAL_Start(self, message):
 def ProcessObjectSpool_SPOOLING_Unknown(self, message):
 	m = cast_to(message, self.received_type)
 	if not self.idle_process:
-		if len(self.pending_request) < self.size_of_spool:
+		if self.size_of_spool is None or len(self.pending_request) < self.size_of_spool:
 			self.pending_request.append((m, self.return_address))
 			return SPOOLING
 		request = portable_to_signature(self.received_type)
