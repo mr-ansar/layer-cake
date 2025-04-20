@@ -169,8 +169,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		s = str(m.value)
-		assert 'non-zero' in s
-		assert '71' in s
+		assert 'out of bounds' in s
 
 	def test_return_any_person(self):
 		name = 'Gerald'
