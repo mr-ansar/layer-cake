@@ -15,7 +15,7 @@ def library(self):
 		table = test_function.function(self, x=m.x, y=m.y)
 		self.send(lc.cast_to(table, test_api.table_type), self.return_address)
 
-lc.bind(library, api=(test_api.CreateTable,))
+lc.bind(library, api=(test_api.Xy,))
 
 if __name__ == '__main__':
 	lc.create(library)

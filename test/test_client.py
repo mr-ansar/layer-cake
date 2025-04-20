@@ -23,7 +23,7 @@ def client(self, server_address: lc.HostPort=None, convention: CallingConvention
 		return lc.Aborted()
 	server = self.return_address	# Remember where Connected came from.
 
-	self.send(CreateTable(x=x, y=y, convention=convention), server)
+	self.send(Xy(x=x, y=y, convention=convention), server)
 	response = self.input()
 
 	# Explicit close of the connection.
