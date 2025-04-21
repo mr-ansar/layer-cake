@@ -17,16 +17,8 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 
 	# Open a network port for inbound connections.
 	lc.listen(self, server_address)
-	m = self.input()
 
-	if isinstance(m, lc.Listening):		# Good to go.
-		pass
-	elif isinstance(m, lc.Faulted):		# Something went wrong, e.g. address in use.
-		return m
-	elif isinstance(m, lc.Stop):		# Interrupted, i.e. control-c.
-		return lc.Aborted()
-
-	# Manage a private server, i.e. a library.
+	# Manage a private server, i.e. a loadable library.
 	lib = self.create(lc.ProcessObject, library, role_name='library')
 
 	# Manage a job spool, i.e. a cluster of libraries.
@@ -37,35 +29,38 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	while True:
 		m = self.input()
 
-		if isinstance(m, (lc.Accepted, lc.Closed)):		# Clients coming and going.
+		if isinstance(m, Xy):					# Client request.
+			pass
+
+		elif isinstance(m, lc.Listening):		# Bound to the port.
 			continue
 
-		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. flood, spool.
+		elif isinstance(m, (lc.Accepted, lc.Closed)):		# Clients coming and going.
+			continue
+
+		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. thread, process, ...
 			d = self.debrief()
 			if isinstance(d, lc.OnReturned):	# Execute a callback.
-				d(m, self)
+				d(self, m)
 				continue
 			return lc.Faulted('Support process terminated.')
 
-		elif isinstance(m, lc.Faulted):
+		elif isinstance(m, lc.Faulted):			# Any fault, including NotListening.
 			return m
 
 		elif isinstance(m, lc.Stop):
 			return lc.Aborted()
 
-		elif isinstance(m, Xy):
-			pass
-
 		else:
 			return lc.Faulted(f'unexpected message {m}.')
 
-		# Received an Xy request from client.
+		# Received an Xy request from one of the connected clients.
 		request = m
 		convention = m.convention
 		return_address = self.return_address
 
 		# Callback for the more complex operations.
-		def respond(value, kv):
+		def respond(self, value, kv):
 			self.send(lc.cast_to(value, self.returned_type), kv.return_address)
 
 		# Demonstrate the selected behaviour.
@@ -73,31 +68,33 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 			response = texture(self, x=request.x, y=request.y)
 
 		elif convention == CallingConvention.THREAD:
-			self.create(texture, x=request.x, y=request.y)
-			returned = self.input()
-			response = returned.value_only()
+			a = self.create(texture, x=request.x, y=request.y)
+			self.callback(a, respond, return_address=return_address)
+			continue
 
 		elif convention == CallingConvention.PROCESS:
-			self.create(lc.ProcessObject, texture, x=request.x, y=request.y)
-			returned = self.input()
-			response = returned.value_only()
+			a = self.create(lc.ProcessObject, texture, x=request.x, y=request.y)
+			self.callback(a, respond, return_address=return_address)
+			continue
 
 		elif convention == CallingConvention.LIBRARY:
-			self.send(request, lib)
-			response = self.input()
+			a = self.create(lc.GetResponse, request, lib)
+			self.callback(a, respond, return_address=return_address)
+			continue
 
 		elif convention == CallingConvention.SPOOL:
-			self.send(request, spool)
-			response = self.input()
+			a = self.create(lc.GetResponse, request, spool)
+			self.callback(a, respond, return_address=return_address)
+			continue
 
 		elif convention == CallingConvention.FLOOD:
-			f = self.create(flood, spool, request, flooding)
-			self.callback(f, respond, return_address=self.return_address)
+			a = self.create(flood, spool, request, flooding)
+			self.callback(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.SOAK:
-			s = self.create(soak, spool, request, flooding, soaking)
-			self.callback(s, respond, return_address=self.return_address)
+			a = self.create(soak, spool, request, flooding, soaking)
+			self.callback(a, respond, return_address=return_address)
 			continue
 
 		else:

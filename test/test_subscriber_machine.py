@@ -7,11 +7,12 @@ from test_api import *
 DEFAULT_SEARCH = 'acme'
 
 class Subscriber(lc.Point, lc.Stateless):
-	def __init__(self, search: str=None, seconds: float=None):
+	def __init__(self, search: str=None, seconds: float=None, enduring: bool=False):
 		lc.Point.__init__(self)
 		lc.Stateless.__init__(self)
 		self.search = search or DEFAULT_SEARCH
 		self.seconds = seconds
+		self.enduring = enduring
 
 def Subscriber_Start(self, message):
 	lc.subscribe(self, self.search)		# Connect this object with the named object.
@@ -22,6 +23,8 @@ def Subscriber_Available(self, message):
 	self.send(Xy(x=2, y=2), self.return_address)
 
 def Subscriber_list_list_float(self, message):
+	if self.enduring:
+		return
 	self.complete(message)
 
 def Subscriber_T1(self, message):

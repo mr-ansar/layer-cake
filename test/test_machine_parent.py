@@ -13,7 +13,7 @@ def Main_Start(self, message):
 	t = lc.text_to_world('1963-03-26T02:24')
 	a = self.create(lc.ProcessObject, test_main.main, b=32, c=99, t=t)
 
-	def test_main_complete(value, _):
+	def test_main_complete(self, value, _):
 		self.complete(value)
 
 	self.callback(a, test_main_complete)
@@ -21,7 +21,7 @@ def Main_Start(self, message):
 def Main_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnReturned):
-		d(message, self)
+		d(self, message)
 
 def Main_Stop(self, message):
 	self.abort()

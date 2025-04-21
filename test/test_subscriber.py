@@ -6,7 +6,7 @@ from test_api import *
 # A bare-bones implementation of a client subscribing to a network service.
 DEFAULT_SEARCH = 'acme'
 
-def subscriber(self, search: str=None) -> list[list[float]]:
+def subscriber(self, search: str=None, enduring: bool=False) -> list[list[float]]:
 	'''Open communications with a named service and exchange messages. Return table.'''
 	search = search or DEFAULT_SEARCH
 
@@ -28,6 +28,8 @@ def subscriber(self, search: str=None) -> list[list[float]]:
 			self.send(Xy(x=2, y=2), self.return_address)
 
 		elif isinstance(m, list):			# Table.
+			if enduring:
+				continue
 			self.complete(m)
 
 		elif isinstance(m, lc.Dropped):		# Lost the server.

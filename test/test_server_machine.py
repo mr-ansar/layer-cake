@@ -29,7 +29,7 @@ def Server_Xy(self, message):
 	return_address = self.return_address
 
 	# Callback for the more complex operations.
-	def respond(value, kv):
+	def respond(self, value, kv):
 		m = lc.cast_to(value, self.returned_type)
 		self.send(m, kv.return_address)
 
@@ -68,7 +68,7 @@ def Server_Xy(self, message):
 def Server_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnReturned):
-		d(message, self)				# A callback.
+		d(self, message)				# A callback.
 		return
 	self.complete(message)				# Library or spool has terminated.
 
