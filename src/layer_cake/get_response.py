@@ -107,7 +107,7 @@ def Concurrently_Start(self, message):
 	if self.count < 1:
 		self.complete(self.orderly)		# Nothing to do.
 
-	def collate(response, kv):			# Place the completion in its proper slot.
+	def collate(self, response, kv):			# Place the completion in its proper slot.
 		i = kv.i
 		self.orderly[i] = response
 		self.count -= 1
@@ -139,7 +139,7 @@ def Concurrently_Stop(self, message):
 def Concurrently_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message, self)
+		d(self, message)
 		return
 	
 	self.complete(Faulted(f'unexpected get completion'))
@@ -208,7 +208,7 @@ def Sequentially_Stop(self, message):
 def Sequentially_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message, self)
+		d(self, message)
 		return
 
 	self.complete(Faulted(f'unexpected sequence completion'))
