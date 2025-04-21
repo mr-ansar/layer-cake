@@ -254,7 +254,7 @@ class Close(object):
 		self.note = note
 		self.error_code = error_code
 
-class Closed(Faulted):
+class Closed(object):
 	"""Session notification, local termination of the messaging transport.
 
 	:param value: completion value for the session
@@ -275,10 +275,9 @@ class Closed(Faulted):
 		self.error_code = error_code
 		self.opened_ipp = opened_ipp or HostPort()
 		self.opened_at = opened_at
-		Faulted.__init__(self, condition=f'closed {opened_ipp}[{self.reason}]', explanation=note)
 
 bind(Close, copy_before_sending=False)
-bind(Closed, explanation=Unicode(), error_code=Integer8(), exit_status=Integer8(), copy_before_sending=False)
+bind(Closed, copy_before_sending=False)
 
 #
 #
