@@ -563,7 +563,7 @@ def ConnectToPeer_INITIAL_Start(self, message):
 def ConnectToPeer_PENDING_Connected(self, message):
 	self.connected = message
 
-	def opened(loop, args):
+	def opened(self, loop, args):
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
@@ -603,7 +603,7 @@ def ConnectToPeer_PENDING_DropLoop(self, message):
 def ConnectToPeer_READY_RequestLoop(self, message):
 	self.request.append(message)
 
-	def opened(loop, args):
+	def opened(self, loop, args):
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
@@ -634,7 +634,7 @@ def ConnectToPeer_READY_DropLoop(self, message):
 		self.reply(d)
 		return READY
 
-	def closed(loop, args):
+	def closed(self, loop, args):
 		request, available, return_address = args.request, args.available, args.return_address
 		if isinstance(loop, LoopClosed):
 			d = Dropped(name=request.name, scope=request.scope, route_id=request.route_id,
@@ -669,7 +669,7 @@ def ConnectToPeer_READY_T1(self, message):
 def ConnectToPeer_READY_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message, self)
+		d(self, message)
 	return READY
 
 def ConnectToPeer_READY_Closed(self, message):
@@ -1014,7 +1014,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		sr[1].add(r)
 
 		# When the route terminates, clear out the links.
-		def clear(value, args):
+		def clear(self, value, args):
 			pr = self.routed_publish.get(args.published_id)
 			if pr is not None:
 				pr[1].discard(args.route)
@@ -1078,7 +1078,7 @@ class ObjectDirectory(Threaded, StateMachine):
 
 	def open_route(self, route):
 		# Callback on loss of ConnectToPeer.
-		def clear_ipp(value, args):
+		def clear_ipp(self, value, args):
 			self.console(f'Clearing peer connection {args.ipp}')
 			self.peer_connect.pop(args.ipp, None)
 
@@ -1132,7 +1132,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			if c is None:
 				return
 
-			def dropped(value, args):
+			def dropped(self, value, args):
 				if not isinstance(value, LoopDropped):
 					self.warning(f'Unexpected response to drop of loop ({value})')
 				route = args.route
@@ -1579,7 +1579,7 @@ def ObjectDirectory_READY_LoopDropped(self, message):
 def ObjectDirectory_READY_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message, self)
+		d(self, message)
 	return READY
 
 def ObjectDirectory_READY_Stop(self, message):
