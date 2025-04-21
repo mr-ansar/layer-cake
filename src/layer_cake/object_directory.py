@@ -1234,7 +1234,6 @@ def ObjectDirectory_READY_Closed(self, message):
 		if self.return_address == self.connected.proxy_address:
 			self.connected = message
 			self.start(T1, self.reconnect_delay)
-			self.connected = message
 			return READY
 
 	p = self.accepted.pop(self.return_address[-1], None)
@@ -1297,6 +1296,7 @@ def ObjectDirectory_READY_PublishAs(self, message):
 		self.to_be_completed.append((message, self.return_address))
 		self.connect_to_directory = DIRECTORY_AT_HOST
 		connect(self, self.connect_to_directory)
+		self.calculate_reconnect(self.connect_to_directory.host)
 		return CONNECTING
 
 	published_id = uuid.uuid4()
@@ -1354,6 +1354,7 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.to_be_completed.append((message, self.return_address))
 		self.connect_to_directory = DIRECTORY_AT_HOST
 		connect(self, self.connect_to_directory)
+		self.calculate_reconnect(self.connect_to_directory.host)
 		return CONNECTING
 
 	subscribed_id = uuid.uuid4()
