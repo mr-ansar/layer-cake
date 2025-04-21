@@ -531,7 +531,7 @@ def ProcessObjectSpool_SPOOLING_Unknown(self, message):
 		self.reply(Overloaded('Process resources busy and spool full', request=request))
 		return SPOOLING
 
-	def forward_response(value, kv):
+	def forward_response(self, value, kv):
 		# Completion of a request/responsesequence.
 		# Record the idle process.
 		self.idle_process.append(kv.idle)
@@ -563,7 +563,7 @@ def ProcessObjectSpool_SPOOLING_Unknown(self, message):
 def ProcessObjectSpool_SPOOLING_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, OnReturned):
-		d(message, self)
+		d(self, message)
 		return SPOOLING
 
 	if self.working():
