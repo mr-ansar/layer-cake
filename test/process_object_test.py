@@ -257,10 +257,10 @@ class TestProcessObject(TestCase):
 		assert 'argument "table"' in s
 		assert 'datetime/MapOf' in s
 
-	def test_create_settings_empty(self):
+	def test_create_role_empty(self):
 		# Watch out for materials left in "../layer-cake/test/.layer-cake/test_main_args"
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -271,7 +271,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'empty'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -281,7 +281,7 @@ class TestProcessObject(TestCase):
 		assert response.command == 'delete-settings'
 		assert response.note is None
 
-	def test_create_settings_full(self):
+	def test_create_role_full(self):
 		# Full set.
 		table = dict(recent=[Person('Gerard'), Person('Niall')])
 		when = lc.world_now()
@@ -290,7 +290,7 @@ class TestProcessObject(TestCase):
 		ratio = 0.125
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True,
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True,
 			table=table, count=count, ratio=ratio, when=when, unique_id=unique_id)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -302,7 +302,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -312,7 +312,7 @@ class TestProcessObject(TestCase):
 		assert response.command == 'delete-settings'
 		assert response.note is None
 
-	def test_create_settings_update(self):
+	def test_create_role_update(self):
 		# Full set.
 		table = dict(recent=[Person('Gerard'), Person('Niall')])
 		when = lc.world_now()
@@ -322,7 +322,7 @@ class TestProcessObject(TestCase):
 
 		# Create with half.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True,
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True,
 			table=table, count=count)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -335,7 +335,7 @@ class TestProcessObject(TestCase):
 
 		# Add other half plus overlap.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', update_settings=True,
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', update_role=True,
 			count=count, ratio=ratio, when=when, unique_id=unique_id)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -347,7 +347,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -360,7 +360,7 @@ class TestProcessObject(TestCase):
 	def test_settings_faulted(self):
 		# Create with half.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -372,7 +372,7 @@ class TestProcessObject(TestCase):
 
 		# Repeat.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -382,7 +382,7 @@ class TestProcessObject(TestCase):
 		assert 'settings already present' in response
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -393,7 +393,7 @@ class TestProcessObject(TestCase):
 		assert response.note is None
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_settings=True)
+			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
