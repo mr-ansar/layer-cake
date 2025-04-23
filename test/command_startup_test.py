@@ -109,7 +109,7 @@ class TestPocArgs(TestCase):
 			assert False
 
 		assert CL.full_output == True
-		assert CL.settings_file == 'content'
+		assert CL.role_file == 'content'
 		assert 'a' in arguments
 		# Still in any format.
 		assert arguments['a'][0] == 10
