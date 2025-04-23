@@ -35,6 +35,7 @@ from .virtual_runtime import *
 
 __all__ = [
 	'ScopeOfDirectory',
+	'ProcessOrigin',
 	'CommandLine',
 	'CL',
 ]
@@ -47,6 +48,13 @@ class ScopeOfDirectory(Enum):
 	GROUP=4
 	PROCESS=5
 	LIBRARY=6
+
+class ProcessOrigin(Enum):
+	SHELL=1
+	RUN=2
+	RUN_CHILD=3
+	START=4
+	START_CHILD=5
 
 #
 class CommandLine(object):
@@ -69,20 +77,20 @@ class CommandLine(object):
 	:type role_name: str
 	:param help: enable output of help page
 	:type help: bool
-	:param create_settings: save the specified settings
-	:type create_settings: bool
-	:param update_settings: add/override the specified settings
-	:type update_settings: bool
-	:param dump_settings: enable output of current settings
-	:type dump_settings: bool
-	:param edit_settings: enable visual editing of the current settings
-	:type edit_settings: bool
+	:param create_role: save the specified settings
+	:type create_role: bool
+	:param update_role: add/override the specified settings
+	:type update_role: bool
+	:param dump_role: enable output of current settings
+	:type dump_role: bool
+	:param edit_role: enable visual editing of the current settings
+	:type edit_role: bool
 	:param factory_reset: discard stored settings
 	:type factory_reset: bool
-	:param delete_settings: remove persisted settings
-	:type delete_settings: bool
-	:param settings_file: use the settings in the specified file
-	:type settings_file: str
+	:param delete_role: remove persisted settings
+	:type delete_role: bool
+	:param role_file: use the settings in the specified file
+	:type role_file: str
 	:param dump_types: enable output of type table
 	:type dump_types: bool
 	:param output_file: place any output in the specified file
@@ -91,24 +99,26 @@ class CommandLine(object):
 	:type group_listen: int
 	"""
 	def __init__(self,
+			origin: ProcessOrigin=None,
 			background_daemon: bool=False,
 			child_process: bool=False,
 			full_output: bool=False,
 			debug_level=None,
 			home_path: str=None, role_name: str=None,
 			help: bool=False,
-			create_settings: bool=False, update_settings: bool=False,
+			create_role: bool=False, update_role: bool=False,
 			factory_reset: bool=False,
-			dump_settings: bool=False,
-			edit_settings: bool=False,
-			delete_settings: bool=False,
-			settings_file: str=None,
+			dump_role: bool=False,
+			edit_role: bool=False,
+			delete_role: bool=False,
+			role_file: str=None,
 			dump_types: bool=False,
 			output_file: str=None,
 			keep_logs: bool=False,
 			directory_scope: ScopeOfDirectory=None,
 			connect_to_directory: HostPort=None,
 			accept_directories_at: HostPort=None):
+		self.origin = origin
 		self.background_daemon = background_daemon
 		self.child_process = child_process
 		self.full_output = full_output
@@ -116,13 +126,13 @@ class CommandLine(object):
 		self.home_path = home_path
 		self.role_name = role_name
 		self.help = help
-		self.create_settings = create_settings
-		self.update_settings = update_settings
+		self.create_role = create_role
+		self.update_role = update_role
 		self.factory_reset = factory_reset
-		self.dump_settings = dump_settings
-		self.edit_settings = edit_settings
-		self.delete_settings = delete_settings
-		self.settings_file = settings_file
+		self.dump_role = dump_role
+		self.edit_role = edit_role
+		self.delete_role = delete_role
+		self.role_file = role_file
 		self.dump_types = dump_types
 		self.output_file = output_file
 		self.keep_logs = keep_logs
