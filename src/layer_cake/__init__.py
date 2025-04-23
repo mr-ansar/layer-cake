@@ -46,7 +46,7 @@ from .file_object import *
 from .folder_object import *
 from .object_startup import *
 from .process_object import *
-from .edit_settings import *
+from .edit_role import *
 from .bind_type import *
 from .object_directory import *
 from .process_directory import *
