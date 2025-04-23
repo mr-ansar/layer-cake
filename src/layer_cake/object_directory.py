@@ -866,6 +866,19 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.reconnect_delay = RECONNECT_DELAY[s.value]
 		self.console(f'Update parameter', reconnect_delay=self.reconnect_delay)
 
+	def auto_connect_to_host(self, message):
+		not_parented = self.connect_to_directory.host is None
+		in_process = self.directory_scope == ScopeOfDirectory.PROCESS
+		will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
+
+		if not_parented and in_process and will_be_pushed:
+			self.to_be_completed.append((message, self.return_address))
+			self.connect_to_directory = DIRECTORY_AT_HOST
+			connect(self, self.connect_to_directory)
+			self.calculate_reconnect(self.connect_to_directory.host)
+			return True
+		return False
+
 	def add_publisher(self, listing, origin, publish):
 		name = listing.name
 		scope = listing.scope
@@ -1289,14 +1302,7 @@ def ObjectDirectory_READY_PublishAs(self, message):
 		self.reply(NotPublished(name=name, scope=scope, note=f'already published'))
 		return READY
 
-	not_parented = self.connect_to_directory.host is None
-	in_process = self.directory_scope == ScopeOfDirectory.PROCESS
-	will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
-	if not_parented and in_process and will_be_pushed:
-		self.to_be_completed.append((message, self.return_address))
-		self.connect_to_directory = DIRECTORY_AT_HOST
-		connect(self, self.connect_to_directory)
-		self.calculate_reconnect(self.connect_to_directory.host)
+	if self.auto_connect_to_host(message):
 		return CONNECTING
 
 	published_id = uuid.uuid4()
@@ -1347,14 +1353,7 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.reply(NotSubscribed(search=search, scope=scope, note=f'already subscribed'))
 		return READY
 
-	not_parented = self.connect_to_directory.host is None
-	in_process = self.directory_scope == ScopeOfDirectory.PROCESS
-	will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
-	if not_parented and in_process and will_be_pushed:
-		self.to_be_completed.append((message, self.return_address))
-		self.connect_to_directory = DIRECTORY_AT_HOST
-		connect(self, self.connect_to_directory)
-		self.calculate_reconnect(self.connect_to_directory.host)
+	if self.auto_connect_to_host(message):
 		return CONNECTING
 
 	subscribed_id = uuid.uuid4()
@@ -1384,6 +1383,10 @@ def ObjectDirectory_CONNECTING_NotConnected(self, message):
 	self.to_be_completed = []
 	self.start(T1, self.reconnect_delay)
 	return READY
+
+def ObjectDirectory_CONNECTING_Unknown(self, message):
+	self.save(message)
+	return CONNECTING
 
 def ObjectDirectory_READY_Published(self, message):
 	if message.scope.value > self.directory_scope.value:
@@ -1591,8 +1594,8 @@ OBJECT_DIRECTORY_DISPATCH = {
 		()
 	),
 	CONNECTING: (
-		(Connected, NotConnected),
-		(Listening, NotListening, HostPort)
+		(Connected, NotConnected, Unknown),
+		()
 	),
 	READY: (
 		(Listening, NotListening,

@@ -198,9 +198,9 @@ def open_role(home_role):
 	# property created and existing value loaded.
 	def resume(name, t):
 		if name not in listing:
-			return
+			raise Incomplete(Faulted(f'cannot open "{home_role}"', f'missing property "{name}"'))
 		if not hasattr(role, name):
-			return
+			raise Incomplete(Faulted(f'cannot open "{home_role}"', f'unknown property "{name}"'))
 
 		path_name = join(home_role, name)
 		f = HomeFile(path_name, t)
@@ -216,15 +216,62 @@ def open_role(home_role):
 
 	# Create a runtime object for potential folders.
 	def link(name):
-		if name in listing and hasattr(role, name):
-			path_name = os.path.join(home_role, name)
-			value = Folder(path_name)
-			setattr(role, name, value)
+		path_name = os.path.join(home_role, name)
+		value = Folder(path_name)
+		setattr(role, name, value)
 
-	link('logs')
 	link('model')
 	link('tmp')
+	link('logs')
 	link('lock')
+
+	return role
+
+def create_role(home_role, executable):
+	Folder(home_role)
+	role = HomeRole()
+
+	# Check name is in role and folder. Only then is the
+	# property created and existing value loaded.
+	def create(name, t, value):
+		path_name = join(home_role, name)
+		f = HomeFile(path_name, t)
+		f.update(value)
+		setattr(role, name, f)
+
+	# Create runtime object for each named property.
+	create('unique_id', UUID(), uuid.uuid4())
+	create('settings', MapOf(Unicode(), Any()), {})
+	create('start_stop', DequeOf(UserDefined(StartStop)), deque())
+	create('log_storage', Integer8(), DEFAULT_STORAGE)
+	create('executable_file', Unicode(), executable)
+
+	# Create a runtime object for potential folders.
+	def link(name):
+		path_name = os.path.join(home_role, name)
+		value = Folder(path_name)
+		setattr(role, name, value)
+
+	link('model')
+	link('tmp')
+	link('logs')
+	link('lock')
+
+	return role
+
+def create_memory_role(executable):
+	role = HomeRole()
+
+	def create(name, t, value):
+		f = NoHomeFile(value)
+		setattr(role, name, f)
+
+	# Create runtime object for each named property.
+	create('unique_id', UUID(), uuid.uuid4())
+	create('settings', MapOf(Unicode(), Any()), {})
+	create('start_stop', DequeOf(UserDefined(StartStop)), deque())
+	create('log_storage', Integer8(), DEFAULT_STORAGE)
+	create('executable_file', Unicode(), executable)
 
 	return role
 
@@ -238,61 +285,32 @@ def open_home(home_path):
 
 	return listing
 
-def object_home(executable, home_role, model=False, tmp=False, recording=False):
+def object_home(executable, home_role, sticky=False):
 	'''Compile the runtime, file-based context for the current process. Return HomeRole and role.'''
 
-	# Load whats already there.
 	role = open_role(home_role)
-	creating = model or tmp
-	if role is None:
-		if creating:
-			Folder(home_role)
-		role = HomeRole()
+	if CL.create_role:
+		if role is not None:
+			raise Incomplete(Faulted(f'cannot create "{home_role}"', f'already exists'))
+		role = create_role(home_role, executable)
 
-	# Reconcile with current requirements.
-	sticky = role.settings is not None
-	def recover(name, portable, value):
-		a = getattr(role, name, None)
-		if a is not None:
-			return
-		if not sticky:
-			f = NoHomeFile(value)
-		else:
-			path_name = join(home_role, name)
-			f = HomeFile(path_name, portable)
-			f.update(value)
-		setattr(role, name, f)
+	# Circular dependency around log_storage. Wrap it in a
+	# condition and default to fixed value.
+	log_storage = role.log_storage() if role is not None else DEFAULT_STORAGE
 
-	recover('unique_id', UUID(), uuid.uuid4())
-	recover('settings', MapOf(Unicode(), Any()), {})
-	recover('start_stop', DequeOf(UserDefined(StartStop)), deque())
-	recover('log_storage', Integer8(), DEFAULT_STORAGE)
-	recover('executable_file', Unicode(), executable)
-
-	# Create missing folders.
-	if model and not role.model:
-		path_name = join(home_role, 'model')
-		role.model = Folder(path_name)
-
-	if tmp and not role.tmp:
-		path_name = join(home_role, 'tmp')
-		role.tmp = Folder(path_name)
-
-	# Create folder if storing logs. Depends on command-line
-	# arguments, i.e. startup context.
-	logs, rolling = open_logs(home_role, role.log_storage(), recording)
-	if rolling:
-		role_logs, files_in_folder = rolling
-		if not role.logs:
-			role.logs = Folder(role_logs)
+	logs, files_in_folder = open_logs(home_role, log_storage)
+	if files_in_folder:
 		logs = RollingLog(role.logs.path, files_in_folder=files_in_folder)
 
-	# Create locking area if there is any disk based
-	# activity, i.e. exclusive access.
-	locking = rolling or sticky or model or tmp
-	if locking and not role.lock:
-		path_name = join(home_role, 'lock')
-		role.lock = Folder(path_name)
+	rolling = isinstance(logs, RollingLog)
+	if sticky or rolling:
+		if role is None:
+			if home_role.count('.') == 0:
+				raise Incomplete(Faulted(f'cannot auto-create "{home_role}"', f'sub-roles only'))
+			role = create_role(home_role, executable)
+
+	elif role is None:
+		role = create_memory_role(executable)
 
 	if role.tmp:
 		remove_contents(role.tmp.path)
@@ -345,15 +363,13 @@ def daemonize():
 	#pid = str(os.getpid())
 	#file(self.pidfile,'w+').write("%s\n" % pid)
 
-def open_logs(home_role, storage, recording):
+def open_logs(home_role, storage):
 	debug_level = CL.debug_level
 
-	role_logs = None
-	if CL.background_daemon or recording or CL.keep_logs:
+	if CL.background_daemon or CL.keep_logs:
 		bytes_in_file = 120 * LINES_IN_FILE
 		files_in_folder = storage / bytes_in_file
-		role_logs = join(home_role, 'logs')
-		return None, (role_logs, files_in_folder)
+		return None, files_in_folder
 	elif debug_level is None:
 		logs = log_to_nowhere
 	else:
@@ -371,8 +387,8 @@ def open_logs(home_role, storage, recording):
 #	self.trace('Running object "%s"' % (object_type.__art__.path,))
 #	self.trace('Class threads (%d) %s' % (len(pt.thread_classes), ','.join(name_counts)))
 
-def start_vector(self, object_type, args):
-	a = self.create(object_type, **args)
+def start_vector(self, object_type, word, args):
+	a = self.create(object_type, *word, **args)
 
 	if CL.directory_scope == ScopeOfDirectory.LIBRARY:
 		pn = PublishAs(name=CL.role_name, scope=ScopeOfDirectory.PROCESS, publisher_address=a)
@@ -393,7 +409,7 @@ def start_vector(self, object_type, args):
 
 bind_routine(start_vector)
 
-def run_object(home, object_type, args, logs, locking):
+def run_object(home, object_type, word, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
 	early_return = False
 	output = None
@@ -418,8 +434,8 @@ def run_object(home, object_type, args, logs, locking):
 				c = Faulted(f'role {home.lock.path} is running')
 				raise Incomplete(c)
 
-		if CL.edit_settings:
-			output = HR.edit_settings(root, home)
+		if CL.edit_role:
+			output = HR.edit_role(root, home)
 			return output
 
 		# Respond to daemon context, i.e. send output and close stdout.
@@ -437,7 +453,7 @@ def run_object(home, object_type, args, logs, locking):
 
 		# Create the async object. Need to wrap in another object
 		# to facilitate the control-c handling.
-		a = root.create(start_vector, object_type, args)
+		a = root.create(start_vector, object_type, word, args)
 
 		# Termination of this function is
 		# either by SIGINT (control-c) or assignment by object_vector.
@@ -525,9 +541,7 @@ def object_output(value):
 	object_encode(value)
 
 #
-def create(object_type, object_table=None,
-	environment_variables=None,
-	sticky=False, model=False, tmp=False, recording=False):
+def create(object_type, object_table=None, environment_variables=None, sticky=False):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -558,7 +572,7 @@ def create(object_type, object_table=None,
 		command_variables(environment_variables)
 
 		# Resume the appropriate operational context, i.e. home.
-		home, logs = object_home(executable, home_role, model=model, tmp=tmp, recording=recording)
+		home, logs = object_home(executable, home_role, sticky=sticky)
 
 		HR.home_path = home_path
 		HR.home_role = home_role
@@ -570,20 +584,16 @@ def create(object_type, object_table=None,
 				print(t)
 			raise Incomplete(None)
 
-		if CL.create_settings:
-			if isinstance(home.settings, HomeFile):
-				raise Incomplete(Faulted(f'settings already present at "{home_role}"'))
-			f = Folder(home_role)
-			s = f.file('settings', MapOf(Unicode(), Any()))
-			s.store(argument)
+		if CL.create_role:
+			home.settings.update(argument)
 			t = [a for a in argument.keys()]
 			if not t:
 				t = ['empty']
 			c = CommandResponse('create-settings', ','.join(t))
 			raise Incomplete(c)
 
-		expect_settings = CL.update_settings or CL.dump_settings
-		expect_settings = expect_settings or CL.factory_reset or CL.delete_settings
+		expect_settings = CL.update_role or CL.dump_role
+		expect_settings = expect_settings or CL.factory_reset or CL.delete_role
 		if expect_settings and not isinstance(home.settings, HomeFile):
 			raise Incomplete(Faulted(f'no settings available "{home_role}"'))
 
@@ -594,7 +604,7 @@ def create(object_type, object_table=None,
 			c = CommandResponse('factory-reset')
 			raise Incomplete(c)
 
-		if CL.dump_settings:
+		if CL.dump_role:
 			settings = (home.settings(), MapOf(Unicode(), Any()))
 			object_encode(settings)
 			raise Incomplete(None)		# Settings on stdout.
@@ -605,7 +615,7 @@ def create(object_type, object_table=None,
 		for k, v in argument.items():
 			settings[k] = v
 
-		if CL.update_settings:
+		if CL.update_role:
 			home.settings.update()
 			t = [a for a in settings.keys()]
 			if not t:
@@ -613,7 +623,7 @@ def create(object_type, object_table=None,
 			c = CommandResponse('update-settings', ','.join(t))
 			raise Incomplete(c)
 
-		if CL.delete_settings:
+		if CL.delete_role:
 			home.unique_id.file.remove()
 			home.start_stop.file.remove()
 			home.log_storage.file.remove()
@@ -626,16 +636,16 @@ def create(object_type, object_table=None,
 			#command_help(object_type, argument)
 			raise Incomplete(None)
 
-		daemon = CL.background_daemon and not CL.child_process
+		daemon = CL.origin == ProcessOrigin.START
 		if daemon:
 			daemonize()
 
-		sticky = isinstance(home.settings, HomeFile)
-		locking = sticky or model or tmp
+		rolling = isinstance(logs, RollingLog)
+		locking = sticky or rolling
 
 		args = {k: from_any(v) for k, v in settings.items()}
 
-		output = run_object(home, object_type, args, logs, locking)
+		output = run_object(home, object_type, word, args, logs, locking)
 	except (CodecError, ValueError, KeyError) as e:
 		s = str(e)
 		output = Faulted(s)

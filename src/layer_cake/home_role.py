@@ -35,4 +35,4 @@ __all__ = [
 	'HR',
 ]
 
-HR = Gas(home_path=None, home_role=None, role_name=None, edit_settings=None)
+HR = Gas(home_path=None, home_role=None, role_name=None, edit_role=None)

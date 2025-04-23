@@ -149,10 +149,11 @@ class ProcessObject(Point, StateMachine):
 	:param kw: addition args passed to Popen
 	:type kw: named args dict
 	"""
-	def __init__(self, object_or_name, home_path=None, role_name=None, object_api=None, extra_types=None, **settings):
+	def __init__(self, object_or_name, origin: ProcessOrigin=None, home_path=None, role_name=None, object_api=None, extra_types=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_or_name = object_or_name
+		self.origin = origin
 		self.home_path = home_path
 		self.role_name = role_name
 		self.object_api = object_api
@@ -162,6 +163,7 @@ class ProcessObject(Point, StateMachine):
 		self.module_path = None
 		self.script_path = None
 		self.origin_path = None
+		self.api = None
 		self.listening_for_directories = None
 		self.p = None
 
@@ -172,6 +174,16 @@ class ProcessObject(Point, StateMachine):
 		# Start the new process.
 		# Derive the home/role context using the globals defined for
 		# this process, plus the values describing the new process.
+
+		if self.origin is not None:				# Override.
+			origin = self.origin
+		elif CL.origin == ProcessOrigin.RUN:	# Foreground.
+			origin = ProcessOrigin.RUN_CHILD
+		elif CL.origin == ProcessOrigin.START:	# Background.
+			origin = ProcessOrigin.START_CHILD
+		else:
+			origin = ProcessOrigin.SHELL		# Default
+
 		self.role_name = self.role_name or breakpath(self.module_path)[1]
 		self.home_path = self.home_path or CL.home_path
 		if CL.role_name:
@@ -180,6 +192,10 @@ class ProcessObject(Point, StateMachine):
 		# Build the command line.
 		interpreter = sys.executable
 		command = [interpreter, self.module_path]
+
+		shell = origin == ProcessOrigin.SHELL
+		if not shell:
+			command.append(f'--origin={origin.name}')
 
 		command.append(f'--child-process')
 		command.append(f'--full-output')
@@ -238,13 +254,15 @@ class ProcessObject(Point, StateMachine):
 			if existing_path:
 				path.append(existing_path)
 
-			python_path = path.join(':')
+			python_path = ':'.join(path)
 			environ['PYTHONPATH'] = python_path
 		else:
 			environ = None
 
+		c = ' '.join(command)
+		self.console(f'Command "{c}"')
 		try:
-			start_new_session = CL.background_daemon and not CL.child_process
+			start_new_session = CL.origin == ProcessOrigin.START
 			self.p = Popen(command,
 				start_new_session=start_new_session,
 				stdin=None, stdout=PIPE, stderr=sys.stderr,
