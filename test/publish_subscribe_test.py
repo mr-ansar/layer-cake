@@ -16,7 +16,7 @@ class TestPublishSubscribe(TestCase):
 		# Start a host directory and give it a chance to setup listen.
 		lc.PB.tear_down_atexit = False
 		self.ch = lc.open_channel()
-		self.directory = self.ch.create(lc.ProcessObject, test_directory.directory, accept_directories_at=lc.DIRECTORY_AT_HOST)
+		self.directory = self.ch.create(lc.ProcessObject, test_directory.directory, directory_scope=lc.ScopeOfDirectory.HOST, accept_directories_at=lc.DIRECTORY_AT_HOST)
 		self.ch.start(lc.T1, 1.0)
 		self.ch.select()
 		super().__init__()
