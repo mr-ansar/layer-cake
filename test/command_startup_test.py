@@ -104,7 +104,7 @@ class TestPocArgs(TestCase):
 
 	def test_insert_setting(self):
 		try:
-			executable, arguments, word = command_arguments(single, override_arguments=['blah', '--full-output=true', '--settings-file=content', '--a=10'])
+			executable, arguments, word = command_arguments(single, override_arguments=['blah', '--full-output=true', '--role-file=content', '--a=10'])
 		except ValueError as e:
 			assert False
 
