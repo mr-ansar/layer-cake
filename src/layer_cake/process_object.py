@@ -202,7 +202,7 @@ class ProcessObject(Point, StateMachine):
 		if CL.background_daemon:
 			command.append(f'--background-daemon')
 
-		if CL.home_path:
+		if self.home_path:
 			command.append(f'--home-path={self.home_path}')
 		command.append(f'--role-name={self.role_name}')
 
