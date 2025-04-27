@@ -47,6 +47,7 @@ from .get_response import *
 
 __all__ = [
 	'DIRECTORY_AT_HOST',
+	'DIRECTORY_AT_LAN',
 	'ConnectTo',
 	'AcceptAt',
 	'PublishAs',
@@ -391,7 +392,9 @@ class PENDING: pass
 class READY: pass
 class CONNECTING: pass
 
-DIRECTORY_AT_HOST = LocalPort(9090)
+DIRECTORY_PORT		= 54195
+DIRECTORY_AT_HOST	= HostPort('127.0.0.1', DIRECTORY_PORT)
+DIRECTORY_AT_LAN	= HostPort('192.168.0.195', DIRECTORY_PORT)
 
 # Represent the list of requests to the directory (i.e. the parent_address)
 # after an attempt to auto-connect to a HOST directory.
