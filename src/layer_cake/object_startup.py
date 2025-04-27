@@ -282,6 +282,8 @@ def open_home(home_path):
 		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path)}
 	except FileNotFoundError:
 		return None
+	except Incomplete:
+		return None
 
 	return listing
 
@@ -589,7 +591,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			t = [a for a in argument.keys()]
 			if not t:
 				t = ['empty']
-			c = CommandResponse('create-settings', ','.join(t))
+			c = CommandResponse('create-role', ','.join(t))
 			raise Incomplete(c)
 
 		expect_settings = CL.update_role or CL.dump_role
@@ -629,7 +631,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			home.log_storage.file.remove()
 			home.executable_file.file.remove()
 			home.settings.file.remove()
-			c = CommandResponse('delete-settings')
+			c = CommandResponse('delete-role')
 			raise Incomplete(c)
 
 		if CL.help:
