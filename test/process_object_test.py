@@ -267,7 +267,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'create-settings'
+		assert response.command == 'create-role'
 		assert response.note == 'empty'
 
 		with lc.channel() as ch:
@@ -278,7 +278,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'delete-settings'
+		assert response.command == 'delete-role'
 		assert response.note is None
 
 	def test_create_role_full(self):
@@ -298,7 +298,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'create-settings'
+		assert response.command == 'create-role'
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
@@ -309,7 +309,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'delete-settings'
+		assert response.command == 'delete-role'
 		assert response.note is None
 
 	def test_create_role_update(self):
@@ -330,7 +330,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'create-settings'
+		assert response.command == 'create-role'
 		assert response.note == 'table,count'
 
 		# Add other half plus overlap.
@@ -354,7 +354,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'delete-settings'
+		assert response.command == 'delete-role'
 		assert response.note is None
 
 	def test_settings_faulted(self):
@@ -367,7 +367,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'create-settings'
+		assert response.command == 'create-role'
 		assert response.note == 'empty'
 
 		# Repeat.
@@ -379,7 +379,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)
-		assert 'settings already present' in response
+		assert 'already exists' in response
 
 		with lc.channel() as ch:
 			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
@@ -389,7 +389,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'delete-settings'
+		assert response.command == 'delete-role'
 		assert response.note is None
 
 		with lc.channel() as ch:
@@ -400,4 +400,4 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)
-		assert 'no settings available' in response
+		assert 'missing property' in response
