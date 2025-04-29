@@ -400,4 +400,4 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)
-		assert 'missing property' in response
+		assert 'no settings available' in response
