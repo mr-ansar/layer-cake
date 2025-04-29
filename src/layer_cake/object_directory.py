@@ -390,26 +390,11 @@ bind(Dropped)
 class INITIAL: pass
 class PENDING: pass
 class READY: pass
-class CONNECTING: pass
 
-DIRECTORY_PORT		= 54195
-DIRECTORY_AT_HOST	= HostPort('127.0.0.1', DIRECTORY_PORT)
-DIRECTORY_AT_LAN	= HostPort('192.168.0.195', DIRECTORY_PORT)
-
-# Represent the list of requests to the directory (i.e. the parent_address)
-# after an attempt to auto-connect to a HOST directory.
-class Resubmit(Point, Stateless):
-	def __init__(self, to_do=None):
-		Point.__init__(self)
-		Stateless.__init__(self)
-		self.to_do = to_do
-
-def Resubmit_Start(self, message):
-	for r, a in self.to_do:
-		self.forward(r, self.parent_address, a)
-	self.complete()
-
-bind(Resubmit, (Start,))
+DIRECTORY_PORT			= 54195
+DIRECTORY_AT_EPHEMERAL	= HostPort('127.0.0.1', 0)
+DIRECTORY_AT_HOST		= HostPort('127.0.0.1', DIRECTORY_PORT)
+DIRECTORY_AT_LAN		= HostPort('192.168.0.195', DIRECTORY_PORT)
 
 # A managed listen. One required for every publish beyond
 # the process scope.
@@ -840,7 +825,6 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.listening = None
 		self.accepted = {}				# Remember who connects from below and what they provide.
 		self.pending_enquiry = set()
-		self.to_be_completed = []
 
 		# Keep the db clean.
 		self.unique_publish = {}
@@ -869,18 +853,22 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.reconnect_delay = RECONNECT_DELAY[s.value]
 		self.console(f'Update parameter', reconnect_delay=self.reconnect_delay)
 
-	def auto_connect_to_host(self, message):
-		not_parented = self.connect_to_directory.host is None
-		in_process = self.directory_scope == ScopeOfDirectory.PROCESS
-		will_be_pushed = message.scope.value < ScopeOfDirectory.GROUP.value
+	def auto_configure(self, message):
+		'''If conditions are met, auto-assign a parent directory address and start connecting. Return nothing.'''
+		connecting_to_host = self.connect_to_directory.host is not None
+		to_be_pushed = message.scope.value < self.directory_scope.value
+		if connecting_to_host or not to_be_pushed:
+			return
 
-		if not_parented and in_process and will_be_pushed:
-			self.to_be_completed.append((message, self.return_address))
+		if self.directory_scope in (ScopeOfDirectory.PROCESS, ScopeOfDirectory.GROUP):
 			self.connect_to_directory = DIRECTORY_AT_HOST
-			connect(self, self.connect_to_directory)
-			self.calculate_reconnect(self.connect_to_directory.host)
-			return True
-		return False
+		elif self.directory_scope  == ScopeOfDirectory.HOST:
+			self.connect_to_directory = DIRECTORY_AT_LAN
+		else:
+			return
+
+		connect(self, self.connect_to_directory)
+		self.calculate_reconnect(self.connect_to_directory.host)
 
 	def add_publisher(self, listing, origin, publish):
 		name = listing.name
@@ -1284,14 +1272,16 @@ def ObjectDirectory_READY_AcceptAt(self, message):
 
 def ObjectDirectory_READY_Enquiry(self, message):
 	if self.accept_directories_at.host is None:
-		self.accept_directories_at = HostPort('127.0.0.1', 0)
+		self.directory_scope = ScopeOfDirectory.PROCESS
+		self.accept_directories_at = DIRECTORY_AT_EPHEMERAL
 		listen(self, self.accept_directories_at)
 		self.pending_enquiry.add(self.return_address)
 		return READY
 
 	if not isinstance(self.listening, Listening):
 		self.pending_enquiry.add(self.return_address)
-		return READY
+	else:
+		self.reply(self.listening.listening_ipp)
 
 	return READY
 
@@ -1305,8 +1295,7 @@ def ObjectDirectory_READY_PublishAs(self, message):
 		self.reply(NotPublished(name=name, scope=scope, note=f'already published'))
 		return READY
 
-	if self.auto_connect_to_host(message):
-		return CONNECTING
+	self.auto_configure(message)
 
 	published_id = uuid.uuid4()
 	listing = Published(name=name, scope=scope, published_id=published_id, home_address=self.object_address)
@@ -1356,8 +1345,7 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.reply(NotSubscribed(search=search, scope=scope, note=f'already subscribed'))
 		return READY
 
-	if self.auto_connect_to_host(message):
-		return CONNECTING
+	self.auto_configure(message)
 
 	subscribed_id = uuid.uuid4()
 	listing = Subscribed(search=search, scope=scope, subscribed_id=subscribed_id, home_address=self.object_address)
@@ -1372,24 +1360,6 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 	self.send_up(listing)
 
 	return READY
-
-def ObjectDirectory_CONNECTING_Connected(self, message):
-	self.connected = message
-	self.push_up()
-	self.create(Resubmit, self.to_be_completed)
-	self.to_be_completed = []
-	return READY
-
-def ObjectDirectory_CONNECTING_NotConnected(self, message):
-	self.connected = message
-	self.create(Resubmit, self.to_be_completed)		# Force a negative outcome.
-	self.to_be_completed = []
-	self.start(T1, self.reconnect_delay)
-	return READY
-
-def ObjectDirectory_CONNECTING_Unknown(self, message):
-	self.save(message)
-	return CONNECTING
 
 def ObjectDirectory_READY_Published(self, message):
 	if message.scope.value > self.directory_scope.value:
@@ -1594,10 +1564,6 @@ def ObjectDirectory_READY_Stop(self, message):
 OBJECT_DIRECTORY_DISPATCH = {
 	INITIAL: (
 		(Start,),
-		()
-	),
-	CONNECTING: (
-		(Connected, NotConnected, Unknown),
 		()
 	),
 	READY: (

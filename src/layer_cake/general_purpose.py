@@ -28,7 +28,7 @@
 __docformat__ = 'restructuredtext'
 
 import os
-import re
+import random
 from enum import Enum
 
 from .virtual_memory import *
@@ -38,7 +38,11 @@ __all__ = [
 	'Gas',
 	'breakpath',
 	'CreateFrame',
+	'spread_out',
 ]
+
+random.seed()
+
 
 #
 #
@@ -76,3 +80,10 @@ class CreateFrame(object):
 		self.object_type = object_type
 		self.args = args
 		self.kw = kw
+
+def spread_out(period, delta=25):
+	'''Adjust a base value in a random way. Return a float.'''
+	lo = 100 - delta
+	hi = 100 + delta
+	cf = random.randrange(lo, hi) / 100
+	return period * cf

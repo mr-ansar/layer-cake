@@ -626,11 +626,10 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			raise Incomplete(c)
 
 		if CL.delete_role:
-			home.unique_id.file.remove()
-			home.start_stop.file.remove()
-			home.log_storage.file.remove()
-			home.executable_file.file.remove()
-			home.settings.file.remove()
+			try:
+				remove_folder(HR.home_role)
+			except OSError as e:
+				raise Incomplete(Faulted('Cannot delete role', str(e)))
 			c = CommandResponse('delete-role')
 			raise Incomplete(c)
 

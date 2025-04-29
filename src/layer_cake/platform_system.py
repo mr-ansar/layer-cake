@@ -30,6 +30,7 @@ import platform
 import signal
 from .virtual_runtime import *
 from .general_purpose import *
+from .command_line import *
 from .object_runtime import *
 
 __all__ = [

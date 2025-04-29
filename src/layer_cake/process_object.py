@@ -262,9 +262,9 @@ class ProcessObject(Point, StateMachine):
 		c = ' '.join(command)
 		self.console(f'Command "{c}"')
 		try:
-			start_new_session = CL.origin == ProcessOrigin.START
+			start_new_session = CL.child_process
 			self.p = Popen(command,
-				start_new_session=start_new_session,
+				#start_new_session=start_new_session,
 				stdin=None, stdout=PIPE, stderr=sys.stderr,
 				text=True, encoding='utf-8', errors='strict',
 				env=environ)
