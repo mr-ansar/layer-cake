@@ -38,7 +38,6 @@ child processes. There are several variations on this general theme;
 """
 __docformat__ = 'restructuredtext'
 
-import os
 import re
 import layer_cake as lc
 
@@ -47,10 +46,16 @@ import layer_cake as lc
 DEFAULT_HOME = '.layer-cake'
 DEFAULT_GROUP = 'group.default'
 
-class Group(lc.Point, lc.Stateless):
+class INITIAL: pass
+class ENQUIRING: pass
+class RUNNING: pass
+class RETURNING: pass
+class GROUP_RETURNING: pass
+
+class Group(lc.Point, lc.StateMachine):
 	def __init__(self, *search, retry: lc.RetryIntervals=None, one_and_all=False, main_role=None):
 		lc.Point.__init__(self)
-		lc.Stateless.__init__(self)
+		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
 		self.retry = retry
 		self.one_and_all = one_and_all
@@ -62,18 +67,18 @@ class Group(lc.Point, lc.Stateless):
 		self.machine = []				# Compiled re's.
 		self.home = {}					# Roles matched by patterns.
 		self.ephemeral = None			# The connect_to_directory value for child processes.
-		self.returned = {}				# Values returned by self-terminating processes
 		self.interval = {}				# Interval iterators for each role.
-		self.clearing = None			# Termination initiated by Stop or Faulted.
-		self.aborted = False
+		self.group_returned = {}		# Values returned by self-terminating processes
+		self.returned = None
 
-def Group_Start(self, message):
+def Group_INITIAL_Start(self, message):
 	if self.search:
 		s = ', '.join(self.search)
 		self.console(f'Search "{s}"')
 	self.send(lc.Enquiry(), lc.PD.directory)	# Request the accept_directories_at value.
+	return ENQUIRING
 
-def Group_HostPort(self, message):
+def Group_ENQUIRING_HostPort(self, message):
 	self.ephemeral = message					# This is accept_directories_at.
 
 	# Load all the roles.
@@ -116,45 +121,39 @@ def Group_HostPort(self, message):
 
 	# Remember for restarts.
 	self.home = home
+	return RUNNING
 
-def Group_Returned(self, message):
+def Group_ENQUIRING_Faulted(self, message):
+	self.complete(message)
+
+def Group_ENQUIRING_Stop(self, message):
+	self.complete(lc.Aborted())
+
+def Group_RUNNING_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnReturned):			# Restart callbacks.
 		d(self, message)
-		return
+		return RUNNING
 
-	# A role has terminated.
-	# Was this prompted by a Stop or Faulted.
-	if self.clearing:
-		if not self.working():					# Includes ProcessObjects and restart callbacks.
-			self.complete(self.clearing)
-		return
-
-	# Un-prompted termination, i.e. not stopped.
-	self.returned[d] = message.value
-
-	if self.aborted:
-		if not self.working():					# Includes ProcessObjects and restart callbacks.
-			self.complete(self.returned)
-		return
+	#
+	self.group_returned[d] = message.value
 
 	if d == self.main_role:						# Declared "main" - no retries.
 		if not self.working():					# Includes ProcessObjects and restart callbacks.
-			self.complete(self.returned)
+			self.complete(self.group_returned)
 
-		if not self.aborted:
-			self.abort()
-			self.aborted = True
-		return
+		self.abort()
+		return GROUP_RETURNING
 
 	if self.retry is None:						# Not configured for restarts.
 		if not self.working():					# As above.
-			self.complete(self.returned)
+			self.complete(self.group_returned)
 
-		if self.one_and_all and not self.aborted:		# Take everything with it.
+		if self.one_and_all:
 			self.abort()
-			self.aborted = True
-		return
+			return GROUP_RETURNING
+
+		return RUNNING
 
 	i = self.interval.get(d, None)
 	if i is None:
@@ -165,13 +164,14 @@ def Group_Returned(self, message):
 		seconds = next(i)
 		self.console(f'Restart "{d}" ({seconds} seconds)')
 	except StopIteration:
-		if not self.working():					# No ProcessObjects and no restarts.
-			self.complete(self.returned)
+		if not self.working():					# As above.
+			self.complete(self.group_returned)
 
-		if self.one_and_all and not self.aborted:		# Take everything with it.
+		if self.one_and_all:
 			self.abort()
-			self.aborted = True
-		return
+			return GROUP_RETURNING
+
+		return RUNNING
 
 	def restart(self, value, args):
 		# origin=lc.ProcessOrigin.RUN,
@@ -183,23 +183,74 @@ def Group_Returned(self, message):
 	# Run a no-op with the desired timeout.
 	a = self.create(lc.GetResponse, lc.Enquiry(), lc.NO_SUCH_ADDRESS, seconds=seconds)
 	self.callback(a, restart, role=d)
+	return RUNNING
 
-def Group_Faulted(self, message):
+def Group_RUNNING_Faulted(self, message):
 	if not self.working():
 		self.complete(message)
 
-	self.clearing = message
 	self.abort()
+	self.returned = message.value
+	return RETURNING
 
-def Group_Stop(self, message):
+def Group_RUNNING_Stop(self, message):
 	if not self.working():
 		self.complete(lc.Aborted())
 
-	self.clearing = lc.Aborted()
 	self.abort()
+	self.returned = lc.Aborted()
+	return RETURNING
 
-lc.bind(Group, (lc.Start, lc.HostPort, lc.Returned, lc.Faulted, lc.Stop), return_type=lc.MapOf(lc.Unicode(),lc.Any()))
+def Group_RETURNING_Returned(self, message):
+	d = self.debrief()
+	if isinstance(d, lc.OnReturned):			# Restart callbacks.
+		d(self, message)
+		return RETURNING
+
+	if not self.working():					# Includes ProcessObjects and restart callbacks.
+		self.complete(self.returned)
+
+	return RETURNING
+
+def Group_GROUP_RETURNING_Returned(self, message):
+	d = self.debrief()
+	if isinstance(d, lc.OnReturned):			# Restart callbacks.
+		d(self, message)
+		return GROUP_RETURNING
+
+	self.group_returned[d] = message.value
+
+	if not self.working():					# Includes ProcessObjects and restart callbacks.
+		self.complete(self.group_returned)
+
+	return GROUP_RETURNING
+
+
+GROUP_DISPATCH = {
+	INITIAL: (
+		(lc.Start,),
+		()
+	),
+	ENQUIRING: (
+		(lc.HostPort, lc.Faulted, lc.Stop),
+		()
+	),
+	RUNNING: (
+		(lc.Returned, lc.Faulted, lc.Stop),
+		()
+	),
+	RETURNING: (
+		(lc.Returned,),
+		()
+	),
+	GROUP_RETURNING: (
+		(lc.Returned,),
+		()
+	),
+}
+
+lc.bind(Group, GROUP_DISPATCH, return_type=lc.MapOf(lc.Unicode(),lc.Any()))
 
 
 if __name__ == '__main__':
-	lc.create(Group)
+	lc.create(Group, scope=lc.ScopeOfDirectory.GROUP)
