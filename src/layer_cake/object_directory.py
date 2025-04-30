@@ -46,6 +46,7 @@ from .listen_connect import *
 from .get_response import *
 
 __all__ = [
+	'scope_type',
 	'DIRECTORY_AT_HOST',
 	'DIRECTORY_AT_LAN',
 	'ConnectTo',
@@ -66,6 +67,8 @@ __all__ = [
 	'Dropped',
 ]
 
+#
+scope_type = def_type(ScopeOfDirectory)
 
 # Time required for request/response sequence across peer connection.
 COMPLETE_A_LOOP = 3.0
@@ -849,6 +852,8 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.peer_connect = {}
 
 	def calculate_reconnect(self, host):
+		if host is None:
+			return
 		s = local_private_other(host)
 		self.reconnect_delay = RECONNECT_DELAY[s.value]
 		self.console(f'Update parameter', reconnect_delay=self.reconnect_delay)
@@ -1194,6 +1199,14 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.send(PublishedDirectory(published, subscribed), self.connected.proxy_address)
 
 def ObjectDirectory_INITIAL_Start(self, message):
+	if self.accept_directories_at.host is None:
+		if self.directory_scope == ScopeOfDirectory.LAN:
+			self.accept_directories_at = HostPort('0.0.0.0', DIRECTORY_PORT)
+		elif self.directory_scope == ScopeOfDirectory.HOST:
+			self.accept_directories_at = DIRECTORY_AT_HOST
+		# GROUP - see Enquiry and auto_configure
+		# PROCESS/LIBRARY - see PublishAs/SubscribeTo/Enquiry and auto_configure
+
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
 		connect(self, self.connect_to_directory)
@@ -1248,31 +1261,8 @@ def ObjectDirectory_READY_Closed(self, message):
 		self.send(ClearListings(p[1], p[2]), self.connected.proxy_address)
 	return READY
 
-#
-def ObjectDirectory_READY_ConnectTo(self, message):
-	if self.connect_to_directory.host is not None:
-		if isinstance(self.connected, Connected):
-			self.send(Close(), self.connected.proxy_address)
-		# Could be a Connected in the queue.
-	else:
-		connect(self, message.ipp)
-	self.connect_to_directory = message.ipp
-	self.calculate_reconnect(message.ipp.host)
-	return READY
-
-def ObjectDirectory_READY_AcceptAt(self, message):
-	if self.accept_directories_at.host is not None:
-		if isinstance(self.listening, Listening):
-			stop_listening(self, self.listening.lid)
-		# Could be a Listening in the queue.
-	else:
-		listen(self, message.ipp)
-	self.accept_directories_at = message.ipp
-	return READY
-
 def ObjectDirectory_READY_Enquiry(self, message):
 	if self.accept_directories_at.host is None:
-		self.directory_scope = ScopeOfDirectory.PROCESS
 		self.accept_directories_at = DIRECTORY_AT_EPHEMERAL
 		listen(self, self.accept_directories_at)
 		self.pending_enquiry.add(self.return_address)
@@ -1369,6 +1359,7 @@ def ObjectDirectory_READY_Published(self, message):
 	if not self.add_publisher(message, pub, None):
 		self.send(Advisory(name=message.name, scope=self.directory_scope, published_id=message.published_id), message.home_address)
 		return READY
+	self.auto_configure(message)
 
 	for s in self.find_subscribers(message):
 		self.create_route(s, message)
@@ -1387,6 +1378,7 @@ def ObjectDirectory_READY_Subscribed(self, message):
 	a, sub, pub = self.accepted[self.return_address[-1]]
 	if not self.add_subscriber(message, sub, None):
 		return READY
+	self.auto_configure(message)
 
 	for p in self.find_publishers(message):
 		self.create_route(message, p)
@@ -1395,21 +1387,30 @@ def ObjectDirectory_READY_Subscribed(self, message):
 
 def ObjectDirectory_READY_PublishedDirectory(self, message):
 	a, sub, pub = self.accepted[self.return_address[-1]]
+	highest = None
 	for p in message.published:
 		if p.scope.value > self.directory_scope.value:
 			continue
 		if not self.add_publisher(p, pub, None):
 			continue
+		if highest is None or p.scope.value < highest.scope.value:
+			highest = p
 		for s in self.find_subscribers(p):
 			self.create_route(s, p)
+
+	highest is not None and self.auto_configure(highest)
 
 	for s in message.subscribed:
 		if s.scope.value > self.directory_scope.value:
 			continue
 		if not self.add_subscriber(s, sub, None):
 			continue
+		if highest is None or s.scope.value < highest.scope.value:
+			highest = s
 		for p in self.find_publishers(s):
 			self.create_route(s, p)
+
+	highest is not None and self.auto_configure(highest)
 
 	if isinstance(self.connected, Connected):
 		self.push_up()
@@ -1571,7 +1572,6 @@ OBJECT_DIRECTORY_DISPATCH = {
 		Connected, NotConnected,
 		T1,
 		Accepted, Closed,
-		ConnectTo, AcceptAt,
 		Enquiry,
 		PublishAs, SubscribeTo, HostPort,
 		Published, Subscribed,
