@@ -543,7 +543,7 @@ def object_output(value):
 	object_encode(value)
 
 #
-def create(object_type, object_table=None, environment_variables=None, sticky=False):
+def create(object_type, object_table=None, environment_variables=None, sticky=False, scope=None):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -561,6 +561,9 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 
 		bp = breakpath(executable)
 		name = bp[1]
+
+		if scope:
+			CL.directory_scope = scope
 
 		# Compose the location of file-based materials.
 		home_path = CL.home_path or DEFAULT_HOME
