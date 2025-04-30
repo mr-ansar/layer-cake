@@ -21,19 +21,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Directory at the HOST scope.
+"""Directory at the LAN scope.
 
-Run the pub-sub name service at the HOST level. Connected to
-by directories at HOST and PROCESS levels, i.e. as part of the
-auto-configuration driven by the pub-sub activity within the
-executing PROCESS(es) and GROUP(s).
+Run the pub-sub name service at the LAN level. Connected to
+by directories at HOST level, i.e. as part of the auto-configuration
+driven by the pub-sub activity within associated, executing PROCESS(es).
 
 This directory needs an HTTP/web interface for the management
-of WAN connection credentials. This is the first level that
-WAN connectivity is supported, allowing a minimal WAN configuration
-of a PROCESS, HOST and WAN.
+of WAN connection credentials. This is the second level where
+WAN connectivity is supported, and possible the better configuration
+from a security pov.
 
-The other level supporting WAN connectivity is at LAN.
+The other level supporting WAN connectivity is at HOST.
 """
 __docformat__ = 'restructuredtext'
 
@@ -44,21 +43,21 @@ import layer_cake as lc
 class INITIAL: pass
 class RUNNING: pass
 
-class Host(lc.Point, lc.StateMachine):
+class Lan(lc.Point, lc.StateMachine):
 	def __init__(self):
 		lc.Point.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 
-def Host_INITIAL_Start(self, message):
+def Lan_INITIAL_Start(self, message):
 	return RUNNING
 
-def Host_RUNNING_Faulted(self, message):
+def Lan_RUNNING_Faulted(self, message):
 	self.complete(message)
 
-def Host_RUNNING_Stop(self, message):
+def Lan_RUNNING_Stop(self, message):
 	self.complete(lc.Aborted())
 
-HOST_DISPATCH = {
+LAN_DISPATCH = {
 	INITIAL: (
 		(lc.Start,),
 		()
@@ -69,13 +68,17 @@ HOST_DISPATCH = {
 	),
 }
 
-lc.bind(Host, HOST_DISPATCH)
+lc.bind(Lan, LAN_DISPATCH)
 
 
 if __name__ == '__main__':
 	# Explicit scope is processed in ObjectDirectory_INITIAL_Start
 	# Unless there is an explicit argument this will open a listen
-	# port at 127.0.0.1:DIRECTORY_PORT (e.g. 54195). If the directory
-	# is presented with pub-subs for higher levels it will auto-
-	# connect to DIRECTORY_AT_LAN (e.g. 192.168.0.195:DIRECTORY_PORT)
-	lc.create(Host, scope=lc.ScopeOfDirectory.HOST)
+	# port at 0.0.0.0:DIRECTORY_PORT (e.g. 54195). HOST directories
+	# will be configured to connect to the 195 host in the appropriate
+	# private IP address range (e.g. 10.0.0.1, 192.168.0.1). The
+	# listen at "any" (0.0.0.0) will catch all connections to the
+	# DIRECTORY_PORT. The IP of the connecting machine is extracted
+	# from the sockets interface and this is the value distributed
+	# to matching subscribers.
+	lc.create(Lan, scope=lc.ScopeOfDirectory.LAN)

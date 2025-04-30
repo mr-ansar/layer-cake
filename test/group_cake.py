@@ -1,7 +1,7 @@
 # Author: Scott Woods <scott.18.ansar@gmail.com>
 # MIT License
 #
-# Copyright (c) 2017-2023 Scott Woods
+# Copyright (c) 2025 Scott Woods
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -253,4 +253,10 @@ lc.bind(Group, GROUP_DISPATCH, return_type=lc.MapOf(lc.Unicode(),lc.Any()))
 
 
 if __name__ == '__main__':
+	# See send(lc.Enquiry()) and Group_ENQUIRING_HostPort for how
+	# this process acquires the right listening configuration.
+	# Unless there is an explicit argument this will open a listen
+	# port at 127.0.0.1:0 (i.e. ephemeral). If the directory
+	# is presented with pub-subs for higher levels it will auto-
+	# connect to DIRECTORY_AT_HOST (e.g. 127.0.0.1:DIRECTORY_PORT)
 	lc.create(Group, scope=lc.ScopeOfDirectory.GROUP)
