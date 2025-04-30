@@ -310,7 +310,8 @@ def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
 			p = install_type(m)
 			x = portable_to_signature(p)
 			d = isinstance(p, UserDefined)
-			if d:
+			e = isinstance(p, Enumeration)
+			if d or e:
 				tag = p.element.__name__
 			else:
 				tag = portable_to_tag(p)
