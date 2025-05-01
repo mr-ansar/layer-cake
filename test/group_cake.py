@@ -52,9 +52,9 @@ class RUNNING: pass
 class RETURNING: pass
 class GROUP_RETURNING: pass
 
-class Group(lc.Point, lc.StateMachine):
-	def __init__(self, *search, retry: lc.RetryIntervals=None, one_and_all=False, main_role=None):
-		lc.Point.__init__(self)
+class Group(lc.Threaded, lc.StateMachine):
+	def __init__(self, *search, retry: lc.RetryIntervals=None, one_and_all=False, main_role: str=None):
+		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
 		self.retry = retry
@@ -69,12 +69,12 @@ class Group(lc.Point, lc.StateMachine):
 		self.ephemeral = None			# The connect_to_directory value for child processes.
 		self.interval = {}				# Interval iterators for each role.
 		self.group_returned = {}		# Values returned by self-terminating processes
-		self.returned = None
+		self.main_returned = None
 
 def Group_INITIAL_Start(self, message):
 	if self.search:
 		s = ', '.join(self.search)
-		self.console(f'Search "{s}"')
+		self.trace(f'Search "{s}"')
 	self.send(lc.Enquiry(), lc.PD.directory)	# Request the accept_directories_at value.
 	return ENQUIRING
 
@@ -135,15 +135,16 @@ def Group_RUNNING_Returned(self, message):
 		d(self, message)
 		return RUNNING
 
-	#
-	self.group_returned[d] = message.value
-
 	if d == self.main_role:						# Declared "main" - no retries.
 		if not self.working():					# Includes ProcessObjects and restart callbacks.
-			self.complete(self.group_returned)
+			self.complete(message.value)
 
 		self.abort()
-		return GROUP_RETURNING
+		self.main_returned = message.value
+		return RETURNING
+
+	#
+	self.group_returned[d] = message.value
 
 	if self.retry is None:						# Not configured for restarts.
 		if not self.working():					# As above.
@@ -162,7 +163,7 @@ def Group_RUNNING_Returned(self, message):
 
 	try:
 		seconds = next(i)
-		self.console(f'Restart "{d}" ({seconds} seconds)')
+		self.trace(f'Restart "{d}" ({seconds} seconds)')
 	except StopIteration:
 		if not self.working():					# As above.
 			self.complete(self.group_returned)
@@ -190,7 +191,7 @@ def Group_RUNNING_Faulted(self, message):
 		self.complete(message)
 
 	self.abort()
-	self.returned = message.value
+	self.main_returned = message.value
 	return RETURNING
 
 def Group_RUNNING_Stop(self, message):
@@ -198,27 +199,25 @@ def Group_RUNNING_Stop(self, message):
 		self.complete(lc.Aborted())
 
 	self.abort()
-	self.returned = lc.Aborted()
+	self.main_returned = lc.Aborted()
 	return RETURNING
 
 def Group_RETURNING_Returned(self, message):
 	d = self.debrief()
-	if isinstance(d, lc.OnReturned):			# Restart callbacks.
-		d(self, message)
-		return RETURNING
+	if isinstance(d, lc.OnReturned):		# Restart callbacks.
+		pass
 
 	if not self.working():					# Includes ProcessObjects and restart callbacks.
-		self.complete(self.returned)
+		self.complete(self.main_returned)
 
 	return RETURNING
 
 def Group_GROUP_RETURNING_Returned(self, message):
 	d = self.debrief()
-	if isinstance(d, lc.OnReturned):			# Restart callbacks.
-		d(self, message)
-		return GROUP_RETURNING
-
-	self.group_returned[d] = message.value
+	if isinstance(d, lc.OnReturned):		# Restart callbacks.
+		pass
+	else:
+		self.group_returned[d] = message.value
 
 	if not self.working():					# Includes ProcessObjects and restart callbacks.
 		self.complete(self.group_returned)
@@ -257,6 +256,7 @@ if __name__ == '__main__':
 	# this process acquires the right listening configuration.
 	# Unless there is an explicit argument this will open a listen
 	# port at 127.0.0.1:0 (i.e. ephemeral). If the directory
-	# is presented with pub-subs for higher levels it will auto-
-	# connect to DIRECTORY_AT_HOST (e.g. 127.0.0.1:DIRECTORY_PORT)
+	# is presented with pub-subs for higher levels and no connect
+	# address has been specified, it will auto-connect to
+	# DIRECTORY_AT_HOST (e.g. 127.0.0.1:DIRECTORY_PORT)
 	lc.create(Group, scope=lc.ScopeOfDirectory.GROUP)

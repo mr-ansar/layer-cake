@@ -10,7 +10,7 @@ def subscriber(self, search: str=None, enduring: bool=False) -> list[list[float]
 	'''Open communications with a named service and exchange messages. Return table.'''
 	search = search or DEFAULT_SEARCH
 
-	lc.subscribe(self, search)		# Connect this object with the named object.
+	lc.subscribe(self, search, scope=lc.ScopeOfDirectory.LAN)		# Connect this object with the named object.
 
 	m = self.input()
 	if isinstance(m, lc.Subscribed):		# Search registered with directory.

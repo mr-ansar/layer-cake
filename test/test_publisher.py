@@ -11,7 +11,7 @@ def publisher(self, name: str=None):
 	'''Establish a named service, wait for clients and their enquiries. Return nothing.'''
 	name = name or DEFAULT_NAME
 
-	lc.publish(self, name)		# Register this object under the given name.
+	lc.publish(self, name, scope=lc.ScopeOfDirectory.LAN)		# Register this object under the given name.
 
 	m = self.input()
 	if isinstance(m, lc.Published):		# Name registered with directory.

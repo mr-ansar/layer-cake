@@ -26,7 +26,7 @@
 Run the pub-sub name service at the HOST level. Connected to
 by directories at HOST and PROCESS levels, i.e. as part of the
 auto-configuration driven by the pub-sub activity within the
-executing PROCESS(es) and GROUP(s).
+associated, underlying PROCESS(es).
 
 This directory needs an HTTP/web interface for the management
 of WAN connection credentials. This is the first level that
@@ -44,9 +44,9 @@ import layer_cake as lc
 class INITIAL: pass
 class RUNNING: pass
 
-class Host(lc.Point, lc.StateMachine):
+class Host(lc.Threaded, lc.StateMachine):
 	def __init__(self):
-		lc.Point.__init__(self)
+		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 
 def Host_INITIAL_Start(self, message):

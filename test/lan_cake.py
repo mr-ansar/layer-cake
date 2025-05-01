@@ -23,9 +23,9 @@
 
 """Directory at the LAN scope.
 
-Run the pub-sub name service at the LAN level. Connected to
-by directories at HOST level, i.e. as part of the auto-configuration
-driven by the pub-sub activity within associated, executing PROCESS(es).
+Run the pub-sub name service at the LAN level. Connected to by directories at
+HOST level, i.e. as part of the ObjectDirectory.auto_connect(), driven by the
+pub-sub activity within associated, underlying PROCESS(es).
 
 This directory needs an HTTP/web interface for the management
 of WAN connection credentials. This is the second level where
@@ -43,9 +43,9 @@ import layer_cake as lc
 class INITIAL: pass
 class RUNNING: pass
 
-class Lan(lc.Point, lc.StateMachine):
+class Lan(lc.Threaded, lc.StateMachine):
 	def __init__(self):
-		lc.Point.__init__(self)
+		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 
 def Lan_INITIAL_Start(self, message):
