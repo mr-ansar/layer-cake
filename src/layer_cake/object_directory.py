@@ -855,11 +855,13 @@ class ObjectDirectory(Threaded, StateMachine):
 		if host is None:
 			return
 		s = local_private_other(host)
-		self.reconnect_delay = RECONNECT_DELAY[s.value]
-		self.console(f'Update parameter', reconnect_delay=self.reconnect_delay)
+		seconds = RECONNECT_DELAY[s.value]
+		self.reconnect_delay = spread_out(seconds, 10)
+		self.trace(f'Update parameter', reconnect_delay=self.reconnect_delay)
 
-	def auto_configure(self, message):
-		'''If conditions are met, auto-assign a parent directory address and start connecting. Return nothing.'''
+	def auto_connect(self, message):
+		# If certain conditions are met, auto-assign a parent directory address
+		# and start connecting.
 		connecting_to_host = self.connect_to_directory.host is not None
 		to_be_pushed = message.scope.value < self.directory_scope.value
 		if connecting_to_host or not to_be_pushed:
@@ -1200,12 +1202,14 @@ class ObjectDirectory(Threaded, StateMachine):
 
 def ObjectDirectory_INITIAL_Start(self, message):
 	if self.accept_directories_at.host is None:
+		# Auto-configure the listen side according to the
+		# where this directory is sitting in the hierarchy.
 		if self.directory_scope == ScopeOfDirectory.LAN:
 			self.accept_directories_at = HostPort('0.0.0.0', DIRECTORY_PORT)
 		elif self.directory_scope == ScopeOfDirectory.HOST:
 			self.accept_directories_at = DIRECTORY_AT_HOST
-		# GROUP - see Enquiry and auto_configure
-		# PROCESS/LIBRARY - see PublishAs/SubscribeTo/Enquiry and auto_configure
+		# GROUP - see Enquiry and auto_connect
+		# PROCESS/LIBRARY - see PublishAs/SubscribeTo/Enquiry and auto_connect
 
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
@@ -1285,7 +1289,7 @@ def ObjectDirectory_READY_PublishAs(self, message):
 		self.reply(NotPublished(name=name, scope=scope, note=f'already published'))
 		return READY
 
-	self.auto_configure(message)
+	self.auto_connect(message)
 
 	published_id = uuid.uuid4()
 	listing = Published(name=name, scope=scope, published_id=published_id, home_address=self.object_address)
@@ -1335,7 +1339,7 @@ def ObjectDirectory_READY_SubscribeTo(self, message):
 		self.reply(NotSubscribed(search=search, scope=scope, note=f'already subscribed'))
 		return READY
 
-	self.auto_configure(message)
+	self.auto_connect(message)
 
 	subscribed_id = uuid.uuid4()
 	listing = Subscribed(search=search, scope=scope, subscribed_id=subscribed_id, home_address=self.object_address)
@@ -1359,7 +1363,7 @@ def ObjectDirectory_READY_Published(self, message):
 	if not self.add_publisher(message, pub, None):
 		self.send(Advisory(name=message.name, scope=self.directory_scope, published_id=message.published_id), message.home_address)
 		return READY
-	self.auto_configure(message)
+	self.auto_connect(message)
 
 	for s in self.find_subscribers(message):
 		self.create_route(s, message)
@@ -1378,7 +1382,7 @@ def ObjectDirectory_READY_Subscribed(self, message):
 	a, sub, pub = self.accepted[self.return_address[-1]]
 	if not self.add_subscriber(message, sub, None):
 		return READY
-	self.auto_configure(message)
+	self.auto_connect(message)
 
 	for p in self.find_publishers(message):
 		self.create_route(message, p)
@@ -1398,7 +1402,7 @@ def ObjectDirectory_READY_PublishedDirectory(self, message):
 		for s in self.find_subscribers(p):
 			self.create_route(s, p)
 
-	highest is not None and self.auto_configure(highest)
+	highest is not None and self.auto_connect(highest)
 
 	for s in message.subscribed:
 		if s.scope.value > self.directory_scope.value:
@@ -1410,7 +1414,7 @@ def ObjectDirectory_READY_PublishedDirectory(self, message):
 		for p in self.find_publishers(s):
 			self.create_route(s, p)
 
-	highest is not None and self.auto_configure(highest)
+	highest is not None and self.auto_connect(highest)
 
 	if isinstance(self.connected, Connected):
 		self.push_up()
@@ -1528,10 +1532,10 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 
 	if routing[0] is not None:	# Route is active.
 		if shortest.scope.value > routing[0].scope.value:
-			self.trace(f'Upgrading "{routing[0].name}"[{routing[0].scope}] to [{shortest.scope}]')
+			self.trace(f'Upgrading "{routing[0].name}"[{routing[0].scope}] to inner [{shortest.scope}]')
 			self.drop_route(ls, routing[0])
 		else:
-			self.trace(f'Added fallback route "{message.name}"[{message.scope}]')
+			self.trace(f'Added outer route "{message.name}"[{message.scope}]')
 		return READY
 
 	routing[0] = shortest
