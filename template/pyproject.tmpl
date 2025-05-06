@@ -49,7 +49,10 @@ dev = ["coverage"]
 "Documentation" = "$documentation"
 
 [project.scripts]
-layer_cake = "layer_cake:layer_cake.main"
+layer_cake = "script:layer_cake.main"
+group_cake = "script:group_cake.main"
+host_cake = "script:host_cake.main"
+lan_cake = "script:lan_cake.main"
 
 [tool.setuptools]
 package-data = { "sample" = ["*.dat"] }
