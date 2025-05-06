@@ -343,7 +343,7 @@ class TestProcessObject(TestCase):
 		assert m.created_type == lc.ProcessObject
 		assert isinstance(m.value, lc.CommandResponse)
 		response = m.value
-		assert response.command == 'update-settings'
+		assert response.command == 'update-role'
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
