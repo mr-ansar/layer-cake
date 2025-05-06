@@ -42,6 +42,7 @@ __docformat__ = 'restructuredtext'
 import sys
 import os
 import signal
+import shutil
 from subprocess import Popen, PIPE
 from collections import deque
 
@@ -161,6 +162,7 @@ class ProcessObject(Point, StateMachine):
 		self.settings = settings
 
 		self.module_path = None
+		self.dot_py = True
 		self.script_path = None
 		self.origin_path = None
 		self.api = None
@@ -190,8 +192,43 @@ class ProcessObject(Point, StateMachine):
 			self.role_name = f'{CL.role_name}.{self.role_name}'
 
 		# Build the command line.
-		interpreter = sys.executable
-		command = [interpreter, self.module_path]
+		command = []
+		if self.dot_py:
+			interpreter = sys.executable
+			command.append(interpreter)
+			command.append(self.module_path)
+
+		else:
+			command.append(self.module_path)
+
+		try:
+			c = CodecNoop()
+			if self.listening_for_directories:
+				v = encode_argument(c, self.listening_for_directories, UserDefined(HostPort))
+				command.append(f'--directory-scope=LIBRARY')
+				command.append(f'--connect-to-directory={v}')
+
+				subscribe(self, self.role_name, scope=ScopeOfDirectory.PROCESS)
+
+			# Generate the proper argument strings.
+			if rt:
+				schema = rt.schema | CommandLine.__art__.schema
+			else:
+				schema = CommandLine.__art__.schema
+
+			for k, v in self.settings.items():
+				name = k
+				e = schema.get(k, None)
+				if e:
+					k = k.replace('_', '-')
+					v = encode_argument(c, v, e)
+				else:
+					v = str(v)
+				command.append(f'--{k}={v}')
+		except CodecError as e:
+			e = str(e)
+			s = e.replace('cannot encode', f'cannot encode value for argument "{name}", {self.module_path}')
+			self.complete(Faulted(s))
 
 		shell = origin == ProcessOrigin.SHELL
 		if not shell:
@@ -211,35 +248,6 @@ class ProcessObject(Point, StateMachine):
 
 		if CL.keep_logs:
 			command.append(f'--keep-logs')
-
-		# Generate the proper argument strings.
-		if rt:
-			schema = rt.schema | CommandLine.__art__.schema
-		else:
-			schema = CommandLine.__art__.schema
-
-		try:
-			c = CodecNoop()
-			if self.listening_for_directories:
-				v = encode_argument(c, self.listening_for_directories, UserDefined(HostPort))
-				command.append(f'--directory-scope=LIBRARY')
-				command.append(f'--connect-to-directory={v}')
-
-				subscribe(self, self.role_name, scope=ScopeOfDirectory.PROCESS)
-
-			for k, v in self.settings.items():
-				name = k
-				e = schema.get(k, None)
-				if e:
-					k = k.replace('_', '-')
-					v = encode_argument(c, v, e)
-				else:
-					v = str(v)
-				command.append(f'--{k}={v}')
-		except CodecError as e:
-			e = str(e)
-			s = e.replace('cannot encode', f'cannot encode value for argument "{name}", {self.module_path}')
-			self.complete(Faulted(s))
 
 
 		if self.script_path or self.origin_path:
@@ -279,10 +287,7 @@ class ProcessObject(Point, StateMachine):
 		# Good to go. Next event should be Returned.
 		self.send(AddObject(self.object_address), PO.collector)
 
-def find_module(name):
-	name_py = f'{name}.py'
-
-	# Executing within a role-process.
+def find_module(name_py):
 	if CL.home_path and CL.role_name:
 		# Deployed script.
 		candidate = os.path.join(CL.home_path, 'script', name_py)
@@ -300,7 +305,8 @@ def find_module(name):
 				if os.path.isfile(candidate):
 					return candidate
 
-	candidate = os.path.join('.', name_py)
+	cwd = os.getcwd()
+	candidate = os.path.join(cwd, name_py)
 	if os.path.isfile(candidate):
 		return candidate
 
@@ -324,7 +330,15 @@ def ProcessObject_INITIAL_Start(self, message):
 	# to be executed.
 	rt = None
 	if isinstance(self.object_or_name, str):
-		self.module_path = find_module(self.object_or_name)
+		s = os.path.splitext(self.object_or_name)
+		if not s[1]:
+			self.module_path = shutil.which(s[0])
+		elif s[1] == '.py':
+			self.dot_py = True
+			self.module_path = find_module(self.object_or_name)
+		else:
+			self.complete(Faulted(f'Cannot execute {self.object_or_name} (unknown extension?)'))
+
 		if self.module_path is None:
 			self.complete(Faulted(f'Cannot execute {self.object_or_name} (not found)'))
 
