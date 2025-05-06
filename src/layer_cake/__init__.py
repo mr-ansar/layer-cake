@@ -20,13 +20,15 @@
 
 Repo: git@github.com:mr-ansar/layer-cake.git
 Branch: main
-Commit: b8e7a51b6dd4421a142765d0fae5f2cc4cf9f838
+Commit: 8839d2bd317c72fec734acd26d488751572c15fd
 Version: 0.1.1
 """
 
 from .general_purpose import *
+from .head_lock import *
 from .ip_networking import *
 from .command_line import *
+from .command_startup import *
 from .virtual_memory import *
 from .convert_memory import *
 from .convert_signature import *
