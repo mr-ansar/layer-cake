@@ -283,7 +283,7 @@ class TestProcessObject(TestCase):
 
 	def test_create_role_full(self):
 		# Full set.
-		table = dict(recent=[Person('Gerard'), Person('Niall')])
+		table = {'recent': [Person('Gerard'), Person('Niall')]}
 		when = lc.world_now()
 		unique_id = uuid.uuid4()
 		count = 10
