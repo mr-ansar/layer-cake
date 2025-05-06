@@ -43,6 +43,7 @@ from .bind_type import *
 
 __all__ = [
 	'PB',
+	'DEFAULT_HOME',
 	'AddOn',
 	'QuietChannel',
 	'start_up',
