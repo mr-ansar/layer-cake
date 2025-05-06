@@ -36,6 +36,8 @@ __all__ = [
 	'from_any',
 	'extract_arguments',
 	'apply_arguments',
+	'kv_arguments',
+	'remaining_arguments',
 	'command_arguments',
 	'command_sub_arguments',
 	'command_variables',
@@ -255,6 +257,18 @@ def apply_arguments(target, extracted):
 			d = from_any(v)
 			setattr(target, k, d)
 
+def kv_arguments(extracted):
+	kv = {k: from_any(v) for k, v in extracted.items()}
+	return kv
+
+def remaining_arguments(remainder):
+	argument = []
+	for k, v in remainder[0].items():
+		argument.append(f'--{k}={v}')
+	for k, v in remainder[1].items():
+		argument.append(f'-{k}={v}')
+	return argument
+
 def command_arguments(object_type, override_arguments=None):
 	'''Process sys.argv according to schemas in CommandLine and object_type. Return decoded info.'''
 	process_schema = type_schema(CL)
@@ -283,7 +297,7 @@ def break_table(object_table):
 	table = {t.__name__.rstrip('_'): (t, type_schema(t)) for t in object_table}
 	return table
 
-def command_sub_arguments(object_type, object_table, override_arguments=None):
+def command_sub_arguments(object_type, object_table, override_arguments=None, strict=True):
 	'''Process sys.argv according to schemas in CommandLine, object_type and sub-commands. Return decoded info.'''
 	process_schema = type_schema(CL)
 	object_schema = type_schema(object_type)
@@ -304,14 +318,15 @@ def command_sub_arguments(object_type, object_table, override_arguments=None):
 
 	# Optional appearance of a sub-command in the arguments.
 	if len(word) > 0:
-		name = word[0]
-		word = word[1:]
+		sub_command = word[0]
 
 		table = break_table(object_table)
-		t = table.get(sub, None)
+		t = table.get(sub_command, None)
 		if t is None:
-			raise ValueError(f'unknown sub-command "{sub}"')
+			raise ValueError(f'unknown sub-command "{sub_command}"')
 		sub_schema = t[1]
+		if sub_schema is None:
+			raise ValueError(f'cannot use sub-command "{sub_command}", not registered?')
 		s3 = set(sub_schema.keys())
 		s4 = s1 | s2
 		c = s3 & s4
@@ -320,16 +335,18 @@ def command_sub_arguments(object_type, object_table, override_arguments=None):
 			raise ValueError(f'collision in settings names - {j}')
 		extracted, remainder = extract_arguments(sub_schema, remainder)
 		jump = t[0]
-		sub = (name, jump, extracted)
-	else:
-		sub = None		# Non sub command.
+		kv = kv_arguments(extracted)
+		word[0] = (sub_command, jump, kv, remainder)
 
-	if remainder[0] or remainder[1]:
+	#else:
+	#	sub = None		# Non sub command.
+
+	if strict and (remainder[0] or remainder[1]):
 		k = [k for k in remainder[0].keys()]
 		k.extend([k for k in remainder[1].keys()])
 		r = ', '.join(k)
 		raise ValueError(f'unknown arguments ({r})')
-	return executable, objected, word, sub
+	return executable, objected, word
 
 def command_variables(factory_variables):
 	'''Scan environment for values matching the given schema. Update the given values.'''
