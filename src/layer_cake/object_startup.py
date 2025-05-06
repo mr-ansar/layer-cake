@@ -179,7 +179,6 @@ class HomeRole(object):
 		s.returned = value
 		self.start_stop.update()
 
-DEFAULT_HOME = '.layer-cake'
 DEFAULT_STORAGE = 1024 * 1024 * 256
 
 #
@@ -543,7 +542,7 @@ def object_output(value):
 	object_encode(value)
 
 #
-def create(object_type, object_table=None, environment_variables=None, sticky=False, scope=None):
+def create(object_type, object_table=None, environment_variables=None, sticky=False, strict=True, scope=None):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: the type of an async object to be instantiated
@@ -557,7 +556,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			executable, argument, word = command_arguments(object_type)
 			sub = None
 		else:
-			executable, argument, word, sub = command_sub_arguments(object_type, object_table)
+			executable, argument, word = command_sub_arguments(object_type, object_table, strict=strict)
 
 		bp = breakpath(executable)
 		name = bp[1]
@@ -625,7 +624,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			t = [a for a in settings.keys()]
 			if not t:
 				t = ['empty']
-			c = CommandResponse('update-settings', ','.join(t))
+			c = CommandResponse('update-role', ','.join(t))
 			raise Incomplete(c)
 
 		if CL.delete_role:
@@ -647,7 +646,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 		rolling = isinstance(logs, RollingLog)
 		locking = sticky or rolling
 
-		args = {k: from_any(v) for k, v in settings.items()}
+		args = kv_arguments(settings)
 
 		output = run_object(home, object_type, word, args, logs, locking)
 	except (CodecError, ValueError, KeyError) as e:
@@ -659,6 +658,10 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 	def ending(output):
 		exit_status = 0
 		if isinstance(output, Faulted):
+			# Need a non-zero exit for command-line scenario but also a value
+			# that ProcessObject can detect as part of framework operations,
+			# i.e. and still make use of the fault, rather than discarding
+			# the event.
 			exit_status = output.exit_status if output.exit_status is not None else FAULTY_EXIT
 			if not CL.full_output:
 				object_error(output)
