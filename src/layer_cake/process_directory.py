@@ -47,6 +47,16 @@ __all__ = [
 
 PD = Gas(directory=None)
 
+'''
+ifs = netifaces.interfaces()
+for i in ifs:
+	a = netifaces.ifaddresses(i)
+	if netifaces.AF_INET not in a:
+		continue
+	print(a[netifaces.AF_INET][0]['addr'])
+
+'''
+
 # Managed creation of the builtin directory.
 def create_directory(root):
 	directory_scope = CL.directory_scope or ScopeOfDirectory.PROCESS

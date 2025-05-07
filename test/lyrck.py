@@ -37,6 +37,7 @@ The other level supporting WAN connectivity is at HOST.
 __docformat__ = 'restructuredtext'
 
 import os
+import signal
 import re
 import layer_cake as lc
 
@@ -224,7 +225,7 @@ def delete(self, search, remainder, all: bool=False):
 		return lc.Faulted(cannot_delete, f'no roles specified, use --all?')
 
 	try:
-		running = home_running(self, home_path, home)
+		running = home_running(self, home)
 		if not running:
 			for k, v in home.items():
 				home_role = os.path.join(home_path, k)
@@ -236,7 +237,7 @@ def delete(self, search, remainder, all: bool=False):
 			self.debrief()
 
 	if running:
-		r = ','.join(running)
+		r = ','.join(running.keys())
 		return lc.Faulted(cannot_delete, f'roles "{r}" are currently running')
 
 	return None
@@ -264,7 +265,7 @@ def destroy(self, word, remainder):
 		return lc.Faulted(cannot_destroy, f'does not exist or unexpected/incomplete materials')
 
 	try:
-		running = home_running(self, home_path, home)
+		running = home_running(self, home)
 		if not running:
 			lc.remove_folder(home_path)
 	finally:
@@ -274,7 +275,7 @@ def destroy(self, word, remainder):
 			self.debrief()
 
 	if running:
-		r = ','.join(running)
+		r = ','.join(running.keys())
 		return lc.Faulted(cannot_destroy, f'running roles "{r}"')
 
 	return None
@@ -283,12 +284,169 @@ lc.bind(destroy)
 
 #
 #
+def run(self, search, remainder, main_role: str=None):
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_run = f'cannot run "{home_path}"'
+	if search:
+		home = home_listing(self, home_path, search)
+	else:
+		home = lc.open_home(home_path)
+		if not home:
+			return lc.Faulted(cannot_run, f'does not exist or unexpected/incomplete materials')
+
+	try:
+		kv = {}
+		if main_role is not None:
+			kv['main_role'] = main_role
+
+		running = home_running(self, home)
+		if not running:
+			a = self.create(lc.ProcessObject, 'group_cake', *search, origin=lc.ProcessOrigin.RUN, **kv)
+			self.assign(a, 0)
+			m = self.input()
+			if isinstance(m, lc.Returned):
+				self.debrief()
+				return m.value
+			elif isinstance(m, lc.Faulted):
+				return m
+			elif isinstance(m, lc.Stop):
+				return lc.Aborted()
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+
+	if running:
+		r = ','.join(running.keys())
+		return lc.Faulted(cannot_run, f'roles "{r}" are already running')
+
+	return None
+
+lc.bind(run)
+
+#
+#
+def start(self, search, remainder, main_role: str=None):
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
+
+	cannot_start = f'cannot start "{home_path}"'
+	if search:
+		home = home_listing(self, home_path, search)
+	else:
+		home = lc.open_home(home_path)
+		if not home:
+			return lc.Faulted(cannot_start, f'does not exist or unexpected/incomplete materials')
+
+	try:
+		kv = {}
+		if main_role is not None:
+			kv['main_role'] = main_role
+
+		running = home_running(self, home)
+		if not running:
+			a = self.create(lc.ProcessObject, 'group_cake', *search,
+				origin=lc.ProcessOrigin.START,
+				home_path=home_path,
+				**kv)
+			self.assign(a, 0)
+			m = self.input()
+			if isinstance(m, lc.Returned):
+				self.debrief()
+				return m.value
+			elif isinstance(m, lc.Faulted):
+				return m
+			elif isinstance(m, lc.Stop):
+				return lc.Aborted()
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+
+	if running:
+		r = ','.join(running.keys())
+		return lc.Faulted(cannot_start, f'roles "{r}" are already running')
+
+	return None
+
+lc.bind(start)
+
+#
+#
+def stop(self, word, remainder, group_name: str=None):
+	group_name = word_i(word, 0) or 'group_cake'
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_stop = f'cannot stop "{group_name}"[{home_path}]'
+	home = lc.open_home(home_path)
+	if not home:
+		return lc.Faulted(cannot_stop, f'does not exist or unexpected/incomplete materials')
+
+	try:
+		running = home_running(self, home)
+		if not running:
+			return lc.Faulted(cannot_stop, f'nothing running')
+		parent_pid = set()
+
+		for k, v in running.items():
+			parent_pid.add(v.parent_pid)
+
+		for p in parent_pid:
+			os.kill(p, signal.SIGINT)
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+
+	return None
+
+lc.bind(stop)
+
+#
+#
+def status(self, search, remainder):
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_status = f'cannot query status "{home_path}"'
+	home = home_listing(self, home_path, search)
+	if not home:
+		return lc.Faulted(cannot_status, f'does not exist or unexpected/incomplete materials')
+
+	try:
+		running = home_running(self, home)
+		if not running:
+			return lc.Faulted(cannot_status, f'nothing running')
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+
+	for k, v in running.items():
+		print(f'[{v.pid}] {k}')
+
+	return None
+
+lc.bind(status)
+
+# Functions supporting the
+# sub-commands.
 def word_i(word, i):
+	'''Return the i-th element of word, if its long enough. Return element or None.'''
 	if i < len(word):
 		return word[i]
 	return None
 
 def home_listing(self, home_path, search):
+	'''Load the contents of home_path and search for matching roles. Return dict[str,role] or None.'''
 	home = lc.open_home(home_path)
 	if home is None:
 		self.complete(lc.Faulted(f'cannot list "{home_path}" (does not exist or contains unexpected/incomplete materials)'))
@@ -318,16 +476,18 @@ def home_listing(self, home_path, search):
 
 	return home
 
-def home_running(self, home_path, home):
-	running = []
+#a = root.create(head_lock, home.lock.path, 'head')
+
+def home_running(self, home):
+	'''Scan lock files for the given dict of roles. Return list of those that are running.'''
+	running = {}
 	for k, v in home.items():
-		home_role = os.path.join(home_path, k)
-		a = self.create(lc.head_lock, home_role, 'head')
+		a = self.create(lc.head_lock, v.lock.path, 'head')
 		self.assign(a, k)
 		m, i = self.select(lc.Ready, lc.Returned)
 		if isinstance(m, lc.Returned):	# Cannot lock.
 			r = self.debrief()
-			running.append(r)
+			running[r] = m.value	# LockedOut
 
 	return running
 
@@ -335,17 +495,23 @@ def home_running(self, home_path, home):
 #
 table = [
 	# CRUD for a set of role definitions.
-	create,
-	add,
-	list_,
-	update,
-	delete,
-	destroy
+
+	create,		# Create a new, empty set of role definitions.
+	add,		# Add one (or more) roles.
+	list_,		# List the set of roles.
+	update,		# Modify the settings for one (or more) roles.
+	delete,		# Delete one (or more, or all) roles.
+	destroy,	# Remove all trace of the set of definitions.
+
+	run,
+	start,
+	stop,
+	status
 ]
 
 # For package scripting.
 def main():
-	lc.create(layer_cake, table, strict=False)
+	lc.create(layer_cake, object_table=table, strict=False)
 
 if __name__ == '__main__':
 	main()

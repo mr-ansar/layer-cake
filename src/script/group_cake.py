@@ -83,14 +83,14 @@ def Group_ENQUIRING_HostPort(self, message):
 	# Load all the roles.
 	home = lc.open_home(self.home_path)
 	if home is None:
-		self.complete(lc.Faulted(f'Cannot open path "{self.home_path}"'))
+		self.complete(lc.Faulted(f'cannot open path "{self.home_path}"'))
 
 	# Compile all the patterns.
 	for s in self.search:
 		try:
 			m = re.compile(s)
 		except re.error as e:
-			self.complete(lc.Faulted(f'Cannot compile search "{s}"', str(e)))
+			self.complete(lc.Faulted(f'cannot compile search "{s}"', str(e)))
 		self.machine.append(m)
 
 	# Scan for roles matching a pattern.
@@ -111,6 +111,7 @@ def Group_ENQUIRING_HostPort(self, message):
 		self.complete(lc.Faulted(f'No roles at location "{self.home_path}"'))
 
 	# Start the roles in this non-empty list.
+	lc.CL.role_name = None
 	for k, v in home.items():
 		#origin=lc.ProcessOrigin.RUN,
 		a = self.create(lc.ProcessObject, v,

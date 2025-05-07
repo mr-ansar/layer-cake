@@ -47,14 +47,15 @@ __all__ = [
 #
 class LockedOut(object):
 	"""Other process already working in same space."""
-	def __init__(self, path: str=None, pid: int=None):
+	def __init__(self, path: str=None, pid: int=None, parent_pid: int=None):
 		self.path = path
 		self.pid = pid
+		self.parent_pid = parent_pid
 
 	def __str__(self):
-		if self.path is None or self.pid is None:
+		if self.path is None or self.pid is None or self.parent_pid is None:
 			return 'locked out and missing details'
-		s = f'locked out of "{self.path}" by <{self.pid}>'
+		s = f'locked out of "{self.path}" by <{self.pid}>({self.parent_pid})'
 		return s
 
 bind_message(LockedOut, copy_before_sending=False)
@@ -102,6 +103,7 @@ class LockUp:
 		lo = LockedOut()
 		lo.path = path
 		lo.pid = os.getpid()
+		lo.parent_pid = os.getppid()
 		f.store(lo)
 
 	def __enter__(self, *args, **kwargs):

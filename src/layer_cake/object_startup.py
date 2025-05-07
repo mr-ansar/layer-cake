@@ -278,7 +278,7 @@ def create_memory_role(executable):
 def open_home(home_path):
 	'''Load all the roles within a folder. Return a dict of HomeRoles'''
 	try:
-		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path)}
+		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path) if not s.startswith('group')}
 	except FileNotFoundError:
 		return None
 	except Incomplete:
@@ -294,6 +294,11 @@ def object_home(executable, home_role, sticky=False):
 		if role is not None:
 			raise Incomplete(Faulted(f'cannot create "{home_role}"', f'already exists'))
 		role = create_role(home_role, executable)
+	elif role is None:
+		if CL.origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD) or CL.keep_logs:
+			role = create_role(home_role, executable)
+		else:
+			role = create_memory_role(executable)
 
 	# Circular dependency around log_storage. Wrap it in a
 	# condition and default to fixed value.
@@ -367,7 +372,7 @@ def daemonize():
 def open_logs(home_role, storage):
 	debug_level = CL.debug_level
 
-	if CL.background_daemon or CL.keep_logs:
+	if CL.origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD) or CL.keep_logs:
 		bytes_in_file = 120 * LINES_IN_FILE
 		files_in_folder = storage / bytes_in_file
 		return None, files_in_folder
@@ -442,8 +447,7 @@ def run_object(home, object_type, word, args, logs, locking):
 		# Respond to daemon context, i.e. send output and close stdout.
 		#cs = CL.call_signature
 		#no_output = cs is not None and 'o' not in cs
-		daemon = CL.background_daemon and not CL.child_process
-		if daemon:	# or no_output:
+		if CL.origin == ProcessOrigin.START:	# or no_output:
 			early_return = True
 			object_encode(CommandResponse('background-daemon'))
 			sys.stdout.close()
@@ -554,7 +558,6 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 		# name/type information in the object type.
 		if object_table is None:
 			executable, argument, word = command_arguments(object_type)
-			sub = None
 		else:
 			executable, argument, word = command_sub_arguments(object_type, object_table, strict=strict)
 
@@ -639,8 +642,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			#command_help(object_type, argument)
 			raise Incomplete(None)
 
-		daemon = CL.origin == ProcessOrigin.START
-		if daemon:
+		if CL.origin == ProcessOrigin.START:
 			daemonize()
 
 		rolling = isinstance(logs, RollingLog)
