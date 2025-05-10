@@ -256,9 +256,7 @@ def portable_to_signature(a):
 	if t is NotFound:
 		return ''
 
-	if c == UserDefined:
-		return a.element.__art__.path
-	if c == Enumeration:
+	if c in (UserDefined, Enumeration):
 		m = a.element.__module__
 		s = a.element.__name__
 		return f'{m}.{s}'

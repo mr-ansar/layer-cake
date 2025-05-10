@@ -275,10 +275,18 @@ def create_memory_role(executable):
 	return role
 
 #
-def open_home(home_path):
+def open_home(home_path, grouping=False):
 	'''Load all the roles within a folder. Return a dict of HomeRoles'''
+
 	try:
-		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path) if not s.startswith('group')}
+		def role(s):
+			if '.' in s:					# Top level only.
+				return False
+			elif s.startswith('group') and not grouping:
+				return False
+			return True
+
+		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path) if role(s)}
 	except FileNotFoundError:
 		return None
 	except Incomplete:
@@ -417,7 +425,6 @@ bind_routine(start_vector)
 
 def run_object(home, object_type, word, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
-	early_return = False
 	output = None
 	try:
 		# Install signal handlers, i.e. control-c.
@@ -445,13 +452,11 @@ def run_object(home, object_type, word, args, logs, locking):
 			return output
 
 		# Respond to daemon context, i.e. send output and close stdout.
-		#cs = CL.call_signature
-		#no_output = cs is not None and 'o' not in cs
-		if CL.origin == ProcessOrigin.START:	# or no_output:
-			early_return = True
-			object_encode(CommandResponse('background-daemon'))
-			sys.stdout.close()
-			os.close(1)
+		#if CL.origin == ProcessOrigin.START:	# or no_output:
+		#	early_return = True
+		#	object_encode(CommandResponse('background-daemon'))
+		#	sys.stdout.close()
+		#	os.close(1)
 
 		# Write partial record to disk.
 		home.starting()
@@ -488,8 +493,8 @@ def run_object(home, object_type, word, args, logs, locking):
 
 		home.stopped(output)
 
-	if early_return:		# Already sent output. Silence any output.
-		return None
+	#if early_return:		# Already sent output. Silence any output.
+	#	return None
 
 	return output
 
@@ -553,6 +558,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 	:type object_type: a function or a Point-based class
 	:rtype: None
 	"""
+	early_return = False
 	try:
 		# Break down the command line with reference to the
 		# name/type information in the object type.
@@ -643,7 +649,11 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			raise Incomplete(None)
 
 		if CL.origin == ProcessOrigin.START:
+			object_encode(CommandResponse('background-daemon'))
+			sys.stdout.close()
+			os.close(1)
 			daemonize()
+			early_return = True
 
 		rolling = isinstance(logs, RollingLog)
 		locking = sticky or rolling
@@ -665,10 +675,11 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 			# i.e. and still make use of the fault, rather than discarding
 			# the event.
 			exit_status = output.exit_status if output.exit_status is not None else FAULTY_EXIT
-			if not CL.full_output:
+			if not CL.full_output and not early_return:
 				object_error(output)
 				return exit_status
-		object_output(output)
+		if not early_return:
+			object_output(output)
 		return exit_status
 
 	# Make available to tear_down (atexit) and also for checking

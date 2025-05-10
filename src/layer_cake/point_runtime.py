@@ -208,6 +208,13 @@ class OutOfService(Faulted):
 		Faulted.__init__(self, text)
 		self.request = request
 
+bind_message(Aborted,
+	condition=Unicode(),
+	explanation=Unicode(),
+	error_code=Integer8(),
+	exit_status=Integer8(),
+)
+
 bind_message(TimedOut,
 	condition=Unicode(),
 	explanation=Unicode(),

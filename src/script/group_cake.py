@@ -43,7 +43,7 @@ import layer_cake as lc
 
 #
 #
-DEFAULT_GROUP = 'group.default'
+DEFAULT_GROUP = 'group'
 
 class INITIAL: pass
 class ENQUIRING: pass
@@ -111,11 +111,10 @@ def Group_ENQUIRING_HostPort(self, message):
 		self.complete(lc.Faulted(f'No roles at location "{self.home_path}"'))
 
 	# Start the roles in this non-empty list.
-	lc.CL.role_name = None
 	for k, v in home.items():
 		#origin=lc.ProcessOrigin.RUN,
 		a = self.create(lc.ProcessObject, v,
-			home_path=self.home_path, role_name=k,
+			home_path=self.home_path, role_name=k, top_role=True,
 			directory_scope=lc.ScopeOfDirectory.PROCESS, connect_to_directory=self.ephemeral)
 		self.assign(a, k)
 

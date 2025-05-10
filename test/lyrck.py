@@ -21,26 +21,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Directory at the LAN scope.
+"""CLI layer-cake utility.
 
-Run the pub-sub name service at the LAN level. Connected to by directories at
-HOST level, i.e. as part of the ObjectDirectory.auto_connect(), driven by the
-pub-sub activity within associated, underlying PROCESS(es).
-
-This directory needs an HTTP/web interface for the management
-of WAN connection credentials. This is the second level where
-WAN connectivity is supported, and possible the better configuration
-from a security pov.
-
-The other level supporting WAN connectivity is at HOST.
+CRUD for creation/management of a set of process definitions.
+Process orchestration for running images of defintiions.
+Access to records of execution.
 """
 __docformat__ = 'restructuredtext'
 
 import os
 import signal
 import re
+import datetime
 import layer_cake as lc
+import layer_cake.rolling_log as rl
 
+from enum import Enum
+import calendar
+
+#
+GROUP_ROLE = 'group'
 
 #
 def layer_cake(self, *word):
@@ -50,18 +50,27 @@ def layer_cake(self, *word):
 	word = word[1:]
 
 	if sub is None:
+		# A non-sub execution of the utility.
 		return
 	sub_command, jump, sub_args, remainder = sub
 
-	# Transfer to sub function.
+	# Catch uncurated args that are not going anywhere.
+	if jump not in (add, update) and (remainder[0] or remainder[1]):
+		a = [k for k in remainder[0].keys()]
+		b = [k for k in remainder[1].keys()]
+		a.extend(b)
+		a = ','.join(a)
+		return lc.Faulted(f'cannot execute "{sub_command}"', f'unknown arg(s) "{a}"')
+
+	# Transfer to sub function. Perhaps could be
+	# a create.
 	return jump(self, word, remainder, **sub_args)
 
 lc.bind(layer_cake)
 
-#
-#
-def create(self, word, remainder):
-	# [0] home
+# Create a place on disk that will hold the process definitions. Preload
+# with defintion of the group process.
+def create(self, word, remainder, retry: lc.RetryIntervals=None):
 	home_path = word_i(word, 0) or lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_create = f'cannot create "{home_path}"'
@@ -70,11 +79,34 @@ def create(self, word, remainder):
 
 	elif os.path.isdir(home_path):
 		return lc.Faulted(cannot_create, 'already exists')
+	# Folder created by execution of group create-role.
 
-	try:
-		lc.Folder(home_path)
-	except OSError as e:
-		return lc.Faulted(cannot_create, str(e))
+	kv = {}
+	if retry is not None:
+		try:
+			c = lc.CodecNoop()
+			v = lc.encode_argument(c, retry, lc.UserDefined(lc.RetryIntervals))
+		except lc.CodecError as e:
+			e = str(e)
+			s = e.replace('cannot encode', f'cannot encode value for argument "retry"')
+			return lc.Faulted(s)
+		kv['retry'] = v
+
+	self.create(lc.ProcessObject, 'group_cake',
+		home_path=home_path,
+		role_name=GROUP_ROLE, top_role=True,
+		create_role=True,
+		**kv)
+
+	m = self.input()
+	if not isinstance(m, lc.Returned):
+		return lc.Faulted(cannot_create, f'unexpected process response {m}')
+
+	if isinstance(m.value, lc.Faulted):
+		return m.value
+
+	if not isinstance(m.value, lc.CommandResponse):
+		return lc.Faulted(cannot_create, f'unexpected command response {m.value}')
 
 	return None
 
@@ -97,16 +129,19 @@ def add(self, word, remainder, count: int=None, start: int=0):
 
 	cannot_add = f'cannot add "{role_name}"'
 
+	if role_name.startswith(GROUP_ROLE):
+		return lc.Faulted(cannot_add, 'reserved name')
+
 	home = lc.open_home(home_path)
 	if home is None:
 		return lc.Faulted(cannot_add, f'home path "{home_path}" does not exist or contains unexpected/incomplete materials')
 
 	if count is None:
 		role_call = [role_name]
-	elif 2 <= count <= 1000:
+	elif 1 <= count <= 1000:
 		role_call = [f'{role_name}-{i}' for i in range(start, start + count)]
 	else:
-		return lc.Faulted(cannot_add, 'expecting count in the range 2...1000')
+		return lc.Faulted(cannot_add, 'expecting count in the range 1...1000')
 
 	c = set(home.keys()) & set(role_call)
 	if c:
@@ -114,14 +149,19 @@ def add(self, word, remainder, count: int=None, start: int=0):
 		return lc.Faulted(cannot_add, f'collision of roles "{s}"')
 
 	# Arguments (un-decoded) to be forwarded to the role process(es).
-	kv = {}
-	kv.update(remainder[0])
-	kv.update(remainder[1])
+	#kv = {}
+	#kv.update(remainder[0])
+	#kv.update(remainder[1]) ... short form not expanded appropriately.
+	#kv = remainder[0]
 
-	self.console(executable=executable, role_name=role_name, home_path=home_path, **kv)
+	self.console(executable=executable, role_name=role_name, home_path=home_path)
 
 	for r in role_call:
-		a = self.create(lc.ProcessObject, executable, role_name=r, home_path=home_path, create_role=True, **kv)
+		a = self.create(lc.ProcessObject, executable,
+			home_path=home_path,
+			role_name=r, top_role=True,
+			create_role=True,
+			remainder_args=remainder)
 		m = self.input()
 		if not isinstance(m, lc.Returned):
 			return lc.Faulted(cannot_add, f'unexpected process response {m}')
@@ -161,40 +201,45 @@ lc.bind(list_)
 
 #
 #
-def update(self, word, remainder, count: int=None, start: int=0):
-	role_name = word_i(word, 0) or lc.CL.role_name 
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+def update(self, search, remainder, group_role: bool=False):
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
-	if role_name is None:
-		return lc.Faulted('cannot update role (no role specified)')
+	cannot_update = f'cannot update "{home_path}"'
 
-	cannot_update = f'cannot update "{role_name}"'
+	# Arguments (un-decoded) to forward to role process(es).
+	#kv.update(remainder[1]) ... short form not expanded appropriately.
+	#kv = remainder[0]
 
-	home = lc.open_home(home_path)
+	home = home_listing(self, home_path, search)
 	if home is None:
 		return lc.Faulted(cannot_update, f'does not exist or contains unexpected/incomplete materials')
 
-	if count is None:
-		role_call = [role_name]
-	elif 2 <= count <= 1000:
-		role_call = [f'{role_name}-{i}' for i in range(start, start + count)]
-	else:
-		return lc.Faulted(cannot_update, 'expecting count in the range 2...1000')
+	elif group_role:
+		a = self.create(lc.ProcessObject, 'group_cake',
+			home_path=home_path,
+			role_name=GROUP_ROLE, top_role=True,
+			update_role=True,
+			remainder_args=remainder)
+		m = self.input()
+		if not isinstance(m, lc.Returned):
+			return lc.Faulted(cannot_update, f'unexpected process response {m}')
 
-	d = set(role_call) - set(home.keys())
-	if d:
-		s = ','.join(d)
-		return lc.Faulted(cannot_update, f'missing roles "{s}"')
+		if isinstance(m.value, lc.Faulted):
+			return m.value
 
-	# Arguments (un-decoded) to forward to role process(es).
-	kv = {}
-	kv.update(remainder[0])
-	kv.update(remainder[1])
+		if not isinstance(m.value, lc.CommandResponse):
+			return lc.Faulted(cannot_update, f'not a proper command response {m.value}')
+		return None
 
-	self.console(role_name=role_name, home_path=home_path, **kv)
+	r = ','.join(home.keys())
+	self.console(roles=r, home_path=home_path)
 
-	for r in role_call:
-		a = self.create(lc.ProcessObject, home[r], role_name=r, home_path=home_path, update_role=True, **kv)
+	for k, v in home.items():
+		a = self.create(lc.ProcessObject, v,
+			home_path=home_path,
+			role_name=k, top_role=True,
+			update_role=True,
+			**kv)
 		m = self.input()
 		if not isinstance(m, lc.Returned):
 			return lc.Faulted(cannot_update, f'unexpected process response {m}')
@@ -247,7 +292,7 @@ lc.bind(delete)
 #
 #
 def destroy(self, word, remainder):
-	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = word_i(word, 0) or lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_destroy = f'cannot destroy "{home_path}"'
 
@@ -302,7 +347,11 @@ def run(self, search, remainder, main_role: str=None):
 
 		running = home_running(self, home)
 		if not running:
-			a = self.create(lc.ProcessObject, 'group_cake', *search, origin=lc.ProcessOrigin.RUN, **kv)
+			a = self.create(lc.ProcessObject, 'group_cake', *search,
+				home_path=home_path,
+				role_name=GROUP_ROLE, top_role=True,
+				origin=lc.ProcessOrigin.RUN,
+				**kv)
 			self.assign(a, 0)
 			m = self.input()
 			if isinstance(m, lc.Returned):
@@ -338,8 +387,11 @@ def start(self, search, remainder, main_role: str=None):
 		home = home_listing(self, home_path, search)
 	else:
 		home = lc.open_home(home_path)
-		if not home:
+		if home is None:
 			return lc.Faulted(cannot_start, f'does not exist or unexpected/incomplete materials')
+
+	if not home:
+		return lc.Faulted(cannot_start, f'empty')
 
 	try:
 		kv = {}
@@ -349,14 +401,17 @@ def start(self, search, remainder, main_role: str=None):
 		running = home_running(self, home)
 		if not running:
 			a = self.create(lc.ProcessObject, 'group_cake', *search,
-				origin=lc.ProcessOrigin.START,
 				home_path=home_path,
+				role_name=GROUP_ROLE, top_role=True,
+				origin=lc.ProcessOrigin.START,
 				**kv)
 			self.assign(a, 0)
 			m = self.input()
 			if isinstance(m, lc.Returned):
 				self.debrief()
-				return m.value
+				if not isinstance(m.value, lc.CommandResponse):
+					return lc.Faulted(cannot_start, f'unexpected response from group')
+				return None
 			elif isinstance(m, lc.Faulted):
 				return m
 			elif isinstance(m, lc.Stop):
@@ -378,14 +433,16 @@ lc.bind(start)
 
 #
 #
-def stop(self, word, remainder, group_name: str=None):
-	group_name = word_i(word, 0) or 'group_cake'
+def stop(self, word, remainder):
 	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
 
-	cannot_stop = f'cannot stop "{group_name}"[{home_path}]'
+	cannot_stop = f'cannot stop "{home_path}"'
 	home = lc.open_home(home_path)
-	if not home:
+	if home is None:
 		return lc.Faulted(cannot_stop, f'does not exist or unexpected/incomplete materials')
+
+	if not home:
+		return lc.Faulted(cannot_stop, f'empty')
 
 	try:
 		running = home_running(self, home)
@@ -415,27 +472,324 @@ def status(self, search, remainder):
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_status = f'cannot query status "{home_path}"'
+
+	# Get list of roles at home_path, trimmed down
+	# according to the list of search patterns.
 	home = home_listing(self, home_path, search)
-	if not home:
+	if home is None:
 		return lc.Faulted(cannot_status, f'does not exist or unexpected/incomplete materials')
 
+	if not home:
+		return lc.Faulted(cannot_status, f'empty')
+
 	try:
+		# Determine the running/idle status of the
+		# selected roles.
 		running = home_running(self, home)
 		if not running:
 			return lc.Faulted(cannot_status, f'nothing running')
 
 	finally:
+		# Cleanup the locking from inside home_running().
 		self.abort()
 		while self.working():
 			m, i = self.select(lc.Returned)
 			self.debrief()
 
+	# The running dict is a non-zero length set of
+	# LockedOut objects, one per role name.
 	for k, v in running.items():
 		print(f'[{v.pid}] {k}')
 
 	return None
 
 lc.bind(status)
+
+#
+#
+def history(self, word, remainder, long_listing: bool=False, group_role: bool=False):
+	role_name = word_i(word, 0) or lc.CL.role_name
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	if role_name is None and group_role:
+		role_name = GROUP_ROLE
+
+	if role_name is None:
+		return lc.Faulted(f'cannot pull history', f'no role specified')
+	cannot_history = f'cannot pull history for "{role_name}"'
+
+	home = lc.open_home(home_path, grouping=group_role)
+	if home is None:
+		return lc.Faulted(cannot_history, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
+
+	role = home.get(role_name, None)
+	if role is None:
+		return lc.Faulted(cannot_history, f'does not exist')
+
+	def long_history():
+		now = datetime.datetime.now(lc.UTC)
+		for s in role.start_stop():
+			start = lc.world_to_text(s.start)
+			if s.stop is None:
+				lc.output_line('%s ... ?' % (start,))
+				continue
+			stop = lc.world_to_text(s.stop)
+			d = s.stop - s.start
+			span = '%s' % (lc.short_delta(d),)
+			if isinstance(s.returned, lc.Incognito):
+				lc.output_line('%s ... %s (%s) %s' % (start, stop, span, s.returned.type_name))
+			else:
+				lc.output_line('%s ... %s (%s) %s' % (start, stop, span, s.returned.__class__.__name__))
+
+	def short_history():
+		for i, s in enumerate(role.start_stop()):
+			now = datetime.datetime.now(lc.UTC)
+			d = now - s.start
+			start = '%s ago' % (lc.short_delta(d),)
+			if s.stop is None:
+				lc.output_line('[%d] %s ... ?' % (i, start))
+				continue
+			d = s.stop - s.start
+			stop = lc.short_delta(d)
+			if isinstance(s.returned, lc.Incognito):
+				lc.output_line('[%d] %s ... %s (%s)' % (i, start, stop, s.returned.type_name))
+			else:
+				lc.output_line('[%d] %s ... %s (%s)' % (i, start, stop, s.returned.__class__.__name__))
+
+	if long_listing:
+		long_history()
+	else:
+		short_history()
+	return None
+
+lc.bind(history)
+
+#
+#
+class NoFault(object):
+	def __init__(self, fault: lc.Any=None):
+		self.fault = fault
+
+lc.bind(NoFault)
+
+def returned(self, word, remainder, start: int=None, timeout: float=None, group_role: bool=False):
+	role_name = word_i(word, 0) or lc.CL.role_name
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	if role_name is None and group_role:
+		role_name = GROUP_ROLE
+
+	if role_name is None:
+		return lc.Faulted(f'cannot pull return', f'no role specified')
+	cannot_returned = f'cannot pull return for "{role_name}"'
+
+	home = lc.open_home(home_path, grouping=group_role)
+	if home is None:
+		return lc.Faulted(cannot_returned, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
+
+	role = home.get(role_name, None)
+	if role is None:
+		return lc.Faulted(cannot_returned, f'does not exist')
+
+	start_stop = role.start_stop()
+	if len(start_stop) < 1:
+		return lc.Faulted(cannot_returned, f'no start/stop records')
+
+	ls = len(start_stop) - 1	# Last stop
+	if start is None:
+		start = ls
+	elif start < 0:
+		start = ls + 1 + start
+
+	if start < 0 or start > ls:
+		return lc.Faulted(cannot_returned, f'start [{start}] out of bounds')
+
+	# Criteria met - valid row in the table.
+	selected = start_stop[start]
+	anchor = selected.start
+
+	def no_fault(value):
+		if isinstance(value, lc.Faulted):
+			return NoFault(value)
+		return selected.returned
+
+	# This row has already returned.
+	if selected.stop is not None:
+		return no_fault(selected.returned)
+
+	# Cannot poll for completion of anything other
+	# than the last row.
+	if start != ls:
+		return lc.Faulted(cannot_returned, f'no record of role[{start}] stopping and never will be')
+
+	if timeout is not None:
+		self.start(lc.T1, timeout)
+
+	self.start(lc.T2, 1.0)
+	while True:
+		m = self.select(lc.Stop, lc.T1, lc.T2)
+		if isinstance(m, lc.Stop):
+			break
+		elif isinstance(m, lc.T1):
+			return lc.TimedOut()
+		elif isinstance(m, lc.T2):
+			r = role.start_stop.resume()
+			if len(r) < start:
+				return lc.Faulted(cannot_returned, f'lost original start position')
+			if r[start].start != anchor:
+				return lc.Faulted(cannot_returned, f'lost original start position, datetime anchor')
+			if r[start].stop is not None:
+				return no_fault(r[start].returned)
+			self.start(lc.T2, 1.0)
+
+	return None
+
+lc.bind(returned)
+
+#
+#
+# Extraction of logs for a role.
+#
+class TimeFrame(Enum):
+	MONTH=0
+	WEEK=1
+	DAY=2
+	HOUR=3 
+	MINUTE=4
+	HALF=5
+	QUARTER=6
+	TEN=7
+	FIVE=8
+
+def log(self, word, remainder, clock: bool=False,
+	rewind: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
+	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=False):
+	role_name = word_i(word, 0) or lc.CL.role_name
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	if role_name is None and group_role:
+		role_name = GROUP_ROLE
+
+	if role_name is None:
+		return lc.Faulted(f'cannot log', f'no role specified')
+	cannot_log = f'cannot log "{role_name}"'
+
+	# Initial sanity checks and a default <begin>.
+	f = [rewind, from_, last, start, back]
+	c = len(f) - f.count(None)
+	if c == 0:
+		rewind = os.get_terminal_size().lines - 1
+	elif c != 1:
+		# one of <from>, <last>, <start> or <back> is required
+		return lc.Faulted(cannot_log, f'need a rewind, from_, last, start or back')
+
+	t = [to, span, count]
+	c = len(t) - t.count(None)
+	if c == 0:
+		pass		# Default is query to end-of-log or end of start-stop.
+	elif c != 1:
+		# one of <to>, <span> or <count> is required
+		return lc.Faulted(cannot_log, f'need a to, span or count')
+
+	home = lc.open_home(home_path, grouping=group_role)
+	if home is None:
+		return lc.Faulted(cannot_log, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
+
+	role = home.get(role_name, None)
+	if role is None:
+		return lc.Faulted(cannot_log, f'does not exist')
+
+	begin, end = None, None
+	if rewind is not None:
+		if rewind < 1:
+			return lc.Faulted(cannot_log, f'rewind [{rewind}] out of range')
+		begin = rewind			# Rewind expresses the begin and end (count).
+
+	elif from_ is not None:
+		begin = world_or_clock(from_, clock)
+
+	elif last is not None:
+		begin = from_last(last)
+		if begin is None:
+			return lc.Faulted(cannot_log, f'last is not a TimeFrame')
+
+	elif start is not None:
+		start_stop = role.start_stop()
+		if len(start_stop) < 1:
+			return lc.Faulted(cannot_log, f'no history available')
+		if start < 0:
+			y = len(start_stop) + start
+		else:
+			y = start
+		try:
+			s = start_stop[y]
+		except IndexError:
+			return lc.Faulted(cannot_log, f'start [{y} out of range]')
+		begin = s.start
+		p1 = y + 1
+		if p1 < len(start_stop):
+			end = start_stop[p1].start
+		else:
+			end = None
+	elif back is not None:
+		d = datetime.datetime.now(lc.UTC)
+		t = datetime.timedelta(seconds=back)
+		begin =  d - t
+
+	count = None
+	if to is not None:
+		end = world_or_clock(to, clock)
+	elif span is not None:
+		#t = datetime.timedelta(seconds=span)
+		end = begin + span	#t
+	elif count is not None:
+		count = count
+		# Override an assignment associated with "start".
+		end = None
+	# Else
+	#   end remains as the default None or
+	#   the stop part of a start-stop.
+
+	# Now that <begin> and <end> have been established, a
+	# few more sanity checks.
+	if begin is None:
+		return lc.Faulted(cannot_log, f'<begin> not defined and not inferred')
+
+	if end is not None and end < begin:
+		return lc.Faulted(cannot_log, f'<end> comes before <begin>')
+
+	header = None
+	if sample:
+		header = sample.split(',')
+		if len(header) < 1 or '' in header:
+			return lc.Faulted(cannot_log, f'<sample> empty or contains empty column')
+
+	if rewind:
+		a = self.create(backward, role, begin)
+	elif header:
+		a = self.create(sampler, role, begin, end, count, header)
+	elif clock:
+		a = self.create(clocker, role, begin, end, count)
+	else:
+		a = self.create(printer, role, begin, end, count)
+
+	m, i = self.select(lc.Stop, lc.Returned)
+	if isinstance(m, lc.Stop):
+		lc.halt(a)
+		m, i = self.select(lc.Returned)
+		return lc.Aborted()
+
+	value = m.value
+	if value is None:   # Reached the end.
+		pass
+	elif isinstance(value, lc.Faulted):	 # lc.Failed to complete stream.
+		return value
+	else:
+		return lc.Faulted(cannot_log, f'unexpected reader response')
+
+	return None
+
+lc.bind(log, span=lc.TimeSpan(), back=lc.TimeSpan())
 
 # Functions supporting the
 # sub-commands.
@@ -491,22 +845,183 @@ def home_running(self, home):
 
 	return running
 
+def world_or_clock(s, clock):
+	if clock:
+		t = lc.text_to_clock(s)
+		d = datetime.datetime.fromtimestamp(t, tz=lc.UTC)
+		return d
+	return lc.text_to_world(s)
+
+def from_last(last):
+	d = datetime.datetime.now(lc.UTC)
+
+	if last == TimeFrame.MONTH:
+		f = datetime.datetime(d.year, d.month, 1, tzinfo=d.tzinfo)
+	elif last == TimeFrame.WEEK:
+		dow = d.weekday()
+		dom = d.day - 1
+		if dom >= dow:
+			f = datetime.datetime(d.year, d.month, d.day - dow, tzinfo=d.tzinfo)
+		elif d.month > 1:
+			t = dow - dom
+			r = calendar.monthrange(d.year, d.month - 1)
+			f = datetime.datetime(d.year, d.month - 1, r[1] - t, tzinfo=d.tzinfo)
+		else:
+			t = dow - dom
+			r = calendar.monthrange(d.year - 1, 12)
+			f = datetime.datetime(d.year - 1, 12, r[1] - t, tzinfo=d.tzinfo)
+	elif last == TimeFrame.DAY:
+		f = datetime.datetime(d.year, d.month, d.day, tzinfo=d.tzinfo)
+	elif last == TimeFrame.HOUR:
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, tzinfo=d.tzinfo)
+	elif last == TimeFrame.MINUTE:
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=d.minute, tzinfo=d.tzinfo)
+	elif last == TimeFrame.HALF:
+		t = d.minute % 30
+		m = d.minute - t
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+	elif last == TimeFrame.QUARTER:
+		t = d.minute % 15
+		m = d.minute - t
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+	elif last == TimeFrame.TEN:
+		t = d.minute % 10
+		m = d.minute - t
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+	elif last == TimeFrame.FIVE:
+		t = d.minute % 5
+		m = d.minute - t
+		f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+	else:
+		return None
+	return f
+
+#
+#
+def clocker(self, role, begin, end, count):
+	try:
+		for d, t in rl.read_log(role.logs, begin, end, count):
+			if self.halted:
+				return lc.Aborted()
+			c = d.astimezone(tz=None)		   # To localtime.
+			s = c.strftime('%Y-%m-%dt%H:%M:%S') # Normal part.
+			f = c.strftime('%f')[:3]			# Up to milliseconds.
+			h = '%s.%s' % (s, f)
+			i = t.index(' ')
+			lc.output_line(h, newline=False)
+			lc.output_line(t[i:], newline=False)
+	except (KeyboardInterrupt, SystemExit) as e:
+		raise e
+	except Exception as e:
+		condition = str(e)
+		fault = lc.Faulted(condition)
+		return fault
+	return None
+
+lc.bind(clocker)
+
+#
+#
+def printer(self, role, begin, end, count):
+	try:
+		for _, t in rl.read_log(role.logs, begin, end, count):
+			if self.halted:
+				return lc.Aborted()
+			lc.output_line(t, newline=False)
+	except (KeyboardInterrupt, SystemExit) as e:
+		raise e
+	except Exception as e:
+		condition = str(e)
+		fault = lc.Faulted(condition)
+		return fault
+	return None
+
+lc.bind(printer)
+
+#
+#
+def backward(self, role, count):
+	try:
+		for t in rl.rewind_log(role.logs, count):
+			if self.halted:
+				return lc.Aborted()
+			lc.output_line(t, newline=False)
+	except (KeyboardInterrupt, SystemExit) as e:
+		raise e
+	except Exception as e:
+		condition = str(e)
+		fault = lc.Faulted(condition)
+		return fault
+	return None
+
+lc.bind(backward)
+
+#
+#
+def tabulate(header, kv):
+	t = []
+	for h in header:
+		v = kv.get(h, None)
+		if v is None:
+			return None
+		t.append(v)
+	t = '\t'.join(t)
+	return t
+
+def sampler(self, role, begin, end, count, header):
+	try:
+		#t = '\t'.join(header)
+		#lc.output_line(t, newline=True)
+
+		for _, t in lc.read_log(role.logs, begin, end, count):
+			if self.halted:
+				return lc.Aborted()
+			if t[24] != '&':
+				continue
+			dash = t.find(' - ', 36)
+			if dash == -1:
+				continue
+			text = t[dash + 3:-1]
+			colon = text.split(':')
+			equals = [c.split('=') for c in colon]
+			kv = {lr[0]: lr[1] for lr in equals}
+			kv['time'] = t[0:23]
+			t = tabulate(header, kv)
+			if t is None:
+				continue
+			lc.output_line(t, newline=True)
+	except (KeyboardInterrupt, SystemExit) as e:
+		raise e
+	except Exception as e:
+		condition = str(e)
+		fault = lc.Faulted(condition)
+		return fault
+	return None
+
+lc.bind(sampler)
+
 #
 #
 table = [
 	# CRUD for a set of role definitions.
+	create,
+	add,
+	list_,
+	update,
+	delete,
+	destroy,
 
-	create,		# Create a new, empty set of role definitions.
-	add,		# Add one (or more) roles.
-	list_,		# List the set of roles.
-	update,		# Modify the settings for one (or more) roles.
-	delete,		# Delete one (or more, or all) roles.
-	destroy,	# Remove all trace of the set of definitions.
-
+	# Orchestration of the processes, i.e. executing
+	# images of the role definitions.
 	run,
 	start,
 	stop,
-	status
+	status,
+
+	# Access to records of execution.
+	log,
+	history,
+	returned
 ]
 
 # For package scripting.

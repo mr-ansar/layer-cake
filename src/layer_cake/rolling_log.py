@@ -44,6 +44,7 @@ __all__ = [
 	'FILES_IN_FOLDER',
 	'RollingLog',
 	'read_log',
+	'rewind_log',
 ]
 
 #
@@ -214,3 +215,53 @@ def read_log(logs, begin, end, count):
 				if d < begin:
 					continue
 				yield d, l
+
+def rewind_log(logs, count):
+	'''Coroutine that accepts a log folder, range and yields lines.'''
+
+	# Get the collection of files and their
+	# timestamps.
+	folder = Folder(logs.path, re=YMDTHMSF, decorate_names=False)
+	rolling = []
+	for f in folder.matching():
+		iso = f.replace('h', '-')
+		iso = iso.replace('c', ':')
+		iso = iso.replace('p', '.')
+		d = text_to_world(iso)
+		a = [
+			os.path.join(folder.path, f),
+			d,
+		]
+		rolling.append(a)
+
+	if len(rolling) < 1:	   # Early exit if nothing there.
+		return
+	rolling.sort(key=lambda m: m[1], reverse=True)
+
+	def get_file():
+		for r in rolling:
+			yield r[0]
+
+	def get_line(r):
+		with open(r, 'r') as f:
+			for line in f:
+				yield line
+
+	def get_ending(n):
+		ending = []
+		for r in get_file():
+			q = deque()
+			for l in get_line(r):
+				q.append(l)
+				if len(q) > n:
+					q.popleft()
+			ending.append(q)
+			n -= len(q)
+			if n == 0:
+				return ending
+		return ending
+
+	ending = get_ending(count)
+	for e in reversed(ending):
+		for l in e:
+			yield l

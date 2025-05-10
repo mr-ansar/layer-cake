@@ -28,15 +28,19 @@
 __docformat__ = 'restructuredtext'
 
 import os
+import sys
 import random
 from enum import Enum
 
 from .virtual_memory import *
+from .convert_memory import *
 from .message_memory import *
 
 __all__ = [
 	'Gas',
 	'breakpath',
+	'output_line',
+	'short_delta',
 	'CreateFrame',
 	'spread_out',
 ]
@@ -64,6 +68,46 @@ def breakpath(p):
 	p, f = os.path.split(p)
 	name, e = os.path.splitext(f)
 	return p, name, e
+
+#
+#
+def output_line(line, tab=0, newline=True, **kv):
+	if kv:
+		line = line.format(**kv)
+
+	if tab:
+		sys.stdout.write('+   ' * tab)
+
+	sys.stdout.write(line)
+	if newline:
+		sys.stdout.write('\n')
+
+#
+def short_delta(d):
+	t = span_to_text(d.total_seconds())
+	i = t.find('d')
+	if i != -1:
+		j = t.find('h')
+		if j != -1:
+			return t[:j + 1]
+		return t[:i + 1]
+	i = t.find('h')
+	if i != -1:
+		j = t.find('m')
+		if j != -1:
+			return t[:j + 1]
+		return t[:i + 1]
+
+	# Minutes or seconds only.
+	i = t.find('.')
+	if i != -1:
+		i += 1
+		j = t.find('s')
+		if j != -1:
+			e = j - i
+			e = min(1, e)
+			return t[:i + e] + 's'
+		return t[:i] + 's'
 
 #
 class CreateFrame(object):

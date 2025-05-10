@@ -150,19 +150,23 @@ class ProcessObject(Point, StateMachine):
 	:param kw: addition args passed to Popen
 	:type kw: named args dict
 	"""
-	def __init__(self, object_or_name, origin: ProcessOrigin=None, home_path=None, role_name=None, object_api=None, extra_types=None, **settings):
+	def __init__(self, object_or_name, origin: ProcessOrigin=None,
+			home_path=None, role_name=None, top_role: bool=False,
+			object_api=None, extra_types=None,
+			remainder_args=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_or_name = object_or_name
 		self.origin = origin
 		self.home_path = home_path
 		self.role_name = role_name
+		self.top_role = top_role
 		self.object_api = object_api
 		self.extra_types = extra_types
+		self.remainder_args = remainder_args
 		self.settings = settings
 
 		self.module_path = None
-		self.dot_py = True
 		self.script_path = None
 		self.origin_path = None
 		self.api = None
@@ -172,7 +176,7 @@ class ProcessObject(Point, StateMachine):
 		self.published = None
 		self.queue = deque()
 
-	def fork_exec(self, rt):
+	def load_image(self, rt):
 		# Start the new process.
 		# Derive the home/role context using the globals defined for
 		# this process, plus the values describing the new process.
@@ -188,18 +192,21 @@ class ProcessObject(Point, StateMachine):
 
 		self.role_name = self.role_name or breakpath(self.module_path)[1]
 		self.home_path = self.home_path or CL.home_path
-		if CL.role_name:
+		if CL.role_name and not self.top_role:
 			self.role_name = f'{CL.role_name}.{self.role_name}'
+
+		s = os.path.splitext(self.module_path)
+		dot_py = s[1] and s[1] == '.py'
 
 		# Build the command line.
 		command = []
-		if self.dot_py:
+		if dot_py:
 			interpreter = sys.executable
 			command.append(interpreter)
-			command.append(self.module_path)
+		command.append(self.module_path)
 
-		else:
-			command.append(self.module_path)
+		if self.remainder_args:
+			command.extend(remaining_arguments(self.remainder_args))
 
 		try:
 			c = CodecNoop()
@@ -268,7 +275,7 @@ class ProcessObject(Point, StateMachine):
 			environ = None
 
 		c = ' '.join(command)
-		self.console(f'Command "{c}"')
+		self.console(c)
 		try:
 			start_new_session = CL.child_process
 			self.p = Popen(command,
@@ -334,7 +341,6 @@ def ProcessObject_INITIAL_Start(self, message):
 		if not s[1]:
 			self.module_path = shutil.which(s[0])
 		elif s[1] == '.py':
-			self.dot_py = True
 			self.module_path = find_module(self.object_or_name)
 		else:
 			self.complete(Faulted(f'Cannot execute {self.object_or_name} (unknown extension?)'))
@@ -378,7 +384,7 @@ def ProcessObject_INITIAL_Start(self, message):
 			self.send(Enquiry(), PD.directory)
 			return PENDING
 
-	self.fork_exec(rt)
+	self.load_image(rt)
 	return EXECUTING
 
 def ProcessObject_PENDING_Unknown(self, message):
@@ -390,7 +396,7 @@ def ProcessObject_PENDING_Unknown(self, message):
 def ProcessObject_PENDING_HostPort(self, message):
 	self.listening_for_directories = message
 	rt = getattr(self.object_or_name, '__art__', None)
-	self.fork_exec(rt)
+	self.load_image(rt)
 	return EXECUTING
 
 def ProcessObject_EXECUTING_Available(self, message):
