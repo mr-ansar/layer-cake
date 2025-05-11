@@ -535,7 +535,7 @@ class ProcessObjectSpool(Point, StateMachine):
 
 		idle = self.idle_process.popleft()
 		r = self.create(GetResponse, message, idle)
-		self.callback(r, forward_response, idle=idle, return_address=return_address, started=clock_now())
+		self.on_return(r, forward_response, idle=idle, return_address=return_address, started=clock_now())
 
 def ProcessObjectSpool_INITIAL_Start(self, message):
 	if self.responsiveness is not None:

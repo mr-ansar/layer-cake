@@ -575,7 +575,7 @@ def ConnectToPeer_PENDING_Connected(self, message):
 			subscribed_id=r.subscribed_id, published_id=r.published_id,
 			subscriber_address=address)
 		a = self.create(GetResponse, open, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-		self.callback(a, opened, request=r)
+		self.on_return(a, opened, request=r)
 	return READY
 
 def ConnectToPeer_PENDING_NotConnected(self, message):
@@ -613,7 +613,7 @@ def ConnectToPeer_READY_RequestLoop(self, message):
 		subscriber_address=message.subscriber_address)
 
 	a = self.create(GetResponse, open, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-	self.callback(a, opened, request=message)
+	self.on_return(a, opened, request=message)
 	return READY
 
 def ConnectToPeer_READY_DropLoop(self, message):
@@ -649,7 +649,7 @@ def ConnectToPeer_READY_DropLoop(self, message):
 		subscriber_address=address)
 
 	a = self.create(GetResponse, close, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-	self.callback(a, closed, request=dr, available=da, return_address=self.return_address)
+	self.on_return(a, closed, request=dr, available=da, return_address=self.return_address)
 	return READY
 
 def ConnectToPeer_READY_T1(self, message):
@@ -1034,7 +1034,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			if sr is not None:
 				sr[1].discard(args.route)
 
-		self.callback(r, clear, subscribed_id=subscriber.subscribed_id, published_id=publisher.published_id, route=r)
+		self.on_return(r, clear, subscribed_id=subscriber.subscribed_id, published_id=publisher.published_id, route=r)
 
 	def clear_listings(self, subscribers, publishers):
 		stop = Stop()
@@ -1104,7 +1104,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
 				c = self.create(ConnectToPeer, route.ipp)
-				self.callback(c, clear_ipp, ipp=route.ipp)
+				self.on_return(c, clear_ipp, ipp=route.ipp)
 				self.peer_connect[route.ipp] = c
 			address = ls[1].subscriber_address
 
@@ -1170,7 +1170,7 @@ class ObjectDirectory(Threaded, StateMachine):
 				subscriber_address=ls[1].subscriber_address)
 
 			a = self.create(GetResponse, d, c, seconds=COMPLETE_A_LOOP)
-			self.callback(a, dropped, route=route)
+			self.on_return(a, dropped, route=route)
 
 		elif isinstance(route, RouteToAddress):
 			closed_at = world_now()

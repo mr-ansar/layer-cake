@@ -40,27 +40,27 @@ def Server_Xy(self, message):
 
 	elif convention == CallingConvention.THREAD:
 		a = self.create(texture, x=message.x, y=message.y)
-		self.callback(a, respond, return_address=return_address)
+		self.on_return(a, respond, return_address=return_address)
 
 	elif convention == CallingConvention.PROCESS:
 		a = self.create(lc.ProcessObject, texture, x=message.x, y=message.y)
-		self.callback(a, respond, return_address=return_address)
+		self.on_return(a, respond, return_address=return_address)
 
 	elif convention == CallingConvention.LIBRARY:
 		a = self.create(lc.GetResponse, message, self.library)
-		self.callback(a, respond, return_address=return_address)
+		self.on_return(a, respond, return_address=return_address)
 
 	elif convention == CallingConvention.SPOOL:
 		a = self.create(lc.GetResponse, message, self.spool)
-		self.callback(a, respond, return_address=return_address)
+		self.on_return(a, respond, return_address=return_address)
 
 	elif convention == CallingConvention.FLOOD:
 		f = self.create(flood, self.spool, message, self.flooding)
-		self.callback(f, respond, return_address=return_address)
+		self.on_return(f, respond, return_address=return_address)
 
 	elif convention == CallingConvention.SOAK:
 		s = self.create(soak, self.spool, message, self.flooding, self.soaking)
-		self.callback(s, respond, return_address=return_address)
+		self.on_return(s, respond, return_address=return_address)
 	
 	else:
 		self.complete(lc.Faulted('No such convention'))
@@ -68,7 +68,7 @@ def Server_Xy(self, message):
 def Server_Returned(self, message):
 	d = self.debrief()
 	if isinstance(d, lc.OnReturned):
-		d(self, message)				# A callback.
+		d(self, message)				# A on_return.
 		return
 	self.complete(message)				# Library or spool has terminated.
 

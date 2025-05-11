@@ -182,7 +182,7 @@ def Group_RUNNING_Returned(self, message):
 
 	# Run a no-op with the desired timeout.
 	a = self.create(lc.GetResponse, lc.Enquiry(), lc.NO_SUCH_ADDRESS, seconds=seconds)
-	self.callback(a, restart, role=d)
+	self.on_return(a, restart, role=d)
 	return RUNNING
 
 def Group_RUNNING_Faulted(self, message):

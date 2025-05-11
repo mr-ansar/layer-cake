@@ -449,7 +449,7 @@ class Point(object):
 		c = self.address_job.pop(a, None)
 		return c
 
-	def callback(self, a, f, **kw):
+	def on_return(self, a, f, **kw):
 		c = OnReturned(f, Gas(**kw))
 		self.assign(a, c)
 

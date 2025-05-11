@@ -1,5 +1,4 @@
 # test_server.py
-import random
 import layer_cake as lc
 
 from test_api import *
@@ -24,26 +23,25 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	# Manage a job spool, i.e. a cluster of libraries.
 	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=32)
 
-	# Run a live network service. Framework notifications and
-	# client requests.
+	# Run a live network service, library and spool.
 	while True:
 		m = self.input()
 
 		if isinstance(m, Xy):					# Client request.
 			pass
 
-		elif isinstance(m, lc.Listening):		# Bound to the port.
-			continue
+		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. thread, process, ...
+			d = self.debrief()
+			if isinstance(d, lc.OnReturned):	# Execute a on_return.
+				d(self, m)
+				continue
+			return lc.Faulted('Supporting process terminated.')
 
 		elif isinstance(m, (lc.Accepted, lc.Closed)):		# Clients coming and going.
 			continue
 
-		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. thread, process, ...
-			d = self.debrief()
-			if isinstance(d, lc.OnReturned):	# Execute a callback.
-				d(self, m)
-				continue
-			return lc.Faulted('Support process terminated.')
+		elif isinstance(m, lc.Listening):		# Bound to the port.
+			continue
 
 		elif isinstance(m, lc.Faulted):			# Any fault, including NotListening.
 			return m
@@ -69,32 +67,32 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 
 		elif convention == CallingConvention.THREAD:
 			a = self.create(texture, x=request.x, y=request.y)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.PROCESS:
 			a = self.create(lc.ProcessObject, texture, x=request.x, y=request.y)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.LIBRARY:
 			a = self.create(lc.GetResponse, request, lib)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.SPOOL:
 			a = self.create(lc.GetResponse, request, spool)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.FLOOD:
 			a = self.create(flood, spool, request, flooding)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.SOAK:
 			a = self.create(soak, spool, request, flooding, soaking)
-			self.callback(a, respond, return_address=return_address)
+			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		else:
@@ -105,16 +103,6 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 		self.send(lc.cast_to(response, table_type), return_address)
 
 lc.bind(server, api=(Xy,))	# Register with the framework.
-
-
-# Supporting functions and async objects for the more
-# complex operations.
-random.seed()
-
-def delay(period):
-	'''Calculate a short break. Something random around the given length.'''
-	cf = random.randrange(75, 125) / 100
-	return period * cf
 
 def flood(self, spool, request, flooding) -> list[list[float]]:
 	'''Generate a burst of requests. Wait for related responses.'''
@@ -145,7 +133,7 @@ def soak(self, spool, request, flooding, soaking) -> list[list[float]]:
 			elif isinstance(response, lc.Stop):
 				return lc.Aborted()
 
-		self.start(lc.T1, delay(2.0))
+		self.start(lc.T1, lc.spread_out(2.0))
 		b = self.input()
 		if isinstance(b, lc.Faulted):
 			return b
