@@ -303,7 +303,7 @@ def object_home(executable, home_role, sticky=False):
 			raise Incomplete(Faulted(f'cannot create "{home_role}"', f'already exists'))
 		role = create_role(home_role, executable)
 	elif role is None:
-		if CL.origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD) or CL.keep_logs:
+		if CL.origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD) or sticky or CL.keep_logs:
 			role = create_role(home_role, executable)
 		else:
 			role = create_memory_role(executable)

@@ -658,8 +658,10 @@ class Player(object):
 	def pushback(self, m):
 		"""Retain the [message, to, return] triplet for later replay."""
 		mtr = self.get_frame
-		if id(m) != id(mtr[0]):
-			return
+		# Cannot verify in the presence of anonymous types.
+		# This pushes back the most recent pull.
+		#if id(m) != id(mtr[0]):
+		#	return
 		mtr[3] += 1
 		if mtr[3] < MAXIMUM_REPLAYS:
 			self.pending.append(mtr)

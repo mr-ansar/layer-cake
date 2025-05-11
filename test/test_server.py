@@ -14,13 +14,11 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	'''Establish a network listen and process API requests. Return nothing.'''
 	server_address = server_address or DEFAULT_ADDRESS
 
-	# Open a network port for inbound connections.
+	# Open a network port for inbound connections,
+	# manage a private server, i.e. a loadable library, and
+	# manage a job spool, i.e. a cluster of libraries.
 	lc.listen(self, server_address)
-
-	# Manage a private server, i.e. a loadable library.
 	lib = self.create(lc.ProcessObject, library, role_name='library')
-
-	# Manage a job spool, i.e. a cluster of libraries.
 	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=32)
 
 	# Run a live network service, library and spool.

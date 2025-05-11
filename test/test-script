@@ -1,5 +1,9 @@
-
-echo --- CREATE
+#!/bin/bash
+# Script to test the layer-cake command-line tool.
+# General stratgey is to run sub-commands, verify their
+# outcomes, and print "END (PASS)". Anything else
+# is a fail.
+echo '--- CREATE'
 python3 lyrck.py create
 [[ -d .layer-cake ]] || exit 1
 [[ -d .layer-cake/group ]] || exit 1
@@ -15,7 +19,7 @@ python3 lyrck.py destroy
 python3 lyrck.py destroy && exit 1
 
 echo
-echo --- CREATE test-group
+echo '--- CREATE test-group'
 python3 lyrck.py create test-group
 [[ -d test-group ]] || exit 1
 python3 lyrck.py create test-group && exit 1
@@ -25,7 +29,7 @@ python3 lyrck.py destroy test-group
 python3 lyrck.py destroy test-group && exit 1
 
 echo
-echo --- ADD
+echo '--- ADD'
 python3 lyrck.py create
 python3 lyrck.py add test_server.py
 [[ -d .layer-cake/test_server ]] || exit 1
@@ -57,11 +61,10 @@ python3 lyrck.py delete --all
 python3 lyrck.py destroy
 
 echo
-echo --- START
+echo '--- START'
 python3 lyrck.py create
 python3 lyrck.py add test_server.py server
 python3 lyrck.py start
-echo xxx
 sleep 2
 [[ `python3 lyrck.py status | wc -l` -eq 1 ]] || exit 1
 
@@ -70,15 +73,25 @@ python3 lyrck.py status && exit 1
 
 python3 lyrck.py add test_subscriber.py subscriber --count=10
 python3 lyrck.py start
-echo yyy
 sleep 2
-[[ `python3 lyrck.py status | wc -l1` -eq 1 ]] || exit 1
+[[ `python3 lyrck.py status | wc -l` -eq 11 ]] || exit 1
 
 python3 lyrck.py stop
-echo zzz
 sleep 2
-python3 lyrck.py status && exit 1
+! python3 lyrck.py status || exit 1
 
+python3 lyrck.py destroy
+
+echo
+echo '--- LOG'
+python3 lyrck.py create
+python3 lyrck.py add test_publisher.py publisher
+python3 lyrck.py add test_subscriber.py subscriber --count=10
+python3 lyrck.py start
+sleep 2
+[[ `python3 lyrck.py log publisher --rewind=10000 | grep "Received list_list_float" | wc -l` -eq 10 ]] || exit 1
+
+python3 lyrck.py stop
 python3 lyrck.py destroy
 
 echo

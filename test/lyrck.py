@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""CLI layer-cake utility.
+"""Layer-cake, command line utility.
 
 CRUD for creation/management of a set of process definitions.
 Process orchestration for running images of defintiions.
@@ -55,7 +55,7 @@ def layer_cake(self, *word):
 	sub_command, jump, sub_args, remainder = sub
 
 	# Catch uncurated args that are not going anywhere.
-	if jump not in (add, update) and (remainder[0] or remainder[1]):
+	if jump not in (create, add, update) and (remainder[0] or remainder[1]):
 		a = [k for k in remainder[0].keys()]
 		b = [k for k in remainder[1].keys()]
 		a.extend(b)
@@ -63,14 +63,13 @@ def layer_cake(self, *word):
 		return lc.Faulted(f'cannot execute "{sub_command}"', f'unknown arg(s) "{a}"')
 
 	# Transfer to sub function. Perhaps could be
-	# a create.
+	# a self.create.
 	return jump(self, word, remainder, **sub_args)
 
 lc.bind(layer_cake)
 
-# Create a place on disk that will hold the process definitions. Preload
-# with defintion of the group process.
-def create(self, word, remainder, retry: lc.RetryIntervals=None):
+def create(self, word, remainder):
+	'''Create a new area on disk to hold process definitions. Return Faulted/None.'''
 	home_path = word_i(word, 0) or lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_create = f'cannot create "{home_path}"'
@@ -79,24 +78,13 @@ def create(self, word, remainder, retry: lc.RetryIntervals=None):
 
 	elif os.path.isdir(home_path):
 		return lc.Faulted(cannot_create, 'already exists')
+
 	# Folder created by execution of group create-role.
-
-	kv = {}
-	if retry is not None:
-		try:
-			c = lc.CodecNoop()
-			v = lc.encode_argument(c, retry, lc.UserDefined(lc.RetryIntervals))
-		except lc.CodecError as e:
-			e = str(e)
-			s = e.replace('cannot encode', f'cannot encode value for argument "retry"')
-			return lc.Faulted(s)
-		kv['retry'] = v
-
 	self.create(lc.ProcessObject, 'group_cake',
 		home_path=home_path,
 		role_name=GROUP_ROLE, top_role=True,
 		create_role=True,
-		**kv)
+		remainder_args=remainder)
 
 	m = self.input()
 	if not isinstance(m, lc.Returned):
@@ -105,6 +93,7 @@ def create(self, word, remainder, retry: lc.RetryIntervals=None):
 	if isinstance(m.value, lc.Faulted):
 		return m.value
 
+	# Consume the expected response.
 	if not isinstance(m.value, lc.CommandResponse):
 		return lc.Faulted(cannot_create, f'unexpected command response {m.value}')
 
@@ -115,6 +104,7 @@ lc.bind(create)
 #
 #
 def add(self, word, remainder, count: int=None, start: int=0):
+	'''Add process definition(s) to an existing store. Return Faulted/None.'''
 	executable = word_i(word, 0)
 	role_name = word_i(word, 1) or lc.CL.role_name 
 	home_path = word_i(word, 2) or lc.CL.home_path or lc.DEFAULT_HOME
@@ -148,12 +138,6 @@ def add(self, word, remainder, count: int=None, start: int=0):
 		s = ','.join(c)
 		return lc.Faulted(cannot_add, f'collision of roles "{s}"')
 
-	# Arguments (un-decoded) to be forwarded to the role process(es).
-	#kv = {}
-	#kv.update(remainder[0])
-	#kv.update(remainder[1]) ... short form not expanded appropriately.
-	#kv = remainder[0]
-
 	self.console(executable=executable, role_name=role_name, home_path=home_path)
 
 	for r in role_call:
@@ -179,6 +163,7 @@ lc.bind(add)
 #
 #
 def list_(self, search, remainder, long_listing: bool=False):
+	'''List the process definition(s) in an existing store. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_list = f'cannot list "{home_path}"'
@@ -191,7 +176,7 @@ def list_(self, search, remainder, long_listing: bool=False):
 	for k in keys:
 		v = home[k]
 		if long_listing:
-			print(f'{k}\t{v.executable_file()}')
+			print(f'{k:24} {v.executable_file()}')
 			continue
 		print(k)
 
@@ -205,10 +190,6 @@ def update(self, search, remainder, group_role: bool=False):
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_update = f'cannot update "{home_path}"'
-
-	# Arguments (un-decoded) to forward to role process(es).
-	#kv.update(remainder[1]) ... short form not expanded appropriately.
-	#kv = remainder[0]
 
 	home = home_listing(self, home_path, search)
 	if home is None:
@@ -239,7 +220,7 @@ def update(self, search, remainder, group_role: bool=False):
 			home_path=home_path,
 			role_name=k, top_role=True,
 			update_role=True,
-			**kv)
+			remainder_args=remainder)
 		m = self.input()
 		if not isinstance(m, lc.Returned):
 			return lc.Faulted(cannot_update, f'unexpected process response {m}')
