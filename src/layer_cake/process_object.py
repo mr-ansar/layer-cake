@@ -243,8 +243,6 @@ class ProcessObject(Point, StateMachine):
 
 		command.append(f'--child-process')
 		command.append(f'--full-output')
-		if CL.background_daemon:
-			command.append(f'--background-daemon')
 
 		if self.home_path:
 			command.append(f'--home-path={self.home_path}')

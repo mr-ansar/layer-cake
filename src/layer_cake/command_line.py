@@ -63,8 +63,6 @@ class CommandLine(object):
 	Communicate the context for the new process, e.g. daemon, home/role,
 	settings and parent/child communications.
 
-	:param background_daemon: enable full parent-child process integration
-	:type background_daemon: bool
 	:param child_process: this process is a standard child of a standard parent
 	:type child_process: bool
 	:param full_output: enable full parent-child process integration
@@ -100,7 +98,6 @@ class CommandLine(object):
 	"""
 	def __init__(self,
 			origin: ProcessOrigin=None,
-			background_daemon: bool=False,
 			child_process: bool=False,
 			full_output: bool=False,
 			debug_level=None,
@@ -119,7 +116,6 @@ class CommandLine(object):
 			connect_to_directory: HostPort=None,
 			accept_directories_at: HostPort=None):
 		self.origin = origin
-		self.background_daemon = background_daemon
 		self.child_process = child_process
 		self.full_output = full_output
 		self.debug_level = debug_level
