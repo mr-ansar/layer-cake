@@ -245,7 +245,7 @@ def delete(self, search, remainder, all: bool=False):
 		home = home_listing(self, home_path, search)
 	elif all:
 		home = lc.open_home(home_path)
-		if not home:
+		if home is None:
 			return lc.Faulted(cannot_delete, f'does not exist or unexpected/incomplete materials')
 	else:
 		return lc.Faulted(cannot_delete, f'no roles specified, use --all?')
