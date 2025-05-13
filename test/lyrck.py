@@ -41,6 +41,7 @@ import calendar
 
 #
 GROUP_ROLE = 'group'
+GROUP_EXECUTABLE = 'group_cake'
 
 #
 def layer_cake(self, *word):
@@ -79,8 +80,10 @@ def create(self, word, remainder):
 	elif os.path.isdir(home_path):
 		return lc.Faulted(cannot_create, 'already exists')
 
+	self.console('create', home_path=home_path)
+
 	# Folder created by execution of group create-role.
-	self.create(lc.ProcessObject, 'group_cake',
+	self.create(lc.ProcessObject, GROUP_EXECUTABLE,
 		home_path=home_path,
 		role_name=GROUP_ROLE, top_role=True,
 		create_role=True,
@@ -138,7 +141,7 @@ def add(self, word, remainder, count: int=None, start: int=0):
 		s = ','.join(c)
 		return lc.Faulted(cannot_add, f'collision of roles "{s}"')
 
-	self.console(executable=executable, role_name=role_name, home_path=home_path)
+	self.console('add', executable=executable, role_name=role_name, home_path=home_path)
 
 	for r in role_call:
 		a = self.create(lc.ProcessObject, executable,
@@ -172,6 +175,9 @@ def list_(self, search, remainder, long_listing: bool=False):
 	if home is None:
 		return lc.Faulted(cannot_list, f'does not exist or contains unexpected/incomplete materials')
 
+	s = ','.join(search)
+	self.console('list', search=s, home_path=home_path)
+
 	keys = sorted(home.keys())
 	for k in keys:
 		v = home[k]
@@ -196,7 +202,7 @@ def update(self, search, remainder, group_role: bool=False):
 		return lc.Faulted(cannot_update, f'does not exist or contains unexpected/incomplete materials')
 
 	elif group_role:
-		a = self.create(lc.ProcessObject, 'group_cake',
+		a = self.create(lc.ProcessObject, GROUP_EXECUTABLE,
 			home_path=home_path,
 			role_name=GROUP_ROLE, top_role=True,
 			update_role=True,
@@ -213,7 +219,7 @@ def update(self, search, remainder, group_role: bool=False):
 		return None
 
 	r = ','.join(home.keys())
-	self.console(roles=r, home_path=home_path)
+	self.console('update', roles=r, home_path=home_path)
 
 	for k, v in home.items():
 		a = self.create(lc.ProcessObject, v,
@@ -249,6 +255,9 @@ def delete(self, search, remainder, all: bool=False):
 			return lc.Faulted(cannot_delete, f'does not exist or unexpected/incomplete materials')
 	else:
 		return lc.Faulted(cannot_delete, f'no roles specified, use --all?')
+
+	s = ','.join(search)
+	self.console('delete', search=s, home_path=home_path)
 
 	try:
 		running = home_running(self, home)
@@ -290,6 +299,8 @@ def destroy(self, word, remainder):
 	if home is None:
 		return lc.Faulted(cannot_destroy, f'does not exist or unexpected/incomplete materials')
 
+	self.console('destroy', home_path=home_path)
+
 	try:
 		running = home_running(self, home)
 		if not running:
@@ -311,6 +322,7 @@ lc.bind(destroy)
 #
 #
 def run(self, search, remainder, main_role: str=None):
+	'''Execute a subset/all of the process definition(s), to completion. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_run = f'cannot run "{home_path}"'
@@ -321,6 +333,9 @@ def run(self, search, remainder, main_role: str=None):
 		if not home:
 			return lc.Faulted(cannot_run, f'does not exist or unexpected/incomplete materials')
 
+	s = ','.join(search)
+	self.console('run', search=s, home_path=home_path)
+
 	try:
 		kv = {}
 		if main_role is not None:
@@ -328,7 +343,7 @@ def run(self, search, remainder, main_role: str=None):
 
 		running = home_running(self, home)
 		if not running:
-			a = self.create(lc.ProcessObject, 'group_cake', *search,
+			a = self.create(lc.ProcessObject, GROUP_EXECUTABLE, *search,
 				home_path=home_path,
 				role_name=GROUP_ROLE, top_role=True,
 				origin=lc.ProcessOrigin.RUN,
@@ -374,6 +389,9 @@ def start(self, search, remainder, main_role: str=None):
 	if not home:
 		return lc.Faulted(cannot_start, f'empty')
 
+	s = ','.join(search)
+	self.console('start', search=s, home_path=home_path)
+
 	try:
 		kv = {}
 		if main_role is not None:
@@ -381,7 +399,7 @@ def start(self, search, remainder, main_role: str=None):
 
 		running = home_running(self, home)
 		if not running:
-			a = self.create(lc.ProcessObject, 'group_cake', *search,
+			a = self.create(lc.ProcessObject, GROUP_EXECUTABLE, *search,
 				home_path=home_path,
 				role_name=GROUP_ROLE, top_role=True,
 				origin=lc.ProcessOrigin.START,
@@ -425,6 +443,8 @@ def stop(self, word, remainder):
 	if not home:
 		return lc.Faulted(cannot_stop, f'empty')
 
+	self.console('stop', home_path=home_path)
+
 	try:
 		running = home_running(self, home)
 		if not running:
@@ -462,6 +482,9 @@ def status(self, search, remainder):
 
 	if not home:
 		return lc.Faulted(cannot_status, f'empty')
+
+	s = ','.join(search)
+	self.console('status', search=s, home_path=home_path)
 
 	try:
 		# Determine the running/idle status of the
@@ -506,6 +529,8 @@ def history(self, word, remainder, long_listing: bool=False, group_role: bool=Fa
 	role = home.get(role_name, None)
 	if role is None:
 		return lc.Faulted(cannot_history, f'does not exist')
+
+	self.console('history', role_name=role_name, home_path=home_path)
 
 	def long_history():
 		now = datetime.datetime.now(lc.UTC)
@@ -571,6 +596,8 @@ def returned(self, word, remainder, start: int=None, timeout: float=None, group_
 	role = home.get(role_name, None)
 	if role is None:
 		return lc.Faulted(cannot_returned, f'does not exist')
+
+	self.console('returned', role_name=role_name, home_path=home_path)
 
 	start_stop = role.start_stop()
 	if len(start_stop) < 1:
@@ -654,6 +681,8 @@ def log(self, word, remainder, clock: bool=False,
 	if role_name is None:
 		return lc.Faulted(f'cannot log', f'no role specified')
 	cannot_log = f'cannot log "{role_name}"'
+
+	self.console('log', role_name=role_name, home_path=home_path)
 
 	# Initial sanity checks and a default <begin>.
 	f = [rewind, from_, last, start, back]
@@ -771,6 +800,34 @@ def log(self, word, remainder, clock: bool=False,
 	return None
 
 lc.bind(log, span=lc.TimeSpan(), back=lc.TimeSpan())
+
+#
+#
+def edit(self, word, remainder, group_role: bool=False):
+	role_name = word_i(word, 0) or lc.CL.role_name
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	if role_name is None:
+		if not group_role:
+			return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+		role_name = GROUP_ROLE
+
+	cannot_edit = f'cannot edit "{role_name}"'
+
+	home = lc.open_home(home_path, grouping=group_role)
+	if home is None:
+		return lc.Faulted(cannot_edit, f'does not exist or contains unexpected/incomplete materials')
+
+	r = home.get(role_name, None)
+	if r is None:
+		return lc.Faulted(cannot_edit, f'does not exist')
+
+	self.console('edit', role_name=role_name, home_path=home_path)
+
+	output = lc.HR.edit_role(self, r)
+	return output
+
+lc.bind(edit)
 
 # Functions supporting the
 # sub-commands.
@@ -999,10 +1056,11 @@ table = [
 	stop,
 	status,
 
-	# Access to records of execution.
+	# Access to records of execution and configuration.
 	log,
 	history,
-	returned
+	returned,
+	edit
 ]
 
 # For package scripting.

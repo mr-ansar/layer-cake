@@ -30,7 +30,7 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 
 		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. thread, process, ...
 			d = self.debrief()
-			if isinstance(d, lc.OnReturned):	# Execute a on_return.
+			if isinstance(d, lc.OnReturned):	# Execute on_return callback.
 				d(self, m)
 				continue
 			return lc.Faulted('Supporting process terminated.')

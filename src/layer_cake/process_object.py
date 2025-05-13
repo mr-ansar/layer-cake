@@ -75,6 +75,7 @@ from .get_response import *
 __all__ = [
 	'ProcessObject',
 	'ProcessObjectSpool',
+	'Utility'
 ]
 
 PO = Gas(collector=None)
@@ -150,12 +151,13 @@ class ProcessObject(Point, StateMachine):
 	:param kw: addition args passed to Popen
 	:type kw: named args dict
 	"""
-	def __init__(self, object_or_name, origin: ProcessOrigin=None,
+	def __init__(self, object_or_name, *args, origin: ProcessOrigin=None,
 			home_path=None, role_name=None, top_role: bool=False,
 			object_api=None, extra_types=None,
 			remainder_args=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
+		self.args = args
 		self.object_or_name = object_or_name
 		self.origin = origin
 		self.home_path = home_path
@@ -204,6 +206,10 @@ class ProcessObject(Point, StateMachine):
 			interpreter = sys.executable
 			command.append(interpreter)
 		command.append(self.module_path)
+
+		if self.args:
+			for a in self.args:
+				command.append(str(a))
 
 		if self.remainder_args:
 			command.extend(remaining_arguments(self.remainder_args))
@@ -283,7 +289,7 @@ class ProcessObject(Point, StateMachine):
 				env=environ)
 				#**self.kw)
 		except OSError as e:
-			s = f'Cannot start process "{self.module_path}" ({e})'
+			s = f'cannot start process "{self.module_path}" ({e})'
 			self.complete(Faulted(s))
 
 		self.log(USER_TAG.STARTED, f'Started process ({self.p.pid})')
@@ -341,10 +347,10 @@ def ProcessObject_INITIAL_Start(self, message):
 		elif s[1] == '.py':
 			self.module_path = find_module(self.object_or_name)
 		else:
-			self.complete(Faulted(f'Cannot execute {self.object_or_name} (unknown extension?)'))
+			self.complete(Faulted(f'cannot execute {self.object_or_name} (unknown extension?)'))
 
 		if self.module_path is None:
-			self.complete(Faulted(f'Cannot execute {self.object_or_name} (not found)'))
+			self.complete(Faulted(f'cannot execute {self.object_or_name} (not found)'))
 
 		if self.object_api is not None and len(self.object_api) > 0:
 			self.api = self.object_api
@@ -354,11 +360,11 @@ def ProcessObject_INITIAL_Start(self, message):
 	elif isinstance(self.object_or_name, HomeRole):
 		executable_file = self.object_or_name.executable_file()
 		if not self.home_path:
-			self.complete(Faulted(f'Cannot execute {executable_file} (no home_path)'))
+			self.complete(Faulted(f'cannot execute {executable_file} (no home_path)'))
 
 		self.module_path = find_role(executable_file, self.home_path)
 		if self.module_path is None:
-			self.complete(Faulted(f'Cannot execute {executable_file} (no role script)'))
+			self.complete(Faulted(f'cannot execute {executable_file} (no role script)'))
 
 		split = os.path.split(executable_file)
 		origin_path = split[0]
@@ -371,7 +377,7 @@ def ProcessObject_INITIAL_Start(self, message):
 	else:
 		rt = getattr(self.object_or_name, '__art__', None)
 		if rt is None:
-			self.complete(Faulted(f'Cannot execute {self.object_or_name} (not registered)'))
+			self.complete(Faulted(f'cannot execute {self.object_or_name} (not registered)'))
 
 		imported_module = self.object_or_name.__module__
 		module = sys.modules[imported_module]
@@ -445,7 +451,7 @@ def ProcessObject_EXECUTING_Returned(self, message):
 	# This is outside normal framework operation.
 	t = '<empty>' if output is None else output.__class__.__name__
 	p = '<empty>' if len(page) < 1 else page[:32]
-	self.complete(Faulted(f'Non-standard process exit - code={code}, output={t}, page="{p}..."'))
+	self.complete(Faulted(f'non-standard process exit - code={code}, output={t}, page="{p}..."'))
 
 def ProcessObject_EXECUTING_Stop(self, message):
 	pid = self.p.pid
@@ -488,7 +494,7 @@ PROCESS_DISPATCH = {
 	),
 }
 
-bind_statemachine(ProcessObject, dispatch=PROCESS_DISPATCH, thread='process-object')
+bind_statemachine(ProcessObject, PROCESS_DISPATCH, thread='process-object')
 
 #
 #
@@ -545,7 +551,7 @@ def ProcessObjectSpool_INITIAL_Start(self, message):
 	r = self.responsiveness
 
 	if pc < 1 or (sos is not None and sos < 1) or (r is not None and r < 0.5):
-		self.complete(Faulted(f'Cannot start the spool with the given parameters (count={pc}, size={sos}, responsiveness={r})'))
+		self.complete(Faulted(f'cannot start the spool with the given parameters (count={pc}, size={sos}, responsiveness={r})'))
 	
 	role_name = self.role_name or 'spool'
 
@@ -633,3 +639,303 @@ OBJECT_SPOOL_DISPATCH = {
 }
 
 bind_statemachine(ProcessObjectSpool, dispatch=OBJECT_SPOOL_DISPATCH, thread='process-object-spool')
+
+############################################################################
+
+#
+#
+class Punctuation(object):
+	"""A collection of strings for custom decoration of a command line.
+
+	:param dash: string to place before a short-form flag
+	:type dash: str
+	:param double_dash: string to place before a long-form name
+	:type double_dash: str
+	:param list_ends: left-end and right-end characters bounding a list
+	:type list_ends: str, len of 2
+	:param list_separator: string to place between list elements
+	:type list_separator: str
+	:param dict_ends: left-end and right-end characters bounding a dict
+	:type dict_ends: str, len of 2
+	:param dict_separator: string to place between dict elements
+	:type dict_separator: str
+	:param dict_colon: str to place between name and value of dict pair
+	:type dict_colon: str
+	:param message_ends: left-end and right-end characters bounding a message
+	:type message_ends: str, len of 2
+	:param message_separator: string to place between message elements
+	:type message_separator: str
+	:param message_colon: str to place between name and value of dict pair
+	:type message_colon: str
+	:param true_false: strings to encode as representations for true and false
+	:type true_false: list of 2 str
+	:param no_value: string to encode as a None value
+	:type no_value: str
+	:param flag_value_separator: string to place between flag and value
+	:type flag_value_separator: str
+	:param any_separator: string to place between elements of an Any representation
+	:type any_separator: str
+	"""
+	def __init__(self, dash=None, double_dash=None,
+			list_ends=None, list_separator=None,
+			dict_ends=None, dict_separator=None, dict_colon=None,
+			message_ends=None, message_separator=None, message_colon=None,
+			true_false=None, no_value=None,
+			flag_value_separator=None, any_separator=None):
+		self.dash = dash or '-'
+		self.double_dash = double_dash or '--'
+		self.list_ends = list_ends or [None, None]
+		self.list_separator = list_separator or ','
+		self.dict_ends = dict_ends or [None, None]
+		self.dict_separator = dict_separator or ','
+		self.dict_colon = dict_colon or ':'
+		self.message_ends = message_ends or [None, None]
+		self.message_separator = message_separator or ','
+		self.message_colon = message_colon or ':'
+		self.true_false = true_false or ['true', 'false']
+		self.no_value = no_value or 'null'
+		self.flag_value_separator = flag_value_separator or '='
+		self.any_separator = any_separator or '/'
+
+class Utility(Point, StateMachine):
+	"""An async proxy object that starts and manages a non-standard sub-process.
+
+	The named executable is started and the machine waits for termination. If stdin
+	is a ``str`` the contents are written to an input pipe. If stdout is ``str`` (i.e. the class)
+	the object will return the text received on the output pipe, in the :class:`~.lifecycle.Completed`
+	message.
+
+	Parameters are passed from the calling process to the child process by translating the
+	positional parameters according to a few rules;
+
+	* Each parameter (i.e. ``args[i]``) should be a tuple where the first element is
+	  the name of the parameter and the second element is the runtime value of that name.
+	* A 3-tuple can also be used where the middle element contains the separator to used
+	  on the command line, between the name and the value.
+	* Values are Python values and these are encoded in a best-guess fashion, e.g. a Python
+	  int will be converted to the proper sequence of digits. A Python str will be
+	  passed verbatim.
+	* Explicit type information can be passed in ``args_schema``. This is a name-type dict
+	  where the type value is used to control the encoding process, e.g. a Python float
+	  can be described as a ``ar.ClockTime`` and the float will be converted to a full ISO
+	  format string on the command line.
+	* By default the command line is decorated with dashes and equals signs. Passing a
+	  :class:`~.processing.Punctuation` parameter takes explicit control over those decorations.
+
+	:param name: name of the executable file
+	:type name: str
+	:param args: positional args
+	:type args: tuple
+	:param args_schema: explicit type information about args
+	:type args_schema: dict of ansar type expressions
+	:param punctuation: override standard decoration of command line
+	:type punctuation: :class:`~.processing.Punctuation`
+	:param stdin: text to pass to child
+	:type stdin: str or None
+	:param stdout: type of expected output, e.g. str
+	:type stdout: type
+	:param stderr: type of expected output, e.g. str
+	:type stderr: type
+	:param text: nature of pipe content - text or binary
+	:type text: bool
+	:param encoding: control encoding of text, passed to ``Popen()``
+	:type encoding: str
+	:param errors: control encoding errors, passed to ``Popen()``
+	:type errors: str
+	:param cwd: where to locate the sub-process
+	:type cwd: str
+	:param kw: additional parameters passed to ``Popen()``
+	:type kw: named parameters dict
+	"""
+	def __init__(self, name, *args,
+			args_schema=None, punctuation=None,
+			stdin=None, stdout=None, stderr=None,
+			text=False, encoding=None, errors=None,
+			cwd=None,
+			**kw):
+		Point.__init__(self)
+		StateMachine.__init__(self, INITIAL)
+		self.name = name
+		self.args = args
+		self.args_schema = args_schema
+		self.punctuation = punctuation or Punctuation()
+		self.stdin = stdin
+		self.stdout = stdout
+		self.stderr = stderr
+		self.text = text
+		self.encoding = encoding
+		self.errors = errors
+		self.cwd = cwd
+		self.input = None
+		self.piping = False
+		self.kw = kw
+		self.p = None
+
+def Utility_INITIAL_Start(self, message):
+	# If no home has been loaded, path will resolve to
+	# none, i.e. the default.
+	executable = shutil.which(self.name)
+	if executable is None:
+		cwd = os.getcwd()
+		self.complete(Faulted(f'cannot resolve executable "{self.name}" from "{cwd}"'))
+
+	try:
+		args = process_args(self.args, self.args_schema, self.punctuation)
+	except ValueError as e:
+		s = str(e)
+		self.complete(Faulted(f'cannot process arguments for "{self.name}", {s}'))
+
+	# Pipe work
+	# 1. ACTION - nothing in, nothing out (default)
+	# 2. SINK - something in, nothing out
+	# 3. SOURCE - nothing in, something out
+	# 4. FILTER - something in, something out
+
+	stdin = self.stdin
+	if isinstance(stdin, str):
+		self.input = stdin
+		self.stdin = PIPE
+		self.text = True
+	elif isinstance(stdin, (bytes, bytearray)):	# Block
+		self.input = stdin
+		self.stdin = PIPE
+		self.text = False
+
+	stdout = self.stdout
+	if stdout == str:	 # Unicode
+		if stdin and not self.text:
+			raise ValueError('cannot support different input/output/error pipes')
+		self.stdout = PIPE
+		self.text = True
+	elif stdout in (bytes, bytearray):	# Block
+		if stdin and self.text:
+			raise ValueError('cannot support different input/output/error pipes')
+		self.stdout = PIPE
+		self.text = False
+
+	stderr = self.stderr
+	if stderr == str:	 # Unicode
+		if (stdin or stdout) and not self.text:
+			raise ValueError('cannot support different input/output/error pipes')
+		self.stderr = PIPE
+		self.text = True
+	elif stderr in (bytes, bytearray):	# Block
+		if (stdin or stdout) and self.text:
+			raise ValueError('cannot support different input/output pipes')
+		self.stderr = PIPE
+		self.text = False
+
+	self.piping = stdin or stdout or stderr
+
+	line = [executable]
+	line.extend(args)
+
+	c = ' '.join(line)
+	self.console(c)
+	try:
+		start_new_session = CL.child_process
+		self.p = Popen(line,
+			start_new_session=True,
+			stdin=self.stdin, stdout=self.stdout, stderr=sys.stderr,
+			text=True, encoding='utf-8', errors='strict')
+			#**self.kw)
+	except OSError as e:
+		s = f'cannot start process "{self.module_path}" ({e})'
+		self.complete(Faulted(s))
+
+	#self.log(USER_TAG.STARTED, f'Started process ({self.p.pid})')
+	self.create(wait, self.p, True)
+
+	return EXECUTING
+
+def Utility_EXECUTING_Returned(self, message):
+	code, page = message.value.code, message.value.page
+
+	if code == 0:
+		if not page:
+			self.complete(None)
+		output = cast_to(page, bytes_type)
+		self.complete(output)
+	self.complete(Faulted(f'child exit code {code}', 'expecting 0 (zero)'))
+
+def Utility_EXECUTING_Stop(self, message):
+	self.p.terminate()
+	return CLEARING
+
+def Utility_CLEARING_Returned(self, message):
+	self.complete(Aborted())
+
+UTILITY_DISPATCH = {
+	INITIAL: (
+		(Start,),
+		()
+	),
+	EXECUTING: (
+		(Returned, Stop),
+		()
+	),
+	CLEARING: (
+		(Returned,),
+		()
+	),
+}
+
+bind_statemachine(Utility, UTILITY_DISPATCH)
+
+
+#
+#
+NoneType = type(None)
+
+def write_if(r, s):
+	if s:
+		r.write(s)
+
+def write_if_else(r, b, ie):
+	if b:
+		r.write(ie[0])
+	else:
+		r.write(ie[1])
+
+def dash_style(name, punctuation):
+	if len(name) == 1:
+		return punctuation.dash
+	return punctuation.double_dash
+
+def resolve(name, value, schema, punctuation):
+	if value is None:
+		return None
+	return str(value)
+
+def process_args(args, schema, punctuation=None):
+	punctuation = punctuation or Punctuation()
+	line = []
+	for i, a in enumerate(args):
+		if isinstance(a, tuple):
+			n = len(a)
+			if not (n in [2, 3]):
+				raise ValueError('tuple flag [%d] with unexpected length %d' % (i, n))
+
+			name = a[0]
+			if not isinstance(name, str):
+				raise ValueError('tuple flag [%d] with strange name %r' % (i, name))
+
+			separator = punctuation.flag_value_separator
+			dash = dash_style(name, punctuation)
+			if len(a) == 2:
+				value = resolve(name, a[1], schema, punctuation)
+			else:
+				separator = a[1]
+				value = resolve(name, a[2], schema, punctuation)
+
+			if value is None:
+				line.append('%s%s' % (dash, name))
+			elif separator is None:
+				line.append('%s%s' % (dash, name))
+				line.append('%s' % (value,))
+			else:
+				line.append('%s%s%s%s' % (dash, name, separator, value))
+		else:
+			value = resolve(i, a, schema, punctuation)
+			line.append('%s' % (value,))
+	return line
