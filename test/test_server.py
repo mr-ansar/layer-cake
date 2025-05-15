@@ -19,7 +19,7 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	# manage a job spool, i.e. a cluster of libraries.
 	lc.listen(self, server_address)
 	lib = self.create(lc.ProcessObject, library, role_name='library')
-	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=32)
+	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=2)
 
 	# Run a live network service, library and spool.
 	while True:

@@ -14,6 +14,8 @@ def library(self):
 
 		if isinstance(m, Xy):				# Expected request.
 			pass
+		elif isinstance(m, (lc.Delivered, lc.Dropped)):		# Check for faults and control-c.
+			continue
 		elif isinstance(m, lc.Faulted):		# Check for faults and control-c.
 			return m
 		elif isinstance(m, lc.Stop):
