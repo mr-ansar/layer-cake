@@ -176,6 +176,7 @@ class ProcessObject(Point, StateMachine):
 		self.p = None
 
 		self.published = None
+		self.subscribed = None
 		self.queue = deque()
 
 	def load_image(self, rt):
@@ -411,7 +412,7 @@ def ProcessObject_EXECUTING_Available(self, message):
 	return EXECUTING
 
 def ProcessObject_EXECUTING_Subscribed(self, message):
-	# Ignore.
+	self.subscribed = message
 	return EXECUTING
 
 def ProcessObject_EXECUTING_Unknown(self, message):
@@ -424,6 +425,8 @@ def ProcessObject_EXECUTING_Unknown(self, message):
 	return EXECUTING
 
 def ProcessObject_EXECUTING_Returned(self, message):
+	if self.subscribed:
+		clear_subscribed(self, self.subscribed)
 	self.send(RemoveObject(self.object_address), PO.collector)
 
 	# Wait thread has returned
@@ -466,6 +469,8 @@ def ProcessObject_CLEARING_Stop(self, message):
 	return CLEARING
 
 def ProcessObject_CLEARING_Returned(self, message):
+	if self.subscribed:
+		clear_subscribed(self, self.subscribed)
 	self.send(RemoveObject(self.object_address), PO.collector)
 
 	# Wait thread has returned
@@ -506,10 +511,11 @@ class ProcessObjectSpool(Point, StateMachine):
 	:param name: name of the executable file
 	:type name: str
 	"""
-	def __init__(self, object_or_name, role_name=None, process_count=8, size_of_spool=512, responsiveness=None, **settings):
+	def __init__(self, object_or_name, *args, role_name=None, process_count=8, size_of_spool=512, responsiveness=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_or_name = object_or_name
+		self.args = args
 		self.role_name = role_name
 		self.process_count = process_count
 		self.size_of_spool = size_of_spool
@@ -557,8 +563,8 @@ def ProcessObjectSpool_INITIAL_Start(self, message):
 
 	for i in range(pc):
 		r = f'{role_name}-{i}'
-		a = self.create(ProcessObject, self.object_or_name, role_name=r, **self.settings)
-		self.assign(a, i)
+		a = self.create(ProcessObject, self.object_or_name, *self.args, role_name=r, **self.settings)
+		self.assign(a, r)
 		self.idle_process.append(a)
 
 	return SPOOLING
@@ -607,11 +613,20 @@ def ProcessObjectSpool_SPOOLING_Returned(self, message):
 	if isinstance(d, OnReturned):
 		d(self, message)
 		return SPOOLING
+	self.trace(f'Spool process termination', returned_value=message.value)
 
-	if self.working():
-		self.abort()
-		return CLEARING
-	self.complete(Aborted())
+	seconds = spread_out(32.0)
+
+	def restart(self, value, args):
+		role_name = args.role_name
+		a = self.create(ProcessObject, self.object_or_name, *self.args, role_name=role_name, **self.settings)
+		self.assign(a, role_name)
+		self.idle_process.append(a)
+
+	# Run a no-op with the desired timeout.
+	a = self.create(GetResponse, Enquiry(), NO_SUCH_ADDRESS, seconds=seconds)
+	self.on_return(a, restart, role_name=d)
+	return SPOOLING
 
 def ProcessObjectSpool_SPOOLING_Stop(self, message):
 	self.abort()
@@ -638,9 +653,7 @@ OBJECT_SPOOL_DISPATCH = {
 	),
 }
 
-bind_statemachine(ProcessObjectSpool, dispatch=OBJECT_SPOOL_DISPATCH, thread='process-object-spool')
-
-############################################################################
+bind_statemachine(ProcessObjectSpool, OBJECT_SPOOL_DISPATCH, thread='process-object-spool')
 
 #
 #

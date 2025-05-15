@@ -209,11 +209,12 @@ class ClearListings(object):
 bind(ClearListings)
 
 # Custom message from route to loadable library process.
-class ResolveLibrary(object):
-	def __init__(self, name: str=None):
-		self.name = name
+class OpenLibrary(object):
+	def __init__(self, published_id: UUID=None, subscribed_id: UUID=None):
+		self.published_id = published_id
+		self.subscribed_id = subscribed_id
 
-bind(ResolveLibrary)
+bind(OpenLibrary)
 
 # Messages from route to pub/sub home processes to inform the
 # receivers of another routing option.
@@ -246,13 +247,17 @@ class RouteOverLoop(SubscriberRoute):
 class RouteToAddress(SubscriberRoute):
 	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
-			name: str=None):
+			subscriber_address: Address=None, publisher_address: Address=None,
+			name: str=None, opened_at: datetime=None):
 		# Base members.
 		self.route_id = route_id
 		self.scope = scope
 		self.subscribed_id = subscribed_id
 		self.published_id = published_id
+		self.subscriber_address = subscriber_address
+		self.publisher_address = publisher_address
 		self.name = name
+		self.opened_at = opened_at
 
 # Messages from route to pub/sub home processes, to delete the given route.
 class ClearSubscriberRoute(object):
@@ -393,6 +398,7 @@ bind(Dropped)
 class INITIAL: pass
 class PENDING: pass
 class READY: pass
+class OPENING: pass
 
 DIRECTORY_PORT			= 54195
 DIRECTORY_AT_EPHEMERAL	= HostPort('127.0.0.1', 0)
@@ -734,27 +740,59 @@ bind(RouteOverConnect, ROUTE_OVER_PEER_DISPATCH)
 # A match has been found between two objects within a process.
 # This also covers the process-to-library scenario.
 class RouteInProcess(Point, StateMachine):
-	def __init__(self, route_id: UUID=None, subscriber: Subscribed=None, publisher: Published=None, subscriber_address: Address=None, publish_as: PublishAs=None):
+	def __init__(self, route_id: UUID=None, subscriber: Subscribed=None, publisher: Published=None, subscribe_to: SubscribeTo=None, publish_as: PublishAs=None):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.route_id = route_id
 		self.subscriber = subscriber
 		self.publisher = publisher
-		self.subscriber_address = subscriber_address
+		self.subscribe_to = subscribe_to
 		self.publish_as = publish_as
+	
+	def send_route(self):
+		opened_at = world_now()
+		r = RouteToAddress(route_id=self.route_id, scope=ScopeOfDirectory.PROCESS,
+			subscribed_id=self.subscriber.subscribed_id, published_id=self.publisher.published_id,
+			subscriber_address=self.subscribe_to.subscriber_address, publisher_address=self.publish_as.publisher_address,
+			name=self.publisher.name, opened_at=opened_at)
+
+		self.send(r, self.subscriber.home_address)
 
 def RouteInProcess_INITIAL_Start(self, message):
-	if self.publish_as is None:
-		self.forward(ResolveLibrary(self.publisher.name), self.publisher.home_address, self.subscriber_address)
-		return READY
+	pa = self.publish_as
+	st = self.subscribe_to
+	if pa is None and st is None:
+		self.complete(Faulted('inter-library routing not supported'))
 
-	r = RouteToAddress(route_id=self.route_id, scope=ScopeOfDirectory.PROCESS,
-		subscribed_id=self.subscribed_id, published_id=self.published_id, name=self.name)
+	if pa is None:
+		self.send(OpenLibrary(published_id=self.publisher.published_id), self.publisher.home_address)
+		return OPENING
 
-	self.send(r, self.subscriber.home_address)
+	elif st is None:
+		self.send(OpenLibrary(subscribed_id=self.subscriber.subscribed_id), self.subscriber.home_address)
+		return OPENING
+
+	self.send_route()	
 	return READY
 
+def RouteInProcess_OPENING_SubscribeTo(self, message):
+	self.subscribe_to = message
+	self.send_route()	
+	return READY
+
+def RouteInProcess_OPENING_PublishAs(self, message):
+	self.publish_as = message
+	self.send_route()	
+	return READY
+
+def RouteInProcess_OPENING_Stop(self, message):
+	self.complete(Aborted())
+
 def RouteInProcess_READY_Stop(self, message):
+	#if self.publish_as is None:
+	#	self.forward(OpenLibrary(self.publisher.name), self.publisher.home_address, self.subscriber_address)
+	#	return READY
+
 	s = self.subscriber
 	p = self.publisher
 	self.send(ClearSubscriberRoute(subscribed_id=s.subscribed_id, name=p.name, route_id=self.route_id), s.home_address)
@@ -764,6 +802,10 @@ def RouteInProcess_READY_Stop(self, message):
 ROUTE_IN_PROCESS_DISPATCH = {
 	INITIAL: (
 		(Start,),
+		()
+	),
+	OPENING: (
+		(SubscribeTo, PublishAs, Stop),
 		()
 	),
 	READY: (
@@ -1004,7 +1046,7 @@ class ObjectDirectory(Threaded, StateMachine):
 
 			r = self.create(RouteInProcess, route_id=route_id,
 				subscriber=subscriber, publisher=publisher,
-				subscriber_address=s.subscriber_address, publish_as=p)
+				subscribe_to=s, publish_as=p)
 
 		else:
 			self.warning(f'Cannot route "{publisher.name}" at [{self.directory_scope}]')
@@ -1112,25 +1154,21 @@ class ObjectDirectory(Threaded, StateMachine):
 			r = RequestLoop(name=route.name, scope=route.scope, route_id=route.route_id,
 				subscribed_id=route.subscribed_id, subscriber_address=address,
 				published_id=route.published_id,
-				)
+			)
 			self.send(r, c)
 
 		elif isinstance(route, RouteToAddress):
-			# Comms is between objects within this process.
-			ls = self.listed_subscribe.get(route.subscribed_id, None)
-			lp = self.listed_publish.get(route.published_id, None)
-
-			opened_at = world_now()
+			# Comms is between objects within this process, or this process and a library.
 			a = Available(name=route.name, scope=route.scope, route_id=route.route_id,
 				subscribed_id=route.subscribed_id, published_id=route.published_id,
-				publisher_address=lp[1].publisher_address, opened_at=opened_at)
+				publisher_address=route.publisher_address, opened_at=route.opened_at)
 
 			d = Delivered(name=route.name, scope=route.scope, route_id=route.route_id,
 				subscribed_id=route.subscribed_id, published_id=route.published_id,
-				subscriber_address=ls[1].subscriber_address, opened_at=opened_at)
+				subscriber_address=route.subscriber_address, opened_at=route.opened_at)
 
-			self.forward(a, ls[1].subscriber_address, lp[1].publisher_address)
-			self.forward(d, lp[1].publisher_address, ls[1].subscriber_address)
+			self.forward(a, route.subscriber_address, route.publisher_address)
+			self.forward(d, route.publisher_address, route.subscriber_address)
 		else:
 			self.warning(f'Routing by {type(route)} not implemented')
 
@@ -1173,17 +1211,39 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.on_return(a, dropped, route=route)
 
 		elif isinstance(route, RouteToAddress):
-			closed_at = world_now()
 			s = Dropped(name=route.name, scope=route.scope, route_id=route.route_id,
 				subscribed_id=route.subscribed_id, published_id=route.published_id,
-				remote_address=self.publisher[1].publisher_address, opened_at=closed_at)
+				remote_address=route.publisher_address, opened_at=route.opened_at)
 
 			p = Dropped(name=route.name, scope=route.scope, route_id=route.route_id,
 				subscribed_id=route.subscribed_id, published_id=route.published_id,
-				remote_address=self.subscriber[1].subscriber_address, opened_at=closed_at)
+				remote_address=route.subscriber_address, opened_at=route.opened_at)
 
-			self.forward(s, self.subscriber[1].subscriber_address, self.publisher[1].publisher_address)
-			self.forward(p, self.publisher[1].publisher_address, self.subscriber[1].subscriber_address)
+			self.forward(s, route.subscriber_address, route.publisher_address)
+			self.forward(p, route.publisher_address, route.subscriber_address)
+
+	def clear_route(self, ls, route):
+		self.trace(f'Clearing route "{route.name}"[{route.scope}]')
+
+		if isinstance(route, RouteOverLoop):
+			# Transport-based pub-sub is not cleared on loss of the
+			# control channel.
+			return False
+
+		elif isinstance(route, RouteToAddress):
+			s = Dropped(name=route.name, scope=route.scope, route_id=route.route_id,
+				subscribed_id=route.subscribed_id, published_id=route.published_id,
+				remote_address=route.publisher_address, opened_at=route.opened_at)
+
+			p = Dropped(name=route.name, scope=route.scope, route_id=route.route_id,
+				subscribed_id=route.subscribed_id, published_id=route.published_id,
+				remote_address=route.subscriber_address, opened_at=route.opened_at)
+
+			self.forward(s, route.subscriber_address, route.publisher_address)
+			self.forward(p, route.publisher_address, route.subscriber_address)
+
+			return True
+		return False
 
 	def send_up(self, listing):
 		if isinstance(self.connected, Connected):
@@ -1460,10 +1520,15 @@ def ObjectDirectory_READY_ClearSubscriberRoute(self, message):
 	if routing is None:
 		return READY
 
-	# Delete the route.
-	if not delete_route(message.route_id, routing[1]):
+	# Delete the route from the available routes.
+	d = delete_route(message.route_id, routing[1])
+	if not d:
 		self.warning('Unknown route')
 		return READY
+
+	if routing[0] and routing[0].route_id == message.route_id:
+		if self.clear_route(listing, routing[0]):
+			routing[0] = None
 
 	# Clear out empty vessels.
 	if len(routing[1]) == 0:
@@ -1481,12 +1546,15 @@ def ObjectDirectory_READY_ClearPublisherRoute(self, message):
 	# publisher side.
 	return READY
 
-def ObjectDirectory_READY_ResolveLibrary(self, message):
-	p = self.published.get(message.name, None)
-	if p is None:
-		return READY
-	address = p[1].publisher_address
-	self.forward(Available(publisher_address=address), self.return_address, address)
+def ObjectDirectory_READY_OpenLibrary(self, message):
+	if message.published_id:
+		p = self.listed_publish.get(message.published_id, None)
+		if p[1]:
+			self.reply(p[1])
+	elif message.subscribed_id:
+		s = self.listed_subscribe.get(message.subscribed_id, None)
+		if s[1]:
+			self.reply(s[1])
 	return READY
 
 def ObjectDirectory_READY_SubscriberRoute(self, message):
@@ -1585,7 +1653,7 @@ OBJECT_DIRECTORY_DISPATCH = {
 		ClearPublished, ClearSubscribed,
 		ClearSubscriberRoute, ClearPublisherRoute,
 		LoopDropped,
-		ResolveLibrary,
+		OpenLibrary,
 		SubscriberRoute,
 		Returned,
 		Stop,),
