@@ -184,14 +184,14 @@ class ProcessObject(Point, StateMachine):
 		# Derive the home/role context using the globals defined for
 		# this process, plus the values describing the new process.
 
-		if self.origin is not None:				# Override.
+		if self.origin:
 			origin = self.origin
-		elif CL.origin == ProcessOrigin.RUN:	# Foreground.
-			origin = ProcessOrigin.RUN_CHILD
-		elif CL.origin == ProcessOrigin.START:	# Background.
-			origin = ProcessOrigin.START_CHILD
 		else:
-			origin = ProcessOrigin.SHELL		# Default
+			origin = CL.origin
+			if origin in (ProcessOrigin.RUN, ProcessOrigin.RUN_CHILD):
+				origin = ProcessOrigin.RUN_CHILD
+			elif origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD):
+				origin = ProcessOrigin.START_CHILD
 
 		self.role_name = self.role_name or breakpath(self.module_path)[1]
 		self.home_path = self.home_path or CL.home_path
@@ -244,8 +244,7 @@ class ProcessObject(Point, StateMachine):
 			s = e.replace('cannot encode', f'cannot encode value for argument "{name}", {self.module_path}')
 			self.complete(Faulted(s))
 
-		shell = origin == ProcessOrigin.SHELL
-		if not shell:
+		if origin:
 			command.append(f'--origin={origin.name}')
 
 		command.append(f'--child-process')
@@ -255,7 +254,7 @@ class ProcessObject(Point, StateMachine):
 			command.append(f'--home-path={self.home_path}')
 		command.append(f'--role-name={self.role_name}')
 
-		if CL.debug_level is not None:
+		if CL.debug_level is not None and origin not in (ProcessOrigin.START, ProcessOrigin.START_CHILD):
 			command.append(f'--debug-level={CL.debug_level.name}')
 
 		if CL.keep_logs:
