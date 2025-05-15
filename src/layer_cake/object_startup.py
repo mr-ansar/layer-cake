@@ -275,12 +275,12 @@ def create_memory_role(executable):
 	return role
 
 #
-def open_home(home_path, grouping=False):
+def open_home(home_path, grouping=False, sub_roles=False):
 	'''Load all the roles within a folder. Return a dict of HomeRoles'''
 
 	try:
 		def role(s):
-			if '.' in s:					# Top level only.
+			if '.' in s and not sub_roles:
 				return False
 			elif s.startswith('group') and not grouping:
 				return False
