@@ -112,7 +112,6 @@ def Group_ENQUIRING_HostPort(self, message):
 
 	# Start the roles in this non-empty list.
 	for k, v in home.items():
-		#origin=lc.ProcessOrigin.RUN,
 		a = self.create(lc.ProcessObject, v,
 			home_path=self.home_path, role_name=k, top_role=True,
 			directory_scope=lc.ScopeOfDirectory.PROCESS, connect_to_directory=self.ephemeral)
@@ -174,9 +173,8 @@ def Group_RUNNING_Returned(self, message):
 		return RUNNING
 
 	def restart(self, value, args):
-		# origin=lc.ProcessOrigin.RUN,
 		a = self.create(lc.ProcessObject, self.home[args.role],
-			home_path=self.home_path, role_name=args.role,
+			home_path=self.home_path, role_name=args.role, top_role=True,
 			directory_scope=lc.ScopeOfDirectory.PROCESS, connect_to_directory=self.ephemeral)
 		self.assign(a, args.role)
 
