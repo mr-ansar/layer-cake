@@ -165,13 +165,13 @@ lc.bind(add)
 
 #
 #
-def list_(self, search, remainder, long_listing: bool=False, group_role: bool=False):
+def list_(self, search, remainder, long_listing: bool=False, group_role: bool=False, sub_roles: bool=False):
 	'''List the process definition(s) in an existing store. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_list = f'cannot list "{home_path}"'
 
-	home = home_listing(self, home_path, search, grouping=group_role)
+	home = home_listing(self, home_path, search, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_list, f'does not exist or contains unexpected/incomplete materials')
 
@@ -192,13 +192,13 @@ lc.bind(list_)
 
 #
 #
-def update(self, search, remainder, group_role: bool=False):
+def update(self, search, remainder, group_role: bool=False, sub_roles: bool=False):
 	'''Update details of existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_update = f'cannot update "{home_path}"'
 
-	home = home_listing(self, home_path, search)
+	home = home_listing(self, home_path, search, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_update, f'does not exist or contains unexpected/incomplete materials')
 
@@ -263,19 +263,27 @@ def delete(self, search, remainder, all: bool=False):
 
 	try:
 		running = home_running(self, home)
-		if not running:
-			for k, v in home.items():
-				home_role = os.path.join(home_path, k)
-				lc.remove_folder(home_role)
+		if running:
+			r = ','.join(running.keys())
+			return lc.Faulted(cannot_delete, f'roles "{r}" are currently running')
+
 	finally:
 		self.abort()
 		while self.working():
 			m, i = self.select(lc.Returned)
 			self.debrief()
 
-	if running:
-		r = ','.join(running.keys())
-		return lc.Faulted(cannot_delete, f'roles "{r}" are currently running')
+	try:
+		for p in os.listdir(home_path):
+			if p.startswith('group'):
+				continue
+			s = p.split('.')
+			if s[0] not in home:
+				continue
+			home_role = os.path.join(home_path, p)
+			lc.remove_folder(home_role)
+	except FileNotFoundError as e:
+		return lc.Faulted(cannot_delete, str(e))
 
 	return None
 
@@ -474,15 +482,15 @@ lc.bind(stop)
 
 #
 #
-def status(self, search, remainder, long_listing: bool=False, group_role: bool=False):
-	'''Query the previously started set of background daemons. Return Faulted/None (immediately).'''
+def status(self, search, remainder, long_listing: bool=False, group_role: bool=False, sub_roles: bool=False):
+	'''Query running/not-running status of background daemons. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	cannot_status = f'cannot query status "{home_path}"'
 
 	# Get list of roles at home_path, trimmed down
 	# according to the list of search patterns.
-	home = home_listing(self, home_path, search, grouping=group_role)
+	home = home_listing(self, home_path, search, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_status, f'does not exist or unexpected/incomplete materials')
 
@@ -704,7 +712,7 @@ class TimeFrame(Enum):
 
 def log(self, word, remainder, clock: bool=False,
 	rewind: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
-	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=False):
+	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=False, sub_roles: bool=False):
 	'''List logging records for the specified process definition. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
 	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
@@ -735,7 +743,7 @@ def log(self, word, remainder, clock: bool=False,
 		# one of <to>, <span> or <count> is required
 		return lc.Faulted(cannot_log, f'need a to, span or count')
 
-	home = lc.open_home(home_path, grouping=group_role)
+	home = lc.open_home(home_path, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_log, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
 
@@ -883,9 +891,9 @@ def word_i(word, i):
 		return word[i]
 	return None
 
-def home_listing(self, home_path, search, grouping=False):
+def home_listing(self, home_path, search, grouping=False, sub_roles=False):
 	'''Load the contents of home_path and search for matching roles. Return dict[str,role] or None.'''
-	home = lc.open_home(home_path, grouping=grouping)
+	home = lc.open_home(home_path, grouping=grouping, sub_roles=sub_roles)
 	if home is None:
 		self.complete(lc.Faulted(f'cannot list "{home_path}" (does not exist or contains unexpected/incomplete materials)'))
 
@@ -915,6 +923,25 @@ def home_listing(self, home_path, search, grouping=False):
 	return home
 
 #a = root.create(head_lock, home.lock.path, 'head')
+def home_sub_roles(home_path, home):
+	'''Load all the roles within a folder. Return a dict of HomeRoles'''
+
+	try:
+		def top_or_sub(s):
+			s = s.split('.')
+			if s in home:
+				return True
+			return False
+
+		listing = {s: lc.open_role() for s in os.listdir(home_path) if top_or_sub(s)}
+	except FileNotFoundError:
+		return None
+
+	except lc.Incomplete:
+		return None
+
+	return listing
+
 
 def home_running(self, home):
 	'''Scan lock files for the given dict of roles. Return list of those that are running.'''
