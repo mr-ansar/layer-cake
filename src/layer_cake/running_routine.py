@@ -138,7 +138,7 @@ def running_in_thread(routine, queue, args, kw_args):
 	return_type = routine.__art__.return_type
 	if return_type is None:
 		pass
-	elif isinstance(return_type, Any):
+	elif isinstance(return_type, (Any, UserDefined)):
 		pass
 	elif isinstance(return_type, Portable):
 		if not hasattr(value, '__art__'):
