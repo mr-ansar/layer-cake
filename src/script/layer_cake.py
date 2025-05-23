@@ -82,6 +82,17 @@ def create(self, word, remainder):
 
 	self.console('create', home_path=home_path)
 
+	try:
+		f = lc.Folder(home_path)
+		f.folder('script')
+		f.folder('resource')
+		f.folder('role')
+		f.folder('departures')
+		f.folder('arrivals')
+
+	except OSError as e:
+		return lc.Faulted(cannot_create, str(e))
+
 	# Folder created by execution of group create-role.
 	self.create(lc.ProcessObject, GROUP_EXECUTABLE,
 		home_path=home_path,
@@ -182,7 +193,9 @@ def list_(self, search, remainder, long_listing: bool=False, group_role: bool=Fa
 	for k in keys:
 		v = home[k]
 		if long_listing:
-			print(f'{k:24} {v.executable_file()}')
+			home_role = os.path.join(home_path, 'role', k)
+			m, _ = lc.storage_manifest(home_role)
+			print(f'{k:24} {v.executable_file()} {m.manifests}/{m.listings}/{m.bytes}')
 			continue
 		print(k)
 
@@ -274,13 +287,14 @@ def delete(self, search, remainder, all: bool=False):
 			self.debrief()
 
 	try:
-		for p in os.listdir(home_path):
+		role_path = os.path.join(home_path, 'role')
+		for p in os.listdir(role_path):
 			if p.startswith('group'):
 				continue
 			s = p.split('.')
 			if s[0] not in home:
 				continue
-			home_role = os.path.join(home_path, p)
+			home_role = os.path.join(role_path, p)
 			lc.remove_folder(home_role)
 	except FileNotFoundError as e:
 		return lc.Faulted(cannot_delete, str(e))
@@ -883,6 +897,50 @@ def edit(self, word, remainder, group_role: bool=False):
 
 lc.bind(edit)
 
+#
+#
+def snapshot(self, word, remainder,	image_path: str=None):
+	'''Store a copy of the composition at home_path, under the '''
+	image_path = word_i(word, 0) or image_path
+	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_snapshot = f'cannot snapshot "{home_path}"'
+
+	if not image_path:
+		return lc.Faulted(cannot_snapshot, f'no destination image path')
+
+	home = lc.open_home(home_path, grouping=True, sub_roles=True)
+	if home is None:
+		return lc.Faulted(cannot_snapshot, f'does not exist or contains unexpected/incomplete materials')
+
+
+	# Repo modules
+	# Read-only executable resources
+	# One-time consumable (?)
+	# Operational data per role
+	# Calculate delta
+	# Affected processes (opt stop)
+	# Copy complete materials to target device
+	# Move to resting places
+	# Restart processes
+	return None
+
+	# ROLES <home_path>/role/<role>/{settings,executable_file,log_storage}.json ---> <image_path>/defined_role/<role>/*.json
+	# SCRIPT <home_path>/script/*.py ---> <image_path>/script/*.py
+	# READ-ONLY <home_path>/resource/executable.py/<resources> ---> <image_path>/resource/executable.py/<resources>
+	# DATABASE <home_path>/role/<role_name>/model/<model> ---> <image_path>/role/<role_name>/<model>
+	# TUNINGS <home_path>/role/<role_name>/<settings> ---> <image_path>/role-settings/<role_name>/<settings> ---> 
+	# DELIVERY ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
+	# INWARD ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
+
+	# READ-ONLY ./executable-resource/executable.py/<resources> ---> <home_path>/resource/executable.py/<resources>
+	# DATABASE ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
+	# TUNINGS ./role-settings/<role_name>/<settings> ---> <home_path>/role/<role_name>/<settings>
+	# DELIVERY ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
+	# INWARD ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
+
+lc.bind(snapshot)
+
 # Functions supporting the
 # sub-commands.
 def word_i(word, i):
@@ -921,27 +979,6 @@ def home_listing(self, home_path, search, grouping=False, sub_roles=False):
 			self.complete(lc.Faulted(f'cannot list "{home_path}"', f'no roles matching "{s}"'))
 
 	return home
-
-#a = root.create(head_lock, home.lock.path, 'head')
-def home_sub_roles(home_path, home):
-	'''Load all the roles within a folder. Return a dict of HomeRoles'''
-
-	try:
-		def top_or_sub(s):
-			s = s.split('.')
-			if s in home:
-				return True
-			return False
-
-		listing = {s: lc.open_role() for s in os.listdir(home_path) if top_or_sub(s)}
-	except FileNotFoundError:
-		return None
-
-	except lc.Incomplete:
-		return None
-
-	return listing
-
 
 def home_running(self, home):
 	'''Scan lock files for the given dict of roles. Return list of those that are running.'''
@@ -1158,7 +1195,10 @@ table = [
 	log,
 	history,
 	returned,
-	edit
+	edit,
+
+	# Software distribution.
+	snapshot,
 ]
 
 # For package scripting.
