@@ -47,14 +47,26 @@ HR = Gas(home_path=None, role_name=None,
 	temp_dir=None,
 	model=None,	tmp=None, resource=None)
 
+# File storage areas for an instance of a process object.
+# Specifically deals with both group and solo (CLI) contexts.
+# Resource - read-only, persistent, shared by all instances of same executable.
+# Model - read-write, persistent, private to each instance.
+# Tmp - read-write, empty on start, private.
 
-def resource():	return HR.resource
-def model():	return HR.model
+# Set in create_role(), open_role() and create_memory_role().
+def resource():
+	return HR.resource
 
-lock = threading.RLock()
+def model():
+	return HR.model
+
+# For the CLI context (create_memory_role) the tmp member is null.
+# This is a lazy creation of a tmp folder. CLI objects that dont
+# make use of a tmp folder never create one.
+tmp_lock = threading.RLock()
 
 def tmp():
-	with lock:
+	with tmp_lock:
 		if not HR.tmp:
 			# Cleanup in create()
 			HR.temp_dir = tempfile.TemporaryDirectory()
