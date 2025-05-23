@@ -6,12 +6,12 @@
 echo '--- CREATE'
 python3 lyrck.py create
 [[ -d .layer-cake ]] || exit 1
-[[ -d .layer-cake/group ]] || exit 1
-[[ -f .layer-cake/group/unique_id.json ]] || exit 1
-[[ -f .layer-cake/group/start_stop.json ]] || exit 1
-[[ -f .layer-cake/group/settings.json ]] || exit 1
-[[ -f .layer-cake/group/log_storage.json ]] || exit 1
-[[ -f .layer-cake/group/executable_file.json ]] || exit 1
+[[ -d .layer-cake/role/group ]] || exit 1
+[[ -f .layer-cake/role/group/unique_id.json ]] || exit 1
+[[ -f .layer-cake/role/group/start_stop.json ]] || exit 1
+[[ -f .layer-cake/role/group/settings.json ]] || exit 1
+[[ -f .layer-cake/role/group/log_storage.json ]] || exit 1
+[[ -f .layer-cake/role/group/executable_file.json ]] || exit 1
 python3 lyrck.py create && exit 1
 
 python3 lyrck.py destroy
@@ -40,16 +40,16 @@ echo
 echo '--- ADD'
 python3 lyrck.py create
 python3 lyrck.py add test_server.py
-[[ -d .layer-cake/test_server ]] || exit 1
-[[ -f .layer-cake/test_server/unique_id.json ]] || exit 1
-[[ -f .layer-cake/test_server/start_stop.json ]] || exit 1
-[[ -f .layer-cake/test_server/settings.json ]] || exit 1
-[[ -f .layer-cake/test_server/log_storage.json ]] || exit 1
-[[ -f .layer-cake/test_server/executable_file.json ]] || exit 1
+[[ -d .layer-cake/role/test_server ]] || exit 1
+[[ -f .layer-cake/role/test_server/unique_id.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/start_stop.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/settings.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/log_storage.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/executable_file.json ]] || exit 1
 python3 lyrck.py add test_server.py && exit 1
 
 python3 lyrck.py delete test_server
-[[ ! -d .layer-cake/test_server ]] || exit 1
+[[ ! -d .layer-cake/role/test_server ]] || exit 1
 
 python3 lyrck.py destroy
 
@@ -57,23 +57,23 @@ echo
 echo '--- ADD server_address'
 python3 lyrck.py create
 python3 lyrck.py add test_server.py --server_address='{"host": "127.0.0.1", "port": 50000}'
-[[ -d .layer-cake/test_server ]] || exit 1
-[[ -f .layer-cake/test_server/unique_id.json ]] || exit 1
-[[ -f .layer-cake/test_server/start_stop.json ]] || exit 1
-[[ -f .layer-cake/test_server/settings.json ]] || exit 1
-[[ -f .layer-cake/test_server/log_storage.json ]] || exit 1
-[[ -f .layer-cake/test_server/executable_file.json ]] || exit 1
+[[ -d .layer-cake/role/test_server ]] || exit 1
+[[ -f .layer-cake/role/test_server/unique_id.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/start_stop.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/settings.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/log_storage.json ]] || exit 1
+[[ -f .layer-cake/role/test_server/executable_file.json ]] || exit 1
 
-[[ `cat .layer-cake/test_server/settings.json | grep 50000 | wc -l` -eq 1 ]] || exit 1
+[[ `cat .layer-cake/role/test_server/settings.json | grep 50000 | wc -l` -eq 1 ]] || exit 1
 
 echo
 echo '--- UPDATE server_address'
 python3 lyrck.py update test_server --server_address='{"host": "127.0.0.1", "port": 50001}'
 
-[[ `cat .layer-cake/test_server/settings.json | grep 50001 | wc -l` -eq 1 ]] || exit 1
+[[ `cat .layer-cake/role/test_server/settings.json | grep 50001 | wc -l` -eq 1 ]] || exit 1
 
 python3 lyrck.py delete test_server
-[[ ! -d .layer-cake/test_server ]] || exit 1
+[[ ! -d .layer-cake/role/test_server ]] || exit 1
 
 python3 lyrck.py destroy
 
