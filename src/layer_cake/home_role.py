@@ -27,12 +27,36 @@ needs it. Ensure that support is cleared out during process termination.
 """
 __docformat__ = 'restructuredtext'
 
+import threading
+import tempfile
 from .general_purpose import *
 from .virtual_runtime import *
 from .command_line import *
+from .folder_object import *
 
 __all__ = [
 	'HR',
+	'resource',
+	'model',
+	'tmp',
 ]
 
-HR = Gas(home_path=None, home_role=None, role_name=None, edit_role=None)
+HR = Gas(home_path=None, role_name=None,
+	home_role=None,
+	edit_role=None,
+	temp_dir=None,
+	model=None,	tmp=None, resource=None)
+
+
+def resource():	return HR.resource
+def model():	return HR.model
+
+lock = threading.RLock()
+
+def tmp():
+	with lock:
+		if not HR.tmp:
+			# Cleanup in create()
+			HR.temp_dir = tempfile.TemporaryDirectory()
+			HR.tmp = Folder(HR.temp_dir.name)
+	return HR.tmp
