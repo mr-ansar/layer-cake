@@ -148,6 +148,7 @@ class HomeRole(object):
 	def __init__(self,
 		unique_id=None, start_stop=None,
 		settings=None,
+		resource=None,
 		logs=None,
 		model=None, tmp=None,
 		lock=None,
@@ -156,6 +157,7 @@ class HomeRole(object):
 		self.unique_id = unique_id
 		self.start_stop = start_stop
 		self.settings = settings
+		self.resource = resource
 		self.logs = logs
 		self.model = model
 		self.tmp = tmp
@@ -182,7 +184,18 @@ class HomeRole(object):
 DEFAULT_STORAGE = 1024 * 1024 * 256
 
 #
-def open_role(home_role):
+def link_resource(role, resource_path):
+	executable_file = role.executable_file()
+	if not executable_file:
+		return
+	s = os.path.split(executable_file)
+	file = s[1]
+
+	executable_resource = os.path.join(resource_path, file)
+	value = Folder(executable_resource)
+	setattr(role, 'resource', value)
+
+def open_role(home_role, resource_path):
 	'''Load all the details of a role from the specified location. Returns HomeRole.'''
 	try:
 		# Get list of names in role, less any extent.
@@ -224,9 +237,10 @@ def open_role(home_role):
 	link('logs')
 	link('lock')
 
+	link_resource(role, resource_path)
 	return role
 
-def create_role(home_role, executable):
+def create_role(home_role, executable, resource_path):
 	Folder(home_role)
 	role = HomeRole()
 
@@ -256,6 +270,7 @@ def create_role(home_role, executable):
 	link('logs')
 	link('lock')
 
+	link_resource(role, resource_path)
 	return role
 
 def create_memory_role(executable):
@@ -272,12 +287,35 @@ def create_memory_role(executable):
 	create('log_storage', Integer8(), DEFAULT_STORAGE)
 	create('executable_file', Unicode(), executable)
 
+	# Logical storage areas for transient, non-home instance.
+	# Model - command line arg or current folder.
+	cwd = os.getcwd()
+	model_path = CL.model_path or cwd
+	model_folder = Folder(model_path)
+
+	# Lazy completion of tmp when the object calls
+	# the supporting function - tmp() in home_role.py.
+
+	# Resource - command line arg or None.
+	resource_path = CL.resource_path
+	if not resource_path:
+		resource_folder = None
+	else:
+		resource_path = os.path.abspath(resource_path)
+		resource_folder = Folder(resource_path)
+
+	setattr(role, 'model', model_folder)
+	setattr(role, 'tmp', None)
+	setattr(role, 'resource', resource_folder)
+
 	return role
 
 #
 def open_home(home_path, grouping=False, sub_roles=False):
 	'''Load all the roles within a folder. Return a dict of HomeRoles'''
 
+	role_path = join(home_path, 'role')
+	resource_path = join(home_path, 'resource')
 	try:
 		def role(s):
 			if '.' in s and not sub_roles:
@@ -286,7 +324,7 @@ def open_home(home_path, grouping=False, sub_roles=False):
 				return False
 			return True
 
-		listing = {s: open_role(join(home_path, s)) for s in os.listdir(home_path) if role(s)}
+		listing = {s: open_role(join(role_path, s), resource_path) for s in os.listdir(role_path) if role(s)}
 	except FileNotFoundError:
 		return None
 	except Incomplete:
@@ -294,17 +332,17 @@ def open_home(home_path, grouping=False, sub_roles=False):
 
 	return listing
 
-def object_home(executable, home_role, sticky=False):
+def object_home(executable, home_role, resource_path, sticky=False):
 	'''Compile the runtime, file-based context for the current process. Return HomeRole and role.'''
 
-	role = open_role(home_role)
+	role = open_role(home_role, resource_path)
 	if CL.create_role:
 		if role is not None:
 			raise Incomplete(Faulted(f'cannot create "{home_role}"', f'already exists'))
-		role = create_role(home_role, executable)
+		role = create_role(home_role, executable, resource_path)
 	elif role is None:
 		if CL.origin in (ProcessOrigin.START, ProcessOrigin.START_CHILD) or sticky or CL.keep_logs:
-			role = create_role(home_role, executable)
+			role = create_role(home_role, executable, resource_path)
 		else:
 			role = create_memory_role(executable)
 
@@ -321,7 +359,7 @@ def object_home(executable, home_role, sticky=False):
 		if role is None:
 			if home_role.count('.') == 0:
 				raise Incomplete(Faulted(f'cannot auto-create "{home_role}"', f'sub-roles only'))
-			role = create_role(home_role, executable)
+			role = create_role(home_role, executable, resource_path)
 
 	elif role is None:
 		role = create_memory_role(executable)
@@ -578,18 +616,24 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 		role_name = CL.role_name or name
 
 		home_path = os.path.abspath(home_path)
-		home_role = join(home_path, role_name)
+		home_role = join(home_path, 'role', role_name)
+		resource_path = join(home_path, 'resource')
 
 		# Extract values from the environment with reference
 		# to the name/type info in the variables object.
 		command_variables(environment_variables)
 
 		# Resume the appropriate operational context, i.e. home.
-		home, logs = object_home(executable, home_role, sticky=sticky)
+		home, logs = object_home(executable, home_role, resource_path, sticky=sticky)
 
 		HR.home_path = home_path
-		HR.home_role = home_role
 		HR.role_name = role_name
+		HR.home_role = home_role
+
+		# Transfer folder info visible to object, see home_role.model().
+		HR.model = home.model
+		HR.tmp = home.tmp
+		HR.resource = home.resource
 
 		if CL.dump_types:
 			table = sorted(SIGNATURE_TABLE.keys())
@@ -666,6 +710,9 @@ def create(object_type, object_table=None, environment_variables=None, sticky=Fa
 		output = Faulted(s)
 	except Incomplete as e:
 		output = e.value
+
+	if HR.temp_dir is not None:
+		HR.temp_dir.cleanup()
 
 	def ending(output):
 		exit_status = 0
