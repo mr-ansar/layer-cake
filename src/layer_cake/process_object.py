@@ -307,7 +307,8 @@ def find_module(name_py):
 
 		# Common ancestry.
 		home_role = os.path.join(CL.home_path, CL.role_name)
-		role = open_role(home_role)
+		resource_path = os.path.join(CL.home_path, 'resource')
+		role = open_role(home_role, resource_path)
 		if role:
 			executable_file = role.executable_file()
 			split = os.path.split(executable_file)
