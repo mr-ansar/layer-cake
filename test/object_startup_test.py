@@ -87,10 +87,11 @@ class TestObjectStartup(TestCase):
 		return super().tearDown()
 
 	def test_no_role(self):
-		r = open_role('no-such-home-role')
+		r = open_role('no-such-home-role', 'no-such-resource')
 		assert r is None
 
 	def test_is_role(self):
+		role = join('good', 'one')
 		role = join('good', 'one')
 		r = open_role(role)
 		assert isinstance(r, HomeRole)
