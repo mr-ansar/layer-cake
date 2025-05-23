@@ -60,7 +60,9 @@ def resource():
 def model():
 	return HR.model
 
-# For the CLI context (create_memory_role) the tmp member is null.
+# For the CLI context (create_memory_role) the resource member must
+# be set (--resource-path) or its null, and the model member is set
+# (--model-path) or defaults to '.' (cwd). The tmp member is always null.
 # This is a lazy creation of a tmp folder. CLI objects that dont
 # make use of a tmp folder never create one.
 tmp_lock = threading.RLock()
