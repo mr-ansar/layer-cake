@@ -78,7 +78,7 @@ def create(self, word, remainder):
 		return lc.Faulted(cannot_create, 'existing file')
 
 	elif os.path.isdir(home_path):
-		return lc.Faulted(cannot_create, 'already exists')
+		return lc.Faulted(cannot_create, 'existing folder')
 
 	self.console('create', home_path=home_path)
 
@@ -899,6 +899,216 @@ lc.bind(edit)
 
 #
 #
+def resource(self, word, remainder, full_path: bool=False,
+		long_listing: bool=False, recursive_listing: bool=False,
+		make_changes: bool=False, clear_all: bool=False):
+	'''.'''
+	if not word:
+		return lc.Faulted(f'cannot resource group', f'no executable specified')
+
+	executable = word[0]
+	word = word[1:]
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_resource = f'cannot resource "{executable}"'
+
+	home = lc.open_home(home_path, grouping=True, sub_roles=True)
+	if home is None:
+		return lc.Faulted(cannot_resource, f'does not exist or contains unexpected/incomplete materials')
+
+	'''
+	selected = {}
+	for k, v in home.items():
+		executable_file = v.executable_file()
+		s = os.path.split(executable_file)
+		if s[1] == executable:
+			selected[k] = v
+
+	if not selected:
+		return lc.Faulted(cannot_resource, f'no roles refer to "{executable}"')
+
+	try:
+		running = home_running(self, selected)
+		if running:
+			r = ','.join(running.keys())
+			return lc.Faulted(cannot_resource, f'roles "{r}" are running')
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+	'''
+
+	def list_folder(path):
+		for s in os.listdir(path):
+			p = os.path.join(path, s)
+			if os.path.isdir(p):
+				yield p
+				if recursive_listing:
+					yield from list_folder(p)
+			elif os.path.isfile(p):
+				yield p
+
+	try:
+		resource_path = os.path.join(home_path, 'resource', executable)
+
+		if not word:
+			# No resources specified.
+			# List contents or delete everything.
+			if clear_all:
+				lc.remove_contents(resource_path)
+			elif full_path:
+				for r in list_folder(resource_path):
+					print(r)
+				return None
+			else:
+				head = len(resource_path)
+				for r in list_folder(resource_path):
+					print(r[head + 1:])
+		else:
+			if clear_all or full_path or recursive_listing:
+				return lc.Faulted(cannot_resource, 'inappropriate argument(s)')
+
+			target_storage, _ = lc.storage_manifest(resource_path)
+			source_storage, _ = lc.storage_selection(word)
+			storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
+
+			if not storage_delta:			# Nothing to see or do.
+				return None
+
+			if not make_changes:			# Without explicit command, show what would happen.
+				for d in storage_delta:
+					print(d)
+				return None
+
+			a = self.create(lc.FolderTransfer, storage_delta, resource_path)
+
+			m, _ = self.select(lc.Returned, lc.Stop)
+			if isinstance(m, lc.Stop):
+				self.send(m, a)
+				m, _ = self.select(lc.Returned)
+				return lc.Aborted()
+
+			value = m.value
+			if isinstance(value, lc.Faulted):
+				return value
+			return None
+
+	except (OSError, ValueError) as e:
+		return lc.Faulted(cannot_resource, str(e))
+
+	return None
+
+lc.bind(resource)
+
+#
+#
+def model(self, word, remainder, full_path: bool=False,
+		long_listing: bool=False, recursive_listing: bool=False,
+		make_changes: bool=False, clear_all: bool=False):
+	'''.'''
+	if not word:
+		return lc.Faulted(f'cannot resource group', f'no executable specified')
+
+	executable = word[0]
+	word = word[1:]
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	cannot_resource = f'cannot resource "{executable}"'
+
+	home = lc.open_home(home_path, grouping=True, sub_roles=True)
+	if home is None:
+		return lc.Faulted(cannot_resource, f'does not exist or contains unexpected/incomplete materials')
+
+	'''
+	selected = {}
+	for k, v in home.items():
+		executable_file = v.executable_file()
+		s = os.path.split(executable_file)
+		if s[1] == executable:
+			selected[k] = v
+
+	if not selected:
+		return lc.Faulted(cannot_resource, f'no roles refer to "{executable}"')
+
+	try:
+		running = home_running(self, selected)
+		if running:
+			r = ','.join(running.keys())
+			return lc.Faulted(cannot_resource, f'roles "{r}" are running')
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
+	'''
+
+	def list_folder(path):
+		for s in os.listdir(path):
+			p = os.path.join(path, s)
+			if os.path.isdir(p):
+				yield p
+				if recursive_listing:
+					yield from list_folder(p)
+			elif os.path.isfile(p):
+				yield p
+
+	try:
+		resource_path = os.path.join(home_path, 'resource', executable)
+
+		if not word:
+			# No resources specified.
+			# List contents or delete everything.
+			if clear_all:
+				lc.remove_contents(resource_path)
+			elif full_path:
+				for r in list_folder(resource_path):
+					print(r)
+				return None
+			else:
+				head = len(resource_path)
+				for r in list_folder(resource_path):
+					print(r[head + 1:])
+		else:
+			if clear_all or full_path or recursive_listing:
+				return lc.Faulted(cannot_resource, 'inappropriate argument(s)')
+
+			target_storage, _ = lc.storage_manifest(resource_path)
+			source_storage, _ = lc.storage_selection(word)
+			storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
+
+			if not storage_delta:			# Nothing to see or do.
+				return None
+
+			if not make_changes:			# Without explicit command, show what would happen.
+				for d in storage_delta:
+					print(d)
+				return None
+
+			a = self.create(lc.FolderTransfer, storage_delta, resource_path)
+
+			m, _ = self.select(lc.Returned, lc.Stop)
+			if isinstance(m, lc.Stop):
+				self.send(m, a)
+				m, _ = self.select(lc.Returned)
+				return lc.Aborted()
+
+			value = m.value
+			if isinstance(value, lc.Faulted):
+				return value
+			return None
+
+	except (OSError, ValueError) as e:
+		return lc.Faulted(cannot_resource, str(e))
+
+	return None
+
+lc.bind(model)
+
+#
+#
 def snapshot(self, word, remainder,	image_path: str=None):
 	'''Store a copy of the composition at home_path, under the '''
 	image_path = word_i(word, 0) or image_path
@@ -1198,6 +1408,8 @@ table = [
 	edit,
 
 	# Software distribution.
+	resource,
+	model,
 	snapshot,
 ]
 
