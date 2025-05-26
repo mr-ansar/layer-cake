@@ -39,6 +39,9 @@ from .virtual_codec import *
 from .json_codec import *
 from .file_object import *
 from .folder_object import *
+from .point_runtime import *
+from .virtual_point import *
+from .point_machine import *
 
 __all__ = [
 	'DELTA_FILE_ADD', 'DELTA_FILE_UPDATE', 'DELTA_FILE_UGM', 'DELTA_FILE_REMOVE',
@@ -51,6 +54,7 @@ __all__ = [
 	'StorageListing',
 	'StorageTables',
 	'storage_manifest',
+	'storage_selection',
 	'storage_walk',
 	'storage_delta',
 	'DeltaMachine',
@@ -64,7 +68,14 @@ __all__ = [
 	'AddFolder',
 	'ReplaceWithFile',
 	'ReplaceWithFile',
+	'FolderTransfer',
 ]
+
+#
+#
+class INITIAL: pass
+class RUNNING: pass
+class HALTED: pass
 
 # User, group ids and mode (permissions - rwxrwxrwx).
 #
@@ -212,6 +223,78 @@ def storage_manifest(path, parent=None, table=None):
 		content[k] = v
 
 	return m, table
+
+#
+def storage_selection(selection, table=None):
+	"""Gather arbitrary files and folders into a single logical manifest. Return a manifest of contents."""
+	table = table or StorageTables()
+	user_name = table.user_name
+	group_name = table.group_name
+
+	# Small optimization to reduce hits on the
+	# platform dbs.
+	def lookup(s):
+		# User ids <---> names
+		try:
+			t = user_name[s.st_uid]	 # Already seen?
+		except KeyError:
+			t = None				# Not defined.
+			#try:
+			#	t = pwd.getpwuid(s.st_uid).pw_name	# Nope - lookup.
+			#except KeyError:
+			#	t = None				# Not defined.
+			user_name[s.st_uid] = t	 # Remember results.
+		# Group ids <---> names
+		try:
+			t = group_name[s.st_gid]
+		except KeyError:
+			t = None
+			#try:
+			#	t = grp.getgrgid(s.st_gid).gr_name
+			#except KeyError:
+			#	t = None
+			group_name[s.st_gid] = t
+		a = StorageAttributes(user=s.st_uid, group=s.st_gid, mode=s.st_mode)
+		return a
+
+	selected = StorageManifest()	# This is a purely logical collection, e.g. it has no location.
+	parenting = {}					# May include materials from multiple sources.
+	def find(parent):
+		p = parenting.get(parent, None)
+		if p is None:
+			s = os.stat(parent)
+			d = datetime.fromtimestamp(s.st_mtime, tz=UTC)
+			a = lookup(s)
+			p = StorageManifest(path=parent, modified=d, attributes=a)
+			parenting[parent] = p
+		return p
+
+	content = selected.content
+	for s in selection:
+		absolute = os.path.abspath(s)
+		if not os.path.exists(absolute):
+			raise ValueError(f'"{absolute}" does not exist')
+		s0, s1 = os.path.split(absolute)
+		if s1 in content:
+			raise ValueError(f'multiple selections of "{s1}"')
+		parent = find(s0)
+
+		if os.path.isdir(absolute):
+			selected.manifests += 1
+			v, _ = storage_manifest(path=absolute, parent=parent, table=table)
+			selected.manifests += v.manifests
+			selected.listings += v.listings
+			selected.bytes += v.bytes
+		elif os.path.isfile(absolute):
+			selected.listings += 1
+			s = os.stat(absolute)
+			d = datetime.fromtimestamp(s.st_mtime, tz=UTC)
+			a = lookup(s)
+			v = StorageListing(name=s1, modified=d, attributes=a, size=s.st_size, parent=parent)
+			selected.bytes += v.size
+		content[s1] = v
+
+	return selected, table
 
 # Flatten the hierarchy into a list
 # of full name and manifest/listing.
@@ -633,3 +716,75 @@ def storage_delta_removals(source, target):
 			yield AddFolder(c, target)
 		else:
 			yield AddFile(c, target)
+
+#
+#
+def folder_transfer(self, delta, target):
+	"""An async routine to copy folders-and-files to target folder."""
+
+	# Interruption happens at the lowest level of transfer activity, i.e before
+	# each IO operation (i.e. read or write of blocks). Parent object calls
+	# a halt() on this object and the halted flag is checked by every delta
+	# opcode (e.g. storage.AddFile) before every IO. If halted it raises the special
+	# TransferHalted exception to jump back to this code.
+	machine = DeltaMachine(self, target)
+	try:
+		deltas = len(delta)
+		self.console(f'File transfer ({deltas} deltas) to {target}')
+		for d in delta:
+			d(machine)
+			aliases = machine.aliases()
+		self.console(f'Move {aliases} aliases to targets')
+		machine.rename()
+	except TransferHalted:
+		return Aborted()
+	except OSError as e:
+		condition = str(e)
+		fault = Faulted(condition)
+		return fault
+	finally:
+		aliases = machine.aliases()
+		self.console(f'Clear {aliases} aliases')
+		machine.clear()
+	return Ack()
+
+bind(folder_transfer)
+
+#
+#
+class FolderTransfer(Point, StateMachine):
+	def __init__(self, delta, target):
+		Point.__init__(self)
+		StateMachine.__init__(self, INITIAL)
+		self.delta = delta
+		self.target = target
+		self.transfer = None
+
+def FolderTransfer_INITIAL_Start(self, message):
+	self.transfer = self.create(folder_transfer, self.delta, self.target)
+	return RUNNING
+
+def FolderTransfer_RUNNING_Returned(self, message):
+	value = message.value
+	self.complete(value)
+
+def FolderTransfer_RUNNING_Stop(self, message):
+	halt(self.transfer)
+	return HALTED
+
+def FolderTransfer_HALTED_Returned(self, message):
+	self.complete(Aborted())
+
+FOLDER_TRANSFER_DISPATCH = {
+	INITIAL: (
+		(Start,), ()
+	),
+	RUNNING: (
+		(Returned, Stop), ()
+	),
+	HALTED: (
+		(Returned,), ()
+	),
+}
+
+bind(FolderTransfer, FOLDER_TRANSFER_DISPATCH)
