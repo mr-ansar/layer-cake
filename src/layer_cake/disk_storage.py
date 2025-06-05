@@ -67,7 +67,7 @@ __all__ = [
 	'AddFile',
 	'AddFolder',
 	'ReplaceWithFile',
-	'ReplaceWithFile',
+	'ReplaceWithFolder',
 	'FolderTransfer',
 ]
 
@@ -225,7 +225,7 @@ def storage_manifest(path, parent=None, table=None):
 	return m, table
 
 #
-def storage_selection(selection, table=None):
+def storage_selection(selection, path=None, table=None):
 	"""Gather arbitrary files and folders into a single logical manifest. Return a manifest of contents."""
 	table = table or StorageTables()
 	user_name = table.user_name
@@ -257,8 +257,8 @@ def storage_selection(selection, table=None):
 		a = StorageAttributes(user=s.st_uid, group=s.st_gid, mode=s.st_mode)
 		return a
 
-	selected = StorageManifest()	# This is a purely logical collection, e.g. it has no location.
-	parenting = {}					# May include materials from multiple sources.
+	selected = StorageManifest(path=path)	# This is a purely logical collection, i.e. path is optional.
+	parenting = {}							# May include materials from multiple sources.
 	def find(parent):
 		p = parenting.get(parent, None)
 		if p is None:
@@ -371,7 +371,7 @@ class DeltaMachine(object):
 			t = os.path.join(self.target, source[len_origin + 1:], name)
 		return t
 
-	def alias(self, d, m):
+	def alias(self, d, m, t=None):
 		s = str(uuid.uuid4())		   # Actual alias.
 		origin = d.source.origin()	  # Location of source.
 		len_origin = len(origin)
@@ -381,7 +381,9 @@ class DeltaMachine(object):
 		# Want to replace the source location with the target
 		# location and the final name with the alias name.
 		# Extra detail is including the relative path, if any.
-		if len_origin == len(source):
+		if t is not None:
+			t = os.path.join(t, s)	# No relative component.
+		elif len_origin == len(source):
 			t = os.path.join(self.target, s)	# No relative component.
 		else:
 			t = os.path.join(self.target, source[len_origin + 1:], s)
@@ -495,7 +497,7 @@ class UpdateFile(object):
 		return f'UpdateFile(path={self.source.full_path()}, modified={self.source.modified}, target={self.target.parent.path})'
 
 	def __call__(self, dm):
-		a = dm.alias(self, dm.alias_file)
+		a = dm.alias(self, dm.alias_file, t=self.target.parent.path)
 		transfer_file(dm.context, self.source.full_path(), a)
 
 bind(UpdateFile, source=PointerTo(StorageListing), target=PointerTo(StorageListing))
@@ -552,7 +554,7 @@ class AddFile(object):
 		return f'AddFile(path={self.source.full_path()}, target={self.target.path})'
 
 	def __call__(self, dm):
-		a = dm.alias(self, dm.alias_file)
+		a = dm.alias(self, dm.alias_file, t=self.target.path)
 		transfer_file(dm.context, self.source.full_path(), a)
 
 bind(AddFile, source=PointerTo(StorageListing), target=PointerTo(StorageManifest))
@@ -566,7 +568,7 @@ class AddFolder(object):
 		return f'AddFolder(path={self.source.path}, target={self.target.path})'
 
 	def __call__(self, dm):
-		a = dm.alias(self, dm.alias_folder)
+		a = dm.alias(self, dm.alias_folder, t=self.target.path)
 		add_folder(dm.context, self.source.path, a)
 
 bind(AddFolder, source=PointerTo(StorageManifest), target=PointerTo(StorageManifest))
@@ -605,7 +607,7 @@ bind(ReplaceWithFolder, source=PointerTo(StorageManifest), target=PointerTo(Stor
 
 #
 #
-def storage_delta(source, target, flags=DELTA_CRUD):
+def storage_delta(source, target, flags=DELTA_CRUD, guard_path=None):
 	"""Compare the two trees. Yield a sequence of the changes needed."""
 	def content_keys(m):
 		if m is None:
@@ -657,7 +659,8 @@ def storage_delta(source, target, flags=DELTA_CRUD):
 			else:
 				# No t - add file/folder
 				if isinstance(s, StorageManifest):
-					if flags & DELTA_FOLDER_ADD: yield AddFolder(s, target)
+					if not target.path.startswith(s.path):
+						if flags & DELTA_FOLDER_ADD: yield AddFolder(s, target)
 				else:
 					if flags & DELTA_FILE_ADD: yield AddFile(s, target)
 		else:
@@ -666,56 +669,6 @@ def storage_delta(source, target, flags=DELTA_CRUD):
 				if flags & DELTA_FOLDER_REMOVE: yield RemoveFolder(t)
 			else:
 				if flags & DELTA_FILE_REMOVE: yield RemoveFile(t)
-
-def storage_delta_removals(source, target):
-	"""Compare the two manifests. Return the ops to update the target.
-
-	The sequence is optimized to reduce the maximum storage required at the
-	target end, i.e. all removals are performed first, then updates and lastly
-	any additions. Folders that need to be added or removed only appear as
-	the folder operations, i.e. objects under those folders do not appear
-	in the list of operations.
-	"""
-	s, t = source.content.keys(), target.content.keys()
-
-	add = s - t	   # In source only
-	update = s & t	# Both
-	remove = t - s	# Target only
-
-	for r in remove:
-		t = target.content[r]
-		if isinstance(t, StorageManifest):
-			yield RemoveFolder(t)
-		else:
-			yield RemoveFile(t)
-
-	for c in update:
-		s, t = source.content[c], target.content[c]
-		if type(s) == type(t):
-			if isinstance(s, StorageManifest):
-				yield from storage_delta(s, t)
-			elif s.modified > t.modified:
-				yield UpdateFile(s, t)		# Creates new target file.
-				continue
-			if s.attributes.user != t.attributes.user:
-				yield UpdateUser(t, s.attributes.user)
-			if s.attributes.group != t.attributes.group:
-				yield UpdateGroup(t, s.attributes.group)
-			if s.attributes.mode != t.attributes.mode:
-				yield UpdateMode(t, s.attributes.mode)
-		elif type(s) == StorageManifest:
-			yield RemoveFile(t)
-			yield AddFolder(s, target)
-		else:
-			yield RemoveFolder(t)
-			yield AddFile(s, target)
-
-	for a in add:
-		c = source.content[a]
-		if isinstance(c, StorageManifest):
-			yield AddFolder(c, target)
-		else:
-			yield AddFile(c, target)
 
 #
 #
