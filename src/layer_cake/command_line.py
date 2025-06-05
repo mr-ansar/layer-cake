@@ -102,7 +102,7 @@ class CommandLine(object):
 			full_output: bool=False,
 			debug_level=None,
 			home_path: str=None, role_name: str=None,
-			model_path: str=None, resource_path: str=None,
+			resource_path: str=None, model_path: str=None,
 			help: bool=False,
 			create_role: bool=False, update_role: bool=False,
 			factory_reset: bool=False,
@@ -122,8 +122,8 @@ class CommandLine(object):
 		self.debug_level = debug_level
 		self.home_path = home_path
 		self.role_name = role_name
-		self.model_path = model_path
 		self.resource_path = resource_path
+		self.model_path = model_path
 		self.help = help
 		self.create_role = create_role
 		self.update_role = update_role
