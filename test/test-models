@@ -1,0 +1,101 @@
+#!/bin/bash
+# Script to test the management of scripts within a group.
+echo '--- CREATE ---'
+layer_cake create
+layer_cake add test_server.py server
+layer_cake add test_publisher.py publisher
+layer_cake add test_subscriber.py subscriber --count=4
+
+echo '--- MODEL ---'
+
+# No assets for role server.
+[[ `layer_cake model server | wc -l` -eq '0' ]] || exit 1
+
+rm -rf ../asset/server-model
+
+mkdir ../asset/server-model
+touch .layer-cake/role/server/model/empty-file
+[[ `layer_cake model server --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server --get-latest=../asset/server-model --make-changes
+[[ -f ../asset/server-model/empty-file ]] || exit 1
+[[ `layer_cake model server --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '0' ]] || exit 1
+
+mkdir .layer-cake/role/server/model/empty-folder
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -d ../asset/server-model/empty-folder ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+touch .layer-cake/role/server/model/empty-folder/empty-file
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -f ../asset/server-model/empty-folder/empty-file ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '0' ]] || exit 1
+
+mkdir .layer-cake/role/server/model/empty-folder/empty-folder
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -d ../asset/server-model/empty-folder/empty-folder ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+echo "hello world" > .layer-cake/role/server/model/empty-folder/hello-world
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '0' ]] || exit 1
+[[ -f ../asset/server-model/empty-folder/hello-world ]] || exit 1
+[[ `cat ../asset/server-model/empty-folder/hello-world` == 'hello world' ]] || exit 1
+
+touch .layer-cake/role/server/model/empty-folder/empty-file
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep UpdateFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -f ../asset/server-model/empty-folder/empty-file ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep UpdateFile | wc -l` -eq '0' ]] || exit 1
+
+chmod +x .layer-cake/role/server/model/empty-folder/hello-world
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep UpdateMode | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ `ls -l ../asset/server-model/empty-folder/hello-world | cut --characters=1-10` == '-rwxrwxr-x' ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep UpdateMode | wc -l` -eq '0' ]] || exit 1
+
+rm .layer-cake/role/server/model/empty-folder/hello-world
+mkdir .layer-cake/role/server/model/empty-folder/hello-world
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep ReplaceWithFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -d ../asset/server-model/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep ReplaceWithFolder | wc -l` -eq '0' ]] || exit 1
+
+rm -rf .layer-cake/role/server/model/empty-folder/hello-world
+touch .layer-cake/role/server/model/empty-folder/hello-world
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep ReplaceWithFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -f ../asset/server-model/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep ReplaceWithFile | wc -l` -eq '0' ]] || exit 1
+
+# Filename expansion skips anything that is a directory/folder. F#*&$%$^&^#!
+cp -r ../asset/mixed-content/* .layer-cake/role/server/model
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '151' ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '8' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ -f ../asset/server-model/empty-file ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFile | wc -l` -eq '0' ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+rm .layer-cake/role/server/model/empty-folder/hello-world
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep RemoveFile | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ ! -f ../asset/server-model/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep RemoveFile | wc -l` -eq '0' ]] || exit 1
+
+rm -rf .layer-cake/role/server/model/empty-folder/empty-folder
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep RemoveFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model --make-changes
+[[ ! -d ../asset/server-model/empty-folder/empty-folder ]] || exit 1
+[[ `layer_cake model server ../asset/server-model/* --get-latest=../asset/server-model | grep RemoveFolder | wc -l` -eq '0' ]] || exit 1
+
+# No model for role server.
+[[ `layer_cake model server | wc -l` -eq '161' ]] || exit 1
+
+layer_cake destroy
+
+echo
+echo '--- END (PASS)'

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Script to test the management of python scripts within a group.
+echo '--- CREATE ---'
+layer_cake create
+layer_cake add test_server.py server
+layer_cake add test_publisher.py publisher
+layer_cake add test_subscriber.py subscriber --count=4
+
+# Count the roles.
+[[ `layer_cake script --role-scripts | wc -l` -eq '7' ]] || exit 1
+
+# Count the changes required which is effectively a count of
+# files in the source folder(s). Approximate to avoid endless editing.
+[[ `layer_cake script --list-changes | wc -l` -ge '70' ]] || exit 1
+
+# Propagate the scripts to the group.
+layer_cake script --make-changes
+[[ `layer_cake script --list-changes | wc -l` -eq '0' ]] || exit 1
+
+# Modify a module.
+touch lyrck.py
+[[ `layer_cake script --list-changes | grep UpdateFile | wc -l` -eq '1' ]] || exit 1
+layer_cake script --make-changes
+[[ `layer_cake script --list-changes | grep UpdateFile | wc -l` -eq '0' ]] || exit 1
+
+# Remove all the propagated materials.
+layer_cake script --clear-all
+[[ `layer_cake script | wc -l` -eq '0' ]] || exit 1
+
+layer_cake destroy
+
+echo
+echo '--- END (PASS)'

@@ -1,0 +1,8 @@
+#!/bin/bash
+# Script to test the layer-cake command-line tool.
+# General stratgey is to run sub-commands, verify their
+# outcomes, and print "END (PASS)". Anything else
+# is a fail.
+
+./test-resources
+./test-models

@@ -1,0 +1,99 @@
+#!/bin/bash
+# Script to test the management of scripts within a group.
+echo '--- CREATE ---'
+layer_cake create
+layer_cake add test_server.py server
+layer_cake add test_publisher.py publisher
+layer_cake add test_subscriber.py subscriber --count=4
+
+# No resources for test_server.py.
+[[ `layer_cake resource test_server.py | wc -l` -eq '0' ]] || exit 1
+
+rm -rf ../asset/server-resource
+
+mkdir ../asset/server-resource
+touch ../asset/server-resource/empty-file
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -f .layer-cake/resource/test_server.py/empty-file ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '0' ]] || exit 1
+
+mkdir ../asset/server-resource/empty-folder
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -d .layer-cake/resource/test_server.py/empty-folder ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+touch ../asset/server-resource/empty-folder/empty-file
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -f .layer-cake/resource/test_server.py/empty-folder/empty-file ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '0' ]] || exit 1
+
+mkdir ../asset/server-resource/empty-folder/empty-folder
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -d .layer-cake/resource/test_server.py/empty-folder ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+echo "hello world" > ../asset/server-resource/empty-folder/hello-world
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '0' ]] || exit 1
+[[ -f .layer-cake/resource/test_server.py/empty-folder/hello-world ]] || exit 1
+[[ `cat .layer-cake/resource/test_server.py/empty-folder/hello-world` == 'hello world' ]] || exit 1
+
+touch ../asset/server-resource/empty-folder/empty-file
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep UpdateFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -f .layer-cake/resource/test_server.py/empty-folder/empty-file ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep UpdateFile | wc -l` -eq '0' ]] || exit 1
+
+chmod +x ../asset/server-resource/empty-folder/hello-world
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep UpdateMode | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ `ls -l .layer-cake/resource/test_server.py/empty-folder/hello-world | cut --characters=1-10` == '-rwxrwxr-x' ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep UpdateMode | wc -l` -eq '0' ]] || exit 1
+
+rm ../asset/server-resource/empty-folder/hello-world
+mkdir ../asset/server-resource/empty-folder/hello-world
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep ReplaceWithFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -d .layer-cake/resource/test_server.py/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep ReplaceWithFolder | wc -l` -eq '0' ]] || exit 1
+
+rm -rf ../asset/server-resource/empty-folder/hello-world
+touch ../asset/server-resource/empty-folder/hello-world
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep ReplaceWithFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -f .layer-cake/resource/test_server.py/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep ReplaceWithFile | wc -l` -eq '0' ]] || exit 1
+
+# Filename expansion skips anything that is a directory/folder. F#*&$%$^&^#!
+cp -r ../asset/mixed-content/* ../asset/server-resource
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '151' ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '8' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ -f .layer-cake/resource/test_server.py/empty-file ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFile | wc -l` -eq '0' ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep AddFolder | wc -l` -eq '0' ]] || exit 1
+
+rm ../asset/server-resource/empty-folder/hello-world
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep RemoveFile | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ ! -f .layer-cake/resource/test_server.py/empty-folder/hello-world ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep RemoveFile | wc -l` -eq '0' ]] || exit 1
+
+rm -rf ../asset/server-resource/empty-folder/empty-folder
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep RemoveFolder | wc -l` -eq '1' ]] || exit 1
+layer_cake resource test_server.py ../asset/server-resource/* --make-changes
+[[ ! -d .layer-cake/resource/test_server.py/empty-folder/empty-folder ]] || exit 1
+[[ `layer_cake resource test_server.py ../asset/server-resource/* | grep RemoveFolder | wc -l` -eq '0' ]] || exit 1
+
+# No model for role server.
+[[ `layer_cake model server | wc -l` -eq '0' ]] || exit 1
+
+layer_cake destroy
+
+echo
+echo '--- END (PASS)'
