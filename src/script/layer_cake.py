@@ -30,6 +30,7 @@ Access to records of execution.
 __docformat__ = 'restructuredtext'
 
 import os
+import stat
 import signal
 import re
 import datetime
@@ -179,6 +180,7 @@ lc.bind(add)
 def list_(self, search, remainder, long_listing: bool=False, group_role: bool=False, sub_roles: bool=False):
 	'''List the process definition(s) in an existing store. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_list = f'cannot list "{home_path}"'
 
@@ -208,6 +210,7 @@ lc.bind(list_)
 def update(self, search, remainder, group_role: bool=False, sub_roles: bool=False):
 	'''Update details of existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_update = f'cannot update "{home_path}"'
 
@@ -260,6 +263,7 @@ lc.bind(update)
 def delete(self, search, remainder, all: bool=False):
 	'''Delete existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_delete = f'cannot delete from "{home_path}"'
 	if search:
@@ -349,6 +353,7 @@ lc.bind(destroy)
 def run(self, search, remainder, main_role: str=None):
 	'''Execute a subset/all of the process definition(s), to completion. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_run = f'cannot run "{home_path}"'
 	if search:
@@ -499,6 +504,7 @@ lc.bind(stop)
 def status(self, search, remainder, long_listing: bool=False, group_role: bool=False, sub_roles: bool=False):
 	'''Query running/not-running status of background daemons. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_status = f'cannot query status "{home_path}"'
 
@@ -899,8 +905,42 @@ lc.bind(edit)
 
 #
 #
-def resource(self, word, remainder, full_path: bool=False,
-		long_listing: bool=False, recursive_listing: bool=False,
+def list_folder(path, recursive_listing):
+	for s in os.listdir(path):
+		p = os.path.join(path, s)
+		if os.path.isdir(p):
+			yield p
+			if recursive_listing:
+				yield from list_folder(p, True)
+		elif os.path.isfile(p):
+			yield p
+
+def get_printer(target_path, full_path, long_listing):
+	if full_path:
+		if long_listing:
+			def printer(path):
+				st = os.stat(path)
+				fm = stat.filemode(st.st_mode)
+				print(f'{fm} {st.st_uid}/{st.st_gid} {path}')
+		else:
+			def printer(path):
+				print(path)
+	else:
+		h = len(target_path)
+		if long_listing:
+			def printer(path):
+				st = os.stat(path)
+				fm = stat.filemode(st.st_mode)
+				hd = path[h + 1:]
+				print(f'{fm} {st.st_uid}/{st.st_gid} {hd}')
+		else:
+			def printer(path):
+				hd = path[h + 1:]
+				print(hd)
+	return printer
+
+def resource(self, word, remainder,
+		full_path: bool=False, recursive_listing: bool=False, long_listing: bool=False,
 		make_changes: bool=False, clear_all: bool=False):
 	'''.'''
 	if not word:
@@ -909,6 +949,7 @@ def resource(self, word, remainder, full_path: bool=False,
 	executable = word[0]
 	word = word[1:]
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_resource = f'cannot resource "{executable}"'
 
@@ -916,240 +957,313 @@ def resource(self, word, remainder, full_path: bool=False,
 	if home is None:
 		return lc.Faulted(cannot_resource, f'does not exist or contains unexpected/incomplete materials')
 
-	'''
-	selected = {}
-	for k, v in home.items():
-		executable_file = v.executable_file()
+	def matching(executable_file):
 		s = os.path.split(executable_file)
-		if s[1] == executable:
-			selected[k] = v
+		return s[1] == executable
 
-	if not selected:
-		return lc.Faulted(cannot_resource, f'no roles refer to "{executable}"')
+	role_matching = {k: v for k, v in home.items() if matching(v.executable_file())}
 
 	try:
-		running = home_running(self, selected)
-		if running:
+		running = home_running(self, role_matching)
+		n = len(running)
+		if n > 1:
 			r = ','.join(running.keys())
 			return lc.Faulted(cannot_resource, f'roles "{r}" are running')
+		elif n == 1:
+			r = next(iter(running.keys()))
+			return lc.Faulted(cannot_resource, f'role "{r}" is running')
 
 	finally:
 		self.abort()
 		while self.working():
 			m, i = self.select(lc.Returned)
 			self.debrief()
-	'''
-
-	def list_folder(path):
-		for s in os.listdir(path):
-			p = os.path.join(path, s)
-			if os.path.isdir(p):
-				yield p
-				if recursive_listing:
-					yield from list_folder(p)
-			elif os.path.isfile(p):
-				yield p
 
 	try:
-		resource_path = os.path.join(home_path, 'resource', executable)
+		resource_path = lc.CL.resource_path
+		target_path = os.path.join(home_path, 'resource', executable)
+		if not os.path.isdir(target_path):
+			return lc.Faulted(cannot_resource, f'folder "{target_path}" does not exist')
 
 		if not word:
-			# No resources specified.
-			# List contents or delete everything.
-			if clear_all:
-				lc.remove_contents(resource_path)
-			elif full_path:
-				for r in list_folder(resource_path):
-					print(r)
+			if resource_path:
+				source_storage, _ = lc.storage_manifest(resource_path)
+				target_storage, _ = lc.storage_manifest(target_path)
+			elif clear_all:
+				if role_matching:
+					lc.remove_contents(target_path)
+				else:
+					lc.remove_folder(target_path)
 				return None
 			else:
-				head = len(resource_path)
-				for r in list_folder(resource_path):
-					print(r[head + 1:])
+				printer = get_printer(target_path, full_path, long_listing)
+				for r in list_folder(target_path, recursive_listing):
+					printer(r)
+				return None
 		else:
-			if clear_all or full_path or recursive_listing:
+			if resource_path or clear_all or full_path or recursive_listing:
 				return lc.Faulted(cannot_resource, 'inappropriate argument(s)')
 
-			target_storage, _ = lc.storage_manifest(resource_path)
-			source_storage, _ = lc.storage_selection(word)
-			storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
+			source_storage, _ = lc.storage_selection(word, path=os.getcwd())
+			target_storage, _ = lc.storage_manifest(target_path)
 
-			if not storage_delta:			# Nothing to see or do.
-				return None
+		storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
 
-			if not make_changes:			# Without explicit command, show what would happen.
-				for d in storage_delta:
-					print(d)
-				return None
-
-			a = self.create(lc.FolderTransfer, storage_delta, resource_path)
-
-			m, _ = self.select(lc.Returned, lc.Stop)
-			if isinstance(m, lc.Stop):
-				self.send(m, a)
-				m, _ = self.select(lc.Returned)
-				return lc.Aborted()
-
-			value = m.value
-			if isinstance(value, lc.Faulted):
-				return value
+		if not storage_delta:			# Nothing to see or do.
 			return None
+
+		if not make_changes:			# Without explicit command, show what would happen.
+			for d in storage_delta:
+				print(d)
+			return None
+
+		a = self.create(lc.FolderTransfer, storage_delta, target_storage.path)
+
+		m, _ = self.select(lc.Returned, lc.Stop)
+		if isinstance(m, lc.Stop):
+			self.send(m, a)
+			m, _ = self.select(lc.Returned)
+			return lc.Aborted()
 
 	except (OSError, ValueError) as e:
 		return lc.Faulted(cannot_resource, str(e))
 
+	value = m.value
+	if isinstance(value, lc.Faulted):
+		return value
 	return None
 
 lc.bind(resource)
 
 #
 #
-def model(self, word, remainder, full_path: bool=False,
-		long_listing: bool=False, recursive_listing: bool=False,
-		make_changes: bool=False, clear_all: bool=False):
+def model(self, word, remainder,
+		full_path: bool=False, recursive_listing: bool=False, long_listing: bool=False,
+		make_changes: bool=False, clear_all: bool=False,
+		get_latest: str=None):
 	'''.'''
-	if not word:
-		return lc.Faulted(f'cannot resource group', f'no executable specified')
-
-	executable = word[0]
-	word = word[1:]
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
-	cannot_resource = f'cannot resource "{executable}"'
+	cannot_model = f'cannot model "{home_path}"'
+
+	if not word:
+		return lc.Faulted(cannot_model, f'no role specified')
+	role = word[0]
+	word = word[1:]
+
+	cannot_model = f'cannot model "{role}"'
 
 	home = lc.open_home(home_path, grouping=True, sub_roles=True)
 	if home is None:
-		return lc.Faulted(cannot_resource, f'does not exist or contains unexpected/incomplete materials')
+		return lc.Faulted(cannot_model, f'does not exist or contains unexpected/incomplete materials')
 
-	'''
-	selected = {}
-	for k, v in home.items():
-		executable_file = v.executable_file()
-		s = os.path.split(executable_file)
-		if s[1] == executable:
-			selected[k] = v
+	# Can match only 1. Keep consistent code
+	# layout for status checks.
+	def matching(k):
+		return k == role
 
-	if not selected:
-		return lc.Faulted(cannot_resource, f'no roles refer to "{executable}"')
+	role_matching = {k: v for k, v in home.items() if matching(k)}
 
+	if not role_matching:
+		return lc.Faulted(cannot_model, f'unknown role')
+
+	model_path = lc.CL.model_path
 	try:
-		running = home_running(self, selected)
-		if running:
-			r = ','.join(running.keys())
-			return lc.Faulted(cannot_resource, f'roles "{r}" are running')
+		running = home_running(self, role_matching)
+		n = len(running)
+		if word or model_path or clear_all or make_changes:
+			if n > 1:
+				r = ','.join(running.keys())
+				return lc.Faulted(cannot_model, f'roles "{r}" are running')
+			elif n == 1:
+				r = next(iter(running.keys()))
+				return lc.Faulted(cannot_model, f'role "{r}" is running')
 
 	finally:
 		self.abort()
 		while self.working():
 			m, i = self.select(lc.Returned)
 			self.debrief()
-	'''
 
-	def list_folder(path):
-		for s in os.listdir(path):
-			p = os.path.join(path, s)
-			if os.path.isdir(p):
-				yield p
-				if recursive_listing:
-					yield from list_folder(p)
-			elif os.path.isfile(p):
-				yield p
+	if model_path or clear_all or full_path or recursive_listing:
+		return lc.Faulted(cannot_model, 'inappropriate argument(s)')
 
 	try:
-		resource_path = os.path.join(home_path, 'resource', executable)
+		target_path = os.path.join(home_path, 'role', role, 'model')
+		if not os.path.isdir(target_path):
+			return lc.Faulted(cannot_model, f'role model folder is not usable')
 
 		if not word:
-			# No resources specified.
-			# List contents or delete everything.
-			if clear_all:
-				lc.remove_contents(resource_path)
-			elif full_path:
-				for r in list_folder(resource_path):
-					print(r)
+			if model_path:
+				# Folder-based asset management.
+				model_path = os.path.abspath(model_path)
+				if not os.path.isdir(model_path):
+					return lc.Faulted(cannot_model, f'path "{model_path}" is not a usable folder')
+
+				source_storage, _ = lc.storage_manifest(model_path)
+				target_storage, _ = lc.storage_manifest(target_path)
+
+			elif get_latest:
+				# Retrieve assets from the role.
+				get_latest = os.path.abspath(get_latest)
+				if not os.path.exists(get_latest):
+					lc.Folder(get_latest)
+				elif not os.path.isdir(get_latest):
+					return lc.Faulted(cannot_model, f'path "{get_latest}" is not a usable folder')
+
+				source_storage, _ = lc.storage_manifest(target_path)
+				target_storage, _ = lc.storage_manifest(get_latest)
+
+			elif clear_all:
+				lc.remove_contents(target_path)
 				return None
 			else:
-				head = len(resource_path)
-				for r in list_folder(resource_path):
-					print(r[head + 1:])
+				printer = get_printer(target_path, full_path, long_listing)
+				for r in list_folder(target_path, recursive_listing):
+					printer(r)
+				return None
 		else:
-			if clear_all or full_path or recursive_listing:
-				return lc.Faulted(cannot_resource, 'inappropriate argument(s)')
+			if get_latest:
+				get_latest = os.path.abspath(get_latest)
+				if not os.path.exists(get_latest):
+					lc.Folder(get_latest)
+				elif not os.path.isdir(get_latest):
+					return lc.Faulted(cannot_model, f'path "{get_latest}" is not a usable folder')
 
-			target_storage, _ = lc.storage_manifest(resource_path)
-			source_storage, _ = lc.storage_selection(word)
-			storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
+				source_storage, _ = lc.storage_manifest(target_path)
+				target_storage, _ = lc.storage_selection(word, path=get_latest)
+			else:
+				source_storage, _ = lc.storage_selection(word)
+				target_storage, _ = lc.storage_manifest(target_path)
 
-			if not storage_delta:			# Nothing to see or do.
-				return None
+		storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
 
-			if not make_changes:			# Without explicit command, show what would happen.
-				for d in storage_delta:
-					print(d)
-				return None
-
-			a = self.create(lc.FolderTransfer, storage_delta, resource_path)
-
-			m, _ = self.select(lc.Returned, lc.Stop)
-			if isinstance(m, lc.Stop):
-				self.send(m, a)
-				m, _ = self.select(lc.Returned)
-				return lc.Aborted()
-
-			value = m.value
-			if isinstance(value, lc.Faulted):
-				return value
+		if not storage_delta:			# Nothing to see or do.
 			return None
 
-	except (OSError, ValueError) as e:
-		return lc.Faulted(cannot_resource, str(e))
+		if not make_changes:			# Without explicit command, show what would happen.
+			for d in storage_delta:
+				print(d)
+			return None
 
+		a = self.create(lc.FolderTransfer, storage_delta, target_storage.path)
+
+		m, _ = self.select(lc.Returned, lc.Stop)
+		if isinstance(m, lc.Stop):
+			self.send(m, a)
+			m, _ = self.select(lc.Returned)
+			return lc.Aborted()
+
+	except (OSError, ValueError) as e:
+		return lc.Faulted(cannot_model, str(e))
+
+	value = m.value
+	if isinstance(value, lc.Faulted):
+		return value
 	return None
 
 lc.bind(model)
 
 #
 #
-def snapshot(self, word, remainder,	image_path: str=None):
-	'''Store a copy of the composition at home_path, under the '''
-	image_path = word_i(word, 0) or image_path
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+def script(self, word, remainder,
+		full_path: bool=False, recursive_listing: bool=False, long_listing: bool=False,
+		list_changes: bool=False, role_scripts: bool=False,
+		make_changes: bool=False, clear_all: bool=False):
+	'''.'''
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
-	cannot_snapshot = f'cannot snapshot "{home_path}"'
-
-	if not image_path:
-		return lc.Faulted(cannot_snapshot, f'no destination image path')
+	cannot_script = f'cannot script "{home_path}"'
 
 	home = lc.open_home(home_path, grouping=True, sub_roles=True)
 	if home is None:
-		return lc.Faulted(cannot_snapshot, f'does not exist or contains unexpected/incomplete materials')
+		return lc.Faulted(cannot_script, f'does not exist or contains unexpected/incomplete materials')
 
+	# Get all executable for every role, then refine that to a map of
+	# unique paths, i.e. where each python module comes from.
+	role_executable = {k: v.executable_file() for k, v in home.items()}
+	source_path = {os.path.split(v)[0] for k, v in role_executable.items() if v.endswith('.py')}
 
-	# Repo modules
-	# Read-only executable resources
-	# One-time consumable (?)
-	# Operational data per role
-	# Calculate delta
-	# Affected processes (opt stop)
-	# Copy complete materials to target device
-	# Move to resting places
-	# Restart processes
+	if not source_path:
+		return lc.Faulted(cannot_script, f'no scripts in use')
+
+	# Combine the file and folder names from each unique path into
+	# a single collection.
+	selection = []
+	collision = []
+	for p in source_path:
+		for s in os.listdir(p):
+			# Need special handling of "library" module. Allow
+			# the first one through. If present as this level its
+			# intended that they are all empty.
+			if s == '__init__.py':
+				if s in selection:
+					continue
+			elif s.startswith('__') and s.endswith('__'):
+				# Skip any other special python materials, e.g. cache.
+				continue
+			elif s in selection:
+				collision.append(s)
+				continue
+			t = os.path.join(p, s)
+			selection.append(t)
+
+	if collision:
+		c = ','.join(collision)
+		return lc.Faulted(cannot_script, f'duplicated names "{c}"')
+
+	try:
+		target_path = os.path.join(home_path, 'script')
+
+		if list_changes or make_changes:
+			if clear_all or full_path or long_listing or recursive_listing:
+				return lc.Faulted(cannot_script, 'inappropriate argument(s)')
+
+			source_storage, _ = lc.storage_selection(selection, path=os.getcwd())
+			target_storage, _ = lc.storage_manifest(target_path)
+		elif role_scripts:
+			for k, v in role_executable.items():
+				print(f'{k:24} {v}')
+			return None
+
+		elif clear_all:
+			lc.remove_contents(target_path)
+			return None
+		else:
+			printer = get_printer(target_path, full_path, long_listing)
+			for r in list_folder(target_path, recursive_listing):
+				printer(r)
+			return None
+
+		storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
+
+		if not storage_delta:			# Nothing to see or do.
+			return None
+
+		if not make_changes:			# Without explicit command, show what would happen.
+			for d in storage_delta:
+				print(d)
+			return None
+
+		a = self.create(lc.FolderTransfer, storage_delta, target_storage.path)
+
+		m, _ = self.select(lc.Returned, lc.Stop)
+		if isinstance(m, lc.Stop):
+			self.send(m, a)
+			m, _ = self.select(lc.Returned)
+			return lc.Aborted()
+
+	except (OSError, ValueError) as e:
+		return lc.Faulted(cannot_script, str(e))
+
+	value = m.value
+	if isinstance(value, lc.Faulted):
+		return value
 	return None
 
-	# ROLES <home_path>/role/<role>/{settings,executable_file,log_storage}.json ---> <image_path>/defined_role/<role>/*.json
-	# SCRIPT <home_path>/script/*.py ---> <image_path>/script/*.py
-	# READ-ONLY <home_path>/resource/executable.py/<resources> ---> <image_path>/resource/executable.py/<resources>
-	# DATABASE <home_path>/role/<role_name>/model/<model> ---> <image_path>/role/<role_name>/<model>
-	# TUNINGS <home_path>/role/<role_name>/<settings> ---> <image_path>/role-settings/<role_name>/<settings> ---> 
-	# DELIVERY ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
-	# INWARD ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
-
-	# READ-ONLY ./executable-resource/executable.py/<resources> ---> <home_path>/resource/executable.py/<resources>
-	# DATABASE ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
-	# TUNINGS ./role-settings/<role_name>/<settings> ---> <home_path>/role/<role_name>/<settings>
-	# DELIVERY ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
-	# INWARD ./role-model/<role_name>/<model> ---> <home_path>/role/<role_name>/model/<model>
-
-lc.bind(snapshot)
+lc.bind(script)
 
 # Functions supporting the
 # sub-commands.
@@ -1410,7 +1524,7 @@ table = [
 	# Software distribution.
 	resource,
 	model,
-	snapshot,
+	script,
 ]
 
 # For package scripting.
