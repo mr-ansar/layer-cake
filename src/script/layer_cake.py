@@ -990,10 +990,7 @@ def resource(self, word, remainder,
 				source_storage, _ = lc.storage_manifest(resource_path)
 				target_storage, _ = lc.storage_manifest(target_path)
 			elif clear_all:
-				if role_matching:
-					lc.remove_contents(target_path)
-				else:
-					lc.remove_folder(target_path)
+				lc.remove_contents(target_path)
 				return None
 			else:
 				printer = get_printer(target_path, full_path, long_listing)
@@ -1003,7 +1000,6 @@ def resource(self, word, remainder,
 		else:
 			if resource_path or clear_all or full_path or recursive_listing:
 				return lc.Faulted(cannot_resource, 'inappropriate argument(s)')
-
 			source_storage, _ = lc.storage_selection(word, path=os.getcwd())
 			target_storage, _ = lc.storage_manifest(target_path)
 
