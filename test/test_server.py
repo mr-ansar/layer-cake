@@ -9,15 +9,16 @@ from test_library import *
 # A bare-bones implementation of a traditional network server that
 # demonstrates the different function-calling options.
 DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
+SERVER_API = (Xy,)
 
 def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: int=100):
 	'''Establish a network listen and process API requests. Return nothing.'''
 	server_address = server_address or DEFAULT_ADDRESS
 
-	# Open a network port for inbound connections,
-	# manage a private server, i.e. a loadable library, and
-	# manage a job spool, i.e. a cluster of libraries.
-	lc.listen(self, server_address)
+	# 1. Open a network port for HTTP clients, e.g. curl,
+	# 2. manage a private server, i.e. a loadable library, and
+	# 3. manage a job spool, i.e. a cluster of libraries.
+	lc.listen(self, server_address, api_server=SERVER_API)
 	lib = self.create(lc.ProcessObject, library, role_name='library')
 	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=2)
 
@@ -25,17 +26,17 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	while True:
 		m = self.input()
 
-		if isinstance(m, Xy):					# Client request.
+		if isinstance(m, Xy):					# Request from HTTP client.
 			pass
 
 		elif isinstance(m, lc.Returned):		# Child object terminated, e.g. thread, process, ...
 			d = self.debrief()
-			if isinstance(d, lc.OnReturned):	# Execute on_return callback.
+			if isinstance(d, lc.OnReturned):	# Execute saved callback.
 				d(self, m)
 				continue
 			return lc.Faulted('Supporting process terminated.')
 
-		elif isinstance(m, (lc.Accepted, lc.Closed)):		# Clients coming and going.
+		elif isinstance(m, (lc.Accepted, lc.Closed)):		# HTTP clients coming and going.
 			continue
 
 		elif isinstance(m, lc.Listening):		# Bound to the port.
@@ -48,14 +49,14 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 			return lc.Aborted()
 
 		else:
-			return lc.Faulted(f'unexpected message {m}.')
+			return lc.Faulted(f'unexpected message {m}')
 
 		# Received an Xy request from one of the connected clients.
 		request = m
 		convention = m.convention
 		return_address = self.return_address
 
-		# Callback for the more complex operations.
+		# Callback for the async variants.
 		def respond(self, value, kv):
 			self.send(lc.cast_to(value, self.returned_type), kv.return_address)
 

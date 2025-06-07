@@ -8,9 +8,10 @@ random.seed()
 def texture(self, x: int=8, y: int=8) -> list[list[float]]:
 	'''Generate a matrix and fill with random values. Return a 2D table of floats.'''
 
-	table = [[None] * x] * y			# Table of nulls.
+	table = []
 	for r in range(y):
-		row = table[r]
+		row = [None] * x
+		table.append(row)
 		for c in range(x):
 			row[c] = random.random()	# Populate table.
 

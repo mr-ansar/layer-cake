@@ -6,7 +6,7 @@ from test_function import *
 
 
 def library(self):
-	'''Accept requests from the framework.'''
+	'''Provide an API to the framework. Return nothing.'''
 
 	# The process runs until it receives a Stop.
 	while True:
@@ -14,17 +14,15 @@ def library(self):
 
 		if isinstance(m, Xy):				# Expected request.
 			pass
-		elif isinstance(m, (lc.Delivered, lc.Dropped)):		# Check for faults and control-c.
-			continue
-		elif isinstance(m, lc.Faulted):		# Check for faults and control-c.
+		elif isinstance(m, lc.Faulted):		# Any fault.
 			return m
-		elif isinstance(m, lc.Stop):
+		elif isinstance(m, lc.Stop):		# Terminate, e.g. control-c.
 			return lc.Aborted()
 		else:
-			self.warning(f'unexpected message')
+			continue
 
-		# Call the function directly and send the
-		# results back to the client.
+		# Process the framework request.
+		# Commits the entire process to the function call.
 		table = texture(self, x=m.x, y=m.y)
 		self.send(lc.cast_to(table, table_type), self.return_address)
 
