@@ -171,7 +171,7 @@ def stream_form(k, v, d):
 # a member in an object.
 
 S2D = {
-	Boolean:		lambda s: s == 'true',
+	Boolean:	lambda s: s == 'true',
 	Character:	lambda s: s,
 	Rune:		lambda s: s,
 	Integer2:	lambda s: int(s),
@@ -197,6 +197,8 @@ def recover_form(k, v, d):
 	c = S2D.get(type(v), None)
 	if c:
 		return c(d)
+	elif isinstance(v, Enumeration):
+		return v.element[d]
 	return None
 
 # Stream the representation of an HTTP request onto the
@@ -603,7 +605,6 @@ class ApiServerStream(object):
 	# Recover the best-possible message and forward to receiver.
 	def recover_hyper_text(self):
 		transport = self.transport
-		upgrade = transport.upgrade
 		codec = transport.codec
 		return_address = transport.return_proxy
 		to_address = transport.local_termination
@@ -644,7 +645,7 @@ class ApiServerStream(object):
 				if not default_to_request:
 					raise ValueError(f'unknown and defaulting to HTTP requests disabled')
 			elif question != -1:
-				schema = tom.__art__.value
+				schema = tom.__art__.schema
 				message = tom()
 				a = query.split('&')
 				for kv in a:
@@ -669,7 +670,7 @@ class ApiServerStream(object):
 				return message, to_address, return_address
 
 			elif content_type == 'application/x-www-form-urlencoded':
-				schema = tom.__art__.value
+				schema = tom.__art__.schema
 				message = tom()
 				if body:
 					# Breakout the flat form into a key-value dict.
@@ -703,15 +704,10 @@ class ApiServerStream(object):
 				if body:
 					json = body.decode('utf-8')
 					try:
-						message, v = codec.decode(json, UserDefined(tom))
+						message = codec.decode(json, UserDefined(tom))
 					except (CodecError, OverflowError, ValueError) as e:
 						s = str(e)
 						raise ValueError(s)
-
-					if v is not None:
-						if not upgrade:
-							raise ValueError(f'body with version "{v}" and no upgrade available')
-						message = upgrade(message, v)
 				else:
 					message = tom()
 				return message, to_address, return_address
@@ -1041,7 +1037,7 @@ class ApiClientStream(object):
 			body = e.encode('utf-8')
 		else:
 			content_type = 'application/x-www-form-urlencoded'
-			schema = tom.__art__.value
+			schema = tom.__art__.schema
 			ks = []
 			for k, v in schema.items():
 				# Form representation of null is to omit.
@@ -1126,7 +1122,6 @@ class ApiClientStream(object):
 	def recover_hyper_text(self):
 		transport = self.transport
 		codec = transport.codec
-		upgrade = transport.upgrade
 
 		return_address = transport.return_proxy
 		to_address = transport.local_termination
@@ -1163,7 +1158,7 @@ class ApiClientStream(object):
 			v = None
 			try:
 				body = body.decode('utf-8')
-				message, v = codec.decode(body, Any())
+				message = codec.decode(body, Any())
 			except (CodecError, OverflowError, ValueError) as e:
 				s = str(e)
 				client_error = f'unexpected body "{s}"'
@@ -1174,12 +1169,4 @@ class ApiClientStream(object):
 				body=client_error.encode('utf-8'))
 			return message, to_address, return_address
 
-		if v is not None:
-			if not upgrade:
-				client_error = f'HTTP response "{code}/{reason}" with body version "{v}" and no upgrade'
-				message = HttpResponse(status_code=500, reason_phrase='Server Error',
-					header={'Content-Type': 'plain/text'},
-					body=client_error.encode('utf-8'))
-				return message, to_address, return_address
-			message = upgrade(message, v)
 		return message, to_address, return_address
