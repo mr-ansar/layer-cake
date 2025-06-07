@@ -1,0 +1,13 @@
+11-1
+Completed rst content for
+9 out of 11 modules
+
+2-5
+standup with nic.
+discussed strategy for getting code into develop.
+plowed into .rst docstrings for point module.
+turns out to be one of the biggest
+courtesy of the fact that Point methods are the
+application entry points to all the significant
+ansar features. going to take another couple of
+hours.

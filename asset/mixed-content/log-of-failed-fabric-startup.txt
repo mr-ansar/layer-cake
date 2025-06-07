@@ -1,0 +1,175 @@
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ ansar log fabric
+2024-03-27T00:41:46.614 + <00000009>SocketSelect - Created by <00000001>
+2024-03-27T00:41:46.615 < <00000009>SocketSelect - Received Start from <00000001>
+2024-03-27T00:41:46.615 > <00000009>SocketSelect - Sent SocketChannel to <00000001>
+2024-03-27T00:41:46.616 + <0000000a>SocketSelect - Created by <00000001>
+2024-03-27T00:41:46.620 < <0000000a>SocketSelect - Received Start from <00000001>
+2024-03-27T00:41:46.620 > <0000000a>SocketSelect - Sent SocketChannel to <00000001>
+2024-03-27T00:41:46.620 + <0000000b>PubSub[INITIAL] - Created by <00000001>
+2024-03-27T00:41:46.629 < <0000000b>PubSub[INITIAL] - Received Start from <00000001>
+2024-03-27T00:41:46.629 + <0000000c>lock_and_hold - Created by <00000001>
+2024-03-27T00:41:46.630 > <0000000c>lock_and_hold - Sent Ready to <00000001>
+2024-03-27T00:41:46.631 + <0000000d>node_vector - Created by <00000001>
+2024-03-27T00:41:46.644 ~ <0000000d>node_vector - Executable "/home/mr-ansar/gh/ansar-wan/src/ansar/.ansar-home/bin/ansar-fabric" as node process (29374)
+2024-03-27T00:41:46.644 ~ <0000000d>node_vector - Working folder "/"
+2024-03-27T00:41:46.644 ~ <0000000d>node_vector - Running object "__main__.Fabric"
+2024-03-27T00:41:46.644 ~ <0000000d>node_vector - Class threads (2) "subscribed" (3),"published" (2)
+2024-03-27T00:41:46.644 ~ <0000000d>node_vector - Detected group port 127.0.0.1:34623
+2024-03-27T00:41:46.644 + <0000000e>ServiceDirectory[INITIAL] - Created by <0000000d>
+2024-03-27T00:41:46.647 < <0000000e>ServiceDirectory[INITIAL] - Received Start from <0000000d>
+2024-03-27T00:41:46.647 ~ <0000000e>ServiceDirectory[INITIAL] - Scope of PROCESS
+2024-03-27T00:41:46.647 ~ <0000000e>ServiceDirectory[INITIAL] - Connecting up to "LocalPort"
+2024-03-27T00:41:46.647 ~ <0000000e>ServiceDirectory[INITIAL] - Listening below at "HostPort"
+2024-03-27T00:41:46.647 + <0000000f>ConnectToDirectory[INITIAL] - Created by <0000000e>
+2024-03-27T00:41:46.647 > <0000000e>ServiceDirectory[INITIAL] - Sent HostPort to <0000000d>
+2024-03-27T00:41:46.647 < <0000000f>ConnectToDirectory[INITIAL] - Received Start from <0000000e>
+2024-03-27T00:41:46.647 > <0000000f>ConnectToDirectory[INITIAL] - Sent StartTimer to <00000003>
+2024-03-27T00:41:46.647 ~ <00000009>SocketSelect - Connected to "127.0.0.1"(34623), at local address "127.0.0.1"(50014)
+2024-03-27T00:41:46.647 + <00000010>SocketProxy[INITIAL] - Created by <00000009>
+2024-03-27T00:41:46.648 > <00000009>SocketSelect - Forward Connected to <0000000f> (from <00000010>)
+2024-03-27T00:41:46.648 < <00000010>SocketProxy[INITIAL] - Received Start from <00000009>
+2024-03-27T00:41:46.648 < <0000000f>ConnectToDirectory[PENDING] - Received Connected from <00000010>
+2024-03-27T00:41:46.648 > <0000000f>ConnectToDirectory[PENDING] - Sent CancelTimer to <00000003>
+2024-03-27T00:41:46.648 > <0000000f>ConnectToDirectory[PENDING] - Sent UseAddress to <0000000e>
+2024-03-27T00:41:46.648 < <0000000e>ServiceDirectory[NORMAL] - Received UseAddress from <0000000f>
+2024-03-27T00:41:46.648 < <0000000d>node_vector - Received HostPort from <0000000e>
+2024-03-27T00:41:46.648 + <00000011>Fabric[INITIAL] - Created by <0000000d>
+2024-03-27T00:41:46.650 < <00000011>Fabric[INITIAL] - Received Start from <0000000d>
+2024-03-27T00:41:46.650 > <00000011>Fabric[INITIAL] - Sent PublishAsName to <0000000b>
+2024-03-27T00:41:46.651 > <00000011>Fabric[INITIAL] - Sent SubscribeToName to <0000000b>
+2024-03-27T00:41:46.651 < <0000000b>PubSub[NORMAL] - Received PublishAsName from <00000011>
+2024-03-27T00:41:46.651 + <00000012>PublishingAgent[INITIAL] - Created by <0000000b>
+2024-03-27T00:41:46.651 < <0000000b>PubSub[NORMAL] - Received SubscribeToName from <00000011>
+2024-03-27T00:41:46.651 + <00000013>SubscriptionAgent[INITIAL] - Created by <0000000b>
+2024-03-27T00:41:46.651 > <0000000b>PubSub[NORMAL] - Forward Subscribed to <00000011> (from <00000013>)
+2024-03-27T00:41:46.651 < <00000012>PublishingAgent[INITIAL] - Received Start from <0000000b>
+2024-03-27T00:41:46.651 < <00000013>SubscriptionAgent[INITIAL] - Received Start from <0000000b>
+2024-03-27T00:41:46.651 > <00000013>SubscriptionAgent[INITIAL] - Sent FindService to <0000000e>
+2024-03-27T00:41:46.651 ~ <0000000a>SocketSelect - Listening on "0.0.0.0"(43667), requested "0.0.0.0"(0)
+2024-03-27T00:41:46.651 > <0000000a>SocketSelect - Sent Listening to <00000012>
+2024-03-27T00:41:46.651 < <00000012>PublishingAgent[PENDING] - Received Listening from <0000000a>
+2024-03-27T00:41:46.651 > <00000012>PublishingAgent[PENDING] - Sent ServiceListing to <0000000e>
+2024-03-27T00:41:46.651 > <00000012>PublishingAgent[PENDING] - Sent Published to <00000011>
+2024-03-27T00:41:46.651 < <0000000e>ServiceDirectory[NORMAL] - Received FindService from <00000013>
+2024-03-27T00:41:46.651 ~ <0000000e>ServiceDirectory[NORMAL] - Added search "13/relay..*"
+2024-03-27T00:41:46.651 > <0000000e>ServiceDirectory[NORMAL] - Sent FindService to <00000010>
+2024-03-27T00:41:46.651 < <0000000e>ServiceDirectory[NORMAL] - Received ServiceListing from <00000012>
+2024-03-27T00:41:46.651 ~ <0000000e>ServiceDirectory[NORMAL] - Added listing "fabric"
+2024-03-27T00:41:46.651 > <0000000e>ServiceDirectory[NORMAL] - Sent ServiceListing to <00000010>
+2024-03-27T00:41:46.651 < <00000010>SocketProxy[NORMAL] - Received FindService from <0000000e>
+2024-03-27T00:41:46.651 < <00000010>SocketProxy[NORMAL] - Received ServiceListing from <0000000e>
+2024-03-27T00:41:46.659 > <00000009>SocketSelect - Forward RouteOverConnected to <00000013> (from <00000010>)
+2024-03-27T00:41:46.659 > <00000009>SocketSelect - Forward RouteOverConnected to <00000013> (from <00000010>)
+2024-03-27T00:41:46.659 < <00000013>SubscriptionAgent[READY] - Received RouteOverConnected from <00000010>
+2024-03-27T00:41:46.659 + <00000014>SubscriberLoop[INITIAL] - Created by <00000013>
+2024-03-27T00:41:46.659 ~ <00000013>SubscriptionAgent[READY] - Add service "relay.eb637c0a-d4f1-4d88-a7cb-ec3fd82731ce" and peer route [GROUP](127.0.0.1:41725)
+2024-03-27T00:41:46.659 < <00000013>SubscriptionAgent[READY] - Received RouteOverConnected from <00000010>
+2024-03-27T00:41:46.659 + <00000015>SubscriberLoop[INITIAL] - Created by <00000013>
+2024-03-27T00:41:46.659 ~ <00000013>SubscriptionAgent[READY] - Add service "relay.6390010d-fb96-4222-b5aa-e7c959f112a1" and peer route [GROUP](127.0.0.1:43853)
+2024-03-27T00:41:46.659 < <00000014>SubscriberLoop[INITIAL] - Received Start from <00000013>
+2024-03-27T00:41:46.659 ~ <00000014>SubscriberLoop[INITIAL] - Initiate route [GROUP](13,24:relay.eb637c0a-d4f1-4d88-a7cb-ec3fd82731ce)
+2024-03-27T00:41:46.659 ~ <00000014>SubscriberLoop[INITIAL] - Requests peer 127.0.0.1:41725 (13,24:relay.eb637c0a-d4f1-4d88-a7cb-ec3fd82731ce)
+2024-03-27T00:41:46.659 > <00000014>SubscriberLoop[INITIAL] - Sent OpenPeer to <0000000b>
+2024-03-27T00:41:46.659 ~ <00000014>SubscriberLoop[INITIAL] - Selected "LOCAL" for retry timeouts
+2024-03-27T00:41:46.659 < <00000015>SubscriberLoop[INITIAL] - Received Start from <00000013>
+2024-03-27T00:41:46.659 ~ <00000015>SubscriberLoop[INITIAL] - Initiate route [GROUP](13,24:relay.6390010d-fb96-4222-b5aa-e7c959f112a1)
+2024-03-27T00:41:46.659 ~ <00000015>SubscriberLoop[INITIAL] - Requests peer 127.0.0.1:43853 (13,24:relay.6390010d-fb96-4222-b5aa-e7c959f112a1)
+2024-03-27T00:41:46.659 > <00000015>SubscriberLoop[INITIAL] - Sent OpenPeer to <0000000b>
+2024-03-27T00:41:46.659 ~ <00000015>SubscriberLoop[INITIAL] - Selected "LOCAL" for retry timeouts
+2024-03-27T00:41:46.659 < <0000000b>PubSub[NORMAL] - Received OpenPeer from <00000014>
+2024-03-27T00:41:46.659 ~ <0000000b>PubSub[NORMAL] - Connect to peer 127.0.0.1:41725
+2024-03-27T00:41:46.659 < <0000000b>PubSub[NORMAL] - Received OpenPeer from <00000015>
+2024-03-27T00:41:46.659 ~ <0000000b>PubSub[NORMAL] - Connect to peer 127.0.0.1:43853
+2024-03-27T00:41:46.660 ~ <00000009>SocketSelect - Connected to "127.0.0.1"(41725), at local address "127.0.0.1"(34680)
+2024-03-27T00:41:46.660 + <00000016>SocketProxy[INITIAL] - Created by <00000009>
+2024-03-27T00:41:46.660 > <00000009>SocketSelect - Forward Connected to <0000000b> (from <00000016>)
+2024-03-27T00:41:46.660 ~ <00000009>SocketSelect - Connected to "127.0.0.1"(43853), at local address "127.0.0.1"(39986)
+2024-03-27T00:41:46.660 + <00000017>SocketProxy[INITIAL] - Created by <00000009>
+2024-03-27T00:41:46.660 > <00000009>SocketSelect - Forward Connected to <0000000b> (from <00000017>)
+2024-03-27T00:41:46.660 < <00000016>SocketProxy[INITIAL] - Received Start from <00000009>
+2024-03-27T00:41:46.660 < <00000017>SocketProxy[INITIAL] - Received Start from <00000009>
+2024-03-27T00:41:46.660 < <0000000b>PubSub[NORMAL] - Received Connected from <00000016>
+2024-03-27T00:41:46.660 > <0000000b>PubSub[NORMAL] - Forward PeerOpened to <00000014> (from <00000016>)
+2024-03-27T00:41:46.661 < <0000000b>PubSub[NORMAL] - Received Connected from <00000017>
+2024-03-27T00:41:46.661 > <0000000b>PubSub[NORMAL] - Forward PeerOpened to <00000015> (from <00000017>)
+2024-03-27T00:41:46.661 < <00000014>SubscriberLoop[PEERING] - Received PeerOpened from <00000016>
+2024-03-27T00:41:46.661 ~ <00000014>SubscriberLoop[PEERING] - Initiate latch/loop to [16] (13,24:relay.eb637c0a-d4f1-4d88-a7cb-ec3fd82731ce)
+2024-03-27T00:41:46.661 + <00000018>Latch[INITIAL] - Created by <00000014>
+2024-03-27T00:41:46.661 > <00000014>SubscriberLoop[PEERING] - Sent OpenLoop to <00000016>
+2024-03-27T00:41:46.661 > <00000014>SubscriberLoop[PEERING] - Sent StartTimer to <00000003>
+2024-03-27T00:41:46.661 < <00000015>SubscriberLoop[PEERING] - Received PeerOpened from <00000017>
+2024-03-27T00:41:46.661 ~ <00000015>SubscriberLoop[PEERING] - Initiate latch/loop to [17] (13,24:relay.6390010d-fb96-4222-b5aa-e7c959f112a1)
+2024-03-27T00:41:46.661 + <00000019>Latch[INITIAL] - Created by <00000015>
+2024-03-27T00:41:46.661 > <00000015>SubscriberLoop[PEERING] - Sent OpenLoop to <00000017>
+2024-03-27T00:41:46.661 > <00000015>SubscriberLoop[PEERING] - Sent StartTimer to <00000003>
+2024-03-27T00:41:46.661 < <00000018>Latch[INITIAL] - Received Start from <00000014>
+2024-03-27T00:41:46.661 < <00000019>Latch[INITIAL] - Received Start from <00000015>
+2024-03-27T00:41:46.661 < <00000016>SocketProxy[NORMAL] - Received OpenLoop from <00000014>
+2024-03-27T00:41:46.661 < <00000017>SocketProxy[NORMAL] - Received OpenLoop from <00000015>
+2024-03-27T00:41:46.662 > <00000009>SocketSelect - Forward LoopOpened to <00000014> (from <00000016>)
+2024-03-27T00:41:46.663 > <00000009>SocketSelect - Forward RelayResource to <00000018> (from <00000016>)
+2024-03-27T00:41:46.663 > <00000009>SocketSelect - Forward LoopOpened to <00000015> (from <00000017>)
+2024-03-27T00:41:46.663 < <00000014>SubscriberLoop[LOOPING] - Received LoopOpened from <00000016>
+2024-03-27T00:41:46.663 ~ <00000014>SubscriberLoop[LOOPING] - Loop opened between subscriber [11] and publisher [11,16]
+2024-03-27T00:41:46.663 > <00000014>SubscriberLoop[LOOPING] - Forward Available to <00000011> (from <00000016>)
+2024-03-27T00:41:46.663 > <00000014>SubscriberLoop[LOOPING] - Sent SwitchOver to <00000018>
+2024-03-27T00:41:46.663 < <00000018>Latch[STANDBY] - Received RelayResource from <00000016>
+2024-03-27T00:41:46.663 < <00000015>SubscriberLoop[LOOPING] - Received LoopOpened from <00000017>
+2024-03-27T00:41:46.663 ~ <00000015>SubscriberLoop[LOOPING] - Loop opened between subscriber [11] and publisher [11,17]
+2024-03-27T00:41:46.663 > <00000015>SubscriberLoop[LOOPING] - Forward Available to <00000011> (from <00000017>)
+2024-03-27T00:41:46.663 > <00000015>SubscriberLoop[LOOPING] - Sent SwitchOver to <00000019>
+2024-03-27T00:41:46.663 < <00000018>Latch[STANDBY] - Received SwitchOver from <00000014>
+2024-03-27T00:41:46.663 > <0000001a>Latch[STANDBY] - Forward RelayResource to <00000011> (from <00000016>)
+2024-03-27T00:41:46.663 > <0000001a>Latch[STANDBY] - Sent Ack to <00000014>
+2024-03-27T00:41:46.663 < <00000019>Latch[STANDBY] - Received SwitchOver from <00000015>
+2024-03-27T00:41:46.663 > <0000001b>Latch[STANDBY] - Sent Ack to <00000015>
+2024-03-27T00:41:46.663 < <00000014>SubscriberLoop[LATCHING] - Received Ack from <0000001a>
+2024-03-27T00:41:46.663 < <00000015>SubscriberLoop[LATCHING] - Received Ack from <0000001b>
+2024-03-27T00:41:46.674 > <00000009>SocketSelect - Forward RelayResource to <00000019> (from <00000017>)
+2024-03-27T00:41:46.675 < <00000011>Fabric[DIRECTING] - Received Subscribed from <00000013>
+2024-03-27T00:41:46.675 < <00000011>Fabric[DIRECTING] - Received Published from <00000012>
+2024-03-27T00:41:46.675 < <00000011>Fabric[READY] - Received Available from <00000016>
+2024-03-27T00:41:46.675 ~ <00000011>Fabric[READY] - Relay available at [22]
+2024-03-27T00:41:46.675 < <00000011>Fabric[READY] - Received Available from <00000017>
+2024-03-27T00:41:46.675 ~ <00000011>Fabric[READY] - Relay available at [23]
+2024-03-27T00:41:46.675 < <00000011>Fabric[READY] - Received RelayResource from <00000016>
+2024-03-27T00:41:46.675 ~ <00000011>Fabric[READY] - Relay [22] providing 512 relays (0 operational)
+2024-03-27T00:41:46.837 > <00000009>SocketSelect - Forward InboundOverAccepted to <00000012> (from <00000010>)
+2024-03-27T00:41:46.837 < <00000012>PublishingAgent[READY] - Received InboundOverAccepted from <00000010>
+2024-03-27T00:41:46.837 ~ <00000012>PublishingAgent[READY] - Added peer route [GROUP](113,21:fabric)
+2024-03-27T00:41:46.837 ~ <0000000a>SocketSelect - Accepted "127.0.0.1"(45982), server at "0.0.0.0"(43667)
+2024-03-27T00:41:46.837 + <0000001c>SocketProxy[INITIAL] - Created by <0000000a>
+2024-03-27T00:41:46.838 > <0000000a>SocketSelect - Forward Accepted to <00000012> (from <0000001c>)
+2024-03-27T00:41:46.838 < <0000001c>SocketProxy[INITIAL] - Received Start from <0000000a>
+2024-03-27T00:41:46.838 < <00000012>PublishingAgent[READY] - Dropped Accepted from <0000001c>
+2024-03-27T00:41:46.840 > <0000000a>SocketSelect - Forward OpenLoop to <00000012> (from <0000001c>)
+2024-03-27T00:41:46.840 < <00000012>PublishingAgent[READY] - Received OpenLoop from <0000001c>
+2024-03-27T00:41:46.840 + <0000001d>PublisherLoop[INITIAL] - Created by <00000012>
+2024-03-27T00:41:46.840 < <0000001d>PublisherLoop[INITIAL] - Received Start from <00000012>
+2024-03-27T00:41:46.840 > <0000001d>PublisherLoop[INITIAL] - Sent LoopOpened to <0000001c>
+2024-03-27T00:41:46.840 > <0000001d>PublisherLoop[INITIAL] - Forward Delivered to <00000011> (from <0000001c>)
+2024-03-27T00:41:46.840 < <00000011>Fabric[READY] - Received Delivered from <0000001c>
+2024-03-27T00:41:46.840 ~ <00000011>Fabric[READY] - Delivering service to [28]
+2024-03-27T00:41:46.840 < <0000001c>SocketProxy[NORMAL] - Received LoopOpened from <0000001d>
+2024-03-27T00:41:46.865 > <00000009>SocketSelect - Forward InboundOverAccepted to <00000012> (from <00000010>)
+2024-03-27T00:41:46.865 < <00000012>PublishingAgent[READY] - Received InboundOverAccepted from <00000010>
+2024-03-27T00:41:46.865 ~ <00000012>PublishingAgent[READY] - Added peer route [GROUP](113,28:fabric)
+2024-03-27T00:41:46.866 ~ <0000000a>SocketSelect - Accepted "127.0.0.1"(45998), server at "0.0.0.0"(43667)
+2024-03-27T00:41:46.866 + <0000001e>SocketProxy[INITIAL] - Created by <0000000a>
+2024-03-27T00:41:46.866 > <0000000a>SocketSelect - Forward Accepted to <00000012> (from <0000001e>)
+2024-03-27T00:41:46.866 < <0000001e>SocketProxy[INITIAL] - Received Start from <0000000a>
+2024-03-27T00:41:46.866 < <00000012>PublishingAgent[READY] - Dropped Accepted from <0000001e>
+2024-03-27T00:41:46.869 > <0000000a>SocketSelect - Forward OpenLoop to <00000012> (from <0000001e>)
+2024-03-27T00:41:46.869 < <00000012>PublishingAgent[READY] - Received OpenLoop from <0000001e>
+2024-03-27T00:41:46.869 + <0000001f>PublisherLoop[INITIAL] - Created by <00000012>
+2024-03-27T00:41:46.869 < <0000001f>PublisherLoop[INITIAL] - Received Start from <00000012>
+2024-03-27T00:41:46.869 > <0000001f>PublisherLoop[INITIAL] - Sent LoopOpened to <0000001e>
+2024-03-27T00:41:46.869 > <0000001f>PublisherLoop[INITIAL] - Forward Delivered to <00000011> (from <0000001e>)
+2024-03-27T00:41:46.869 < <00000011>Fabric[READY] - Received Delivered from <0000001e>
+2024-03-27T00:41:46.869 ~ <00000011>Fabric[READY] - Delivering service to [30]
+2024-03-27T00:41:46.869 < <0000001e>SocketProxy[NORMAL] - Received LoopOpened from <0000001f>
+2024-03-27T00:41:51.894 < <00000014>SubscriberLoop[LOOPED] - Dropped T2 from <00000003>
+2024-03-27T00:41:51.894 < <00000015>SubscriberLoop[LOOPED] - Dropped T2 from <00000003>
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ 
+
+

@@ -1,0 +1,70 @@
+ FROM https://snyk.io/blog/implementing-tls-ssl-python/
+ 
+ 2859  ls /etc/ssl/certs
+ 2860  ls /etc/ssl/certs/ssl-cert-snakeoil.pem 
+ 2861  ls /etc/ssl/certs/ssl-cert-*
+ 2862  ls /etc/ssl/{certs,private}/ssl-cert-*
+ 2863  sudo ls /etc/ssl/{certs,private}/ssl-cert-*
+ 2864  sudo ls /etc/ssl/private
+ 2865  sudo ls /etc/ssl/certs
+ 2866  sudo ls /etc/ssl/certs/ssl-cert-*
+ 2867  openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+ 2868  ls -la
+ 2869  ls -la *.pem
+ 2870  pwd
+ 2871  openssl version
+ 
+ ****  GENERATE 2048-bit RSA PRIVATE KEY WITH PASSPHRASE
+ 2872  openssl genrsa -aes256 -out key.pem 2048
+ 2873  ls
+ 2874  ls *.pem
+ 
+ ****  CREATE THE CSR USING THE KEY
+ 2875  openssl req -ansar-mx.net -key key.pem -out signreq.csr <<<<<<<<<<<<< bad arg ansar-mx....
+ 2876  openssl req -new -key key.pem -out signreq.csr
+ 2877  ls
+ 2878  ls *.csr
+ 
+ ****  SIGNING THE CERTIFICATE WITH THE KEY
+ 2879  openssl x509 -req -days 365 -in signreq.csr -signkey key.pem -out certificate.pem
+ 2880  ls *.pem
+ 
+ ****  CAN ALSO VIEW THE KEY WITH
+ ****  openssl x509 -text -noout -in certificate.pem
+ 
+ ****  
+ 2881  sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout selfsigned.key -out selfsigned.crt
+ 2882  ls self*
+ 2883  openssl version
+ 2884  history
+ 
+ 
+ 2885  python3 --version
+ 2886  openssl genrsa -out rootCA.key 2048
+ 2887  ls *.key
+ 2888  openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 365 -out rootCA.pem
+ 2889  openssl genrsa -out device.key 2048
+ 2890  openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 364 -sha256
+ 2891  history
+ 2892  ls /etc/
+ 2893  ls /etc/ssl
+ 2894  openssl genrsa --help
+ 2895  ls root*
+ 2896  sudo apt-get install -y ca-certificates
+ 2897  ls root*
+ 2898  cp rootCA.pem local-ca.crt
+ 2899  sudo cp local-ca.crt /usr/local/share/ca-certificates
+ 2900  sudo update-ca-certificates
+ 2901  openssl genrsa -out device.key 2048
+ 2902  openssl req -new -key device.key -out device.csr
+ 2903  openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 364 -sha256
+ 2904  ls *.pem
+ 2905  pwd
+ 2906  history
+(.testing) scott@seneca:~/gh/ansar-testing$ 
+
+
+sudo add-apt-repository ppa:wireshark-dev/stable
+sudo apt-get update
+sudo apt-get install wireshark
+sudo wireshark

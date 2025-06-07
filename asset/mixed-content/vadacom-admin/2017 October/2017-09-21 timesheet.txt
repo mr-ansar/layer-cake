@@ -1,0 +1,7 @@
+10-12
+some discussion about network security with nic
+org a livecd to verify situation wrt malware
+conversion of Phonebook and PhonebookLDAPUserManager from connector (sync) to mux (async)
+
+2-5
+conversion of Phonebook and PhonebookLDAPUserManager from connector (sync) to mux (async)

@@ -1,0 +1,102 @@
+
+    def read(self, entry):
+        """
+        returns list of entries found based off the phonebook provided
+        """
+        assert entry is not None
+        assert entry.commonname is not None
+        if entry.dn is None:
+            # cn=%s,%s % entry.commonname, self.rootdn
+            entry.dn = ','.join(['='.join(['cn', entry.commonname]), self.rootdn])
+        if entry.dn in self._cache:
+            return [self._cache[entry.dn]]
+
+        response = self.connector.read(entry.dn)
+        if len(response) == 0:
+            raise ValueError("Item not found in LDAP tree")
+        retvs = []
+        for (rdn, info) in response:
+            pbe = PhonebookEntry(dn=rdn, **info)
+            self._cache[rdn] = pbe
+            retvs.append(pbe)
+            if pbe.guid:
+                self._by_guid[pbe.guid] = pbe
+
+        return retvs
+
+entry ..... is a pre-existing entry in the phonebook?
+
+connector ... is the open session with ldap
+
+need connect+reconnect
+need multiple connections
+need Phonebook.read that is re-entrant for client calls from different threads
+need async interaction within each connections, e.g. pagination
+need async interaction between Phonebook.read and async request manager.
+
+areas of functionality/capability
+1. async connection object... exists for single network connection to ldap server, performs single request at a time
+2. array of connection objects
+3. manager of array
+4. receiver of async phonebook requests
+5. delegator/queueing of phonebook requests
+
+receive request
+	ch = free channel
+	if not ch:
+		if queue full
+			return OVERLOADED
+		queue.append
+		return
+	r = object_only(ActiveRequest, m, return_address)
+	active[r] = ch
+
+receive completed
+	ch = active[return_address]
+	make free ch
+	if gueue empty:
+		return
+	m, return_address = queue.popleft()
+	r = object_only(ActiveRequest, m, return_address)
+	active[r] = ch
+	
+receive abort
+	ch = active[return_address]
+
+phonebook_agent = root.object_and_thread(PhonebookAgent(...))
+
+mh_Phonebook_Start(queue, message):
+	for i in range(NUMBER_OF_CHANNELS):
+		channel[i] = connector
+	pending = {}
+	
+mh_Phonebook_PhonebookRead(queue, message):
+	if len(pending) == NUMBER_OF_CHANNELS:
+		if len(pending) == PEAK_BEFORE_OVERLOADED:
+			return
+		pending.append
+		return
+	channel[ch] = root.object_only(PhonebookRequest, message, queue.return_address)
+
+mh_Phonebook_Complete(queue, message):
+	try:
+		ch = channels[return_address]
+		del channels[return_address]
+	except KeyError:
+		return # dont know that request
+
+	if queue empty
+		return
+	
+	r = queue.popleft()
+	channel[ch] = root.object_only(PhonebookRequest, message, queue.return_address)
+	
+
+		
+
+Phonebook
+	ch = root.sync_object(PhonebookChannel)
+	ch.send(PhonebookRead(), phonebook_agent)
+	ch.start(T1)
+	ch.select()
+

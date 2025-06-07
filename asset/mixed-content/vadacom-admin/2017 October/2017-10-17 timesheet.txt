@@ -1,0 +1,14 @@
+11-1
+Worked on patch that nic created a while
+back for minor fixes to ansar.
+Ran into bit of hassle with version of
+python/nosetests. queried team.
+sorted and pushed.
+some more code docstrings.
+2-6
+further docstrings and managed to finish and push - yippee.
+will be doing generation of pdf/html tomorrow.
+no doubt further edits will be needed.
+added a section explicitly for nic.
+THE POINT AND OTHER CONCEPTS
+That is at the tail of the ansar google doc.

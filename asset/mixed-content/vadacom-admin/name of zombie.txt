@@ -1,0 +1,19 @@
+no_such_address()
+no_such_object()
+send_only()
+blank_object()
+zero_object()
+zombie_object()
+	send()
+	custom_routine()
+	object_and_thread()
+	object_only()
+	start()
+	cancel()
+
+base()
+sdl()
+no_parent
+non_object
+null_object
+sdl_primitive

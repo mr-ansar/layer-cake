@@ -1,0 +1,12 @@
+11-1
+finally get tapi pieces to cooperate and place calls to webman/asterisk
+broken host-only adaptors
+debugview not working
+changed release build to compile in the tsptrace call
+misleading support doc showing "http://<ip>" when it should be just the naked "<ip>"
+nginx mapping /api/1 to /admin/api/1
+2-6
+everytbing looks good except need to verify at answering end
+consult with nic about using pjsua to get command line sip device registered
+several loops of reload/rebuild to try and get "test_user_301" into the right db
+no joy yet

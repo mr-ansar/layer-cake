@@ -1,0 +1,11 @@
+11-1
+driver looking ok  so moved onto sorting the repo - branches
+the repo had been left in disarray and i didnt help by adding to develop
+the last release was on a separate branch that had never been merged
+merged everything so all in-sync
+setup feature branch for getting it all working
+3-9
+used different files from different branches to compile a working driver
+and complete docs that is also installable,operational.
+battled linker dependencies and missing icons in docs.
+the tapi development cycle is the worst.

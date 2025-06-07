@@ -1,0 +1,15 @@
+I reckon.
+
+Several things on the to-do done already, e.g. zero-knowledge of messages bouncing through top-level directory. Had
+to laugh at the official sockets doc for how to do async sockets;
+
+    "If you’ve understood the preceding, you already know most of what you need to know about the mechanics of using    sockets. You’ll still use the same calls, in much the same ways. It’s just that, if you do it right, your app will be almost    inside-out.
+
+    In Python, you use socket.setblocking(0) to make it non-blocking. In C, it’s more complex, (for one thing, you’ll need to    choose between the BSD flavor O_NONBLOCK and the almost indistinguishable Posix flavor O_NDELAY, which is    completely different from TCP_NODELAY), but it’s the exact same idea. You do this after creating the socket, but before    using it. (Actually, if you’re nuts, you can switch back and forth.)
+                                ^^^^^^^^^^^^^
+    The major mechanical difference is that send, recv, connect and accept can return without having done anything. You    have (of course) a number of choices. You can check return code and error codes and generally drive yourself crazy. If you    don’t believe me, try it sometime. Your app will grow large, buggy and suck CPU. So let’s skip the brain-dead solutions and do it right.                                                                                                                                                               ^^^^^^^^^^^
+    Use select."
+
+I think my version of messaging-with-sockets compares well :-)
+    self.send(AnyKnownMessage(), any-address-within-the-wan)
+And sockets doesnt do anything beyond transmission of blocks.

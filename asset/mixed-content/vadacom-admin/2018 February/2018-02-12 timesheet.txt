@@ -1,0 +1,9 @@
+7-12
+building dev machine
+downloading iso
+creating vms
+configuring vms
+downloading/installing/configuring tools
+1-4
+configuring vms
+downloading/installing/configuring tools

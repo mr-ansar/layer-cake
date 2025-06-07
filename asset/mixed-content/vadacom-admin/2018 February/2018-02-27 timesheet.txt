@@ -1,0 +1,11 @@
+7.30-11
+testing of LDAPRequestMultiplex, phonebook
+load-test-data working
+difficulties with .cfg files being clobbered by ci
+first testing with webman.
+difficulties with ansar logging
+known bug in log level testing - fixed.
+
+12-5.30
+testing LDAPRequestMultiplex
+spring meetings

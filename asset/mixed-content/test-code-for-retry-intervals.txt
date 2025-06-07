@@ -1,0 +1,11 @@
+
+#
+#
+
+from retry import RetryIntervals, intervals
+
+r = RetryIntervals(first_steps=[1,2,4], regular_steps=8)
+
+for i in intervals(r): print(i)
+
+

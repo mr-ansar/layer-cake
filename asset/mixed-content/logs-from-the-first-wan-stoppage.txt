@@ -1,0 +1,931 @@
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ ansar log relay-0 --back=2h
+2024-03-11T14:11:28.977 < <00000016>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:11:29.140 > <00000009>SocketSelect - Forward Relay to <00000017> (from <00000016>)
+2024-03-11T14:11:29.141 < <00000017>SocketProxy[NORMAL] - Received Relay from <00000016>
+2024-03-11T14:11:29.286 > <00000009>SocketSelect - Forward Relay to <00000016> (from <00000017>)
+2024-03-11T14:11:29.287 < <00000016>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:11:29.457 > <00000009>SocketSelect - Forward Relay to <00000017> (from <00000016>)
+2024-03-11T14:11:29.458 < <00000017>SocketProxy[NORMAL] - Received Relay from <00000016>
+2024-03-11T14:11:29.603 > <00000009>SocketSelect - Forward Relay to <00000016> (from <00000017>)
+2024-03-11T14:11:29.604 < <00000016>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:11:29.770 > <00000009>SocketSelect - Forward Relay to <00000017> (from <00000016>)
+2024-03-11T14:11:29.770 < <00000017>SocketProxy[NORMAL] - Received Relay from <00000016>
+2024-03-11T14:11:29.853 > <00000009>SocketSelect - Forward Relay to <00000019> (from <00000018>)
+2024-03-11T14:11:29.855 > <00000009>SocketSelect - Forward Relay to <00000019> (from <00000018>)
+2024-03-11T14:11:29.856 < <00000019>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:11:29.856 < <00000019>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:11:29.858 > <00000009>SocketSelect - Forward Relay to <00000019> (from <00000018>)
+2024-03-11T14:11:29.859 < <00000019>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:11:29.916 > <00000009>SocketSelect - Forward Relay to <00000016> (from <00000017>)
+2024-03-11T14:11:29.916 < <00000016>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:11:29.994 > <00000009>SocketSelect - Forward Relay to <00000019> (from <00000018>)
+2024-03-11T14:11:29.994 > <00000009>SocketSelect - Forward Relay to <00000019> (from <00000018>)
+2024-03-11T14:11:29.994 < <00000019>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:11:29.994 < <00000019>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:26:59.699 ! <00000009>SocketSelect - Unexpected socket termination [110] Connection timed out
+2024-03-11T14:26:59.699 > <00000009>SocketSelect - Sent Stop to <00000019>
+2024-03-11T14:26:59.699 > <00000009>SocketSelect - Forward Abandoned to <00000010> (from <00000019>)
+2024-03-11T14:26:59.699 < <00000019>SocketProxy[NORMAL] - Received Stop from <00000009>
+2024-03-11T14:26:59.699 X <00000019>SocketProxy[NORMAL] - Destroyed
+2024-03-11T14:26:59.699 < <00000010>Relay[READY] - Received Abandoned from <00000019>
+2024-03-11T14:26:59.699 ~ <00000010>Relay[READY] - Abandoning service to "49.224.106.209:22727"
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ 
+
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ ansar log relay-0 --back=2h
+2024-03-11T14:11:29.032 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.032 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.033 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.034 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.034 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.035 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.035 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.036 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.173 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.173 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T14:11:29.173 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.174 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:11:29.386 > <00000009>SocketSelect - Forward Relay to <00000017> (from <00000018>)
+2024-03-11T14:11:29.386 < <00000017>SocketProxy[NORMAL] - Received Relay from <00000018>
+2024-03-11T14:11:29.533 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.534 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.535 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.535 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.536 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.536 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.537 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.537 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.674 > <00000009>SocketSelect - Forward Blob to <00000018> (from <00000017>)
+2024-03-11T14:11:29.674 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T14:11:29.674 < <00000018>SocketProxy[NORMAL] - Received Blob from <00000017>
+2024-03-11T14:11:29.674 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T14:27:05.843 ! <00000009>SocketSelect - Unexpected socket termination [110] Connection timed out
+2024-03-11T14:27:05.843 > <00000009>SocketSelect - Sent Stop to <00000018>
+2024-03-11T14:27:05.843 > <00000009>SocketSelect - Forward Abandoned to <00000010> (from <00000018>)
+2024-03-11T14:27:05.843 < <00000018>SocketProxy[NORMAL] - Received Stop from <00000009>
+2024-03-11T14:27:05.843 X <00000018>SocketProxy[NORMAL] - Destroyed
+2024-03-11T14:27:05.843 < <00000010>Relay[READY] - Received Abandoned from <00000018>
+2024-03-11T14:27:05.843 ~ <00000010>Relay[READY] - Abandoning service to "49.224.106.209:4902"
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ 
+
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ ansar log wan-0 --back=2d
+2024-03-11T07:12:21.637 < <00000122>SocketProxy[NORMAL] - Received YourCloud from <00000013>
+2024-03-11T07:12:22.867 > <0000000a>SocketSelect - Forward DirectoryEnquiry to <00000013> (from <00000122>)
+2024-03-11T07:12:22.867 < <00000013>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000122>
+2024-03-11T07:12:22.867 > <00000013>ServiceDirectory[NORMAL] - Sent DirectoryAncestry to <00000122>
+2024-03-11T07:12:22.867 < <00000122>SocketProxy[NORMAL] - Received DirectoryAncestry from <00000013>
+2024-03-11T07:12:23.139 > <0000000a>SocketSelect - Sent Stop to <00000122>
+2024-03-11T07:12:23.140 > <0000000a>SocketSelect - Forward Abandoned to <00000011> (from <00000122>)
+2024-03-11T07:12:23.140 < <00000122>SocketProxy[NORMAL] - Received Stop from <0000000a>
+2024-03-11T07:12:23.140 X <00000122>SocketProxy[NORMAL] - Destroyed
+2024-03-11T07:12:23.140 < <00000011>Wan[READY] - Received Abandoned from <00000122>
+2024-03-11T07:12:23.140 > <00000011>Wan[READY] - Forward Abandoned to <00000013> (from <00000122>)
+2024-03-11T07:12:23.140 ~ <00000011>Wan[READY] - Abandoning service to "49.224.106.209:51962"
+2024-03-11T07:12:23.140 < <00000013>ServiceDirectory[NORMAL] - Received Abandoned from <00000122>
+2024-03-11T07:19:15.526 > <0000000a>SocketSelect - Forward DirectoryEnquiry to <00000013> (from <0000011b>)
+2024-03-11T07:19:15.526 < <00000013>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <0000011b>
+2024-03-11T07:19:15.526 > <00000013>ServiceDirectory[NORMAL] - Sent DirectoryAncestry to <0000011b>
+2024-03-11T07:19:15.527 < <0000011b>SocketProxy[NORMAL] - Received DirectoryAncestry from <00000013>
+2024-03-11T07:19:54.930 > <0000000a>SocketSelect - Forward FindService to <00000013> (from <0000011b>)
+2024-03-11T07:19:54.930 < <00000013>ServiceDirectory[NORMAL] - Received FindService from <0000011b>
+2024-03-11T07:19:54.930 ~ <00000013>ServiceDirectory[NORMAL] - Added search "16,14,2b,13,11b/this-network-transfer-speed"
+2024-03-11T07:19:54.930 ~ <00000013>ServiceDirectory[NORMAL] - Adds route [WAN] "16,14,2b,13,11b:this-network-transfer-speed"
+2024-03-11T07:19:54.930 + <00000123>ServiceRoute[INITIAL] - Created by <00000013>
+2024-03-11T07:19:54.931 < <00000123>ServiceRoute[INITIAL] - Received Start from <00000013>
+2024-03-11T07:19:54.931 > <00000123>ServiceRoute[INITIAL] - Sent RelayLookup to <00000011>
+2024-03-11T07:19:54.931 > <00000123>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-03-11T07:19:54.931 < <00000011>Wan[READY] - Received RelayLookup from <00000123>
+2024-03-11T07:19:54.931 > <00000011>Wan[READY] - Forward RelayLookup to <00000116> (from <00000123>)
+2024-03-11T07:19:54.931 < <00000116>SocketProxy[NORMAL] - Received RelayLookup from <00000123>
+2024-03-11T07:19:54.935 > <0000000a>SocketSelect - Forward RelayRedirect to <00000123> (from <00000116>)
+2024-03-11T07:19:54.935 < <00000123>ServiceRoute[RELAYING] - Received RelayRedirect from <00000116>
+2024-03-11T07:19:54.935 ~ <00000123>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [16,14,2b,13,11b]
+2024-03-11T07:19:54.935 ~ <00000123>ServiceRoute[RELAYING] - And "InboundByRelay" to [16,1b,11d]
+2024-03-11T07:19:54.935 > <00000123>ServiceRoute[RELAYING] - Sent RouteByRelay to <0000011b>
+2024-03-11T07:19:54.935 > <00000123>ServiceRoute[RELAYING] - Sent InboundByRelay to <0000011d>
+2024-03-11T07:19:54.936 < <0000011b>SocketProxy[NORMAL] - Received RouteByRelay from <00000123>
+2024-03-11T07:19:54.936 < <0000011d>SocketProxy[NORMAL] - Received InboundByRelay from <00000123>
+2024-03-11T07:20:00.156 < <00000123>ServiceRoute[NORMAL] - Dropped T1 from <00000003>
+2024-03-11T07:34:55.089 > <0000000a>SocketSelect - Forward PushedDirectory to <00000013> (from <0000011b>)
+2024-03-11T07:34:55.089 < <00000013>ServiceDirectory[NORMAL] - Received PushedDirectory from <0000011b>
+2024-03-11T07:34:55.089 ~ <00000013>ServiceDirectory[NORMAL] - Pushed "0" listings and "1" finds
+2024-03-11T07:34:55.089 ~ <00000013>ServiceDirectory[NORMAL] - Added search "15,14,2c,13,11b/this-network-complexity-stress"
+2024-03-11T07:34:55.089 ~ <00000013>ServiceDirectory[NORMAL] - Adds route [WAN] "15,14,2c,13,11b:this-network-complexity-stress"
+2024-03-11T07:34:55.089 + <00000124>ServiceRoute[INITIAL] - Created by <00000013>
+2024-03-11T07:34:55.090 < <00000124>ServiceRoute[INITIAL] - Received Start from <00000013>
+2024-03-11T07:34:55.090 > <00000124>ServiceRoute[INITIAL] - Sent RelayLookup to <00000011>
+2024-03-11T07:34:55.090 > <00000124>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-03-11T07:34:55.090 < <00000011>Wan[READY] - Received RelayLookup from <00000124>
+2024-03-11T07:34:55.090 > <00000011>Wan[READY] - Forward RelayLookup to <00000116> (from <00000124>)
+2024-03-11T07:34:55.090 < <00000116>SocketProxy[NORMAL] - Received RelayLookup from <00000124>
+2024-03-11T07:34:55.094 > <0000000a>SocketSelect - Forward RelayRedirect to <00000124> (from <00000116>)
+2024-03-11T07:34:55.095 < <00000124>ServiceRoute[RELAYING] - Received RelayRedirect from <00000116>
+2024-03-11T07:34:55.095 ~ <00000124>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [15,14,2c,13,11b]
+2024-03-11T07:34:55.095 ~ <00000124>ServiceRoute[RELAYING] - And "InboundByRelay" to [16,1a,11d]
+2024-03-11T07:34:55.095 > <00000124>ServiceRoute[RELAYING] - Sent RouteByRelay to <0000011b>
+2024-03-11T07:34:55.095 > <00000124>ServiceRoute[RELAYING] - Sent InboundByRelay to <0000011d>
+2024-03-11T07:34:55.095 < <0000011b>SocketProxy[NORMAL] - Received RouteByRelay from <00000124>
+2024-03-11T07:34:55.095 < <0000011d>SocketProxy[NORMAL] - Received InboundByRelay from <00000124>
+2024-03-11T07:35:00.278 < <00000124>ServiceRoute[NORMAL] - Dropped T1 from <00000003>
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ 
+
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ ansar log wan-1 --back=2d
+2024-03-11T01:59:23.465 > <0000000a>SocketSelect - Forward RouteOverConnected to <00000113> (from <00000012>)
+2024-03-11T01:59:23.465 < <00000113>SubscriptionAgent[READY] - Received RouteOverConnected from <00000012>
+2024-03-11T01:59:23.465 + <00000115>SubscriberLoop[INITIAL] - Created by <00000113>
+2024-03-11T01:59:23.465 ~ <00000113>SubscriptionAgent[READY] - Add service "fabric" and peer route [GROUP](127.0.0.1:35341)
+2024-03-11T01:59:23.466 < <00000115>SubscriberLoop[INITIAL] - Received Start from <00000113>
+2024-03-11T01:59:23.466 ~ <00000115>SubscriberLoop[INITIAL] - Initiate route [GROUP](113,2a:fabric)
+2024-03-11T01:59:23.466 ~ <00000115>SubscriberLoop[INITIAL] - Requests peer 127.0.0.1:35341 (113,2a:fabric)
+2024-03-11T01:59:23.466 > <00000115>SubscriberLoop[INITIAL] - Sent OpenPeer to <0000000c>
+2024-03-11T01:59:23.466 ~ <00000115>SubscriberLoop[INITIAL] - Selected "LOCAL" for retry timeouts
+2024-03-11T01:59:23.466 < <0000000c>PubSub[NORMAL] - Received OpenPeer from <00000115>
+2024-03-11T01:59:23.466 ~ <0000000c>PubSub[NORMAL] - Connect to peer 127.0.0.1:35341
+2024-03-11T01:59:23.466 < <00000011>Wan[STARTING] - Received Published from <00000114>
+2024-03-11T01:59:23.467 > <0000000a>SocketSelect - Forward InboundOverAccepted to <00000114> (from <00000012>)
+2024-03-11T01:59:23.467 ~ <0000000a>SocketSelect - Listening on "0.0.0.0"(5101), requested "0.0.0.0"(5101)
+2024-03-11T01:59:23.468 > <0000000a>SocketSelect - Sent Listening to <00000011>
+2024-03-11T01:59:23.468 ~ <0000000a>SocketSelect - Connected to "127.0.0.1"(35341), at local address "127.0.0.1"(51410)
+2024-03-11T01:59:23.468 + <00000116>SocketProxy[INITIAL] - Created by <0000000a>
+2024-03-11T01:59:23.468 > <0000000a>SocketSelect - Forward Connected to <0000000c> (from <00000116>)
+2024-03-11T01:59:23.468 < <00000116>SocketProxy[INITIAL] - Received Start from <0000000a>
+2024-03-11T01:59:23.468 < <00000114>PublishingAgent[READY] - Received InboundOverAccepted from <00000012>
+2024-03-11T01:59:23.468 ~ <00000114>PublishingAgent[READY] - Added peer route [GROUP](14,25:directory.861f3b7f-c2e8-40ab-8153-d29b52491c73)
+2024-03-11T01:59:23.468 < <0000000c>PubSub[NORMAL] - Received Connected from <00000116>
+2024-03-11T01:59:23.468 > <0000000c>PubSub[NORMAL] - Forward PeerOpened to <00000115> (from <00000116>)
+2024-03-11T01:59:23.468 < <00000115>SubscriberLoop[PEERING] - Received PeerOpened from <00000116>
+2024-03-11T01:59:23.468 ~ <00000115>SubscriberLoop[PEERING] - Initiate latch/loop to [116] (113,2a:fabric)
+2024-03-11T01:59:23.468 + <00000117>Latch[INITIAL] - Created by <00000115>
+2024-03-11T01:59:23.468 > <00000115>SubscriberLoop[PEERING] - Sent OpenLoop to <00000116>
+2024-03-11T01:59:23.468 > <00000115>SubscriberLoop[PEERING] - Sent StartTimer to <00000003>
+2024-03-11T01:59:23.468 < <00000117>Latch[INITIAL] - Received Start from <00000115>
+2024-03-11T01:59:23.468 < <00000116>SocketProxy[NORMAL] - Received OpenLoop from <00000115>
+2024-03-11T01:59:23.468 < <00000011>Wan[LISTENING] - Received Listening from <0000000a>
+2024-03-11T01:59:23.468 ~ <00000011>Wan[LISTENING] - Accepting connections at "52.53.115.135:5101"
+2024-03-11T01:59:23.470 ~ <0000000b>SocketSelect - Accepted "127.0.0.1"(41318), server at "0.0.0.0"(41725)
+2024-03-11T01:59:23.470 + <00000118>SocketProxy[INITIAL] - Created by <0000000b>
+2024-03-11T01:59:23.470 > <0000000b>SocketSelect - Forward Accepted to <00000114> (from <00000118>)
+2024-03-11T01:59:23.470 < <00000118>SocketProxy[INITIAL] - Received Start from <0000000b>
+2024-03-11T01:59:23.471 < <00000114>PublishingAgent[READY] - Dropped Accepted from <00000118>
+2024-03-11T01:59:23.471 > <0000000a>SocketSelect - Forward LoopOpened to <00000115> (from <00000116>)
+2024-03-11T01:59:23.471 < <00000115>SubscriberLoop[LOOPING] - Received LoopOpened from <00000116>
+2024-03-11T01:59:23.471 ~ <00000115>SubscriberLoop[LOOPING] - Loop opened between subscriber [11] and publisher [10,116]
+2024-03-11T01:59:23.471 > <00000115>SubscriberLoop[LOOPING] - Forward Available to <00000011> (from <00000116>)
+2024-03-11T01:59:23.471 > <00000115>SubscriberLoop[LOOPING] - Sent SwitchOver to <00000117>
+2024-03-11T01:59:23.471 < <00000117>Latch[STANDBY] - Received SwitchOver from <00000115>
+2024-03-11T01:59:23.471 > <00000119>Latch[STANDBY] - Sent Ack to <00000115>
+2024-03-11T01:59:23.471 < <00000115>SubscriberLoop[LATCHING] - Received Ack from <00000119>
+2024-03-11T01:59:23.471 < <00000011>Wan[READY] - Received Available from <00000116>
+2024-03-11T01:59:23.471 ~ <00000011>Wan[READY] - Supporting service "fabric" at [278]
+2024-03-11T01:59:23.472 > <0000000b>SocketSelect - Forward OpenLoop to <00000114> (from <00000118>)
+2024-03-11T01:59:23.472 < <00000114>PublishingAgent[READY] - Received OpenLoop from <00000118>
+2024-03-11T01:59:23.472 + <0000011a>PublisherLoop[INITIAL] - Created by <00000114>
+2024-03-11T01:59:23.473 < <0000011a>PublisherLoop[INITIAL] - Received Start from <00000114>
+2024-03-11T01:59:23.473 > <0000011a>PublisherLoop[INITIAL] - Sent LoopOpened to <00000118>
+2024-03-11T01:59:23.473 > <0000011a>PublisherLoop[INITIAL] - Forward Delivered to <00000011> (from <00000118>)
+2024-03-11T01:59:23.473 < <00000118>SocketProxy[NORMAL] - Received LoopOpened from <0000011a>
+2024-03-11T01:59:23.473 < <00000011>Wan[READY] - Received Delivered from <00000118>
+2024-03-11T01:59:23.473 ~ <00000011>Wan[READY] - Delivering service to "280"
+2024-03-11T01:59:23.475 > <0000000b>SocketSelect - Forward Enquiry to <00000011> (from <00000118>)
+2024-03-11T01:59:23.475 < <00000011>Wan[READY] - Received Enquiry from <00000118>
+2024-03-11T01:59:23.475 > <00000011>Wan[READY] - Sent DirectoryManifest to <00000118>
+2024-03-11T01:59:23.475 < <00000118>SocketProxy[NORMAL] - Received DirectoryManifest from <00000011>
+2024-03-11T01:59:28.609 < <00000115>SubscriberLoop[LOOPED] - Dropped T2 from <00000003>
+(.cloud) admin@ip-172-31-14-67:~/gh/ansar-wan/src/ansar$ 
+
+*** TESTING CONSOLE - response-time ***
+[00643480] 2024-03-11T14:11:27.883 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:27.883 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:27.884 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:28.278 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:28.279 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:28.279 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:28.279 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:28.592 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:28.592 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:28.592 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:28.593 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:28.902 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:28.902 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:28.902 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:28.903 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.212 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.212 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.212 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.212 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.529 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.529 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.529 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.530 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.841 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.842 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.842 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.842 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+
+*** TESTING CONSOLE - transfer-speed ***
+[00652676] 2024-03-11T14:11:28.956 < <0000001b>TransferSpeedClient[RUNNING] - Received Ack from <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:28.956 > <0000001b>TransferSpeedClient[RUNNING] - Sent Enquiry to <00000018>
+[00652676] 2024-03-11T14:11:28.957 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.958 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:28.959 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00652676] 2024-03-11T14:11:29.457 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00652676] 2024-03-11T14:11:29.457 < <0000001b>TransferSpeedClient[RUNNING] - Received Ack from <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.457 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.458 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.458 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.458 > <0000001b>TransferSpeedClient[RUNNING] - Sent Enquiry to <00000018>
+[00652676] 2024-03-11T14:11:29.458 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.458 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+
+*** TESTING CONSOLE - complexity-stress ***
+[00653492] 2024-03-11T14:11:25.266 < <0000001b>ComplexityStressClient[GLARING] - Received T1 from <00000003>
+[00653492] 2024-03-11T14:11:25.266 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:25.267 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:25.269 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:25.270 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:25.271 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:25.272 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:25.272 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:25.272 > <0000001b>ComplexityStressClient[GLARING] - Sent Enquiry to <00000018>
+[00653492] 2024-03-11T14:11:25.273 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:25.273 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00653492] 2024-03-11T14:11:25.806 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00653492] 2024-03-11T14:11:25.806 < <0000001b>ComplexityStressClient[RUNNING] - Received Ack from <00000018>
+[00653492] 2024-03-11T14:11:25.806 > <0000001b>ComplexityStressClient[RUNNING] - Sent StartTimer to <00000003>
+[00653492] 2024-03-11T14:11:27.019 < <0000001b>ComplexityStressClient[GLARING] - Received T1 from <00000003>
+[00653492] 2024-03-11T14:11:27.019 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.020 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.022 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.023 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.024 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.025 > <0000001b>ComplexityStressClient[GLARING] - Sent Enquiry to <00000018>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00653492] 2024-03-11T14:11:27.530 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00653492] 2024-03-11T14:11:27.531 < <0000001b>ComplexityStressClient[RUNNING] - Received Ack from <00000018>
+[00653492] 2024-03-11T14:11:27.531 > <0000001b>ComplexityStressClient[RUNNING] - Sent StartTimer to <00000003>
+[00653492] 2024-03-11T14:11:29.773 < <0000001b>ComplexityStressClient[GLARING] - Received T1 from <00000003>
+[00653492] 2024-03-11T14:11:29.773 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.775 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.776 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.778 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.778 > <0000001b>ComplexityStressClient[GLARING] - Sent Enquiry to <00000018>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+
+*** DIRECTORY - seneca host ***
+(.services) scott@seneca:~/gh/ansar-services$ ansar log product-host --back=2d
+..
+2024-03-11T07:19:15.444 < <00000016>SocketProxy[NORMAL] - Received DirectoryEnquiry from <0000002a>
+2024-03-11T07:19:15.607 > <00000009>SocketSelect - Forward Relay to <0000002a> (from <00000016>)
+2024-03-11T07:19:15.608 < <0000002a>SocketProxy[NORMAL] - Received Relay from <00000016>
+2024-03-11T07:19:15.695 > <00000009>SocketSelect - Sent Stop to <0000002a>
+2024-03-11T07:19:15.695 > <00000009>SocketSelect - Forward Abandoned to <0000000e> (from <0000002a>)
+2024-03-11T07:19:15.695 < <0000002a>SocketProxy[NORMAL] - Received Stop from <00000009>
+2024-03-11T07:19:15.695 X <0000002a>SocketProxy[NORMAL] - Destroyed
+2024-03-11T07:19:15.695 < <0000000e>ProductDirectory[READY] - Received Abandoned from <0000002a>
+2024-03-11T07:19:15.695 > <0000000e>ProductDirectory[READY] - Forward Abandoned to <00000010> (from <0000002a>)
+2024-03-11T07:19:15.695 ~ <0000000e>ProductDirectory[READY] - Abandoned by child [42] (127.0.0.1:34774)
+2024-03-11T07:19:15.695 < <00000010>ServiceDirectory[NORMAL] - Received Abandoned from <0000002a>
+2024-03-11T07:19:54.717 ~ <00000009>SocketSelect - Accepted "127.0.0.1"(49304), server at "127.0.0.1"(32177)
+2024-03-11T07:19:54.717 + <0000002b>SocketProxy[INITIAL] - Created by <00000009>
+2024-03-11T07:19:54.717 > <00000009>SocketSelect - Forward Accepted to <0000000e> (from <0000002b>)
+2024-03-11T07:19:54.717 < <0000000e>ProductDirectory[READY] - Received Accepted from <0000002b>
+2024-03-11T07:19:54.717 ~ <0000000e>ProductDirectory[READY] - Accepted child [43] (127.0.0.1:49304)
+2024-03-11T07:19:54.717 < <0000002b>SocketProxy[INITIAL] - Received Start from <00000009>
+2024-03-11T07:19:54.718 > <00000009>SocketSelect - Forward ProductLookup to <0000000e> (from <0000002b>)
+2024-03-11T07:19:54.718 < <0000000e>ProductDirectory[READY] - Received ProductLookup from <0000002b>
+2024-03-11T07:19:54.718 > <0000000e>ProductDirectory[READY] - Forward Accepted to <00000010> (from <0000002b>)
+2024-03-11T07:19:54.718 > <0000000e>ProductDirectory[READY] - Sent YourProduct to <0000002b>
+2024-03-11T07:19:54.718 < <00000010>ServiceDirectory[NORMAL] - Received Accepted from <0000002b>
+2024-03-11T07:19:54.719 < <0000002b>SocketProxy[NORMAL] - Received YourProduct from <0000000e>
+2024-03-11T07:19:54.855 > <00000009>SocketSelect - Forward FindService to <00000010> (from <0000002b>)
+2024-03-11T07:19:54.855 < <00000010>ServiceDirectory[NORMAL] - Received FindService from <0000002b>
+2024-03-11T07:19:54.855 ~ <00000010>ServiceDirectory[NORMAL] - Added search "16,14,2b/this-network-transfer-speed"
+2024-03-11T07:19:54.856 > <00000010>ServiceDirectory[NORMAL] - Sent FindService to <00000016>
+2024-03-11T07:19:54.856 < <00000016>SocketProxy[NORMAL] - Received FindService from <00000010>
+2024-03-11T07:19:55.014 > <00000009>SocketSelect - Forward Relay to <0000002b> (from <00000016>)
+2024-03-11T07:19:55.014 < <0000002b>SocketProxy[NORMAL] - Received Relay from <00000016>
+2024-03-11T07:34:54.872 ~ <00000009>SocketSelect - Accepted "127.0.0.1"(47710), server at "127.0.0.1"(32177)
+2024-03-11T07:34:54.872 + <0000002c>SocketProxy[INITIAL] - Created by <00000009>
+2024-03-11T07:34:54.872 > <00000009>SocketSelect - Forward Accepted to <0000000e> (from <0000002c>)
+2024-03-11T07:34:54.872 < <0000002c>SocketProxy[INITIAL] - Received Start from <00000009>
+2024-03-11T07:34:54.872 < <0000000e>ProductDirectory[READY] - Received Accepted from <0000002c>
+2024-03-11T07:34:54.872 ~ <0000000e>ProductDirectory[READY] - Accepted child [44] (127.0.0.1:47710)
+2024-03-11T07:34:54.873 > <00000009>SocketSelect - Forward ProductLookup to <0000000e> (from <0000002c>)
+2024-03-11T07:34:54.873 < <0000000e>ProductDirectory[READY] - Received ProductLookup from <0000002c>
+2024-03-11T07:34:54.873 > <0000000e>ProductDirectory[READY] - Forward Accepted to <00000010> (from <0000002c>)
+2024-03-11T07:34:54.874 > <0000000e>ProductDirectory[READY] - Sent YourProduct to <0000002c>
+2024-03-11T07:34:54.874 < <00000010>ServiceDirectory[NORMAL] - Received Accepted from <0000002c>
+2024-03-11T07:34:54.874 < <0000002c>SocketProxy[NORMAL] - Received YourProduct from <0000000e>
+2024-03-11T07:34:55.014 > <00000009>SocketSelect - Forward PushedDirectory to <00000010> (from <0000002c>)
+2024-03-11T07:34:55.014 < <00000010>ServiceDirectory[NORMAL] - Received PushedDirectory from <0000002c>
+2024-03-11T07:34:55.014 ~ <00000010>ServiceDirectory[NORMAL] - Pushed "0" listings and "1" finds
+2024-03-11T07:34:55.014 ~ <00000010>ServiceDirectory[NORMAL] - Added search "15,14,2c/this-network-complexity-stress"
+2024-03-11T07:34:55.014 > <00000010>ServiceDirectory[NORMAL] - Sent PushedDirectory to <00000016>
+2024-03-11T07:34:55.014 < <00000016>SocketProxy[NORMAL] - Received PushedDirectory from <00000010>
+2024-03-11T07:34:55.173 > <00000009>SocketSelect - Forward Relay to <0000002c> (from <00000016>)
+2024-03-11T07:34:55.174 < <0000002c>SocketProxy[NORMAL] - Received Relay from <00000016>
+(.services) scott@seneca:~/gh/ansar-services$ 
+
+*** DIRECTORY - seneca lan ***
+(.services) mr-ansar@ansar-lan-directory:~/gh/ansar-services$ ansar log product-lan --back=2d
+..
+2024-03-11T02:22:52.679 < <0000000e>ProductDirectory[READY] - Received ProductLookup from <00000018>
+2024-03-11T02:22:52.679 > <0000000e>ProductDirectory[READY] - Forward Accepted to <00000010> (from <00000018>)
+2024-03-11T02:22:52.679 > <0000000e>ProductDirectory[READY] - Sent YourProduct to <00000018>
+2024-03-11T02:22:52.679 < <00000010>ServiceDirectory[NORMAL] - Received Accepted from <00000018>
+2024-03-11T02:22:52.680 < <00000018>SocketProxy[NORMAL] - Received YourProduct from <0000000e>
+2024-03-11T02:22:52.687 > <00000009>SocketSelect - Forward PushedDirectory to <00000010> (from <00000018>)
+2024-03-11T02:22:52.688 < <00000010>ServiceDirectory[NORMAL] - Received PushedDirectory from <00000018>
+2024-03-11T02:22:52.688 ~ <00000010>ServiceDirectory[NORMAL] - Pushed "3" listings and "0" finds
+2024-03-11T02:22:52.688 ~ <00000010>ServiceDirectory[NORMAL] - Added listing "testing-1-response-time"
+2024-03-11T02:22:52.688 ~ <00000010>ServiceDirectory[NORMAL] - Added listing "testing-1-transfer-speed"
+2024-03-11T02:22:52.688 ~ <00000010>ServiceDirectory[NORMAL] - Added listing "testing-1-complexity-stress"
+2024-03-11T02:22:52.688 > <00000010>ServiceDirectory[NORMAL] - Sent PushedDirectory to <00000017>
+2024-03-11T02:22:52.688 < <00000017>SocketProxy[NORMAL] - Received PushedDirectory from <00000010>
+2024-03-11T02:23:00.069 > <00000009>SocketSelect - Forward DirectoryEnquiry to <00000010> (from <00000018>)
+2024-03-11T02:23:00.070 < <00000010>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:23:00.070 > <00000010>ServiceDirectory[NORMAL] - Forward DirectoryEnquiry to <00000017> (from <00000018>)
+2024-03-11T02:23:00.071 < <00000017>SocketProxy[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:23:00.222 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T02:23:00.223 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T02:23:31.843 > <00000009>SocketSelect - Forward DirectoryEnquiry to <00000010> (from <00000018>)
+2024-03-11T02:23:31.844 < <00000010>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:23:31.844 > <00000010>ServiceDirectory[NORMAL] - Forward DirectoryEnquiry to <00000017> (from <00000018>)
+2024-03-11T02:23:31.845 < <00000017>SocketProxy[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:23:31.997 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T02:23:31.997 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T02:26:11.449 > <00000009>SocketSelect - Forward DirectoryEnquiry to <00000010> (from <00000018>)
+2024-03-11T02:26:11.450 < <00000010>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:26:11.450 > <00000010>ServiceDirectory[NORMAL] - Forward DirectoryEnquiry to <00000017> (from <00000018>)
+2024-03-11T02:26:11.451 < <00000017>SocketProxy[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T02:26:11.603 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T02:26:11.604 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T06:14:53.623 > <00000009>SocketSelect - Forward DirectoryEnquiry to <00000010> (from <00000018>)
+2024-03-11T06:14:53.623 < <00000010>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T06:14:53.623 > <00000010>ServiceDirectory[NORMAL] - Forward DirectoryEnquiry to <00000017> (from <00000018>)
+2024-03-11T06:14:53.623 < <00000017>SocketProxy[NORMAL] - Received DirectoryEnquiry from <00000018>
+2024-03-11T06:14:53.776 > <00000009>SocketSelect - Forward Relay to <00000018> (from <00000017>)
+2024-03-11T06:14:53.776 < <00000018>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T07:19:15.453 > <00000009>SocketSelect - Forward DirectoryEnquiry to <00000010> (from <00000013>)
+2024-03-11T07:19:15.454 < <00000010>ServiceDirectory[NORMAL] - Received DirectoryEnquiry from <00000013>
+2024-03-11T07:19:15.454 > <00000010>ServiceDirectory[NORMAL] - Forward DirectoryEnquiry to <00000017> (from <00000013>)
+2024-03-11T07:19:15.454 < <00000017>SocketProxy[NORMAL] - Received DirectoryEnquiry from <00000013>
+2024-03-11T07:19:15.608 > <00000009>SocketSelect - Forward Relay to <00000013> (from <00000017>)
+2024-03-11T07:19:15.608 < <00000013>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T07:19:54.860 > <00000009>SocketSelect - Forward FindService to <00000010> (from <00000013>)
+2024-03-11T07:19:54.860 < <00000010>ServiceDirectory[NORMAL] - Received FindService from <00000013>
+2024-03-11T07:19:54.860 ~ <00000010>ServiceDirectory[NORMAL] - Added search "16,14,2b,13/this-network-transfer-speed"
+2024-03-11T07:19:54.860 > <00000010>ServiceDirectory[NORMAL] - Sent FindService to <00000017>
+2024-03-11T07:19:54.861 < <00000017>SocketProxy[NORMAL] - Received FindService from <00000010>
+2024-03-11T07:19:55.015 > <00000009>SocketSelect - Forward Relay to <00000013> (from <00000017>)
+2024-03-11T07:19:55.015 < <00000013>SocketProxy[NORMAL] - Received Relay from <00000017>
+2024-03-11T07:34:55.020 > <00000009>SocketSelect - Forward PushedDirectory to <00000010> (from <00000013>)
+2024-03-11T07:34:55.020 < <00000010>ServiceDirectory[NORMAL] - Received PushedDirectory from <00000013>
+2024-03-11T07:34:55.020 ~ <00000010>ServiceDirectory[NORMAL] - Pushed "0" listings and "1" finds
+2024-03-11T07:34:55.020 ~ <00000010>ServiceDirectory[NORMAL] - Added search "15,14,2c,13/this-network-complexity-stress"
+2024-03-11T07:34:55.020 > <00000010>ServiceDirectory[NORMAL] - Sent PushedDirectory to <00000017>
+2024-03-11T07:34:55.020 < <00000017>SocketProxy[NORMAL] - Received PushedDirectory from <00000010>
+2024-03-11T07:34:55.176 > <00000009>SocketSelect - Forward Relay to <00000013> (from <00000017>)
+2024-03-11T07:34:55.176 < <00000013>SocketProxy[NORMAL] - Received Relay from <00000017>
+(.services) mr-ansar@ansar-lan-directory:~/gh/ansar-services$ 
+
+
+(.testing) scott@seneca:~/gh/ansar-testing$ ansar -dl=DEBUG run client-response-time --group-name=client
+[00643480] 2024-03-11T14:11:28.592 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:28.592 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:28.592 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:28.593 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:28.902 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:28.902 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:28.902 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:28.903 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.212 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.212 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.212 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.212 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.529 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.529 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.529 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.530 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00643480] 2024-03-11T14:11:29.841 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00643480] 2024-03-11T14:11:29.842 < <0000001b>ResponseTimeClient[RUNNING] - Received Ack from <00000018>
+[00643480] 2024-03-11T14:11:29.842 > <0000001b>ResponseTimeClient[RUNNING] - Sent Enquiry to <00000018>
+[00643480] 2024-03-11T14:11:29.842 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+^C[00643480] 2024-03-11T14:55:45.082 < <0000000e>node_vector - Received Stop from <00000001>
+[00643480] 2024-03-11T14:55:45.082 > <0000000e>node_vector - Sent Stop to <00000011>
+[00643480] 2024-03-11T14:55:45.082 < <00000011>GroupObject[RUNNING] - Received Stop from <0000000e>
+[00643480] 2024-03-11T14:55:45.082 > <00000011>GroupObject[RUNNING] - Sent Stop to <00000012>
+[00643480] 2024-03-11T14:55:45.082 < <00000012>AddressGroup[READY] - Received Stop from <00000011>
+[00643480] 2024-03-11T14:55:45.082 > <00000012>AddressGroup[READY] - Sent Stop to <00000014>
+[00643480] 2024-03-11T14:55:45.082 > <00000012>AddressGroup[READY] - Sent Stop to <0000001b>
+[00643480] 2024-03-11T14:55:45.082 > <00000012>AddressGroup[READY] - Sent Stop to <0000001c>
+[00643480] 2024-03-11T14:55:45.082 < <00000014>SubscribeToListing[CONNECTED] - Received Stop from <00000012>
+[00643480] 2024-03-11T14:55:45.082 X <00000014>SubscribeToListing[CONNECTED] - Destroyed
+[00643480] 2024-03-11T14:55:45.082 < <00000012>AddressGroup[CLEARING] - Received Completed from <00000014>
+[00643480] 2024-03-11T14:55:45.083 < <0000001b>ResponseTimeClient[RUNNING] - Received Stop from <00000012>
+[00643480] 2024-03-11T14:55:45.083 X <0000001b>ResponseTimeClient[RUNNING] - Destroyed
+[00643480] 2024-03-11T14:55:45.083 < <0000001c>Latch[CARETAKER] - Received Stop from <00000012>
+[00643480] 2024-03-11T14:55:45.083 X <0000001c>Latch[CARETAKER] - Destroyed
+[00643480] 2024-03-11T14:55:45.083 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001b>
+[00643480] 2024-03-11T14:55:45.083 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001c>
+[00643480] 2024-03-11T14:55:45.083 X <00000012>AddressGroup[CLEARING] - Destroyed
+[00643480] 2024-03-11T14:55:45.083 < <00000011>GroupObject[RUNNING] - Received Completed from <00000012>
+[00643480] 2024-03-11T14:55:45.083 X <00000011>GroupObject[RUNNING] - Destroyed
+[00643480] 2024-03-11T14:55:45.083 < <0000000e>node_vector - Received Completed from <00000011>
+[00643480] 2024-03-11T14:55:45.083 X <0000000e>node_vector - Destroyed
+[00643480] 2024-03-11T14:55:45.083 < <0000000d>lock_and_hold - Received Stop from <00000001>
+[00643480] 2024-03-11T14:55:45.086 X <0000000d>lock_and_hold - Destroyed
+[00643480] 2024-03-11T14:55:45.087 < <0000000c>PubSub[NORMAL] - Received Stop from <00000001>
+[00643480] 2024-03-11T14:55:45.087 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000015>
+[00643480] 2024-03-11T14:55:45.087 < <00000015>SubscriptionAgent[READY] - Received Stop from <0000000c>
+[00643480] 2024-03-11T14:55:45.087 > <00000015>SubscriptionAgent[READY] - Sent Stop to <00000017>
+[00643480] 2024-03-11T14:55:45.087 < <00000017>SubscriberLoop[LOOPED] - Received Stop from <00000015>
+[00643480] 2024-03-11T14:55:45.087 > <00000017>SubscriberLoop[LOOPED] - Forward Dropped to <00000014> (from <00000018>)
+[00643480] 2024-03-11T14:55:45.087 > <00000017>SubscriberLoop[LOOPED] - Sent CloseLoop to <00000018>
+[00643480] 2024-03-11T14:55:45.087 > <00000017>SubscriberLoop[LOOPED] - Sent Stop to <0000001a>
+[00643480] 2024-03-11T14:55:45.087 < <0000001a>Latch[CARETAKER] - Received Stop from <00000017>
+[00643480] 2024-03-11T14:55:45.087 X <0000001a>Latch[CARETAKER] - Destroyed
+[00643480] 2024-03-11T14:55:45.087 < <00000017>SubscriberLoop[COMPLETING] - Received Completed from <0000001a>
+[00643480] 2024-03-11T14:55:45.087 > <00000017>SubscriberLoop[COMPLETING] - Sent CloseRelay to <00000018>
+[00643480] 2024-03-11T14:55:45.087 X <00000017>SubscriberLoop[COMPLETING] - Destroyed
+[00643480] 2024-03-11T14:55:45.087 < <00000015>SubscriptionAgent[COMPLETING] - Received Completed from <00000017>
+[00643480] 2024-03-11T14:55:45.087 > <00000015>SubscriptionAgent[COMPLETING] - Sent UnlistFind to <0000000f>
+[00643480] 2024-03-11T14:55:45.087 X <00000015>SubscriptionAgent[COMPLETING] - Destroyed
+[00643480] 2024-03-11T14:55:45.087 < <0000000c>PubSub[COMPLETING] - Received Completed from <00000015>
+[00643480] 2024-03-11T14:55:45.087 X <0000000c>PubSub[COMPLETING] - Destroyed
+[00643480] 2024-03-11T14:55:45.087 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000015>
+[00643480] 2024-03-11T14:55:45.087 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "15/this-network-response-time" (0 matches to stop)
+[00643480] 2024-03-11T14:55:45.087 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000016>
+[00643480] 2024-03-11T14:55:45.088 < <00000018>SocketProxy[NORMAL] - Received CloseLoop from <00000017>
+[00643480] 2024-03-11T14:55:45.088 < <00000018>SocketProxy[NORMAL] - Received CloseRelay from <00000017>
+[00643480] 2024-03-11T14:55:45.088 < <00000016>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+[00643480] 2024-03-11T14:55:45.088 X <0000000b>SocketSelect - Destroyed
+[00643480] 2024-03-11T14:55:45.088 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <00000001>
+[00643480] 2024-03-11T14:55:45.088 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00643480] 2024-03-11T14:55:45.088 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00643480] 2024-03-11T14:55:45.088 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000016>
+[00643480] 2024-03-11T14:55:45.088 < <00000016>SocketProxy[NORMAL] - Received Close from <00000010>
+[00643480] 2024-03-11T14:55:45.088 X <00000016>SocketProxy[NORMAL] - Destroyed
+[00643480] 2024-03-11T14:55:45.088 > <0000000a>SocketSelect - Forward Closed to <00000010> (from <00000016>)
+[00643463] 2024-03-11T14:55:45.088 > <00000009>SocketSelect - Forward UnlistFind to <0000000f> (from <00000014>)
+[00643480] 2024-03-11T14:55:45.088 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000016>
+[00643480] 2024-03-11T14:55:45.088 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00643480] 2024-03-11T14:55:45.088 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00643480] 2024-03-11T14:55:45.088 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <00000001>
+[00643480] 2024-03-11T14:55:45.088 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00643463] 2024-03-11T14:55:45.088 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000014>
+[00643480] 2024-03-11T14:55:45.088 > <0000000a>SocketSelect - Sent Close to <00000018>
+[00643480] 2024-03-11T14:55:45.088 < <00000018>SocketProxy[NORMAL] - Received Close from <0000000a>
+[00643480] 2024-03-11T14:55:45.089 X <00000018>SocketProxy[NORMAL] - Destroyed
+[00643480] 2024-03-11T14:55:45.089 > <0000000a>SocketSelect - Forward Closed to <0000000c> (from <00000018>)
+[00643480] 2024-03-11T14:55:45.089 X <0000000a>SocketSelect - Destroyed
+[00643463] 2024-03-11T14:55:45.088 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "15,14/this-network-response-time" (0 matches to stop)
+[00643463] 2024-03-11T14:55:45.088 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000011>
+[00643463] 2024-03-11T14:55:45.088 > <00000009>SocketSelect - Sent Stop to <00000014>
+[00643463] 2024-03-11T14:55:45.088 > <00000009>SocketSelect - Forward Abandoned to <0000000f> (from <00000014>)
+[00643463] 2024-03-11T14:55:45.088 < <00000011>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+[00643463] 2024-03-11T14:55:45.088 < <0000000f>ServiceDirectory[NORMAL] - Received Abandoned from <00000014>
+[00643463] 2024-03-11T14:55:45.089 < <00000014>SocketProxy[NORMAL] - Received Stop from <00000009>
+[00643463] 2024-03-11T14:55:45.089 X <00000014>SocketProxy[NORMAL] - Destroyed
+[00643448] 2024-03-11T14:55:45.120 < <0000000c>object_vector - Received Stop from <00000001>
+[00643448] 2024-03-11T14:55:45.120 > <0000000c>object_vector - Sent Stop to <0000000d>
+[00643448] 2024-03-11T14:55:45.120 < <0000000d>ansar - Received Stop from <0000000c>
+[00643448] 2024-03-11T14:55:45.120 > <0000000d>ansar - Sent Stop to <00000010>
+[00643448] 2024-03-11T14:55:45.120 < <00000010>Process[EXECUTING] - Received Stop from <0000000d>
+[00643448] 2024-03-11T14:55:45.120 ~ <00000010>Process[EXECUTING] - Relaying local Stop to remote <643463> as SIGINT
+[00643463] 2024-03-11T14:55:45.148 < <0000000d>node_vector - Received Stop from <00000001>
+[00643463] 2024-03-11T14:55:45.148 > <0000000d>node_vector - Sent Stop to <0000000e>
+[00643463] 2024-03-11T14:55:45.148 < <0000000e>Group[RUNNING] - Received Stop from <0000000d>
+[00643463] 2024-03-11T14:55:45.148 > <0000000e>Group[RUNNING] - Sent Stop to <0000000f>
+[00643463] 2024-03-11T14:55:45.148 > <0000000e>Group[RUNNING] - Sent Stop to <00000012>
+[00643463] 2024-03-11T14:55:45.148 < <00000012>Process[EXECUTING] - Received Stop from <0000000e>
+[00643463] 2024-03-11T14:55:45.148 ~ <00000012>Process[EXECUTING] - Relaying local Stop to remote <643478> as SIGINT
+[00643463] 2024-03-11T14:55:45.149 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <0000000e>
+[00643463] 2024-03-11T14:55:45.149 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00643463] 2024-03-11T14:55:45.149 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00643463] 2024-03-11T14:55:45.149 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000011>
+[00643463] 2024-03-11T14:55:45.149 < <00000011>SocketProxy[NORMAL] - Received Close from <00000010>
+[00643463] 2024-03-11T14:55:45.149 X <00000011>SocketProxy[NORMAL] - Destroyed
+[00643463] 2024-03-11T14:55:45.149 > <00000009>SocketSelect - Forward Closed to <00000010> (from <00000011>)
+[00643463] 2024-03-11T14:55:45.149 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000011>
+[00643463] 2024-03-11T14:55:45.149 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00643463] 2024-03-11T14:55:45.149 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00643463] 2024-03-11T14:55:45.149 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <0000000e>
+[00643463] 2024-03-11T14:55:45.149 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00643463] 2024-03-11T14:55:45.149 < <0000000e>Group[CLEARING] - Dropped Ack from <0000000f>
+[00643463] 2024-03-11T14:55:45.149 < <0000000e>Group[CLEARING] - Received Completed from <0000000f>
+[00643463] 2024-03-11T14:55:45.301 X <00000013>wait - Destroyed
+[00643463] 2024-03-11T14:55:45.302 < <00000012>Process[CLEARING] - Received Completed from <00000013>
+[00643463] 2024-03-11T14:55:45.302 ) <00000012>Process[CLEARING] - Process (643478) ended with 0
+[00643463] 2024-03-11T14:55:45.302 X <00000012>Process[CLEARING] - Destroyed
+[00643463] 2024-03-11T14:55:45.302 < <0000000e>Group[CLEARING] - Received Completed from <00000012>
+[00643463] 2024-03-11T14:55:45.302 X <0000000e>Group[CLEARING] - Destroyed
+[00643463] 2024-03-11T14:55:45.302 < <0000000d>node_vector - Received Completed from <0000000e>
+[00643463] 2024-03-11T14:55:45.302 X <0000000d>node_vector - Destroyed
+[00643463] 2024-03-11T14:55:45.302 < <0000000c>lock_and_hold - Received Stop from <00000001>
+[00643463] 2024-03-11T14:55:45.305 X <0000000c>lock_and_hold - Destroyed
+[00643463] 2024-03-11T14:55:45.306 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00643463] 2024-03-11T14:55:45.306 X <0000000b>PubSub[NORMAL] - Destroyed
+[00643463] 2024-03-11T14:55:45.307 X <0000000a>SocketSelect - Destroyed
+[00643463] 2024-03-11T14:55:45.307 X <00000009>SocketSelect - Destroyed
+[00643448] 2024-03-11T14:55:45.548 X <00000011>wait - Destroyed
+[00643448] 2024-03-11T14:55:45.548 < <00000010>Process[CLEARING] - Received Completed from <00000011>
+[00643448] 2024-03-11T14:55:45.548 ) <00000010>Process[CLEARING] - Process (643463) ended with 0
+[00643448] 2024-03-11T14:55:45.548 X <00000010>Process[CLEARING] - Destroyed
+[00643448] 2024-03-11T14:55:45.548 < <0000000d>ansar - Received Completed from <00000010>
+[00643448] 2024-03-11T14:55:45.548 X <0000000d>ansar - Destroyed
+[00643448] 2024-03-11T14:55:45.548 < <0000000c>object_vector - Received Completed from <0000000d>
+[00643448] 2024-03-11T14:55:45.548 X <0000000c>object_vector - Destroyed
+[00643448] 2024-03-11T14:55:45.549 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00643448] 2024-03-11T14:55:45.549 X <0000000b>PubSub[NORMAL] - Destroyed
+[00643448] 2024-03-11T14:55:45.549 X <0000000a>SocketSelect - Destroyed
+[00643448] 2024-03-11T14:55:45.549 X <00000009>SocketSelect - Destroyed
+GroupRun
++   home: "/home/scott/gh/ansar-testing/.ansar-home"
++   role: (vector)
++   +   [0]: "client-response-time"
++   start: 2024-03-11T02:19:34.734715
++   stop: 2024-03-11T14:55:45.301691
++   seconds: 45370.566976
++   completed: (map){
++   +   @ "client-response-time"
++   +   = (any)
++   +   +   ? Incognito
++   +   +   +   type_name: "response_time_connect.ResponseTime"
++   +   +   +   decoded_word: {"average": 0.31920355185866356, "count": 130614, "ended": "2024-03-11T14:55:45.082537", "highest": 0.7802570648491383, "lowest": 0.3160680830478668, "response": [0.31975889205932617, 0.317852258682251, 0.3128926753997803, 0.30980491638183594, 0.31004858016967773, 0.31996941566467285, 0.31018948554992676, 0.31956934928894043, 0.3113901615142822, 0.3359229564666748, 0.31235647201538086, 0.31026220321655273, 0.3271152973175049, 0.32013821601867676, 0.31400489807128906, 0.31888270378112793, 0.3401772975921631, 0.320375919342041, 0.3195223808288574, 0.32877063751220703, 0.3112497329711914, 0.3297154903411865, 0.3170163631439209, 0.3631734848022461, 0.3169996738433838, 0.31293201446533203, 0.31650400161743164, 0.3135099411010742, 0.3173539638519287, 0.3223872184753418, 0.31058382987976074, 0.30939722061157227, 0.3105924129486084, 0.30968594551086426, 0.3200669288635254, 0.3199646472930908, 0.32053589820861816, 0.31939005851745605, 0.32201552391052246, 0.32540273666381836, 0.3120615482330322, 0.33754944801330566, 0.31282901763916016, 0.30945372581481934, 0.3106563091278076, 0.3190572261810303, 0.310605525970459, 0.32012152671813965, 0.3171665668487549, 0.322446346282959, 0.3099803924560547, 0.3204209804534912, 0.3197212219238281, 0.3179793357849121, 0.312283992767334, 0.3097355365753174, 0.3199882507324219, 0.32142090797424316, 0.39510560035705566, 0.3135101795196533, 0.3102707862854004, 0.3098266124725342, 0.3169100284576416, 0.31244444847106934], "seconds": 45369.41604, "started": "2024-03-11T02:19:35.666497"}
++   +   +   +   saved_pointers: {}
++   }
+(.testing) scott@seneca:~/gh/ansar-testing$
+
+(.testing) scott@seneca:~/gh/ansar-testing$ ansar -dl=DEBUG run client-transfer-speed --group-name=ts
+[00652676] 2024-03-11T14:11:29.458 > <0000001b>TransferSpeedClient[RUNNING] - Sent Blob to <00000018>
+[00652676] 2024-03-11T14:11:29.458 > <0000001b>TransferSpeedClient[RUNNING] - Sent Enquiry to <00000018>
+[00652676] 2024-03-11T14:11:29.458 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.458 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Blob from <0000001b>
+[00652676] 2024-03-11T14:11:29.459 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+^C[00652676] 2024-03-11T14:57:01.414 < <0000000e>node_vector - Received Stop from <00000001>
+[00652676] 2024-03-11T14:57:01.414 > <0000000e>node_vector - Sent Stop to <00000011>
+[00652676] 2024-03-11T14:57:01.415 < <00000011>GroupObject[RUNNING] - Received Stop from <0000000e>
+[00652676] 2024-03-11T14:57:01.415 > <00000011>GroupObject[RUNNING] - Sent Stop to <00000012>
+[00652676] 2024-03-11T14:57:01.415 < <00000012>AddressGroup[READY] - Received Stop from <00000011>
+[00652676] 2024-03-11T14:57:01.415 > <00000012>AddressGroup[READY] - Sent Stop to <00000014>
+[00652676] 2024-03-11T14:57:01.415 > <00000012>AddressGroup[READY] - Sent Stop to <0000001b>
+[00652676] 2024-03-11T14:57:01.415 > <00000012>AddressGroup[READY] - Sent Stop to <0000001c>
+[00652676] 2024-03-11T14:57:01.415 < <00000014>SubscribeToListing[CONNECTED] - Received Stop from <00000012>
+[00652676] 2024-03-11T14:57:01.415 X <00000014>SubscribeToListing[CONNECTED] - Destroyed
+[00652676] 2024-03-11T14:57:01.415 < <00000012>AddressGroup[CLEARING] - Received Completed from <00000014>
+[00652676] 2024-03-11T14:57:01.415 < <0000001b>TransferSpeedClient[RUNNING] - Received Stop from <00000012>
+[00652676] 2024-03-11T14:57:01.416 X <0000001b>TransferSpeedClient[RUNNING] - Destroyed
+[00652676] 2024-03-11T14:57:01.417 < <0000001c>Latch[CARETAKER] - Received Stop from <00000012>
+[00652676] 2024-03-11T14:57:01.417 X <0000001c>Latch[CARETAKER] - Destroyed
+[00652676] 2024-03-11T14:57:01.417 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001b>
+[00652676] 2024-03-11T14:57:01.417 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001c>
+[00652676] 2024-03-11T14:57:01.417 X <00000012>AddressGroup[CLEARING] - Destroyed
+[00652676] 2024-03-11T14:57:01.417 < <00000011>GroupObject[RUNNING] - Received Completed from <00000012>
+[00652659] 2024-03-11T14:57:01.418 < <0000000d>node_vector - Received Stop from <00000001>
+[00652659] 2024-03-11T14:57:01.418 > <0000000d>node_vector - Sent Stop to <0000000e>
+[00652676] 2024-03-11T14:57:01.417 X <00000011>GroupObject[RUNNING] - Destroyed
+[00652676] 2024-03-11T14:57:01.417 < <0000000e>node_vector - Received Completed from <00000011>
+[00652676] 2024-03-11T14:57:01.418 X <0000000e>node_vector - Destroyed
+[00652676] 2024-03-11T14:57:01.418 < <0000000d>lock_and_hold - Received Stop from <00000001>
+[00652659] 2024-03-11T14:57:01.419 < <0000000e>Group[RUNNING] - Received Stop from <0000000d>
+[00652659] 2024-03-11T14:57:01.419 > <0000000e>Group[RUNNING] - Sent Stop to <0000000f>
+[00652659] 2024-03-11T14:57:01.419 > <0000000e>Group[RUNNING] - Sent Stop to <00000012>
+[00652659] 2024-03-11T14:57:01.419 < <00000012>Process[EXECUTING] - Received Stop from <0000000e>
+[00652659] 2024-03-11T14:57:01.419 ~ <00000012>Process[EXECUTING] - Relaying local Stop to remote <652674> as SIGINT
+[00652659] 2024-03-11T14:57:01.419 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <0000000e>
+[00652659] 2024-03-11T14:57:01.419 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00652659] 2024-03-11T14:57:01.419 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00652659] 2024-03-11T14:57:01.420 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000011>
+[00652659] 2024-03-11T14:57:01.420 < <00000011>SocketProxy[NORMAL] - Received Close from <00000010>
+[00652659] 2024-03-11T14:57:01.420 X <00000011>SocketProxy[NORMAL] - Destroyed
+[00652659] 2024-03-11T14:57:01.420 > <00000009>SocketSelect - Forward Closed to <00000010> (from <00000011>)
+[00652659] 2024-03-11T14:57:01.420 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000011>
+[00652659] 2024-03-11T14:57:01.420 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00652659] 2024-03-11T14:57:01.420 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00652659] 2024-03-11T14:57:01.420 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <0000000e>
+[00652659] 2024-03-11T14:57:01.420 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00652659] 2024-03-11T14:57:01.420 < <0000000e>Group[CLEARING] - Dropped Ack from <0000000f>
+[00652659] 2024-03-11T14:57:01.420 < <0000000e>Group[CLEARING] - Received Completed from <0000000f>
+[00652676] 2024-03-11T14:57:01.421 X <0000000d>lock_and_hold - Destroyed
+[00652676] 2024-03-11T14:57:01.422 < <0000000c>PubSub[NORMAL] - Received Stop from <00000001>
+[00652676] 2024-03-11T14:57:01.422 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000016>
+[00652676] 2024-03-11T14:57:01.422 < <00000016>SubscriptionAgent[READY] - Received Stop from <0000000c>
+[00652676] 2024-03-11T14:57:01.422 > <00000016>SubscriptionAgent[READY] - Sent Stop to <00000017>
+[00652676] 2024-03-11T14:57:01.422 < <00000017>SubscriberLoop[LOOPED] - Received Stop from <00000016>
+[00652676] 2024-03-11T14:57:01.422 > <00000017>SubscriberLoop[LOOPED] - Forward Dropped to <00000014> (from <00000018>)
+[00652676] 2024-03-11T14:57:01.422 > <00000017>SubscriberLoop[LOOPED] - Sent CloseLoop to <00000018>
+[00652676] 2024-03-11T14:57:01.422 > <00000017>SubscriberLoop[LOOPED] - Sent Stop to <0000001a>
+[00652676] 2024-03-11T14:57:01.422 < <0000001a>Latch[CARETAKER] - Received Stop from <00000017>
+[00652676] 2024-03-11T14:57:01.422 X <0000001a>Latch[CARETAKER] - Destroyed
+[00652676] 2024-03-11T14:57:01.422 < <00000017>SubscriberLoop[COMPLETING] - Received Completed from <0000001a>
+[00652676] 2024-03-11T14:57:01.422 > <00000017>SubscriberLoop[COMPLETING] - Sent CloseRelay to <00000018>
+[00652676] 2024-03-11T14:57:01.422 X <00000017>SubscriberLoop[COMPLETING] - Destroyed
+[00652676] 2024-03-11T14:57:01.422 < <00000016>SubscriptionAgent[COMPLETING] - Received Completed from <00000017>
+[00652676] 2024-03-11T14:57:01.422 > <00000016>SubscriptionAgent[COMPLETING] - Sent UnlistFind to <0000000f>
+[00652676] 2024-03-11T14:57:01.422 X <00000016>SubscriptionAgent[COMPLETING] - Destroyed
+[00652676] 2024-03-11T14:57:01.422 < <0000000c>PubSub[COMPLETING] - Received Completed from <00000016>
+[00652676] 2024-03-11T14:57:01.422 X <0000000c>PubSub[COMPLETING] - Destroyed
+[00652676] 2024-03-11T14:57:01.422 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000016>
+[00652676] 2024-03-11T14:57:01.422 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "16/this-network-transfer-speed" (0 matches to stop)
+[00652676] 2024-03-11T14:57:01.422 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000015>
+[00652676] 2024-03-11T14:57:01.422 < <00000018>SocketProxy[NORMAL] - Received CloseLoop from <00000017>
+[00652676] 2024-03-11T14:57:01.422 < <00000018>SocketProxy[NORMAL] - Received CloseRelay from <00000017>
+[00652676] 2024-03-11T14:57:01.422 < <00000015>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+[00652676] 2024-03-11T14:57:01.423 X <0000000b>SocketSelect - Destroyed
+[00652676] 2024-03-11T14:57:01.423 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <00000001>
+[00652676] 2024-03-11T14:57:01.423 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00652676] 2024-03-11T14:57:01.423 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00652676] 2024-03-11T14:57:01.423 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000015>
+[00652659] 2024-03-11T14:57:01.423 > <00000009>SocketSelect - Forward UnlistFind to <0000000f> (from <00000014>)
+[00652676] 2024-03-11T14:57:01.423 < <00000015>SocketProxy[NORMAL] - Received Close from <00000010>
+[00652676] 2024-03-11T14:57:01.423 X <00000015>SocketProxy[NORMAL] - Destroyed
+[00652676] 2024-03-11T14:57:01.423 > <0000000a>SocketSelect - Forward Closed to <00000010> (from <00000015>)
+[00652659] 2024-03-11T14:57:01.423 > <00000009>SocketSelect - Sent Stop to <00000014>
+[00652676] 2024-03-11T14:57:01.423 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000015>
+[00652676] 2024-03-11T14:57:01.423 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00652659] 2024-03-11T14:57:01.423 > <00000009>SocketSelect - Forward Abandoned to <0000000f> (from <00000014>)
+[00652659] 2024-03-11T14:57:01.423 < <00000014>SocketProxy[NORMAL] - Received Stop from <00000009>
+[00652659] 2024-03-11T14:57:01.423 X <00000014>SocketProxy[NORMAL] - Destroyed
+[00652676] 2024-03-11T14:57:01.423 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00652676] 2024-03-11T14:57:01.423 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <00000001>
+[00652676] 2024-03-11T14:57:01.423 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00652676] 2024-03-11T14:57:01.423 > <0000000a>SocketSelect - Sent Close to <00000018>
+[00652676] 2024-03-11T14:57:01.423 < <00000018>SocketProxy[NORMAL] - Received Close from <0000000a>
+[00652676] 2024-03-11T14:57:01.423 X <00000018>SocketProxy[NORMAL] - Destroyed
+[00652676] 2024-03-11T14:57:01.423 > <0000000a>SocketSelect - Forward Closed to <0000000c> (from <00000018>)
+[00652676] 2024-03-11T14:57:01.424 X <0000000a>SocketSelect - Destroyed
+[00652644] 2024-03-11T14:57:01.452 < <0000000c>object_vector - Received Stop from <00000001>
+[00652644] 2024-03-11T14:57:01.452 > <0000000c>object_vector - Sent Stop to <0000000d>
+[00652644] 2024-03-11T14:57:01.452 < <0000000d>ansar - Received Stop from <0000000c>
+[00652644] 2024-03-11T14:57:01.452 > <0000000d>ansar - Sent Stop to <00000010>
+[00652644] 2024-03-11T14:57:01.452 < <00000010>Process[EXECUTING] - Received Stop from <0000000d>
+[00652644] 2024-03-11T14:57:01.452 ~ <00000010>Process[EXECUTING] - Relaying local Stop to remote <652659> as SIGINT
+[00652659] 2024-03-11T14:57:01.665 X <00000013>wait - Destroyed
+[00652659] 2024-03-11T14:57:01.665 < <00000012>Process[CLEARING] - Received Completed from <00000013>
+[00652659] 2024-03-11T14:57:01.665 ) <00000012>Process[CLEARING] - Process (652674) ended with 0
+[00652659] 2024-03-11T14:57:01.666 X <00000012>Process[CLEARING] - Destroyed
+[00652659] 2024-03-11T14:57:01.666 < <0000000e>Group[CLEARING] - Received Completed from <00000012>
+[00652659] 2024-03-11T14:57:01.666 X <0000000e>Group[CLEARING] - Destroyed
+[00652659] 2024-03-11T14:57:01.666 < <0000000d>node_vector - Received Completed from <0000000e>
+[00652659] 2024-03-11T14:57:01.666 X <0000000d>node_vector - Destroyed
+[00652659] 2024-03-11T14:57:01.666 < <0000000c>lock_and_hold - Received Stop from <00000001>
+[00652659] 2024-03-11T14:57:01.669 X <0000000c>lock_and_hold - Destroyed
+[00652659] 2024-03-11T14:57:01.670 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00652659] 2024-03-11T14:57:01.670 X <0000000b>PubSub[NORMAL] - Destroyed
+[00652659] 2024-03-11T14:57:01.670 X <0000000a>SocketSelect - Destroyed
+[00652659] 2024-03-11T14:57:01.670 X <00000009>SocketSelect - Destroyed
+[00652644] 2024-03-11T14:57:01.897 X <00000011>wait - Destroyed
+[00652644] 2024-03-11T14:57:01.897 < <00000010>Process[CLEARING] - Received Completed from <00000011>
+[00652644] 2024-03-11T14:57:01.897 ) <00000010>Process[CLEARING] - Process (652659) ended with 0
+[00652644] 2024-03-11T14:57:01.897 X <00000010>Process[CLEARING] - Destroyed
+[00652644] 2024-03-11T14:57:01.897 < <0000000d>ansar - Received Completed from <00000010>
+[00652644] 2024-03-11T14:57:01.897 X <0000000d>ansar - Destroyed
+[00652644] 2024-03-11T14:57:01.897 < <0000000c>object_vector - Received Completed from <0000000d>
+[00652644] 2024-03-11T14:57:01.898 X <0000000c>object_vector - Destroyed
+[00652644] 2024-03-11T14:57:01.898 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00652644] 2024-03-11T14:57:01.898 X <0000000b>PubSub[NORMAL] - Destroyed
+[00652644] 2024-03-11T14:57:01.898 X <0000000a>SocketSelect - Destroyed
+[00652644] 2024-03-11T14:57:01.898 X <00000009>SocketSelect - Destroyed
+GroupRun
++   home: "/home/scott/gh/ansar-testing/.ansar-home"
++   role: (vector)
++   +   [0]: "client-transfer-speed"
++   start: 2024-03-11T07:19:54.716766
++   stop: 2024-03-11T14:57:01.66557
++   seconds: 27426.948804
++   completed: (map){
++   +   @ "client-transfer-speed"
++   +   = (any)
++   +   +   ? Incognito
++   +   +   +   type_name: "transfer_speed_connect.TransferSpeed"
++   +   +   +   decoded_word: {"average": 16199.767954139796, "ended": "2024-03-11T14:57:01.415509", "highest": 16544.932578886368, "lowest": 15151.547977612685, "rate": [16471.290728165066, 15203.087705139267, 16574.398133002356, 16494.11798184577, 16382.492326250569, 16754.12181743622, 16662.19155459043, 16421.884271672418, 16697.430329490046, 16388.74356047688, 16376.284884707407, 16734.96185558826, 16380.930262759559, 16372.929360469272, 15412.937711251037, 16783.28027119174, 15759.446620889315, 14883.346494828258, 15766.150042031151, 16119.708214170438, 16657.280328261455, 15751.600669127223, 16692.50642029972, 16108.500846921663, 14872.07295508522, 15725.633374844561, 16384.523454223363, 16107.096302511947, 15504.40153637335, 15390.803686474937, 16406.225421152827, 16383.250034330704, 16700.262689938987, 16723.021325908176, 16949.19069859216, 16162.907147719088, 17083.705008507113, 15812.273550733807, 16720.620618103178, 15393.189388295263, 16042.848350039314, 14904.33494234286, 15775.154753793688, 16651.016256671846, 16445.34602640369, 16722.96435197533, 16057.070500703087, 17058.71816757389, 16400.56360326372, 16702.681913084143, 16384.703155176147, 16132.9382868154, 16650.943633994353, 17056.507989962596, 16403.20999705924, 16379.024948648315, 16705.637888441855, 17091.01300737466, 16051.95452160747, 16284.159017255843, 14207.785217671048, 14364.084818978126, 15795.88143988187, 16347.806692850634], "seconds": 27425.851488, "started": "2024-03-11T07:19:55.564021", "transferred": 398655488}
++   +   +   +   saved_pointers: {}
++   }
+(.testing) scott@seneca:~/gh/ansar-testing$
+
+
+(.testing) scott@seneca:~/gh/ansar-testing$ ansar -dl=DEBUG run client-complexity-stress --group-name=cs
+[00653492] 2024-03-11T14:11:27.022 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.023 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:27.024 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.025 > <0000001b>ComplexityStressClient[GLARING] - Sent Enquiry to <00000018>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:27.026 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+[00653492] 2024-03-11T14:11:27.530 > <0000000a>SocketSelect - Forward Ack to <0000001b> (from <00000018>)
+[00653492] 2024-03-11T14:11:27.531 < <0000001b>ComplexityStressClient[RUNNING] - Received Ack from <00000018>
+[00653492] 2024-03-11T14:11:27.531 > <0000001b>ComplexityStressClient[RUNNING] - Sent StartTimer to <00000003>
+[00653492] 2024-03-11T14:11:29.773 < <0000001b>ComplexityStressClient[GLARING] - Received T1 from <00000003>
+[00653492] 2024-03-11T14:11:29.773 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.775 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.776 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.778 > <0000001b>ComplexityStressClient[GLARING] - Sent Breakfast to <00000018>
+[00653492] 2024-03-11T14:11:29.778 > <0000001b>ComplexityStressClient[GLARING] - Sent Enquiry to <00000018>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Breakfast from <0000001b>
+[00653492] 2024-03-11T14:11:29.778 < <00000018>SocketProxy[NORMAL] - Received Enquiry from <0000001b>
+^C[00653460] 2024-03-11T14:57:48.455 < <0000000c>object_vector - Received Stop from <00000001>
+[00653460] 2024-03-11T14:57:48.455 > <0000000c>object_vector - Sent Stop to <0000000d>
+[00653460] 2024-03-11T14:57:48.455 < <0000000d>ansar - Received Stop from <0000000c>
+[00653460] 2024-03-11T14:57:48.455 > <0000000d>ansar - Sent Stop to <00000010>
+[00653460] 2024-03-11T14:57:48.456 < <00000010>Process[EXECUTING] - Received Stop from <0000000d>
+[00653460] 2024-03-11T14:57:48.456 ~ <00000010>Process[EXECUTING] - Relaying local Stop to remote <653475> as SIGINT
+[00653492] 2024-03-11T14:57:48.462 < <0000000e>node_vector - Received Stop from <00000001>
+[00653492] 2024-03-11T14:57:48.462 > <0000000e>node_vector - Sent Stop to <00000011>
+[00653492] 2024-03-11T14:57:48.462 < <00000011>GroupObject[RUNNING] - Received Stop from <0000000e>
+[00653492] 2024-03-11T14:57:48.462 > <00000011>GroupObject[RUNNING] - Sent Stop to <00000012>
+[00653492] 2024-03-11T14:57:48.462 < <00000012>AddressGroup[READY] - Received Stop from <00000011>
+[00653492] 2024-03-11T14:57:48.463 > <00000012>AddressGroup[READY] - Sent Stop to <00000014>
+[00653492] 2024-03-11T14:57:48.463 > <00000012>AddressGroup[READY] - Sent Stop to <0000001b>
+[00653492] 2024-03-11T14:57:48.463 > <00000012>AddressGroup[READY] - Sent Stop to <0000001c>
+[00653492] 2024-03-11T14:57:48.463 < <00000014>SubscribeToListing[CONNECTED] - Received Stop from <00000012>
+[00653492] 2024-03-11T14:57:48.463 X <00000014>SubscribeToListing[CONNECTED] - Destroyed
+[00653492] 2024-03-11T14:57:48.463 < <00000012>AddressGroup[CLEARING] - Received Completed from <00000014>
+[00653492] 2024-03-11T14:57:48.463 < <0000001b>ComplexityStressClient[RUNNING] - Received Stop from <00000012>
+[00653492] 2024-03-11T14:57:48.463 X <0000001b>ComplexityStressClient[RUNNING] - Destroyed
+[00653492] 2024-03-11T14:57:48.464 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001b>
+[00653492] 2024-03-11T14:57:48.464 < <0000001c>Latch[CARETAKER] - Received Stop from <00000012>
+[00653492] 2024-03-11T14:57:48.464 X <0000001c>Latch[CARETAKER] - Destroyed
+[00653492] 2024-03-11T14:57:48.464 < <00000012>AddressGroup[CLEARING] - Received Completed from <0000001c>
+[00653492] 2024-03-11T14:57:48.464 X <00000012>AddressGroup[CLEARING] - Destroyed
+[00653492] 2024-03-11T14:57:48.465 < <00000011>GroupObject[RUNNING] - Received Completed from <00000012>
+[00653492] 2024-03-11T14:57:48.465 X <00000011>GroupObject[RUNNING] - Destroyed
+[00653492] 2024-03-11T14:57:48.465 < <0000000e>node_vector - Received Completed from <00000011>
+[00653492] 2024-03-11T14:57:48.465 X <0000000e>node_vector - Destroyed
+[00653492] 2024-03-11T14:57:48.466 < <0000000d>lock_and_hold - Received Stop from <00000001>
+[00653492] 2024-03-11T14:57:48.469 X <0000000d>lock_and_hold - Destroyed
+[00653492] 2024-03-11T14:57:48.471 < <0000000c>PubSub[NORMAL] - Received Stop from <00000001>
+[00653492] 2024-03-11T14:57:48.471 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000015>
+[00653492] 2024-03-11T14:57:48.471 < <00000015>SubscriptionAgent[READY] - Received Stop from <0000000c>
+[00653492] 2024-03-11T14:57:48.471 > <00000015>SubscriptionAgent[READY] - Sent Stop to <00000017>
+[00653492] 2024-03-11T14:57:48.471 < <00000017>SubscriberLoop[LOOPED] - Received Stop from <00000015>
+[00653492] 2024-03-11T14:57:48.471 > <00000017>SubscriberLoop[LOOPED] - Forward Dropped to <00000014> (from <00000018>)
+[00653492] 2024-03-11T14:57:48.471 > <00000017>SubscriberLoop[LOOPED] - Sent CloseLoop to <00000018>
+[00653492] 2024-03-11T14:57:48.471 > <00000017>SubscriberLoop[LOOPED] - Sent Stop to <0000001a>
+[00653492] 2024-03-11T14:57:48.471 < <0000001a>Latch[CARETAKER] - Received Stop from <00000017>
+[00653492] 2024-03-11T14:57:48.471 X <0000001a>Latch[CARETAKER] - Destroyed
+[00653492] 2024-03-11T14:57:48.471 < <00000017>SubscriberLoop[COMPLETING] - Received Completed from <0000001a>
+[00653492] 2024-03-11T14:57:48.471 > <00000017>SubscriberLoop[COMPLETING] - Sent CloseRelay to <00000018>
+[00653492] 2024-03-11T14:57:48.471 X <00000017>SubscriberLoop[COMPLETING] - Destroyed
+[00653492] 2024-03-11T14:57:48.471 < <00000015>SubscriptionAgent[COMPLETING] - Received Completed from <00000017>
+[00653492] 2024-03-11T14:57:48.471 > <00000015>SubscriptionAgent[COMPLETING] - Sent UnlistFind to <0000000f>
+[00653492] 2024-03-11T14:57:48.471 X <00000015>SubscriptionAgent[COMPLETING] - Destroyed
+[00653492] 2024-03-11T14:57:48.471 < <0000000c>PubSub[COMPLETING] - Received Completed from <00000015>
+[00653492] 2024-03-11T14:57:48.471 X <0000000c>PubSub[COMPLETING] - Destroyed
+[00653492] 2024-03-11T14:57:48.471 < <00000018>SocketProxy[NORMAL] - Received CloseLoop from <00000017>
+[00653492] 2024-03-11T14:57:48.471 < <00000018>SocketProxy[NORMAL] - Received CloseRelay from <00000017>
+[00653492] 2024-03-11T14:57:48.472 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000015>
+[00653492] 2024-03-11T14:57:48.472 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "15/this-network-complexity-stress" (0 matches to stop)
+[00653492] 2024-03-11T14:57:48.472 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000016>
+[00653492] 2024-03-11T14:57:48.472 < <00000016>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+[00653492] 2024-03-11T14:57:48.472 X <0000000b>SocketSelect - Destroyed
+[00653492] 2024-03-11T14:57:48.472 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <00000001>
+[00653492] 2024-03-11T14:57:48.472 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00653492] 2024-03-11T14:57:48.473 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00653492] 2024-03-11T14:57:48.473 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000016>
+[00653492] 2024-03-11T14:57:48.473 < <00000016>SocketProxy[NORMAL] - Received Close from <00000010>
+[00653492] 2024-03-11T14:57:48.473 X <00000016>SocketProxy[NORMAL] - Destroyed
+[00653492] 2024-03-11T14:57:48.474 > <0000000a>SocketSelect - Forward Closed to <00000010> (from <00000016>)
+[00653492] 2024-03-11T14:57:48.474 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000016>
+[00653492] 2024-03-11T14:57:48.474 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00653475] 2024-03-11T14:57:48.474 > <00000009>SocketSelect - Forward UnlistFind to <0000000f> (from <00000014>)
+[00653492] 2024-03-11T14:57:48.474 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00653492] 2024-03-11T14:57:48.474 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <00000001>
+[00653492] 2024-03-11T14:57:48.474 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00653492] 2024-03-11T14:57:48.474 > <0000000a>SocketSelect - Sent Close to <00000018>
+[00653492] 2024-03-11T14:57:48.474 < <00000018>SocketProxy[NORMAL] - Received Close from <0000000a>
+[00653475] 2024-03-11T14:57:48.474 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000014>
+[00653492] 2024-03-11T14:57:48.474 X <00000018>SocketProxy[NORMAL] - Destroyed
+[00653475] 2024-03-11T14:57:48.474 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "15,14/this-network-complexity-stress" (0 matches to stop)
+[00653492] 2024-03-11T14:57:48.474 > <0000000a>SocketSelect - Forward Closed to <0000000c> (from <00000018>)
+[00653475] 2024-03-11T14:57:48.474 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000011>
+[00653475] 2024-03-11T14:57:48.474 > <00000009>SocketSelect - Sent Stop to <00000014>
+[00653475] 2024-03-11T14:57:48.474 > <00000009>SocketSelect - Forward Abandoned to <0000000f> (from <00000014>)
+[00653492] 2024-03-11T14:57:48.474 X <0000000a>SocketSelect - Destroyed
+[00653475] 2024-03-11T14:57:48.474 < <0000000f>ServiceDirectory[NORMAL] - Received Abandoned from <00000014>
+[00653475] 2024-03-11T14:57:48.474 < <00000011>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+[00653475] 2024-03-11T14:57:48.474 < <00000014>SocketProxy[NORMAL] - Received Stop from <00000009>
+[00653475] 2024-03-11T14:57:48.474 X <00000014>SocketProxy[NORMAL] - Destroyed
+[00653475] 2024-03-11T14:57:48.499 < <0000000d>node_vector - Received Stop from <00000001>
+[00653475] 2024-03-11T14:57:48.499 > <0000000d>node_vector - Sent Stop to <0000000e>
+[00653475] 2024-03-11T14:57:48.499 < <0000000e>Group[RUNNING] - Received Stop from <0000000d>
+[00653475] 2024-03-11T14:57:48.499 > <0000000e>Group[RUNNING] - Sent Stop to <0000000f>
+[00653475] 2024-03-11T14:57:48.499 > <0000000e>Group[RUNNING] - Sent Stop to <00000012>
+[00653475] 2024-03-11T14:57:48.499 < <00000012>Process[EXECUTING] - Received Stop from <0000000e>
+[00653475] 2024-03-11T14:57:48.499 ~ <00000012>Process[EXECUTING] - Relaying local Stop to remote <653490> as SIGINT
+[00653475] 2024-03-11T14:57:48.500 < <0000000f>ServiceDirectory[NORMAL] - Received Stop from <0000000e>
+[00653475] 2024-03-11T14:57:48.500 > <0000000f>ServiceDirectory[NORMAL] - Sent Stop to <00000010>
+[00653475] 2024-03-11T14:57:48.500 < <00000010>ConnectToDirectory[CONNECTED] - Received Stop from <0000000f>
+[00653475] 2024-03-11T14:57:48.500 > <00000010>ConnectToDirectory[CONNECTED] - Sent Close to <00000011>
+[00653475] 2024-03-11T14:57:48.500 < <00000011>SocketProxy[NORMAL] - Received Close from <00000010>
+[00653475] 2024-03-11T14:57:48.500 X <00000011>SocketProxy[NORMAL] - Destroyed
+[00653475] 2024-03-11T14:57:48.501 > <00000009>SocketSelect - Forward Closed to <00000010> (from <00000011>)
+[00653475] 2024-03-11T14:57:48.501 < <00000010>ConnectToDirectory[CLOSING] - Received Closed from <00000011>
+[00653475] 2024-03-11T14:57:48.501 X <00000010>ConnectToDirectory[CLOSING] - Destroyed
+[00653475] 2024-03-11T14:57:48.502 < <0000000f>ServiceDirectory[CLEARING] - Received Completed from <00000010>
+[00653475] 2024-03-11T14:57:48.502 > <0000000f>ServiceDirectory[CLEARING] - Sent Ack to <0000000e>
+[00653475] 2024-03-11T14:57:48.502 X <0000000f>ServiceDirectory[CLEARING] - Destroyed
+[00653475] 2024-03-11T14:57:48.502 < <0000000e>Group[CLEARING] - Dropped Ack from <0000000f>
+[00653475] 2024-03-11T14:57:48.502 < <0000000e>Group[CLEARING] - Received Completed from <0000000f>
+[00653475] 2024-03-11T14:57:48.732 X <00000013>wait - Destroyed
+[00653475] 2024-03-11T14:57:48.732 < <00000012>Process[CLEARING] - Received Completed from <00000013>
+[00653475] 2024-03-11T14:57:48.732 ) <00000012>Process[CLEARING] - Process (653490) ended with 0
+[00653475] 2024-03-11T14:57:48.732 X <00000012>Process[CLEARING] - Destroyed
+[00653475] 2024-03-11T14:57:48.732 < <0000000e>Group[CLEARING] - Received Completed from <00000012>
+[00653475] 2024-03-11T14:57:48.732 X <0000000e>Group[CLEARING] - Destroyed
+[00653475] 2024-03-11T14:57:48.732 < <0000000d>node_vector - Received Completed from <0000000e>
+[00653475] 2024-03-11T14:57:48.732 X <0000000d>node_vector - Destroyed
+[00653475] 2024-03-11T14:57:48.732 < <0000000c>lock_and_hold - Received Stop from <00000001>
+[00653475] 2024-03-11T14:57:48.735 X <0000000c>lock_and_hold - Destroyed
+[00653475] 2024-03-11T14:57:48.736 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00653475] 2024-03-11T14:57:48.736 X <0000000b>PubSub[NORMAL] - Destroyed
+[00653475] 2024-03-11T14:57:48.736 X <0000000a>SocketSelect - Destroyed
+[00653475] 2024-03-11T14:57:48.736 X <00000009>SocketSelect - Destroyed
+[00653460] 2024-03-11T14:57:48.981 X <00000011>wait - Destroyed
+[00653460] 2024-03-11T14:57:48.981 < <00000010>Process[CLEARING] - Received Completed from <00000011>
+[00653460] 2024-03-11T14:57:48.981 ) <00000010>Process[CLEARING] - Process (653475) ended with 0
+[00653460] 2024-03-11T14:57:48.982 X <00000010>Process[CLEARING] - Destroyed
+[00653460] 2024-03-11T14:57:48.982 < <0000000d>ansar - Received Completed from <00000010>
+[00653460] 2024-03-11T14:57:48.982 X <0000000d>ansar - Destroyed
+[00653460] 2024-03-11T14:57:48.982 < <0000000c>object_vector - Received Completed from <0000000d>
+[00653460] 2024-03-11T14:57:48.982 X <0000000c>object_vector - Destroyed
+[00653460] 2024-03-11T14:57:48.982 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00653460] 2024-03-11T14:57:48.982 X <0000000b>PubSub[NORMAL] - Destroyed
+[00653460] 2024-03-11T14:57:48.982 X <0000000a>SocketSelect - Destroyed
+[00653460] 2024-03-11T14:57:48.982 X <00000009>SocketSelect - Destroyed
+GroupRun
++   home: "/home/scott/gh/ansar-testing/.ansar-home"
++   role: (vector)
++   +   [0]: "client-complexity-stress"
++   start: 2024-03-11T07:34:54.871912
++   stop: 2024-03-11T14:57:48.731993
++   seconds: 26573.860081
++   completed: (map){
++   +   @ "client-complexity-stress"
++   +   = (any)
++   +   +   ? Incognito
++   +   +   +   type_name: "complexity_stress_connect.ComplexityStress"
++   +   +   +   decoded_word: {"average": 0.5242272578179836, "count": 10643, "ended": "2024-03-11T14:57:48.463361", "highest": 0.860592395067215, "lowest": 0.5170105509459972, "response": [0.5444309711456299, 0.5180103778839111, 0.5665817260742188, 0.5147497653961182, 0.5141441822052002, 0.5204849243164062, 0.51312255859375, 0.5166580677032471, 0.5457973480224609, 0.5000040531158447, 0.5368497371673584, 0.5171668529510498, 0.5048477649688721, 0.5229086875915527, 0.5098512172698975, 0.5009615421295166, 0.5310394763946533, 0.5120742321014404, 0.5240542888641357, 0.5569605827331543, 0.5396080017089844, 0.5338764190673828, 0.5271844863891602, 0.528465747833252, 0.5212826728820801, 0.50942063331604, 0.5110321044921875, 0.5127177238464355, 0.5252664089202881, 0.5561068058013916, 0.5402791500091553, 0.5126354694366455, 0.5038223266601562, 0.5235073566436768, 0.49691224098205566, 0.5253040790557861, 0.5125491619110107, 0.5289309024810791, 0.5262362957000732, 0.5008597373962402, 0.5078558921813965, 0.527775764465332, 0.5055418014526367, 0.5271809101104736, 0.5360896587371826, 0.5235311985015869, 0.5284545421600342, 0.5145275592803955, 0.5251712799072266, 0.5321075916290283, 0.5901980400085449, 0.521564245223999, 0.5113241672515869, 0.5392906665802002, 0.5032973289489746, 0.5116567611694336, 0.5679450035095215, 0.5444674491882324, 0.519040584564209, 0.5257971286773682, 0.5115675926208496, 0.5176815986633301, 0.5399131774902344, 0.5118684768676758], "seconds": 26572.753728, "started": "2024-03-11T07:34:55.709633"}
++   +   +   +   saved_pointers: {}
++   }
+(.testing) scott@seneca:~/gh/ansar-testing$ 
+
+
+
+
+
+

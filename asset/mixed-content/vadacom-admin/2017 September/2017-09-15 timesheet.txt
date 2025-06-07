@@ -1,0 +1,18 @@
+11-1
+discussion with gerwin about "next step"
+gerwin directed me to current code that is working for the ui
+messaging work will be to replace the sync code;
+
+	connector.read(dn)
+	
+inside webman/modules/phonebook, with async version.
+
+to do that however - need the work from the messaging layer branch.
+branches will not be merged/rebased until after review/accept.
+
+2-4.30
+network hassles. redmine homepage fine but tasks list link goes nowhere
+status update to nic - he says okay review needs to happen.
+software sketching of what connector.read work will look like
+early finish cos of network (reboot needed?) and relocation
+

@@ -1,0 +1,172 @@
+(.testing) mr-ansar@testing-2-lan-1:~/gh/ansar-testing $ ansar log testing-2-response-time --back=1h
+2024-08-07T20:56:22.015 > <00000010>SocketSelect - Forward InboundByRelay to <0000001c> (from <00000018>)
+2024-08-07T20:56:22.016 < <0000001c>PublishingAgent[READY] - Received InboundByRelay from <00000018>
+2024-08-07T20:56:22.016 ~ <0000001c>PublishingAgent[READY] - Peer for relay "1b,1a,35,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time" already known (16 routes pending)
+2024-08-07T20:56:22.016 > <0000001c>PublishingAgent[READY] - Sent InboundByRelay to <00000025>
+2024-08-07T20:56:22.017 ~ <0000001c>PublishingAgent[READY] - Added relay peer [WAN](1b,1a,35,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:56:22.017 < <00000025>SocketProxy[NORMAL] - Received InboundByRelay from <0000001c>
+2024-08-07T20:56:22.989 > <00000010>SocketSelect - Forward OpenLoop to <0000001c> (from <00000025>)
+2024-08-07T20:56:22.990 < <0000001c>PublishingAgent[READY] - Received OpenLoop from <00000025>
+2024-08-07T20:56:22.990 + <00000045>PublisherLoop[INITIAL] - Created by <0000001c>
+2024-08-07T20:56:22.990 < <00000045>PublisherLoop[INITIAL] - Received Start from <0000001c>
+2024-08-07T20:56:22.990 + <00000046>ResponseTimeSession[INITIAL] - Created by <00000045>
+2024-08-07T20:56:22.991 > <00000045>PublisherLoop[INITIAL] - Sent LoopOpened to <00000025>
+2024-08-07T20:56:22.991 > <00000045>PublisherLoop[INITIAL] - Forward Delivered to <0000001a> (from <00000046>)
+2024-08-07T20:56:22.992 < <00000025>SocketProxy[NORMAL] - Received LoopOpened from <00000045>
+2024-08-07T20:56:22.992 < <00000046>ResponseTimeSession[INITIAL] - Received Start from <00000045>
+2024-08-07T20:56:22.992 < <0000001a>PublishAListing[ACCEPTING] - Received Delivered from <00000046>
+2024-08-07T20:56:22.992 > <0000001a>PublishAListing[ACCEPTING] - Forward Delivered to <00000017> (from <00000046>)
+2024-08-07T20:56:22.993 < <00000017>AddressGroup[READY] - Received Delivered from <00000046>
+2024-08-07T20:56:22.993 > <00000017>AddressGroup[READY] - Forward Delivered to <0000001d> (from <00000046>)
+2024-08-07T20:56:22.994 < <0000001d>ResponseTimeServer[RUNNING] - Received Delivered from <00000046>
+2024-08-07T20:56:22.994 ^ <0000001d>ResponseTimeServer[RUNNING] - Session <Delivered> at (70,)
+2024-08-07T20:56:23.403 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:23.404 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:23.404 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:23.405 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:23.812 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:23.813 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:23.813 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:23.813 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:24.216 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:24.217 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:24.217 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:24.217 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:24.620 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:24.621 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:24.621 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:24.621 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:25.024 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:25.024 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:25.024 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:25.025 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:25.428 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:25.428 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:25.429 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:25.429 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:25.828 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:25.829 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:25.829 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:25.830 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:26.233 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:26.233 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:26.233 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:26.234 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:26.637 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:26.637 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:26.637 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:26.638 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:27.041 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:27.042 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:27.042 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:27.042 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:27.445 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:27.446 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:27.446 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:27.447 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:27.849 > <00000010>SocketSelect - Forward Enquiry to <00000046> (from <00000025>)
+2024-08-07T20:56:27.850 < <00000046>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:56:27.850 > <00000046>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:56:27.850 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000046>
+2024-08-07T20:56:28.079 > <00000010>SocketSelect - Forward RetractRoute to <0000001c> (from <00000018>)
+2024-08-07T20:56:28.079 < <0000001c>PublishingAgent[READY] - Received RetractRoute from <00000018>
+2024-08-07T20:56:28.079 ~ <0000001c>PublishingAgent[READY] - Retracted route [WAN](1b,1a,35,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:56:28.134 > <00000010>SocketSelect - Forward CloseLoop to <0000001c> (from <00000025>)
+2024-08-07T20:56:28.134 < <0000001c>PublishingAgent[READY] - Received CloseLoop from <00000025>
+2024-08-07T20:56:28.134 > <0000001c>PublishingAgent[READY] - Forward CloseLoop to <00000045> (from <00000025>)
+2024-08-07T20:56:28.135 < <00000045>PublisherLoop[LOOPED] - Received CloseLoop from <00000025>
+2024-08-07T20:56:28.135 > <00000045>PublisherLoop[LOOPED] - Sent Stop to <00000046>
+2024-08-07T20:56:28.135 < <00000046>ResponseTimeSession[RUNNING] - Received Stop from <00000045>
+2024-08-07T20:56:28.135 X <00000046>ResponseTimeSession[RUNNING] - Destroyed
+2024-08-07T20:56:28.135 < <00000045>PublisherLoop[CLEARING] - Received Completed from <00000046>
+2024-08-07T20:56:28.135 > <00000045>PublisherLoop[CLEARING] - Sent CloseRelay to <00000025>
+2024-08-07T20:56:28.136 > <00000045>PublisherLoop[CLEARING] - Forward Dropped to <0000001a> (from <00000046>)
+2024-08-07T20:56:28.136 X <00000045>PublisherLoop[CLEARING] - Destroyed
+2024-08-07T20:56:28.136 < <0000001c>PublishingAgent[READY] - Received Completed from <00000045>
+2024-08-07T20:56:28.136 < <0000001a>PublishAListing[ACCEPTING] - Received Dropped from <00000046>
+2024-08-07T20:56:28.137 > <0000001a>PublishAListing[ACCEPTING] - Forward Dropped to <00000017> (from <00000046>)
+2024-08-07T20:56:28.137 < <00000025>SocketProxy[NORMAL] - Received CloseRelay from <00000045>
+2024-08-07T20:56:28.137 < <00000017>AddressGroup[READY] - Received Dropped from <00000046>
+2024-08-07T20:56:28.137 > <00000017>AddressGroup[READY] - Forward Dropped to <0000001d> (from <00000046>)
+2024-08-07T20:56:28.138 < <0000001d>ResponseTimeServer[RUNNING] - Dropped Dropped from <00000046>
+2024-08-07T20:57:11.574 > <00000010>SocketSelect - Forward InboundByRelay to <0000001c> (from <00000018>)
+2024-08-07T20:57:11.575 < <0000001c>PublishingAgent[READY] - Received InboundByRelay from <00000018>
+2024-08-07T20:57:11.575 ~ <0000001c>PublishingAgent[READY] - Peer for relay "1b,1a,36,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time" already known (17 routes pending)
+2024-08-07T20:57:11.575 > <0000001c>PublishingAgent[READY] - Sent InboundByRelay to <00000020>
+2024-08-07T20:57:11.576 ~ <0000001c>PublishingAgent[READY] - Added relay peer [WAN](1b,1a,36,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:57:43.673 > <00000010>SocketSelect - Forward RetractRoute to <0000001c> (from <00000018>)
+2024-08-07T20:57:43.674 < <0000001c>PublishingAgent[READY] - Received RetractRoute from <00000018>
+2024-08-07T20:57:43.674 ~ <0000001c>PublishingAgent[READY] - Retracted route [WAN](1b,1a,36,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:57:57.290 > <00000010>SocketSelect - Forward InboundByRelay to <0000001c> (from <00000018>)
+2024-08-07T20:57:57.291 < <0000001c>PublishingAgent[READY] - Received InboundByRelay from <00000018>
+2024-08-07T20:57:57.291 ~ <0000001c>PublishingAgent[READY] - Peer for relay "1b,1a,37,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time" already known (17 routes pending)
+2024-08-07T20:57:57.291 > <0000001c>PublishingAgent[READY] - Sent InboundByRelay to <00000025>
+2024-08-07T20:57:57.292 ~ <0000001c>PublishingAgent[READY] - Added relay peer [WAN](1b,1a,37,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:57:57.292 < <00000025>SocketProxy[NORMAL] - Received InboundByRelay from <0000001c>
+2024-08-07T20:57:57.894 > <00000010>SocketSelect - Forward OpenLoop to <0000001c> (from <00000025>)
+2024-08-07T20:57:57.895 < <0000001c>PublishingAgent[READY] - Received OpenLoop from <00000025>
+2024-08-07T20:57:57.895 + <00000047>PublisherLoop[INITIAL] - Created by <0000001c>
+2024-08-07T20:57:57.896 < <00000047>PublisherLoop[INITIAL] - Received Start from <0000001c>
+2024-08-07T20:57:57.896 + <00000048>ResponseTimeSession[INITIAL] - Created by <00000047>
+2024-08-07T20:57:57.896 > <00000047>PublisherLoop[INITIAL] - Sent LoopOpened to <00000025>
+2024-08-07T20:57:57.896 > <00000047>PublisherLoop[INITIAL] - Forward Delivered to <0000001a> (from <00000048>)
+2024-08-07T20:57:57.897 < <00000048>ResponseTimeSession[INITIAL] - Received Start from <00000047>
+2024-08-07T20:57:57.897 < <00000025>SocketProxy[NORMAL] - Received LoopOpened from <00000047>
+2024-08-07T20:57:57.898 < <0000001a>PublishAListing[ACCEPTING] - Received Delivered from <00000048>
+2024-08-07T20:57:57.898 > <0000001a>PublishAListing[ACCEPTING] - Forward Delivered to <00000017> (from <00000048>)
+2024-08-07T20:57:57.900 < <00000017>AddressGroup[READY] - Received Delivered from <00000048>
+2024-08-07T20:57:57.900 > <00000017>AddressGroup[READY] - Forward Delivered to <0000001d> (from <00000048>)
+2024-08-07T20:57:57.902 < <0000001d>ResponseTimeServer[RUNNING] - Received Delivered from <00000048>
+2024-08-07T20:57:57.902 ^ <0000001d>ResponseTimeServer[RUNNING] - Session <Delivered> at (72,)
+2024-08-07T20:57:58.306 > <00000010>SocketSelect - Forward Enquiry to <00000048> (from <00000025>)
+2024-08-07T20:57:58.307 < <00000048>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:57:58.307 > <00000048>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:57:58.308 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000048>
+2024-08-07T20:57:58.708 > <00000010>SocketSelect - Forward Enquiry to <00000048> (from <00000025>)
+2024-08-07T20:57:58.709 < <00000048>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:57:58.709 > <00000048>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:57:58.709 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000048>
+2024-08-07T20:57:59.110 > <00000010>SocketSelect - Forward Enquiry to <00000048> (from <00000025>)
+2024-08-07T20:57:59.111 < <00000048>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:57:59.111 > <00000048>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:57:59.111 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000048>
+2024-08-07T20:57:59.511 > <00000010>SocketSelect - Forward Enquiry to <00000048> (from <00000025>)
+2024-08-07T20:57:59.512 < <00000048>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:57:59.512 > <00000048>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:57:59.512 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000048>
+2024-08-07T20:57:59.928 > <00000010>SocketSelect - Forward Enquiry to <00000048> (from <00000025>)
+2024-08-07T20:57:59.929 < <00000048>ResponseTimeSession[RUNNING] - Received Enquiry from <00000025>
+2024-08-07T20:57:59.929 > <00000048>ResponseTimeSession[RUNNING] - Sent Ack to <00000025>
+2024-08-07T20:57:59.930 < <00000025>SocketProxy[NORMAL] - Received Ack from <00000048>
+2024-08-07T20:57:59.931 > <00000010>SocketSelect - Forward RetractRoute to <0000001c> (from <00000018>)
+2024-08-07T20:57:59.932 < <0000001c>PublishingAgent[READY] - Received RetractRoute from <00000018>
+2024-08-07T20:57:59.932 ~ <0000001c>PublishingAgent[READY] - Retracted route [WAN](1b,1a,37,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:58:00.132 > <00000010>SocketSelect - Forward CloseLoop to <0000001c> (from <00000025>)
+2024-08-07T20:58:00.132 < <0000001c>PublishingAgent[READY] - Received CloseLoop from <00000025>
+2024-08-07T20:58:00.133 > <0000001c>PublishingAgent[READY] - Forward CloseLoop to <00000047> (from <00000025>)
+2024-08-07T20:58:00.133 < <00000047>PublisherLoop[LOOPED] - Received CloseLoop from <00000025>
+2024-08-07T20:58:00.133 > <00000047>PublisherLoop[LOOPED] - Sent Stop to <00000048>
+2024-08-07T20:58:00.133 < <00000048>ResponseTimeSession[RUNNING] - Received Stop from <00000047>
+2024-08-07T20:58:00.133 X <00000048>ResponseTimeSession[RUNNING] - Destroyed
+2024-08-07T20:58:00.134 < <00000047>PublisherLoop[CLEARING] - Received Completed from <00000048>
+2024-08-07T20:58:00.134 > <00000047>PublisherLoop[CLEARING] - Sent CloseRelay to <00000025>
+2024-08-07T20:58:00.134 > <00000047>PublisherLoop[CLEARING] - Forward Dropped to <0000001a> (from <00000048>)
+2024-08-07T20:58:00.135 X <00000047>PublisherLoop[CLEARING] - Destroyed
+2024-08-07T20:58:00.135 < <0000001c>PublishingAgent[READY] - Received Completed from <00000047>
+2024-08-07T20:58:00.135 < <00000025>SocketProxy[NORMAL] - Received CloseRelay from <00000047>
+2024-08-07T20:58:00.136 < <0000001a>PublishAListing[ACCEPTING] - Received Dropped from <00000048>
+2024-08-07T20:58:00.136 > <0000001a>PublishAListing[ACCEPTING] - Forward Dropped to <00000017> (from <00000048>)
+2024-08-07T20:58:00.136 < <00000017>AddressGroup[READY] - Received Dropped from <00000048>
+2024-08-07T20:58:00.136 > <00000017>AddressGroup[READY] - Forward Dropped to <0000001d> (from <00000048>)
+2024-08-07T20:58:00.137 < <0000001d>ResponseTimeServer[RUNNING] - Dropped Dropped from <00000048>
+2024-08-07T20:59:29.844 > <00000010>SocketSelect - Forward InboundByRelay to <0000001c> (from <00000018>)
+2024-08-07T20:59:29.845 < <0000001c>PublishingAgent[READY] - Received InboundByRelay from <00000018>
+2024-08-07T20:59:29.845 ~ <0000001c>PublishingAgent[READY] - Peer for relay "1b,1a,38,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time" already known (18 routes pending)
+2024-08-07T20:59:29.845 > <0000001c>PublishingAgent[READY] - Sent InboundByRelay to <00000020>
+2024-08-07T20:59:29.846 ~ <0000001c>PublishingAgent[READY] - Added relay peer [WAN](1b,1a,38,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+2024-08-07T20:59:43.575 > <00000010>SocketSelect - Forward RetractRoute to <0000001c> (from <00000018>)
+2024-08-07T20:59:43.576 < <0000001c>PublishingAgent[READY] - Received RetractRoute from <00000018>
+2024-08-07T20:59:43.576 ~ <0000001c>PublishingAgent[READY] - Retracted route [WAN](1b,1a,38,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time)
+(.testing) mr-ansar@testing-2-lan-1:~/gh/ansar-testing $ 
+
+

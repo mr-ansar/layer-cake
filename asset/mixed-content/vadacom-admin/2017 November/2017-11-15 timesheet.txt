@@ -1,0 +1,15 @@
+10-1
+various attempts to create win10 vm for tapi dev
+upgraded vbox
+initially existing webman+buddy vms run
+but complain about old vbox additions
+upgrading vbox additions kills the vm entirely
+reverted to backed up vms but no networking available
+2-6.30
+ugrades appear to crap on host networking
+more fiddling
+eventually rebooted host
+networking in host apparently restored
+some setup of the win10 tapi dev vm.
+enough for today.
+

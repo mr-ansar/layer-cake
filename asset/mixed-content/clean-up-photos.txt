@@ -1,0 +1,1407 @@
+/home/scott/Pictures/2013-05-08-selection-from-becky/3997-ErodedRoad.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2909-TiltedWreck.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2870-stillWorking.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3981-FunnicularRail.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3984-Spider.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/4008-ScottPlaying.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2890-ScottsKing.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3995-DinkAtAnchor.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2895-SharkAttack.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3963-S&SArrive.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/1477.jpg ---> /home/scott/Pictures/2008-04-24-mia-baby
+/home/scott/Pictures/2013-05-08-selection-from-becky/2876-OldStickFace.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2887-GPSTrack.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2912-BigWreck.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3973-RedScar.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2881-UnderTransom.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2896-FiveSharks.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2893-FeedingFrenzy.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2872-PenileExtention.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2899-Closer.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3990-BaieDeProny.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2914-AnotherAngle.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2864-bentrod.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2907-BothWrecks.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2873-LeaningForward.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2908-BigWreck.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2897-Closeup.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2863-scottwithMarlin.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/4001-NoneShallPass.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2898-Closeup.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2904-WrcksDist.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3969-SuzySteering.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3970-SuzySteering.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2911-Together.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/3966-FreshMackeral.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2866-concentration.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3989-S&SHiking.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2906-SmallWreck.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/2900-ThreeSharks.jpg ---> /home/scott/Pictures/2002-04-26 001-sharks-feeding
+/home/scott/Pictures/2013-05-08-selection-from-becky/4003-TooSmall.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2867-LachDriving.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3975-ManMadeFalls.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/4005-River.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2871-MoreWork.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3998-RopeSwing.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3987-RedSoil.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3972-BaieDeProny.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2875-sparkle.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3999-OldBldg.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2879-inwater.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2882-Sweating.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/4006-ErodedRoad.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3986-XephyrFromAbove.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/2865-Scottsmilling.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/2869-workinghard.jpg ---> /home/scott/Pictures/2002-04-23 001-marlin-from-yacht
+/home/scott/Pictures/2013-05-08-selection-from-becky/3993-Xephyr.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2013-05-08-selection-from-becky/3974-PensiveScott.JPG ---> /home/scott/Pictures/2003-08-11 001-sailing-new-caledonia
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4077-MeridianBridge.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4108-ScooterTrash.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4050-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4018-KutoBay.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4014-PineyIsle.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4130-Swollen.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4029-OutBuilding.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4049-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4028-Horse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4136-Dr.Labbe.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4064-FlechFete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4053-OvergrownGate.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4069-ChurchWomen.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4078-MeridianOutrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4009-HalfaTuna.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4111-ResortPool.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4126-Blisters.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4011-ScottFishing.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4115-LegSwelling.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4085-MeridianMainDesk.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4071-ResortEntrance.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4093-GrottoEntrance.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4132-Blisters.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4099-Suzy&Stalagtite.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4079-CarvedFence.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4122-FleshFete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4080-FenceCloseup.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4076-LachOnTree.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4032-Bread&Water.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4058-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4034-Inside.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4041-CowInGrass.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4055-Forest.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4117-InHospital.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4112-VaoEmerRm.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4061-Resort.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4030-HorseOnTether.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4095-GrottoBridge.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4073-ResortHut.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4052-OvergrownGate.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4060-S&SSunbathing.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4089-MeridianFacade.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4010-S&Lach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4082-MeridianDoor.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4113-VaoClinic.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4121-FleshFete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4024-OldWall.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4033-Door.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4037-Windows.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4043-WhiteBeach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4026-InsidePrison.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4044-S&S.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4120-Swollen.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4107-GrottoExit.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4047-S&SOnTheBeach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4131-Swollen.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4110-ResortEntrance.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4027-PrisonWindows.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4088-MeridianPool.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4017-Filets.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4015-IleDesPins.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4048-BlueWater.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4114-Vincent&Jean-Cyril.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4092-DutchBicyclists.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4062-LachWithLight.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4056-Forest.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4051-S&SinTogs.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4039-Suzy&Horse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4014-CaveExit.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4137-AfterSurgery.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4123-FleshFete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4081-FenceCloseup.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4019-LongRoad.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4066-Fleshfete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4094-GrottoEntrance.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4083-MeridianIndoors.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4045-Ferry.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4070-VaoChurch.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4042-NiceHouse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4065-Fleshfete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4035-Inside.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08 001-il-de-pine-broken-leg/4067-FleshFete.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TO-FALE.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/Mrf-sssw.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/SNOOPY.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRFFMMST.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TO-KIDS.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRF-S&FH.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRFWAHOO.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TO-SCHL.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TO-PIG.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRF-S&S.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/SCT&SUZY.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TO-KAVA.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRF-FMST.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRf-Sctt.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/MRF-SUZY.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/Mrf-s-s.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/1999-07-31-sailing-sue-minerva/TOCHFHSE.JPG ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2013-10-28-mia-tracey-athenree/Enlargement - Scott and Mia.JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2013-10-28-mia-tracey-athenree/Enlargement - Mia and Teabag [home].JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2013-10-28-mia-tracey-athenree/Enlargement - Mia face on bed.JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2018-02-20-phuket/DSC00362.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00377.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00378.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00379.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00375.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00372.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00371.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00366.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00363.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00369.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00361.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00359.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00373.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00374.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00364.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00360.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00380.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00370.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00368.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00376.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00365.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00358.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-phuket/DSC00367.JPG ---> /home/scott/Pictures/2017-10-13-malaysia-and-bangkok
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00437.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00464.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00389.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00422.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00476.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00501.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00412.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00444.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00495.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00455.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00393.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00485.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00439.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00383.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00489.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00487.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00491 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00405.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00500.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00505.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00466.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00459.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00401.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00428.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00456.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00384.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00454.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00470.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00398.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00457.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00487 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00434.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00469.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00430.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00410.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00408.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00500 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00390.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00409.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00479.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00408 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00425.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00461 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00426.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00490.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00404.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00488 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00415.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00492.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00473.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00414.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00404 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00402 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00472.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00417.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00510.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00441.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00458.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00433.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00392.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00403.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00447.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00387.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00443.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00493.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00494.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00497.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00399.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00442.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00482.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00423.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00450.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00493 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00442 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00476 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00453.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00418.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00508.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00463.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00445.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00471.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00421 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00467.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00483.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00407.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00452.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00416.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00431.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00484.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00503 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00506.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00477.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00474.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00486.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00507.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00435.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00462.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00502.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00503.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00449.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00502 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00429.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00406.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00481.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00424.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00448.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00436.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00438.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00402.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00491.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00386.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00451.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00411.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00381.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00446.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00468.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00421.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00391.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00461.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00406 (1).JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00385.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00465.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00395.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00488.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00400.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00460.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00496.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00509.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00499.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00480.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00432.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00478.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00420.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00440.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00504.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00427.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00394.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00413.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00388.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00475.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00419.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00397.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00382.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00396.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2018-02-20-ko-pi-pi-siem-reap/DSC00498.JPG ---> /home/scott/Pictures/2017-11-04-koh-lanta-ankar-wat
+/home/scott/Pictures/2002-02-16 001-scott-becky-lach/2807-AllFive.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-02-16 001-scott-becky-lach/2803-Scott&Naite.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0648.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0661.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0652.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0655.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0624.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0646.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0640.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0657.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0647.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0659.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0642.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0653.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0663.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2006-03-16-rmz-at-ruapuke/IMG_0643.JPG ---> /home/scott/Pictures/2022-03-20-recovery-of-sues-canon-card/EOSMISC/100CANON
+/home/scott/Pictures/2016-07-08-bike-for-trademe/DSC00144.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2920-Ned's.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2923-Lachy.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2930-WreckPict.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2922-Surf.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2926-Scott&Lach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2921-NorthBay.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2916-TradewindGuys.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2918-Lidgbird&Gower.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2927-Lidg&Gow.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2919-Anchorage.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2002-04-30 001/2928-AdmiraltyIslets&Lach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2943-ThreeKings.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2934-BallsPyr.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2935-BallsPyr.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2002-05-14 001-balls-pyramid-3-kings/2946-Scott&Beer.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00176.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00168.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00028.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00178.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00142.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00160.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00147 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00089.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00124.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00110.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00173.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00039.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00185.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00183.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00104.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00199.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00098.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00087.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00111.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00005.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00055.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00086.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00063.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00027.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00100.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00095 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00031.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00046.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00147.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00206.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00053.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00042.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00085.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00108.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00006.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00080.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00207.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00106.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00193.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00140.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00066.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00155.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00099.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00201.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00194.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00036.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00172.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00151.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00188.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00076.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00200.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00059.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00122.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00137.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00043.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00114.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00117.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00015.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00120.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00126.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00022.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00157.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00072.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00033.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00119.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00034.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00159.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00078.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00020.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00023.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00135.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00153.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00019.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00164.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00123.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00051.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00007.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00171.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00016.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00037.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00048 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00107.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00081.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00102.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00174.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00196.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00195.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00065.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00020 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00011.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00074.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00149.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00057.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00056.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00173 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00021.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00167.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00025.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00064.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00150.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00131.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00079.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00010.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00082.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00191.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00048.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00114 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00128.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00092.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00134.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00069.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00190.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00045.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00008.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00141.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00044.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00096.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00184.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00109.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00154.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00070.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00062.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00143.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00061.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00090.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00058.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00013.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00097.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00197.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00115.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00136.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00129.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00144.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00035.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00018.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00181.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00175.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00133.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00093.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00169.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00158.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00162.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00094.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00103.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00121.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00101.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00095.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00012.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00145.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00127.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00088.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00073.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00077.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00113.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00075.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00152.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00132.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00060.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00014.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00029.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00192.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00017.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00009.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00054.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00204.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00052.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00032.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00084.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00186.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00158 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00203.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00166.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00068.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00138.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00156.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00116.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00091.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00189.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00041.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00071.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00139.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00105.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00205.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00030.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00038.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00118.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00202.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00026.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00024.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00112.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00125.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00187.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00041 (1).JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00067.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00148.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00146.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00130.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00083.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00165.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00040.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00198.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00049.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00163.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00050.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00161.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00170.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2016-06-30-mia-thames-tairua-bikes/DSC00047.JPG ---> /home/scott/Pictures/2018-02-20-mia-asia-bike-orui
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00630.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00672.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00620.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00624.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00633.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00638.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00657.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00671.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00651.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00642.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00667.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00674.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00637.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00670.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00645.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00623.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00678.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00628.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00631.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00617.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00662.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00626.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00669.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00621.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00663.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00639.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00677.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00658.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00622.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00681.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00682.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00653.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00664.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00679.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00660.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00632.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00666.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00634.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00646.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00675.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00647.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00656.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00680.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00629.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00650.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00640.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00616.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00627.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00625.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00618.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00619.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00636.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00644.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00649.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00659.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00676.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00673.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00668.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00684.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00641.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00648.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00643.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00652.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00683.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00654.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00661.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00665.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00635.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2018-02-21-sri-lanka/DSC00655.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4050-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4018-KutoBay.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4014-PineyIsle.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4029-OutBuilding.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4049-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4028-Horse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4053-OvergrownGate.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4009-HalfaTuna.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4011-ScottFishing.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4032-Bread&Water.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4058-Outrigger.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4034-Inside.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4041-CowInGrass.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4055-Forest.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4061-Resort.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4030-HorseOnTether.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4052-OvergrownGate.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4060-S&SSunbathing.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4010-S&Lach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4024-OldWall.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4033-Door.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4037-Windows.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4043-WhiteBeach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4026-InsidePrison.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4044-S&S.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4047-S&SOnTheBeach.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4027-PrisonWindows.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4017-Filets.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4015-IleDesPins.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4048-BlueWater.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4062-LachWithLight.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4056-Forest.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4051-S&SinTogs.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4039-Suzy&Horse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4019-LongRoad.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4045-Ferry.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4042-NiceHouse.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2003-10-08-tuna-off-il-de-pine/4035-Inside.jpg ---> /home/scott/Pictures/2013-05-08-selection-from-becky
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-08-19 16.47.56.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-11-28 17.25.35.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-07-07 22.09.35.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-14 11.15.19.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-05-12 16.53.54.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-11-28 17.26.39.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-18 08.50.49.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/Enlargement - Scott and Mia.JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-16 12.21.40.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-14 11.15.34.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-11-13 21.01.48.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-05-30 18.37.47.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/Enlargement - Mia and Teabag [home].JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-18 08.50.27.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-09-02 12.07.03.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-20 07.34.02.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-28 16.21.55.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-03-29 15.29.54.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-14 11.14.39.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-06-29 18.49.24.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-17 13.35.35.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-06-29 18.50.22.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-09-14 11.15.46.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-17 13.35.42.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-15 08.44.36.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-07-07 22.09.50.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-07-07 22.08.51.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/Enlargement - Scott and Mia [winter beach].JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-08-19 16.50.51.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-14 18.07.42.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-14 18.07.10.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-17 13.35.10.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/Enlargement - Mia face on bed.JPG ---> /home/scott/Pictures/2009-07-13-best-mia-and-family
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-08-19 16.48.44.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-17 13.35.19.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-07-07 21.56.38.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2013-10-17 13.35.53.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-07-06 18.23.54.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-15 08.29.29.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-12-15 08.31.04.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2014-03-30-mia-raglan-thames/2012-08-19 06.53.04.jpg ---> /home/scott/Pictures/2013-10-28-mia-tracey-athenree
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00587.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00611.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00597.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00553.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00588.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00571.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00573.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00538.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00542.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00518.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00511.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00600.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00556.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00581.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00614.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00604.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00551 (1).JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00569.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00551.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00594.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00595.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00536.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00566.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00545.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00527.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00575.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00523.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00512.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00517.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00582 (1).JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00561.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00565.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00560.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00531.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00535.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00598.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00576 (1).JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00613.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00607.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00574.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00583.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00549.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00515.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00593.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00541.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00543.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00557.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00544.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00572.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00553 (1).JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00579.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00601.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00530.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00540.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00525.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00608.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00546.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00576.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00615.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00596.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00539.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00605.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00584.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00562.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00570.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00550.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00537.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00534.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00513.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00580.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00533.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00558.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00592.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00555.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00599.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00585.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00567.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00559.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00586.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00526.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00516.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00582.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00564.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00529.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00610.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00548.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00602.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00568.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00520.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00554.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00590.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00609.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00519.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00603.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00589.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00528.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00552.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00514.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00578.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00522.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00524.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00532.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00577.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00612.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00563.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00606.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00547.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00591.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-28-cambodia-phnom-phen/DSC00521.JPG ---> /home/scott/Pictures/2018-02-20-siem-reap-phnom-penh-sihanouk
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00818.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00911.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00713.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00764.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00765.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00769.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00685.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00914.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00933.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00971.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00976.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00630.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00771.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00880.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00708.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00852.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00753.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00672.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00905.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00808.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00956.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00706.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00620.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00834.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00876.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00624.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00879.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00860.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00940.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00989.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00872.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00718.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00772.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00838.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00934.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00752.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00695.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00839.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00842.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00817.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00877.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00721.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00967.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00827.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00820.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00974.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00918.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00833.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00910.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00931.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00774.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00958.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00740.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00727.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00722.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00908.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00633.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00712.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00805.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00704.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00896.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00887.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00985.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00996.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00893.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00867.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00744.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00841.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00981.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00798.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00754.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00719.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00638.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00995.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00745.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00899.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00912.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00902.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00733.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00954.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00854.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00657.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00927.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00881.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00847.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00671.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00699.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00651.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00642.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00846.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00890.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00667.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00674.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00968.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00924.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00828.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00637.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00826.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00944.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00947.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00734.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00957.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00999.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00900.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00993.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00812.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00960.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00885.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00898.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00780.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00670.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00731.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00955.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00698.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00868.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00961.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00943.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00799.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00645.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01003.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00777.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00782.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00906.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00623.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00709.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00797.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00792.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00755.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00959.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00716.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00882.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00678.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00628.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00942.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00738.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00710.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00687.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00930.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01011.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00631.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00617.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00781.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00662.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00739.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00806.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00982.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00903.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00742.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00693.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00770.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00758.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00700.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00789.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00626.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00988.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00962.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00822.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00766.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00953.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00669.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01007.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00932.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00794.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00621.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00830.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00814.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00865.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00735.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00945.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00697.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00663.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00853.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00819.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00639.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00677.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00946.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00825.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00821.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00658.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00622.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00681.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00682.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00653.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00856.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00729.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00785.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00816.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00664.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00964.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00787.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00702.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00809.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00679.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00795.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00747.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01005.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00901.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00883.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00889.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00788.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00737.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00696.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00886.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00983.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01012.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00775.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00763.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00790.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00928.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00965.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00843.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00802.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00660.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01006.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00859.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00884.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00632.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00728.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00714.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00929.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00864.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01004.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00952.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00991.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00973.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00725.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00756.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00837.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00666.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00831.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00634.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00768.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00909.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00646.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00866.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00675.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00647.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00935.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00707.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00717.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00757.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00963.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00694.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00938.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00977.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00907.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01001.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00992.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00869.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00779.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00950.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00800.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00941.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00703.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00917.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00761.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00894.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00656.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00680.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00824.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00629.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00760.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00969.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01013.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00759.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00845.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00786.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00650.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01002.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01009.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00892.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00723.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00937.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00916.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00640.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00773.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00732.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00751.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00616.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00627.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00625.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00920.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00913.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00966.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00791.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00804.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00796.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00726.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00915.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00618.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00619.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00636.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00748.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00644.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00749.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00829.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00803.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00711.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00724.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00801.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00897.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00741.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00949.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00970.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00861.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00750.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00926.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00649.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00987.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00659.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00863.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00811.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00813.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00832.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00676.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00715.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00673.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00851.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00784.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00951.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00668.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00888.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00684.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00980.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00904.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00895.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00840.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01008.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00849.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00641.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00778.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00807.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00922.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00855.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00870.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00998.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00815.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00874.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00783.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00948.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00862.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00648.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00705.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00823.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00990.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00878.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00692.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00891.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00936.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00730.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00643.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00972.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00994.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00691.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01000.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00939.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00746.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00997.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00925.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00844.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01014.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00850.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00871.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00921.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00688.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00652.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00701.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00683.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00720.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00810.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00875.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00736.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00978.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00984.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00743.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00654.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00767.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00689.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00975.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00661.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00665.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00836.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00686.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00635.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00986.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00793.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00835.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00762.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00848.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00873.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00655.JPG ---> /home/scott/Pictures/2017-12-16-bali-nusa-lembongan
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00690.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00776.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00858.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC01010.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00979.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00923.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2017-11-29-bali-asia/DSC00919.JPG ---> /home/scott/Pictures/2018-02-21-sri-lanka
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00323.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00330.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00335.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00354 (1).JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00317.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00338.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00333.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00343.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00326.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00346.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00345.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00321.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00348.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00319.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00340.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00355.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00321 (1).JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00332.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00320.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00349.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00325.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00357.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00350.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00341.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00337.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00322.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00351.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00318.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00342.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00324.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00316.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00354.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00329.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00356.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00347.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00339.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00331.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00328.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00334.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00336.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00352.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00353.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00344.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-luang-prabang/DSC00327.JPG ---> /home/scott/Pictures/2017-10-02-luang-prabang
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00225.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00271.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00245.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00259.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00248.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00185.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00255.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00270.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00306.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00229.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00199.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00307 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00285 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00211.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00218.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00223.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00258.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00287 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00311.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00260.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00251.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00206.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00269.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00272 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00207.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00283.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00193.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00241.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00296.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00285.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00233.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00264.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00201.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00281.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00194.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00244.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00213.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00309.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00188.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00308.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00200.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00254.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00312.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00230.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00292 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00263 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00307.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00236 (1).JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00273.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00271 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00253 (1).JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00262.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00224.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00297 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00238.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00295.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00243.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00261.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00314.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00282.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00300.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00217.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00196.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00195.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00262 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00247.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00311 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00208.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00281 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00298.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00310.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00294.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00276.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00210.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00303 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00279.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00267.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00191.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00297.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00301.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00305.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00278.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00268.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00304.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00290.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00209.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00284.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00190.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00299.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00253.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00288.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00220.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00315.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00263.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00197.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00280.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00250.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00222.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00237.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00227.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00252.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00265.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00293.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00256.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00266.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00232.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00289.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00245 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00246.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00192.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00214.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00272.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00286.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00276 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00204.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00257.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00186.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00203.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00236.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00189.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00275.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00277.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00302.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00313.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00292.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00205.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00235.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00234.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00291.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00202.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00274.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00288 - Copy.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00221.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00187.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00242.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00240.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00303.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00212.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00239.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00198.JPG ---> /home/scott/Pictures/2018-02-21-auction-after-se-asia
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00287.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong
+/home/scott/Pictures/2018-02-20-thames-luang-prabang/DSC00249.JPG ---> /home/scott/Pictures/2017-09-22-down-the-mekong

@@ -1,0 +1,147 @@
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ ansar log wan-1 --back=2h
+2024-08-07T20:56:21.901 > <00000010>SocketSelect - Forward FindService to <00000019> (from <00000258>)
+2024-08-07T20:56:21.901 < <00000019>ServiceDirectory[NORMAL] - Received FindService from <00000258>
+2024-08-07T20:56:21.901 ~ <00000019>ServiceDirectory[NORMAL] - Added search "1b,1a,35,14,258/testing-2-response-time"
+2024-08-07T20:56:21.901 ~ <00000019>ServiceDirectory[NORMAL] - Adds route [WAN] "1b,1a,35,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time"
+2024-08-07T20:56:21.901 + <00000286>ServiceRoute[INITIAL] - Created by <00000019>
+2024-08-07T20:56:21.902 < <00000286>ServiceRoute[INITIAL] - Received Start from <00000019>
+2024-08-07T20:56:21.902 > <00000286>ServiceRoute[INITIAL] - Sent RelayLookup to <00000016>
+2024-08-07T20:56:21.902 > <00000286>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-08-07T20:56:21.902 < <00000016>Wan[READY] - Received RelayLookup from <00000286>
+2024-08-07T20:56:21.902 > <00000016>Wan[READY] - Forward RelayLookup to <0000011d> (from <00000286>)
+2024-08-07T20:56:21.902 < <0000011d>SocketProxy[NORMAL] - Received RelayLookup from <00000286>
+2024-08-07T20:56:21.906 > <00000010>SocketSelect - Forward RelayRedirect to <00000286> (from <0000011d>)
+2024-08-07T20:56:21.906 < <00000286>ServiceRoute[RELAYING] - Received RelayRedirect from <0000011d>
+2024-08-07T20:56:21.906 ~ <00000286>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [1b,1a,35,14,258]
+2024-08-07T20:56:21.906 ~ <00000286>ServiceRoute[RELAYING] - And "InboundByRelay" to [1c,1e,1e,255]
+2024-08-07T20:56:21.906 > <00000286>ServiceRoute[RELAYING] - Sent RouteByRelay to <00000258>
+2024-08-07T20:56:21.907 > <00000286>ServiceRoute[RELAYING] - Sent InboundByRelay to <00000255>
+2024-08-07T20:56:21.907 < <00000258>SocketProxy[NORMAL] - Received RouteByRelay from <00000286>
+2024-08-07T20:56:21.907 < <00000255>SocketProxy[NORMAL] - Received InboundByRelay from <00000286>
+2024-08-07T20:56:26.913 < <00000286>ServiceRoute[NORMAL] - Dropped T1 from <00000003>
+2024-08-07T20:56:27.971 > <00000010>SocketSelect - Forward TrimRoutes to <00000019> (from <00000258>)
+2024-08-07T20:56:27.971 < <00000019>ServiceDirectory[NORMAL] - Received TrimRoutes from <00000258>
+2024-08-07T20:56:27.971 ~ <00000019>ServiceDirectory[NORMAL] - Removing 1 subscriptions
+2024-08-07T20:56:27.971 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 publications
+2024-08-07T20:56:27.971 > <00000019>ServiceDirectory[NORMAL] - Sent Stop to <00000286>
+2024-08-07T20:56:27.971 < <00000286>ServiceRoute[NORMAL] - Received Stop from <00000019>
+2024-08-07T20:56:27.971 ~ <00000286>ServiceRoute[NORMAL] - Match sends RetractRoute to [1b,1a,35,14,258] and [1c,1e,1e,255] and completes
+2024-08-07T20:56:27.971 > <00000286>ServiceRoute[NORMAL] - Sent RetractRoute to <00000258>
+2024-08-07T20:56:27.971 > <00000286>ServiceRoute[NORMAL] - Sent RetractRoute to <00000255>
+2024-08-07T20:56:27.971 X <00000286>ServiceRoute[NORMAL] - Destroyed
+2024-08-07T20:56:27.971 < <00000258>SocketProxy[NORMAL] - Received RetractRoute from <00000286>
+2024-08-07T20:56:27.972 < <00000255>SocketProxy[NORMAL] - Received RetractRoute from <00000286>
+2024-08-07T20:56:27.973 < <00000019>ServiceDirectory[NORMAL] - Received Completed from <00000286>
+2024-08-07T20:57:11.459 > <00000010>SocketSelect - Forward PushedDirectory to <00000019> (from <00000258>)
+2024-08-07T20:57:11.459 < <00000019>ServiceDirectory[NORMAL] - Received PushedDirectory from <00000258>
+2024-08-07T20:57:11.459 ~ <00000019>ServiceDirectory[NORMAL] - Pushed "0" listings and "1" finds
+2024-08-07T20:57:11.460 ~ <00000019>ServiceDirectory[NORMAL] - Added search "1b,1a,36,14,258/testing-2-response-time"
+2024-08-07T20:57:11.460 ~ <00000019>ServiceDirectory[NORMAL] - Adds route [WAN] "1b,1a,36,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time"
+2024-08-07T20:57:11.460 + <00000287>ServiceRoute[INITIAL] - Created by <00000019>
+2024-08-07T20:57:11.460 < <00000287>ServiceRoute[INITIAL] - Received Start from <00000019>
+2024-08-07T20:57:11.460 > <00000287>ServiceRoute[INITIAL] - Sent RelayLookup to <00000016>
+2024-08-07T20:57:11.460 > <00000287>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-08-07T20:57:11.460 < <00000016>Wan[READY] - Received RelayLookup from <00000287>
+2024-08-07T20:57:11.460 > <00000016>Wan[READY] - Forward RelayLookup to <0000011d> (from <00000287>)
+2024-08-07T20:57:11.460 < <0000011d>SocketProxy[NORMAL] - Received RelayLookup from <00000287>
+2024-08-07T20:57:11.464 > <00000010>SocketSelect - Forward RelayRedirect to <00000287> (from <0000011d>)
+2024-08-07T20:57:11.464 < <00000287>ServiceRoute[RELAYING] - Received RelayRedirect from <0000011d>
+2024-08-07T20:57:11.464 ~ <00000287>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [1b,1a,36,14,258]
+2024-08-07T20:57:11.464 ~ <00000287>ServiceRoute[RELAYING] - And "InboundByRelay" to [1c,1e,1e,255]
+2024-08-07T20:57:11.464 > <00000287>ServiceRoute[RELAYING] - Sent RouteByRelay to <00000258>
+2024-08-07T20:57:11.464 > <00000287>ServiceRoute[RELAYING] - Sent InboundByRelay to <00000255>
+2024-08-07T20:57:11.465 < <00000258>SocketProxy[NORMAL] - Received RouteByRelay from <00000287>
+2024-08-07T20:57:11.465 < <00000255>SocketProxy[NORMAL] - Received InboundByRelay from <00000287>
+2024-08-07T20:57:16.702 < <00000287>ServiceRoute[NORMAL] - Dropped T1 from <00000003>
+2024-08-07T20:57:43.566 > <00000010>SocketSelect - Forward UnlistFind to <00000019> (from <00000258>)
+2024-08-07T20:57:43.566 < <00000019>ServiceDirectory[NORMAL] - Received UnlistFind from <00000258>
+2024-08-07T20:57:43.566 ~ <00000019>ServiceDirectory[NORMAL] - Removed find "1b,1a,36,14,258/testing-2-response-time" (1 matches to stop)
+2024-08-07T20:57:43.566 > <00000019>ServiceDirectory[NORMAL] - Sent Stop to <00000287>
+2024-08-07T20:57:43.566 < <00000287>ServiceRoute[NORMAL] - Received Stop from <00000019>
+2024-08-07T20:57:43.566 ~ <00000287>ServiceRoute[NORMAL] - Match sends RetractRoute to [1b,1a,36,14,258] and [1c,1e,1e,255] and completes
+2024-08-07T20:57:43.566 > <00000287>ServiceRoute[NORMAL] - Sent RetractRoute to <00000258>
+2024-08-07T20:57:43.566 > <00000287>ServiceRoute[NORMAL] - Sent RetractRoute to <00000255>
+2024-08-07T20:57:43.566 X <00000287>ServiceRoute[NORMAL] - Destroyed
+2024-08-07T20:57:43.566 < <00000019>ServiceDirectory[NORMAL] - Received Completed from <00000287>
+2024-08-07T20:57:43.566 < <00000258>SocketProxy[NORMAL] - Received RetractRoute from <00000287>
+2024-08-07T20:57:43.566 < <00000255>SocketProxy[NORMAL] - Received RetractRoute from <00000287>
+2024-08-07T20:57:43.763 > <00000010>SocketSelect - Forward TrimRoutes to <00000019> (from <00000258>)
+2024-08-07T20:57:43.763 < <00000019>ServiceDirectory[NORMAL] - Received TrimRoutes from <00000258>
+2024-08-07T20:57:43.763 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 subscriptions
+2024-08-07T20:57:43.763 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 publications
+2024-08-07T20:57:57.176 > <00000010>SocketSelect - Forward FindService to <00000019> (from <00000258>)
+2024-08-07T20:57:57.176 < <00000019>ServiceDirectory[NORMAL] - Received FindService from <00000258>
+2024-08-07T20:57:57.176 ~ <00000019>ServiceDirectory[NORMAL] - Added search "1b,1a,37,14,258/testing-2-response-time"
+2024-08-07T20:57:57.176 ~ <00000019>ServiceDirectory[NORMAL] - Adds route [WAN] "1b,1a,37,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time"
+2024-08-07T20:57:57.176 + <00000288>ServiceRoute[INITIAL] - Created by <00000019>
+2024-08-07T20:57:57.176 < <00000288>ServiceRoute[INITIAL] - Received Start from <00000019>
+2024-08-07T20:57:57.176 > <00000288>ServiceRoute[INITIAL] - Sent RelayLookup to <00000016>
+2024-08-07T20:57:57.176 > <00000288>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-08-07T20:57:57.177 < <00000016>Wan[READY] - Received RelayLookup from <00000288>
+2024-08-07T20:57:57.177 > <00000016>Wan[READY] - Forward RelayLookup to <0000011d> (from <00000288>)
+2024-08-07T20:57:57.177 < <0000011d>SocketProxy[NORMAL] - Received RelayLookup from <00000288>
+2024-08-07T20:57:57.181 > <00000010>SocketSelect - Forward RelayRedirect to <00000288> (from <0000011d>)
+2024-08-07T20:57:57.181 < <00000288>ServiceRoute[RELAYING] - Received RelayRedirect from <0000011d>
+2024-08-07T20:57:57.181 ~ <00000288>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [1b,1a,37,14,258]
+2024-08-07T20:57:57.181 ~ <00000288>ServiceRoute[RELAYING] - And "InboundByRelay" to [1c,1e,1e,255]
+2024-08-07T20:57:57.181 > <00000288>ServiceRoute[RELAYING] - Sent RouteByRelay to <00000258>
+2024-08-07T20:57:57.181 > <00000288>ServiceRoute[RELAYING] - Sent InboundByRelay to <00000255>
+2024-08-07T20:57:57.181 < <00000258>SocketProxy[NORMAL] - Received RouteByRelay from <00000288>
+2024-08-07T20:57:57.182 < <00000255>SocketProxy[NORMAL] - Received InboundByRelay from <00000288>
+2024-08-07T20:57:59.822 > <00000010>SocketSelect - Forward TrimRoutes to <00000019> (from <00000258>)
+2024-08-07T20:57:59.822 < <00000019>ServiceDirectory[NORMAL] - Received TrimRoutes from <00000258>
+2024-08-07T20:57:59.822 ~ <00000019>ServiceDirectory[NORMAL] - Removing 1 subscriptions
+2024-08-07T20:57:59.822 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 publications
+2024-08-07T20:57:59.822 > <00000019>ServiceDirectory[NORMAL] - Sent Stop to <00000288>
+2024-08-07T20:57:59.823 < <00000288>ServiceRoute[NORMAL] - Received Stop from <00000019>
+2024-08-07T20:57:59.823 ~ <00000288>ServiceRoute[NORMAL] - Match sends RetractRoute to [1b,1a,37,14,258] and [1c,1e,1e,255] and completes
+2024-08-07T20:57:59.823 > <00000288>ServiceRoute[NORMAL] - Sent RetractRoute to <00000258>
+2024-08-07T20:57:59.823 > <00000288>ServiceRoute[NORMAL] - Sent RetractRoute to <00000255>
+2024-08-07T20:57:59.823 X <00000288>ServiceRoute[NORMAL] - Destroyed
+2024-08-07T20:57:59.823 < <00000019>ServiceDirectory[NORMAL] - Received Completed from <00000288>
+2024-08-07T20:57:59.823 < <00000258>SocketProxy[NORMAL] - Received RetractRoute from <00000288>
+2024-08-07T20:57:59.824 < <00000255>SocketProxy[NORMAL] - Received RetractRoute from <00000288>
+2024-08-07T20:59:29.730 > <00000010>SocketSelect - Forward FindService to <00000019> (from <00000258>)
+2024-08-07T20:59:29.731 < <00000019>ServiceDirectory[NORMAL] - Received FindService from <00000258>
+2024-08-07T20:59:29.731 ~ <00000019>ServiceDirectory[NORMAL] - Added search "1b,1a,38,14,258/testing-2-response-time"
+2024-08-07T20:59:29.731 ~ <00000019>ServiceDirectory[NORMAL] - Adds route [WAN] "1b,1a,38,14,258@(28, 30, 30, 597)47b565da-072a-45ae-b2c5-e79790bf0a92:testing-2-response-time"
+2024-08-07T20:59:29.731 + <00000289>ServiceRoute[INITIAL] - Created by <00000019>
+2024-08-07T20:59:29.731 < <00000289>ServiceRoute[INITIAL] - Received Start from <00000019>
+2024-08-07T20:59:29.731 > <00000289>ServiceRoute[INITIAL] - Sent RelayLookup to <00000016>
+2024-08-07T20:59:29.731 > <00000289>ServiceRoute[INITIAL] - Sent StartTimer to <00000003>
+2024-08-07T20:59:29.731 < <00000016>Wan[READY] - Received RelayLookup from <00000289>
+2024-08-07T20:59:29.731 > <00000016>Wan[READY] - Forward RelayLookup to <0000011d> (from <00000289>)
+2024-08-07T20:59:29.731 < <0000011d>SocketProxy[NORMAL] - Received RelayLookup from <00000289>
+2024-08-07T20:59:29.735 > <00000010>SocketSelect - Forward RelayRedirect to <00000289> (from <0000011d>)
+2024-08-07T20:59:29.735 < <00000289>ServiceRoute[RELAYING] - Received RelayRedirect from <0000011d>
+2024-08-07T20:59:29.735 ~ <00000289>ServiceRoute[RELAYING] - Match sends "RouteByRelay" to [1b,1a,38,14,258]
+2024-08-07T20:59:29.735 ~ <00000289>ServiceRoute[RELAYING] - And "InboundByRelay" to [1c,1e,1e,255]
+2024-08-07T20:59:29.735 > <00000289>ServiceRoute[RELAYING] - Sent RouteByRelay to <00000258>
+2024-08-07T20:59:29.736 > <00000289>ServiceRoute[RELAYING] - Sent InboundByRelay to <00000255>
+2024-08-07T20:59:29.736 < <00000258>SocketProxy[NORMAL] - Received RouteByRelay from <00000289>
+2024-08-07T20:59:29.736 < <00000255>SocketProxy[NORMAL] - Received InboundByRelay from <00000289>
+2024-08-07T20:59:34.814 < <00000289>ServiceRoute[NORMAL] - Dropped T1 from <00000003>
+2024-08-07T20:59:43.468 > <00000010>SocketSelect - Forward UnlistFind to <00000019> (from <00000258>)
+2024-08-07T20:59:43.468 < <00000019>ServiceDirectory[NORMAL] - Received UnlistFind from <00000258>
+2024-08-07T20:59:43.468 ~ <00000019>ServiceDirectory[NORMAL] - Removed find "1b,1a,38,14,258/testing-2-response-time" (1 matches to stop)
+2024-08-07T20:59:43.468 > <00000019>ServiceDirectory[NORMAL] - Sent Stop to <00000289>
+2024-08-07T20:59:43.468 < <00000289>ServiceRoute[NORMAL] - Received Stop from <00000019>
+2024-08-07T20:59:43.468 ~ <00000289>ServiceRoute[NORMAL] - Match sends RetractRoute to [1b,1a,38,14,258] and [1c,1e,1e,255] and completes
+2024-08-07T20:59:43.468 > <00000289>ServiceRoute[NORMAL] - Sent RetractRoute to <00000258>
+2024-08-07T20:59:43.468 > <00000289>ServiceRoute[NORMAL] - Sent RetractRoute to <00000255>
+2024-08-07T20:59:43.468 X <00000289>ServiceRoute[NORMAL] - Destroyed
+2024-08-07T20:59:43.469 < <00000019>ServiceDirectory[NORMAL] - Received Completed from <00000289>
+2024-08-07T20:59:43.469 < <00000258>SocketProxy[NORMAL] - Received RetractRoute from <00000289>
+2024-08-07T20:59:43.469 < <00000255>SocketProxy[NORMAL] - Received RetractRoute from <00000289>
+2024-08-07T20:59:43.666 > <00000010>SocketSelect - Forward TrimRoutes to <00000019> (from <00000258>)
+2024-08-07T20:59:43.666 > <00000010>SocketSelect - Forward TrimRoutes to <00000019> (from <00000258>)
+2024-08-07T20:59:43.667 < <00000019>ServiceDirectory[NORMAL] - Received TrimRoutes from <00000258>
+2024-08-07T20:59:43.667 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 subscriptions
+2024-08-07T20:59:43.667 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 publications
+2024-08-07T20:59:43.667 < <00000019>ServiceDirectory[NORMAL] - Received TrimRoutes from <00000258>
+2024-08-07T20:59:43.667 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 subscriptions
+2024-08-07T20:59:43.667 ~ <00000019>ServiceDirectory[NORMAL] - Removing 0 publications
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ ansar log wan-0 --back=2h
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+
+

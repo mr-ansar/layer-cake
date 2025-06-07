@@ -1,0 +1,17 @@
+11-1
+refresh the intended async to-do list
+start with modules/ldap/LDAPConnectionObject.read
+work through how this interacts with python ldap library
+investigate the python ldap library
+2-6
+suggested 2 different async architectures to gerwin.
+1. multiple reader threads calling result2(), one request per thread
+2. single reader thread, multiple pending requests (capped) and single reader thread.
+going for option 2 which pre-supposes that the ldap lib can cope with
+related multiplexing and accepting that the performance of a particular
+request has more potential to be affected by the queueing of responses
+when there is multiplexed activity on a single wire.
+got some initial feedback from nics code review. python no-nos that
+must be removed. minor except that it becomes a difficult automated
+compilation. atm reverting to manual mappings cos it can make
+explicit mod.mod.Message references.

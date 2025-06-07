@@ -1,0 +1,4 @@
+7-9 (getting car fixed after long idle)
+converting ldap and phonebook modules to LDAPException
+
+(travelled to Northland, got stuck in crash at Puhoi)

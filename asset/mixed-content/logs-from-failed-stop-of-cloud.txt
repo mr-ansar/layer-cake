@@ -1,0 +1,258 @@
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ ansar status
+db
+fabric
+space
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ ansar log db
+2024-04-14T03:15:20.794 < <0000000e>object_vector - Received Stop from <00000001>
+2024-04-14T03:15:20.794 > <0000000e>object_vector - Sent Stop to <0000000f>
+2024-04-14T03:15:20.795 < <0000000f>Db[READY] - Received Stop from <0000000e>
+2024-04-14T03:15:20.795 X <0000000f>Db[READY] - Destroyed
+2024-04-14T03:15:20.798 < <0000000e>object_vector - Received Completed from <0000000f>
+2024-04-14T03:15:20.798 X <0000000e>object_vector - Destroyed
+2024-04-14T03:15:20.798 < <0000000d>lock_and_hold - Received Stop from <00000001>
+2024-04-14T03:15:20.804 X <0000000d>lock_and_hold - Destroyed
+2024-04-14T03:15:20.806 < <0000000c>PubSub[NORMAL] - Received Stop from <00000001>
+2024-04-14T03:15:20.806 X <0000000c>PubSub[NORMAL] - Destroyed
+2024-04-14T03:15:20.807 X <0000000b>SocketSelect - Destroyed
+2024-04-14T03:15:20.807 > <0000000a>SocketSelect - Sent Close to <00000010>
+2024-04-14T03:15:20.807 < <00000010>SocketProxy[NORMAL] - Received Close from <0000000a>
+2024-04-14T03:15:20.821 > <0000000a>SocketSelect - Sent Stop to <00000010>
+2024-04-14T03:15:20.821 > <0000000a>SocketSelect - Forward Abandoned to <0000000f> (from <00000010>)
+2024-04-14T03:15:20.821 X <0000000a>SocketSelect - Destroyed
+2024-04-14T03:15:20.836 X <00000010>SocketProxy[NORMAL] - Destroyed
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ ansar log fabric
+2024-04-14T03:15:20.724 > <0000000a>SocketSelect - Forward RetractRoute to <00000014> (from <00000012>)
+2024-04-14T03:15:20.724 < <00000014>SubscriptionAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.728 > <0000000a>SocketSelect - Forward RetractRoute to <00000014> (from <00000012>)
+2024-04-14T03:15:20.728 > <0000000a>SocketSelect - Forward RetractRoute to <00000013> (from <00000012>)
+2024-04-14T03:15:20.728 > <0000000a>SocketSelect - Forward RetractRoute to <00000013> (from <00000012>)
+2024-04-14T03:15:20.729 < <00000014>SubscriptionAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.729 < <00000013>PublishingAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.729 ~ <00000013>PublishingAgent[READY] - Retracted route [GROUP](114,23@(19, 41)a3fac179-cf99-4d09-bdef-4fa671cc1b7e:fabric)
+2024-04-14T03:15:20.729 < <00000013>PublishingAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.729 ~ <00000013>PublishingAgent[READY] - Retracted route [GROUP](114,28@(19, 41)a3fac179-cf99-4d09-bdef-4fa671cc1b7e:fabric)
+2024-04-14T03:15:20.802 > <0000000a>SocketSelect - Forward CloseLoop to <00000016> (from <0000001a>)
+2024-04-14T03:15:20.802 < <00000016>SubscriberLoop[CONNECTION_LOOPED] - Received CloseLoop from <0000001a>
+2024-04-14T03:15:20.802 > <00000016>SubscriberLoop[CONNECTION_LOOPED] - Forward Dropped to <00000011> (from <0000001a>)
+2024-04-14T03:15:20.802 ~ <00000016>SubscriberLoop[CONNECTION_LOOPED] - Close peer 127.0.0.1:39985 for "14,29@(19, 37)8bbcec6c-4224-44b8-8955-d5ba097f247c:relay.2208a2e9-4112-4e4c-8651-3926ff47cacb"
+2024-04-14T03:15:20.803 > <00000016>SubscriberLoop[CONNECTION_LOOPED] - Sent ClosePeer to <0000000c>
+2024-04-14T03:15:20.803 > <00000016>SubscriberLoop[CONNECTION_LOOPED] - Sent Stop to <0000001e>
+2024-04-14T03:15:20.803 < <0000001e>Latch[CARETAKER] - Received Stop from <00000016>
+2024-04-14T03:15:20.803 X <0000001e>Latch[CARETAKER] - Destroyed
+2024-04-14T03:15:20.803 < <00000016>SubscriberLoop[CLEARING] - Received Completed from <0000001e>
+2024-04-14T03:15:20.803 X <00000016>SubscriberLoop[CLEARING] - Destroyed
+2024-04-14T03:15:20.803 < <00000014>SubscriptionAgent[READY] - Received Completed from <00000016>
+2024-04-14T03:15:20.803 < <00000011>Fabric[READY] - Received Dropped from <0000001a>
+2024-04-14T03:15:20.803 ~ <00000011>Fabric[READY] - Relay [26] dropped
+2024-04-14T03:15:20.803 < <0000000c>PubSub[NORMAL] - Received ClosePeer from <00000016>
+2024-04-14T03:15:20.803 > <0000000c>PubSub[NORMAL] - Forward ClosePeer to <00000018> (from <00000016>)
+2024-04-14T03:15:20.803 < <00000018>ConnectToPeer[CONNECTED] - Received ClosePeer from <00000016>
+2024-04-14T03:15:20.803 > <00000018>ConnectToPeer[CONNECTED] - Sent Close to <0000001a>
+2024-04-14T03:15:20.803 > <00000018>ConnectToPeer[CONNECTED] - Sent StartTimer to <00000003>
+2024-04-14T03:15:20.805 < <0000001a>SocketProxy[NORMAL] - Received Close from <00000018>
+2024-04-14T03:15:20.805 X <0000001a>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.811 < <0000000e>node_vector - Received Stop from <00000001>
+2024-04-14T03:15:20.811 > <0000000e>node_vector - Sent Stop to <00000011>
+2024-04-14T03:15:20.819 < <00000011>Fabric[READY] - Received Stop from <0000000e>
+2024-04-14T03:15:20.819 > <00000011>Fabric[READY] - Sent Retract to <0000000c>
+2024-04-14T03:15:20.820 X <00000011>Fabric[READY] - Destroyed
+2024-04-14T03:15:20.820 < <0000000e>node_vector - Received Completed from <00000011>
+2024-04-14T03:15:20.820 X <0000000e>node_vector - Destroyed
+2024-04-14T03:15:20.820 < <0000000d>lock_and_hold - Received Stop from <00000001>
+2024-04-14T03:15:20.822 < <0000000c>PubSub[NORMAL] - Received Retract from <00000011>
+2024-04-14T03:15:20.822 ~ <0000000c>PubSub[NORMAL] - Retracting service/search at [11]
+2024-04-14T03:15:20.822 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000013>
+2024-04-14T03:15:20.822 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000014>
+2024-04-14T03:15:20.822 < <00000013>PublishingAgent[READY] - Received Stop from <0000000c>
+2024-04-14T03:15:20.822 > <00000013>PublishingAgent[READY] - Sent Stop to <00000020>
+2024-04-14T03:15:20.822 > <00000013>PublishingAgent[READY] - Sent Stop to <00000022>
+2024-04-14T03:15:20.822 < <00000020>PublisherLoop[LOOPED] - Received Stop from <00000013>
+2024-04-14T03:15:20.822 > <00000020>PublisherLoop[LOOPED] - Sent CloseLoop to <0000001f>
+2024-04-14T03:15:20.822 > <00000020>PublisherLoop[LOOPED] - Forward Dropped to <00000011> (from <0000001f>)
+2024-04-14T03:15:20.822 X <00000020>PublisherLoop[LOOPED] - Destroyed
+2024-04-14T03:15:20.822 < <00000022>PublisherLoop[LOOPED] - Received Stop from <00000013>
+2024-04-14T03:15:20.822 > <00000022>PublisherLoop[LOOPED] - Sent CloseLoop to <00000021>
+2024-04-14T03:15:20.822 > <00000022>PublisherLoop[LOOPED] - Forward Dropped to <00000011> (from <00000021>)
+2024-04-14T03:15:20.822 X <00000022>PublisherLoop[LOOPED] - Destroyed
+2024-04-14T03:15:20.822 < <00000013>PublishingAgent[CLEARING] - Received Completed from <00000020>
+2024-04-14T03:15:20.822 < <00000013>PublishingAgent[CLEARING] - Received Completed from <00000022>
+2024-04-14T03:15:20.822 > <00000013>PublishingAgent[CLEARING] - Sent UnlistService to <0000000f>
+2024-04-14T03:15:20.822 X <00000013>PublishingAgent[CLEARING] - Destroyed
+2024-04-14T03:15:20.822 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistService from <00000013>
+2024-04-14T03:15:20.822 ~ <0000000f>ServiceDirectory[NORMAL] - Removed listing "fabric" (0 matches to stop)
+2024-04-14T03:15:20.822 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistService to <00000012>
+2024-04-14T03:15:20.822 < <0000001f>SocketProxy[NORMAL] - Received CloseLoop from <00000020>
+2024-04-14T03:15:20.822 < <00000021>SocketProxy[NORMAL] - Received CloseLoop from <00000022>
+2024-04-14T03:15:20.822 < <00000012>SocketProxy[NORMAL] - Received UnlistService from <0000000f>
+2024-04-14T03:15:20.823 > <0000000b>SocketSelect - Forward CloseLoop to <00000013> (from <0000001f>)
+2024-04-14T03:15:20.823 > <0000000b>SocketSelect - Sent Stop to <0000001f>
+2024-04-14T03:15:20.823 > <0000000b>SocketSelect - Forward Abandoned to <00000013> (from <0000001f>)
+2024-04-14T03:15:20.823 < <0000000c>PubSub[NORMAL] - Received Completed from <00000013>
+2024-04-14T03:15:20.824 < <0000001f>SocketProxy[NORMAL] - Received Stop from <0000000b>
+2024-04-14T03:15:20.824 X <0000001f>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.824 X <0000000d>lock_and_hold - Destroyed
+2024-04-14T03:15:20.825 < <0000000c>PubSub[NORMAL] - Received Stop from <00000001>
+2024-04-14T03:15:20.825 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000014>
+2024-04-14T03:15:20.825 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000017>
+2024-04-14T03:15:20.825 > <0000000c>PubSub[NORMAL] - Sent Stop to <00000018>
+2024-04-14T03:15:20.825 < <00000017>ConnectToPeer[CONNECTED] - Received Stop from <0000000c>
+2024-04-14T03:15:20.825 > <00000017>ConnectToPeer[CONNECTED] - Forward PeerLost to <00000015> (from <00000019>)
+2024-04-14T03:15:20.825 > <00000017>ConnectToPeer[CONNECTED] - Sent Close to <00000019>
+2024-04-14T03:15:20.825 < <00000018>ConnectToPeer[GLARING] - Received Stop from <0000000c>
+2024-04-14T03:15:20.825 X <00000018>ConnectToPeer[GLARING] - Destroyed
+2024-04-14T03:15:20.825 < <0000000c>PubSub[COMPLETING] - Received Completed from <00000018>
+2024-04-14T03:15:20.825 < <00000019>SocketProxy[NORMAL] - Received Close from <00000017>
+2024-04-14T03:15:20.825 X <00000019>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.826 > <0000000b>SocketSelect - Forward CloseLoop to <00000013> (from <00000021>)
+2024-04-14T03:15:20.826 > <0000000b>SocketSelect - Sent Stop to <00000021>
+2024-04-14T03:15:20.826 > <0000000b>SocketSelect - Forward Abandoned to <00000013> (from <00000021>)
+2024-04-14T03:15:20.826 < <00000021>SocketProxy[NORMAL] - Received Stop from <0000000b>
+2024-04-14T03:15:20.826 X <00000021>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.832 < <00000014>SubscriptionAgent[READY] - Received Stop from <0000000c>
+2024-04-14T03:15:20.832 > <00000014>SubscriptionAgent[READY] - Sent Stop to <00000015>
+2024-04-14T03:15:20.832 < <00000014>SubscriptionAgent[COMPLETING] - Dropped Stop from <0000000c>
+2024-04-14T03:15:20.832 < <00000015>SubscriberLoop[CONNECTION_LOOPED] - Received PeerLost from <00000019>
+2024-04-14T03:15:20.832 > <00000015>SubscriberLoop[CONNECTION_LOOPED] - Forward Dropped to <00000011> (from <00000019>)
+2024-04-14T03:15:20.832 > <00000015>SubscriberLoop[CONNECTION_LOOPED] - Sent Stop to <0000001d>
+2024-04-14T03:15:20.832 < <00000015>SubscriberLoop[CLEARING] - Dropped Stop from <00000014>
+2024-04-14T03:15:20.832 < <0000001d>Latch[CARETAKER] - Received Stop from <00000015>
+2024-04-14T03:15:20.832 X <0000001d>Latch[CARETAKER] - Destroyed
+2024-04-14T03:15:20.832 < <00000015>SubscriberLoop[CLEARING] - Received Completed from <0000001d>
+2024-04-14T03:15:20.832 X <00000015>SubscriberLoop[CLEARING] - Destroyed
+2024-04-14T03:15:20.832 < <00000014>SubscriptionAgent[COMPLETING] - Received Completed from <00000015>
+2024-04-14T03:15:20.832 > <00000014>SubscriptionAgent[COMPLETING] - Sent UnlistFind to <0000000f>
+2024-04-14T03:15:20.832 X <00000014>SubscriptionAgent[COMPLETING] - Destroyed
+2024-04-14T03:15:20.832 < <0000000f>ServiceDirectory[NORMAL] - Received UnlistFind from <00000014>
+2024-04-14T03:15:20.832 ~ <0000000f>ServiceDirectory[NORMAL] - Removed find "14/relay..*" (0 matches to stop)
+2024-04-14T03:15:20.832 > <0000000f>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000012>
+2024-04-14T03:15:20.832 < <0000000c>PubSub[COMPLETING] - Received Completed from <00000014>
+2024-04-14T03:15:20.832 < <00000012>SocketProxy[NORMAL] - Received UnlistFind from <0000000f>
+2024-04-14T03:15:20.837 > <0000000a>SocketSelect - Forward CloseLoop to <00000015> (from <00000019>)
+2024-04-14T03:15:20.837 > <0000000a>SocketSelect - Forward Closed to <00000018> (from <0000001a>)
+2024-04-14T03:15:20.837 > <0000000a>SocketSelect - Sent Stop to <00000019>
+2024-04-14T03:15:20.837 > <0000000a>SocketSelect - Forward Abandoned to <00000017> (from <00000019>)
+2024-04-14T03:15:20.837 < <00000017>ConnectToPeer[CLOSING] - Dropped Abandoned from <00000019>
+2024-04-14T03:15:30.928 ~ <00000001>QuietChannel - Accepting signal 15 as SIGINT alias
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ ansar log space
+2024-04-14T03:15:20.721 > <0000000b>SocketSelect - Forward RetractRoute to <00000014> (from <00000012>)
+2024-04-14T03:15:20.722 < <00000014>PublishingAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.722 ~ <00000014>PublishingAgent[READY] - Retracted route [GROUP](16,24@(20, 38)5ff5ee60-5991-4171-a1e0-0185a668391c:space)
+2024-04-14T03:15:20.732 > <0000000b>SocketSelect - Forward RetractRoute to <00000015> (from <00000012>)
+2024-04-14T03:15:20.732 > <0000000b>SocketSelect - Forward RetractRoute to <00000015> (from <00000012>)
+2024-04-14T03:15:20.732 < <00000015>SubscriptionAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.732 < <00000015>SubscriptionAgent[READY] - Received RetractRoute from <00000012>
+2024-04-14T03:15:20.811 < <0000000f>node_vector - Received Stop from <00000001>
+2024-04-14T03:15:20.811 > <0000000f>node_vector - Sent Stop to <00000013>
+2024-04-14T03:15:20.812 < <00000013>Space[READY] - Received Stop from <0000000f>
+2024-04-14T03:15:20.812 > <00000013>Space[READY] - Sent Retract to <0000000d>
+2024-04-14T03:15:20.812 X <00000013>Space[READY] - Destroyed
+2024-04-14T03:15:20.813 < <0000000d>PubSub[NORMAL] - Received Retract from <00000013>
+2024-04-14T03:15:20.813 ~ <0000000d>PubSub[NORMAL] - Retracting service/search at [13]
+2024-04-14T03:15:20.813 > <0000000d>PubSub[NORMAL] - Sent Stop to <00000014>
+2024-04-14T03:15:20.813 > <0000000d>PubSub[NORMAL] - Sent Stop to <00000015>
+2024-04-14T03:15:20.814 < <00000014>PublishingAgent[READY] - Received Stop from <0000000d>
+2024-04-14T03:15:20.814 > <00000014>PublishingAgent[READY] - Sent Stop to <00000017>
+2024-04-14T03:15:20.814 < <00000017>PublisherLoop[LOOPED] - Received Stop from <00000014>
+2024-04-14T03:15:20.814 > <00000017>PublisherLoop[LOOPED] - Sent CloseLoop to <00000016>
+2024-04-14T03:15:20.814 > <00000017>PublisherLoop[LOOPED] - Forward Dropped to <00000013> (from <00000016>)
+2024-04-14T03:15:20.814 X <00000017>PublisherLoop[LOOPED] - Destroyed
+2024-04-14T03:15:20.814 < <00000014>PublishingAgent[CLEARING] - Received Completed from <00000017>
+2024-04-14T03:15:20.814 > <00000014>PublishingAgent[CLEARING] - Sent UnlistService to <00000010>
+2024-04-14T03:15:20.814 X <00000014>PublishingAgent[CLEARING] - Destroyed
+2024-04-14T03:15:20.814 < <00000015>SubscriptionAgent[READY] - Received Stop from <0000000d>
+2024-04-14T03:15:20.814 > <00000015>SubscriptionAgent[READY] - Sent Stop to <00000018>
+2024-04-14T03:15:20.814 > <00000015>SubscriptionAgent[READY] - Sent Stop to <0000001d>
+2024-04-14T03:15:20.814 < <00000018>SubscriberLoop[CONNECTION_LOOPED] - Received Stop from <00000015>
+2024-04-14T03:15:20.814 > <00000018>SubscriberLoop[CONNECTION_LOOPED] - Forward Cleared to <00000013> (from <0000001a>)
+2024-04-14T03:15:20.814 ~ <00000018>SubscriberLoop[CONNECTION_LOOPED] - Close loop for "15,26@(277, 35)3dd79277-1d31-4675-bccc-80fc916d7b2a:directory.11dc16e2-0480-4331-beef-e0b824aedc22"
+2024-04-14T03:15:20.814 > <00000018>SubscriberLoop[CONNECTION_LOOPED] - Sent CloseLoop to <0000001a>
+2024-04-14T03:15:20.815 ~ <00000018>SubscriberLoop[CONNECTION_LOOPED] - Close peer 127.0.0.1:33133 for "15,26@(277, 35)3dd79277-1d31-4675-bccc-80fc916d7b2a:directory.11dc16e2-0480-4331-beef-e0b824aedc22"
+2024-04-14T03:15:20.815 > <00000018>SubscriberLoop[CONNECTION_LOOPED] - Sent ClosePeer to <0000000d>
+2024-04-14T03:15:20.815 > <00000018>SubscriberLoop[CONNECTION_LOOPED] - Sent Stop to <0000001c>
+2024-04-14T03:15:20.815 < <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Received Stop from <00000015>
+2024-04-14T03:15:20.815 > <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Forward Cleared to <00000013> (from <0000001f>)
+2024-04-14T03:15:20.815 ~ <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Close loop for "15,26@(277, 40)50171123-bee3-4439-b82f-0235e816793a:directory.b7fea62b-fd57-4ffe-afdf-767d4064ed05"
+2024-04-14T03:15:20.815 > <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Sent CloseLoop to <0000001f>
+2024-04-14T03:15:20.815 ~ <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Close peer 127.0.0.1:35127 for "15,26@(277, 40)50171123-bee3-4439-b82f-0235e816793a:directory.b7fea62b-fd57-4ffe-afdf-767d4064ed05"
+2024-04-14T03:15:20.815 > <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Sent ClosePeer to <0000000d>
+2024-04-14T03:15:20.815 > <0000001d>SubscriberLoop[CONNECTION_LOOPED] - Sent Stop to <00000021>
+2024-04-14T03:15:20.815 < <0000001c>Latch[CARETAKER] - Received Stop from <00000018>
+2024-04-14T03:15:20.815 X <0000001c>Latch[CARETAKER] - Destroyed
+2024-04-14T03:15:20.815 < <00000021>Latch[CARETAKER] - Received Stop from <0000001d>
+2024-04-14T03:15:20.815 X <00000021>Latch[CARETAKER] - Destroyed
+2024-04-14T03:15:20.815 < <00000018>SubscriberLoop[CLEARING] - Received Completed from <0000001c>
+2024-04-14T03:15:20.815 X <00000018>SubscriberLoop[CLEARING] - Destroyed
+2024-04-14T03:15:20.815 < <0000001d>SubscriberLoop[CLEARING] - Received Completed from <00000021>
+2024-04-14T03:15:20.815 X <0000001d>SubscriberLoop[CLEARING] - Destroyed
+2024-04-14T03:15:20.815 < <00000015>SubscriptionAgent[COMPLETING] - Received Completed from <00000018>
+2024-04-14T03:15:20.815 < <00000015>SubscriptionAgent[COMPLETING] - Received Completed from <0000001d>
+2024-04-14T03:15:20.815 > <00000015>SubscriptionAgent[COMPLETING] - Sent UnlistFind to <00000010>
+2024-04-14T03:15:20.815 X <00000015>SubscriptionAgent[COMPLETING] - Destroyed
+2024-04-14T03:15:20.816 < <00000016>SocketProxy[NORMAL] - Received CloseLoop from <00000017>
+2024-04-14T03:15:20.816 < <0000001a>SocketProxy[NORMAL] - Received CloseLoop from <00000018>
+2024-04-14T03:15:20.816 < <0000001f>SocketProxy[NORMAL] - Received CloseLoop from <0000001d>
+2024-04-14T03:15:20.816 < <00000010>ServiceDirectory[NORMAL] - Received UnlistService from <00000014>
+2024-04-14T03:15:20.816 ~ <00000010>ServiceDirectory[NORMAL] - Removed listing "space" (0 matches to stop)
+2024-04-14T03:15:20.816 > <00000010>ServiceDirectory[NORMAL] - Sent UnlistService to <00000012>
+2024-04-14T03:15:20.816 < <00000010>ServiceDirectory[NORMAL] - Received UnlistFind from <00000015>
+2024-04-14T03:15:20.816 ~ <00000010>ServiceDirectory[NORMAL] - Removed find "15/directory..*" (0 matches to stop)
+2024-04-14T03:15:20.816 > <00000010>ServiceDirectory[NORMAL] - Sent UnlistFind to <00000012>
+2024-04-14T03:15:20.820 < <00000012>SocketProxy[NORMAL] - Received UnlistService from <00000010>
+2024-04-14T03:15:20.820 < <00000012>SocketProxy[NORMAL] - Received UnlistFind from <00000010>
+2024-04-14T03:15:20.821 < <0000000d>PubSub[NORMAL] - Received Completed from <00000014>
+2024-04-14T03:15:20.821 < <0000000d>PubSub[NORMAL] - Received ClosePeer from <00000018>
+2024-04-14T03:15:20.821 > <0000000d>PubSub[NORMAL] - Forward ClosePeer to <00000019> (from <00000018>)
+2024-04-14T03:15:20.821 < <0000000d>PubSub[NORMAL] - Received ClosePeer from <0000001d>
+2024-04-14T03:15:20.821 > <0000000d>PubSub[NORMAL] - Forward ClosePeer to <0000001e> (from <0000001d>)
+2024-04-14T03:15:20.821 < <0000000d>PubSub[NORMAL] - Received Completed from <00000015>
+2024-04-14T03:15:20.821 < <00000019>ConnectToPeer[CONNECTED] - Received ClosePeer from <00000018>
+2024-04-14T03:15:20.821 > <00000019>ConnectToPeer[CONNECTED] - Sent Close to <0000001a>
+2024-04-14T03:15:20.821 > <00000019>ConnectToPeer[CONNECTED] - Sent StartTimer to <00000003>
+2024-04-14T03:15:20.821 < <0000001e>ConnectToPeer[CONNECTED] - Received ClosePeer from <0000001d>
+2024-04-14T03:15:20.821 > <0000001e>ConnectToPeer[CONNECTED] - Sent Close to <0000001f>
+2024-04-14T03:15:20.821 > <0000001e>ConnectToPeer[CONNECTED] - Sent StartTimer to <00000003>
+2024-04-14T03:15:20.822 < <0000001a>SocketProxy[NORMAL] - Received Close from <00000019>
+2024-04-14T03:15:20.822 X <0000001a>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.822 < <0000001f>SocketProxy[NORMAL] - Received Close from <0000001e>
+2024-04-14T03:15:20.822 X <0000001f>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.822 < <0000000f>node_vector - Received Completed from <00000013>
+2024-04-14T03:15:20.822 X <0000000f>node_vector - Destroyed
+2024-04-14T03:15:20.822 < <0000000e>lock_and_hold - Received Stop from <00000001>
+2024-04-14T03:15:20.824 > <0000000c>SocketSelect - Forward CloseLoop to <00000014> (from <00000016>)
+2024-04-14T03:15:20.824 > <0000000c>SocketSelect - Sent Stop to <00000016>
+2024-04-14T03:15:20.824 > <0000000c>SocketSelect - Forward Abandoned to <00000014> (from <00000016>)
+2024-04-14T03:15:20.824 < <00000016>SocketProxy[NORMAL] - Received Stop from <0000000c>
+2024-04-14T03:15:20.824 X <00000016>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.824 > <0000000b>SocketSelect - Forward CloseLoop to <00000018> (from <0000001a>)
+2024-04-14T03:15:20.826 > <0000000b>SocketSelect - Forward CloseLoop to <0000001d> (from <0000001f>)
+2024-04-14T03:15:20.833 X <0000000e>lock_and_hold - Destroyed
+2024-04-14T03:15:20.834 > <0000000b>SocketSelect - Forward Closed to <00000019> (from <0000001a>)
+2024-04-14T03:15:20.834 < <00000019>ConnectToPeer[GLARING] - Received Closed from <0000001a>
+2024-04-14T03:15:20.834 < <0000000d>PubSub[NORMAL] - Received Stop from <00000001>
+2024-04-14T03:15:20.834 > <0000000d>PubSub[NORMAL] - Sent Stop to <00000019>
+2024-04-14T03:15:20.834 > <0000000d>PubSub[NORMAL] - Sent Stop to <0000001e>
+2024-04-14T03:15:20.834 < <00000019>ConnectToPeer[GLARING] - Received Stop from <0000000d>
+2024-04-14T03:15:20.834 X <00000019>ConnectToPeer[GLARING] - Destroyed
+2024-04-14T03:15:20.834 < <0000001e>ConnectToPeer[GLARING] - Received Stop from <0000000d>
+2024-04-14T03:15:20.834 X <0000001e>ConnectToPeer[GLARING] - Destroyed
+2024-04-14T03:15:20.834 < <0000000d>PubSub[COMPLETING] - Received Completed from <00000019>
+2024-04-14T03:15:20.834 < <0000000d>PubSub[COMPLETING] - Received Completed from <0000001e>
+2024-04-14T03:15:20.834 X <0000000d>PubSub[COMPLETING] - Destroyed
+2024-04-14T03:15:20.834 X <0000000c>SocketSelect - Destroyed
+2024-04-14T03:15:20.834 < <00000010>ServiceDirectory[NORMAL] - Received Stop from <00000001>
+2024-04-14T03:15:20.834 > <00000010>ServiceDirectory[NORMAL] - Sent Stop to <00000011>
+2024-04-14T03:15:20.834 < <00000011>ConnectToDirectory[CONNECTED] - Received Stop from <00000010>
+2024-04-14T03:15:20.835 > <00000011>ConnectToDirectory[CONNECTED] - Sent Close to <00000012>
+2024-04-14T03:15:20.835 < <00000012>SocketProxy[NORMAL] - Received Close from <00000011>
+2024-04-14T03:15:20.835 X <00000012>SocketProxy[NORMAL] - Destroyed
+2024-04-14T03:15:20.835 > <0000000b>SocketSelect - Forward Closed to <0000001e> (from <0000001f>)
+2024-04-14T03:15:20.835 > <0000000b>SocketSelect - Forward Closed to <00000011> (from <00000012>)
+2024-04-14T03:15:20.835 < <00000011>ConnectToDirectory[CLOSING] - Received Closed from <00000012>
+2024-04-14T03:15:20.835 X <00000011>ConnectToDirectory[CLOSING] - Destroyed
+2024-04-14T03:15:20.835 < <00000010>ServiceDirectory[CLEARING] - Received Completed from <00000011>
+2024-04-14T03:15:20.835 > <00000010>ServiceDirectory[CLEARING] - Sent Ack to <00000001>
+2024-04-14T03:15:20.835 X <00000010>ServiceDirectory[CLEARING] - Destroyed
+2024-04-14T03:15:20.835 X <0000000b>SocketSelect - Destroyed
+(.cloud) mr-ansar@cloud-1:~/gh/ansar-wan/src/ansar$ 
+
+

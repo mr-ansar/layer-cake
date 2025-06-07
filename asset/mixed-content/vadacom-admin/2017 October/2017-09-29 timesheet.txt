@@ -1,0 +1,5 @@
+11-1
+checked nics branching, rebasing and diff patch for messaging lib
+started "best practise" doc
+2-5
+maybe half-way through "best practise".

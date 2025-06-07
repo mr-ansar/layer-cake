@@ -1,0 +1,8 @@
+7-11
+admin - invoicing
+state machine for scheduler
+scoping out work required for library
+queried ger+nic on app persistence
+12-4
+discuss app persistence - nic
+state machine for scheduler

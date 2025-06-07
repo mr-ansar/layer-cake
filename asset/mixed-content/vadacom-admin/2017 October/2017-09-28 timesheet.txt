@@ -1,0 +1,16 @@
+11-1
+debugging #2183
+only place that calls multiselect during init is locationFilterChanged
+the value of the ids list is 0 (a zero) which is horrid rep of null list, but maybe ok in js.
+tried different approaches to fix including forced call from main controller
+that pulls that data from store and pushes to control.
+data always 0 (zero).
+2-4
+meeting with stu and nic.
+discussed review progress
+feedback so far;
+* doc strings
+* readme doc to be added with best practise patterns.
+* major entity descriptions
+
+shortened day today. need to sort some travel arrangements.

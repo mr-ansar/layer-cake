@@ -1,0 +1,8 @@
+sudo systemctl disable snapd.service
+sudo systemctl disable snapd.socket
+sudo systemctl disable snapd.seeded.service
+
+sudo systemctl enable snapd.seeded.service
+sudo systemctl enable snapd.socket
+sudo systemctl enable snapd.service
+

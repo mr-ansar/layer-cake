@@ -1,0 +1,205 @@
+scott@dt-vada-ub16:~/repo/ansar$ dpkg-buildpackage -rfakeroot -b -D -tc -us -uc
+dpkg-buildpackage: source package ansar
+dpkg-buildpackage: source version 1:0.1.0
+dpkg-buildpackage: source distribution unstable
+dpkg-buildpackage: source changed by Scott Woods <scott.suzuki@gmail.com>
+dpkg-buildpackage: host architecture amd64
+ dpkg-source --before-build ansar
+ fakeroot debian/rules clean
+test -d debian/patched || install -d debian/patched
+dpatch  apply-all  
+dpatch  cat-all  >>patch-stampT
+mv -f patch-stampT patch-stamp
+dh_testdir
+rm -rf *-stamp build/
+dh_clean
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dpatch  deapply-all  
+rm -rf patch-stamp patch-stampT debian/patched
+ debian/rules build
+test -d debian/patched || install -d debian/patched
+dpatch  apply-all  
+dpatch  cat-all  >>patch-stampT
+mv -f patch-stampT patch-stamp
+dh_testdir
+touch build-stamp
+ fakeroot debian/rules binary
+dh_testdir
+dh_testroot
+dh_clean -k
+dh_clean: dh_clean -k is deprecated; use dh_prep instead
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installdirs
+dh_installdirs: Compatibility levels before 5 are deprecated (level 4 in use)
+python setup.py install --root=/home/scott/repo/ansar/debian/ansar
+running install
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-2.7
+creating build/lib.linux-x86_64-2.7/ansar
+copying ansar/__init__.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/core.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/message.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/root.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/point.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/queue.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/lifecycle.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/machine.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/check.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/log.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/bind.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/timing.py -> build/lib.linux-x86_64-2.7/ansar
+running install_lib
+running install_egg_info
+running egg_info
+writing ansar.egg-info/PKG-INFO
+writing top-level names to ansar.egg-info/top_level.txt
+writing dependency_links to ansar.egg-info/dependency_links.txt
+reading manifest file 'ansar.egg-info/SOURCES.txt'
+writing manifest file 'ansar.egg-info/SOURCES.txt'
+removing '/home/scott/repo/ansar/debian/ansar/usr/local/lib/python2.7/dist-packages/ansar-1.0.0-py2.7.egg-info' (and everything under it)
+Copying ansar.egg-info to /home/scott/repo/ansar/debian/ansar/usr/local/lib/python2.7/dist-packages/ansar-1.0.0-py2.7.egg-info
+running install_scripts
+dh_testdir
+dh_testroot
+dh_installdocs -i
+dh_installdocs: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installexamples -i
+dh_installexamples: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installchangelogs -i
+dh_installchangelogs: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_compress -i
+dh_compress: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_fixperms -i
+dh_fixperms: Compatibility levels before 5 are deprecated (level 4 in use)
+# Can't use dh_python here as we're installing to our custom location
+#dh_python -i
+dh_installdeb -i
+dh_installdeb: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_gencontrol -i
+dh_gencontrol: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_md5sums -i
+dh_md5sums: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_builddeb -i
+dpkg-deb: building package 'ansar-dev' in '../ansar-dev_0.1.0_all.deb'.
+dh_builddeb: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_builddeb: Compatibility levels before 5 are deprecated (level 4 in use)
+ dpkg-genchanges -b >../ansar_0.1.0_amd64.changes
+dpkg-genchanges: binary-only upload (no source code included)
+ fakeroot debian/rules clean
+dh_testdir
+rm -rf *-stamp build/
+dh_clean
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dpatch  deapply-all  
+rm -rf patch-stamp patch-stampT debian/patched
+ dpkg-source --after-build ansar
+dpkg-buildpackage: binary-only upload (no source included)
+scott@dt-vada-ub16:~/repo/ansar$ find . -name "*.deb" -print
+scott@dt-vada-ub16:~/repo/ansar$ ls
+ansar  ansar_1.0-1  ansar.egg-info  debian  doc  LICENSE.txt  README.rst  setup.py
+scott@dt-vada-ub16:~/repo/ansar$ ls ansar_1.0-1/
+scott@dt-vada-ub16:~/repo/ansar$ rm -rf ansar_1.0-1
+scott@dt-vada-ub16:~/repo/ansar$ dpkg-buildpackage -rfakeroot -b -D -tc -us -uc
+dpkg-buildpackage: source package ansar
+dpkg-buildpackage: source version 1:0.1.0
+dpkg-buildpackage: source distribution unstable
+dpkg-buildpackage: source changed by Scott Woods <scott.suzuki@gmail.com>
+dpkg-buildpackage: host architecture amd64
+ dpkg-source --before-build ansar
+ fakeroot debian/rules clean
+test -d debian/patched || install -d debian/patched
+dpatch  apply-all  
+dpatch  cat-all  >>patch-stampT
+mv -f patch-stampT patch-stamp
+dh_testdir
+rm -rf *-stamp build/
+dh_clean
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dpatch  deapply-all  
+rm -rf patch-stamp patch-stampT debian/patched
+ debian/rules build
+test -d debian/patched || install -d debian/patched
+dpatch  apply-all  
+dpatch  cat-all  >>patch-stampT
+mv -f patch-stampT patch-stamp
+dh_testdir
+touch build-stamp
+ fakeroot debian/rules binary
+dh_testdir
+dh_testroot
+dh_clean -k
+dh_clean: dh_clean -k is deprecated; use dh_prep instead
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installdirs
+dh_installdirs: Compatibility levels before 5 are deprecated (level 4 in use)
+python setup.py install --root=/home/scott/repo/ansar/debian/ansar
+running install
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-2.7
+creating build/lib.linux-x86_64-2.7/ansar
+copying ansar/__init__.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/core.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/message.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/root.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/point.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/queue.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/lifecycle.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/machine.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/check.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/log.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/bind.py -> build/lib.linux-x86_64-2.7/ansar
+copying ansar/timing.py -> build/lib.linux-x86_64-2.7/ansar
+running install_lib
+running install_egg_info
+running egg_info
+writing ansar.egg-info/PKG-INFO
+writing top-level names to ansar.egg-info/top_level.txt
+writing dependency_links to ansar.egg-info/dependency_links.txt
+reading manifest file 'ansar.egg-info/SOURCES.txt'
+writing manifest file 'ansar.egg-info/SOURCES.txt'
+removing '/home/scott/repo/ansar/debian/ansar/usr/local/lib/python2.7/dist-packages/ansar-1.0.0-py2.7.egg-info' (and everything under it)
+Copying ansar.egg-info to /home/scott/repo/ansar/debian/ansar/usr/local/lib/python2.7/dist-packages/ansar-1.0.0-py2.7.egg-info
+running install_scripts
+dh_testdir
+dh_testroot
+dh_installdocs -i
+dh_installdocs: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installexamples -i
+dh_installexamples: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_installchangelogs -i
+dh_installchangelogs: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_compress -i
+dh_compress: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_fixperms -i
+dh_fixperms: Compatibility levels before 5 are deprecated (level 4 in use)
+# Can't use dh_python here as we're installing to our custom location
+#dh_python -i
+dh_installdeb -i
+dh_installdeb: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_gencontrol -i
+dh_gencontrol: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_md5sums -i
+dh_md5sums: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_builddeb -i
+dpkg-deb: building package 'ansar-dev' in '../ansar-dev_0.1.0_all.deb'.
+dh_builddeb: Compatibility levels before 5 are deprecated (level 4 in use)
+dh_builddeb: Compatibility levels before 5 are deprecated (level 4 in use)
+ dpkg-genchanges -b >../ansar_0.1.0_amd64.changes
+dpkg-genchanges: binary-only upload (no source code included)
+ fakeroot debian/rules clean
+dh_testdir
+rm -rf *-stamp build/
+dh_clean
+dh_clean: Compatibility levels before 5 are deprecated (level 4 in use)
+dpatch  deapply-all  
+rm -rf patch-stamp patch-stampT debian/patched
+ dpkg-source --after-build ansar
+dpkg-buildpackage: binary-only upload (no source included)
+scott@dt-vada-ub16:~/repo/ansar$ ls ..
+ansar  ansar_0.1.0_amd64.changes  ansar-dev_0.1.0_all.deb  vpnmanager  vx-license-manager  vx-python-libvxc  webman
+scott@dt-vada-ub16:~/repo/ansar$ vi ../ansar_0.1.0_amd64.changes 
+scott@dt-vada-ub16:~/repo/ansar$ 

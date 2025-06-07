@@ -1,0 +1,255 @@
+
+class INITIAL: pass
+class CONNECTING: pass
+class NORMAL: pass
+class GLARING: pass
+
+class LDAPRequestMultiplex(ml.Queue, ml.StateMachine, ml.Point):
+    ACTIVE_BEFORE_QUEUE = 8
+    QUEUE_BEFORE_REJECT = 128
+    
+    def __init__(self, host, port, username, password):
+        ml.Queue.__init__(self)
+        ml.StateMachine.__init__(self, INITIAL)
+        ml.Point.__init__(self)
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.reader = None
+        self.conn = None
+        self.retry_count = 0
+        self.active = {}
+        self.pending = deque()
+
+        self.cruds = {
+            LDAPCreate: self.create,
+            LDAPRead: self.read,
+            LDAPUpdate: self.update,
+            LDAPDelete: self.delete,
+            LDAPSearch: self.search,
+        }
+        
+    def search(self, message, address):
+        # SCOPE_BASE == item itself
+        # SCOPE_ONELEVEL = the immediate children
+        # SCOPE_SUBTREE = all descendants
+        rid = self.conn.search(
+            message.basedn,
+            message.scope,
+            filterstr=message.filterstr,
+            attrlist=message.attrlist,
+            attrsonly=message.attrsonly,
+        )
+        self.active[rid] = (message, address)
+
+    # Actual LDAP async requests, ids recorded
+    # in the active table.
+    def create(self, message, address):
+        changeset = ldap.modlist.addModlist(message.dataset)
+        rid = self.conn.add(message.dn, changeset)
+        self.active[rid] = (message, address)
+
+    def read(self, message, address):
+        # get a specific DN
+        rid = self.conn.search(message.dn, scope=ldap.SCOPE_BASE)
+        self.active[rid] = (message, address)
+
+    def update(self, message, address):
+        # FIXME: do this ourselves, we get some really weird behaviour here
+        changeset = ldap.modlist.modifyModlist(message.orig, message.updated)
+        self.trace('changeset: %r' % (changeset,))
+        rid = self.conn.modify(message.dn, changeset)
+        self.active[rid] = (message, address)
+
+    def delete(self, message, address):
+        rid = self.conn.delete(message.dn)
+        self.active[rid] = (message, address)
+
+    # A few generic fragments around management
+    # of active and pending collections.
+    def queue_or_reject(self, message, address):
+        if len(self.pending) < QUEUE_BEFORE_REJECT:
+            a = (message, address)
+            self.pending.append(a)
+            return
+        self.send(LDAPRejected(), address)
+
+    def ready_to_send(self, message, address):
+        if len(self.pending) > 0 or len(self.active) == ACTIVE_BEFORE_QUEUE:
+            self.queue_or_reject(message, address)
+            return False
+        return True
+        
+    BACKOFF = [2, 4, 8, 16, 32]
+    
+    def glare_period(self):
+        if self.retry_count < 0:
+            self.retry_count = 0
+        elif self.retry_count >= len(BACKOFF):
+            return BACKOFF[-1]
+        period = BACKOFF[self.retry_count]
+        self.retry_count += 1
+        return period
+
+    def keep_busy(self):
+        'Move as many requests from pending to active, as possible.'
+        while self.pending and len(self.active) < ACTIVE_BEFORE_QUEUEING:
+            m, r = self.pending.popleft()
+            try:
+                f = self.cruds[m.__class__]
+                f(m, r)
+            except KeyError:
+                self.warning('No CRUD method for %s' % (m.__class__.__name__,))
+        
+def INITIAL_Start(self, message):
+    # Fire the reader object which performs actual connect and then
+    # falls into forever reading loop.
+    self.retry_count = 0
+    self.reader = self.root.custom_routine(ldap_reader,
+        self.host, self.port,
+        self.username, self.password,
+        self.debug_level, self.timeout)
+    return CONNECTING
+    
+def CONNECTING_LDAPCreate(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return CONNECTING
+    
+def CONNECTING_LDAPRead(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return CONNECTING
+
+def CONNECTING_LDAPUpdate(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return CONNECTING
+
+def CONNECTING_LDAPDelete(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return CONNECTING
+    
+def CONNECTING_LDAPSearch(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return CONNECTING
+
+def CONNECTING_LDAPResponse(self, message):
+    self.warning('Response to something before connection was lost?')
+    return CONNECTING
+    
+def CONNECTING_LDAPSessionUp(self, message):
+    self.keep_busy()
+    return NORMAL
+    
+def CONNECTING_Aborted(self, message):
+    self.start(AttemptToConnect, self.glare_period())
+    return GLARING
+
+def NORMAL_LDAPCreate(self, message):
+    if self.ready_to_send(message, self.return_address):
+        self.create(message, self.return_address)
+    return NORMAL
+
+def NORMAL_LDAPRead(self, message):
+    if self.ready_to_send(message, self.return_address):
+        self.read(message, self.return_address)
+    return NORMAL
+
+def NORMAL_LDAPUpdate(self, message):
+    if self.ready_to_send(message, self.return_address):
+        self.update(message, self.return_address)
+    return NORMAL
+
+def NORMAL_LDAPDelete(self, message):
+    if self.ready_to_send(message, self.return_address):
+        self.delete(message, self.return_address)
+    return NORMAL
+
+def NORMAL_LDAPSearch(self, message):
+    if self.ready_to_send(message, self.return_address):
+        self.search(message, self.return_address)
+    return NORMAL
+
+def NORMAL_LDAPResponse(self, message):
+    # Recover context and
+    # clean out from active.
+    try:
+        m, r = self.active[message.rid]
+    except KeyError:
+        self.debug('LDAPResponse for unknown request')
+        return NORMAL
+    self.send(message, r)
+    del self.active[message.rid]
+
+    # If there is pending work then we
+    # can fire up another.
+    self.keep_busy()
+    return NORMAL
+
+def NORMAL_Completed(self, message):
+    'A formal shutdown'
+    return NORMAL
+
+def NORMAL_Aborted(self, message):
+    # Clear house. Prepend active to pending?
+    # Nice but dont have original order so
+    # a dubious action.
+    for k, v in self.active.iteritems():
+        m, r = v
+        self.send(LDAPRejected(), r)
+    self.active = {}
+
+    # Start suitable timer for restart
+    self.retry_count = 0
+    self.start(AttemptToConnect, self.glare_period())
+    return GLARING
+
+def GLARING_AttemptToConnect(self, message):
+    self.reader = self.root.custom_routine(ldap_reader,
+        self.host, self.port,
+        self.username, self.password,
+        self.debug_level, self.timeout)
+    return CONNECTING
+
+def GLARING_LDAPCreate(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return GLARING
+    
+def GLARING_LDAPRead(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return GLARING
+
+def GLARING_LDAPUpdate(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return GLARING
+
+def GLARING_LDAPDelete(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return GLARING
+
+def GLARING_LDAPSearch(self, message):
+    self.queue_or_reject(message, self.return_address)
+    return GLARING
+
+LDAPRequestMultiplex.mapping = {
+    (INITIAL, Start): INITIAL_Start,
+    (CONNECTING, LDAPCreate): CONNECTING_LDAPCreate,
+    (CONNECTING, LDAPRead): CONNECTING_LDAPRead,
+    (CONNECTING, LDAPUpdate): CONNECTING_LDAPUpdate,
+    (CONNECTING, LDAPDelete): CONNECTING_LDAPDelete,
+    (CONNECTING, LDAPSearch): CONNECTING_LDAPSearch,
+    (CONNECTING, LDAPSessionUp): CONNECTING_LDAPSessionUp,
+    (CONNECTING, Aborted): CONNECTING_Aborted,
+    (NORMAL, LDAPCreate): NORMAL_LDAPCreate,
+    (NORMAL, LDAPRead): NORMAL_LDAPRead,
+    (NORMAL, LDAPUpdate): NORMAL_LDAPUpdate,
+    (NORMAL, LDAPDelete): NORMAL_LDAPDelete,
+    (NORMAL, LDAPSearch): NORMAL_LDAPSearch,
+    (NORMAL, Completed): NORMAL_Completed,
+    (NORMAL, Aborted): NORMAL_Aborted,
+    (GLARING, AttemptToConnect): GLARING_AttemptToConnect,
+    (GLARING, LDAPCreate): GLARING_LDAPCreate,
+    (GLARING, LDAPRead): GLARING_LDAPRead,
+    (GLARING, LDAPUpdate): GLARING_LDAPUpdate,
+    (GLARING, LDAPDelete): GLARING_LDAPDelete,
+    (GLARING, LDAPSearch): GLARING_LDAPSearch,
+}

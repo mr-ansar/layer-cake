@@ -1,0 +1,1263 @@
+# Author: Scott Woods <scott.suzuki@gmail.com>
+# MIT License
+#
+# Copyright (c) 2022 Scott Woods
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Utility to maintain the operational folders and files of processes.
+
+"""
+__docformat__ = 'restructuredtext'
+
+__all__ = [
+    'main',
+]
+
+import sys
+import os
+import signal
+import time
+import datetime
+import calendar
+import tempfile
+import ansar.create as ar
+from ansar.create.space import Completion
+from ansar.create.framework import hb, af, ComponentFailed
+from ansar.create.rolling import read_log
+
+#
+#
+'''
+TAG_CREATED   = '+'
+TAG_DESTROYED = 'X'
+TAG_SENT      = '>'
+TAG_RECEIVED  = '<'
+TAG_TRACKING  = '~'
+TAG_FAULT     = '!'
+TAG_WARNING   = '?'
+TAG_CONSOLE   = '^'
+TAG_TRACE     = 'T'
+TAG_DEBUG     = '_'
+'''
+
+#
+#
+component = ar.ComponentSettings()
+
+CWF = '^?!'
+ALL = '+X><~!?^T_'
+
+class AnsarSettings(object):
+    def __init__(self, tags=CWF, debug=False):
+        self.tags = tags
+        self.debug = debug
+
+ar.bind(AnsarSettings)
+
+settings = AnsarSettings()
+
+#
+#
+class ListSettings(object):
+    def __init__(self, long_listing=False):
+        self.long_listing = long_listing
+
+ar.bind(ListSettings)
+
+list_settings = ListSettings()
+
+#                   <begin>                        <end>
+# |---------------->*----------------------------->*--------------->
+# From <begin>, inclusive.
+# To <end>, exclusive.
+# Begin may be;
+# - date-time, e.g. 2022-12-10T10:20
+# - latest time milestone (day, hour, min), month, week, day, hour
+# - reference to start-stop (entries only) -1
+# - relative backward step, e.g. 30s
+# End may be;
+# - relative forward step, e.g. 30s
+# - log count
+# - date-time, must be after
+# - auto-reference to start-stop (from start), e.g. get logs for -1 and then -2
+# - none, to end of log (default)
+#
+# --from=<datetime>
+# --last=<enum>, YEAR, MONTH, WEEK, DAY, HOUR, QUARTER, TEN, FIVE, MINUTE (toupper)
+# --start=<reference to start-stop>, entry-only, sets "to"
+# --back=<timespan>
+#
+# Only one of the above. "to" starts out as "end-of-log". A "start" is a
+# shorthand for "from" and "to". A "last" sets a "from", as does a "back".
+#
+# --to=<datetime>
+# --span=<timespan>
+# --count=<integer>
+#
+# Only one of the above. Overrides default including when using "start".
+# "to" must come after the resolved "from". No selection means "end-of-log",
+# except for "start".
+
+START_OF = ar.Enumeration(MONTH=0, WEEK=1, DAY=2, HOUR=3, MINUTE=4, HALF=5, QUARTER=6, TEN=7, FIVE=8)
+
+class LogSettings(object):
+    def __init__(self,
+            from_=None, last=None, start=None, back=None,
+            to=None, span=None, count=None):
+        # One of these for a <begin>
+        self.from_ = from_
+        self.last = last
+        self.start = start
+        self.back = back
+
+        # One (optional) for an <end>
+        self.to = to
+        self.span = span
+        self.count = count
+
+LOG_SETTINGS_SCHEMA = {
+    # --wall and --utc
+    "from_": ar.WorldTime,
+    "last": START_OF,
+    "start": int,
+    "back": ar.TimeSpan,
+
+    "to": ar.WorldTime,
+    "span": ar.TimeSpan,
+    "count": int,
+}
+
+ar.bind(LogSettings, object_schema=LOG_SETTINGS_SCHEMA)
+
+log_settings = LogSettings()
+
+#
+#
+class SetSettings(object):
+    def __init__(self, encoding=None):
+        self.encoding = encoding
+
+SET_SETTINGS_SCHEMA = {
+    "encoding": str,
+}
+
+ar.bind(SetSettings, object_schema=SET_SETTINGS_SCHEMA)
+
+set_settings = SetSettings()
+
+#
+#
+def abort(self):
+    '''Clear an object of all its workers.'''
+    self.abort()
+    while self.working():
+        self.select(ar.Completed)
+        self.debrief()
+
+def lock_home(self):
+    '''Try to lock everything. Return a dict of rejections (LockedOut).'''
+    # Put a lock on each entry.
+    started = {}
+    for e in hb.entry_list():
+        b = ar.breakpath(e)
+        role = b[1]
+        hb.role_exists(role)
+        hb.open_role(None)
+
+        a = self.create(ar.lock_and_hold, hb.role_entry.path, 'lockup')
+        self.assign(a, hb.role)
+        if hb.role_start_stop:
+            started[hb.role] = hb.role_start_stop[-1].start
+        else:
+            started[hb.role] = None
+
+    # Expect a response for each entry;
+    # Stop - external intervention
+    # Ready - lock was successful and object waiting
+    # Completed - the lock terminated, i.e. was locked out.
+    locked_out = {}
+    w = self.working()
+    for i in range(w):
+        m = self.select(ar.Stop, ar.Ready, ar.Completed)
+        if isinstance(m, ar.Stop):
+            abort(self)
+            return None
+        if isinstance(m, ar.Ready):     # This one is inactive.
+            continue
+        # Locker has completed.
+        r = self.debrief()
+        value = m.value
+        if isinstance(value, ar.LockedOut):     # Active.
+            locked_out[r] = value
+            continue
+        abort(self)
+        s = 'unexpected locking (%r)' % (value,)
+        raise ComponentFailed(s, None)
+
+    abort(self)
+    return locked_out, started
+
+# CRUD for a home and the roles within
+# that home.
+DEFAULT_HOME = '.ansar-home'
+
+def create_home(self, path, redirect):
+    hb.basic_plan(path)
+    if hb.plan_exists():
+        self.fault('home at "%s" already exists' % (hb.home_path,))
+        return 1
+    hb.create_plan(redirect, None)
+    return 0
+
+def add_role(self, executable, role, home, settings):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    bp = ar.breakpath(executable)
+    hb.runs_from_bin(bp)
+    if hb.role_exists(role):
+        self.fault('role "%s" (%s) already exists' % (role, hb.home_path))
+        return 1
+    hb.create_role(executable, None, component.retry)
+    a = self.create(ar.Process, hb.executable_name, role=hb.role, settings=settings, store=True)
+    self.assign(a, hb.role)
+    m = self.select(ar.Completed, ar.Stop)
+    if isinstance(m, ar.Stop):
+        self.abort(self)
+        while self.working():
+            self.select(ar.Completed)
+            self.debrief()
+        return 1
+    value = m.value
+    if isinstance(value, ar.Faulted):
+        s = str(value)
+        self.fault('cannot store settings for "%s" - %s' % (role, s))
+        return 1
+    elif isinstance(value, ar.Ack):
+        return 0
+    c = 'unexpected response from component (%r)' % (value,)
+    self.fault('cannot store settings for "%s" - %s' % (role, c))
+    return 1
+
+def update_role(self, role, home, settings):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, component.retry)
+    # Is it ok to run another instance, even if it is
+    # restricted to storing of settings, i.e. the main
+    # object is not instantiated.
+    a = self.create(ar.Process, hb.executable_name, role=hb.role, settings=settings, store=True)
+    self.assign(a, hb.role)
+    m = self.select(ar.Completed, ar.Stop)
+    if isinstance(m, ar.Stop):
+        self.abort(self)
+        while self.working():
+            self.select(ar.Completed)
+            self.debrief()
+        return 1
+    value = m.value
+    if isinstance(value, ar.Faulted):
+        s = str(value)
+        self.fault('cannot store settings for "%s" - %s' % (role, s))
+        return 1
+    elif isinstance(value, ar.Ack):
+        return 0
+    c = 'unexpected response from component (%r)' % (value,)
+    self.fault('cannot store settings for "%s" - %s' % (role, c))
+    return 1
+
+def delete_role(self, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist' % (role, hb.home_path))
+        return 1
+    hb.open_role(None)
+
+    # Need to check if the selected role is active.
+    a = self.create(ar.lock_and_hold, hb.role_entry.path, 'lockup')
+    self.assign(a, hb.role)
+    m = self.select(ar.Stop, ar.Ready, ar.Completed)
+
+    if isinstance(m, ar.Stop):      # Intervention.
+        abort(self)
+        return 1
+    if isinstance(m, ar.Ready):     # Claimed the lock.
+        abort(self)
+        hb.delete_role(role)
+        return 0
+    # Locker has completed.
+    self.debrief()
+    value = m.value
+    if isinstance(value, ar.LockedOut):
+        self.fault('cannot delete role "%s" - currently running as <%d>' % (role, value.pid))
+        return 1
+    self.fault('cannot delete role "%s" - unexpected locking (%r)' % (role, value))
+    return 1
+
+def list_home(self, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    for e in hb.entry_list():
+        b = ar.breakpath(e)
+        role = b[1]
+        if list_settings.long_listing:
+            hb.role_exists(role)
+            hb.open_role(None)
+            fo, fi, by = ar.shape_of_folder(hb.role_logs.path)
+            self.console('%-24s %s (%d/%d/%d)' % (role, hb.executable_name, 1 + fo, fi, by))
+        else:
+            self.console('%s' % (role,))
+    return 0
+
+def destroy_home(self, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+
+    try:
+        locked_out, started = lock_home(self)
+    except ComponentFailed as e:
+        s = str(e)
+        self.fault('cannot determine status of "%s" - %s' % (hb.home_path, s))
+        return 1
+
+    if locked_out is None:  # Stopped.
+        return 0
+    if len(locked_out) > 0:
+        self.fault('cannot destroy home "%s" - currently running role(s) "%s"' % (hb.home_path, ', '.join(locked_out.keys())))
+        return 1
+    hb.destroy_plan()
+    return 0
+
+# MVC for running instances of roles within
+# a home.
+def start_role(self, role, home, settings):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, component.retry)
+    a = self.create(ar.Process, hb.executable_name, role=hb.role, settings=settings, daemon=True)
+    self.assign(a, hb.role)
+    m = self.select(ar.Completed, ar.Stop)
+
+    if isinstance(m, ar.Stop):
+        abort(self)
+        return 1
+    # Object completed. Switch on return value.
+    value = m.value
+    if isinstance(value, ar.Ack):
+        return 0
+    if isinstance(value, ar.LockedOut):
+        self.fault('cannot start role "%s" - already running as <%d>' % (role, value.pid))
+        return 1
+    self.fault('cannot start role "%s" - unexpected locking (%r)' % (role, value))
+    return 1
+
+def run_role(self, role, home, settings):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, component.retry)
+    a = self.create(ar.Process, hb.executable_name, role=hb.role, settings=settings)
+    self.assign(a, hb.role)
+    m = self.select(ar.Completed, ar.Stop)
+
+    if isinstance(m, ar.Stop):
+        abort(self)
+        return 1
+    # Object completed. Switch on return value.
+    value = m.value
+    if isinstance(value, ar.Ack):
+        return 0
+    if isinstance(value, ar.LockedOut):
+        self.fault('cannot start role "%s" - already running as <%d>' % (role, value.pid))
+        return 1
+    self.fault('cannot start role "%s" - unexpected locking (%r)' % (role, value))
+    return 1
+
+def stop_role(self, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+
+    # Need to know whether a process is there and if so, its pid.
+    a = self.create(ar.lock_and_hold, hb.role_entry.path, 'lockup')
+    self.assign(a, hb.role)
+    m = self.select(ar.Stop, ar.Ready, ar.Completed)
+
+    if isinstance(m, ar.Stop):
+        abort(self)
+        return 1
+    if isinstance(m, ar.Ready):
+        abort(self)
+        self.fault('cannot stop role "%s" - not running' % (role,))
+        return 1
+    # Locker completed.
+    self.debrief()
+    value = m.value
+    if isinstance(value, ar.LockedOut):
+        os.kill(value.pid, signal.SIGTERM)
+        return 0
+    self.fault('cannot stop role "%s" - unexpected locking (%r)' % (role, value))
+    return 1
+
+def short_delta(d):
+    t = ar.span_to_text(d.total_seconds())
+    i = t.find('d')
+    if i != -1:
+        j = t.find('h')
+        if j != -1:
+            return t[:j + 1]
+        return t[:i + 1]
+    i = t.find('h')
+    if i != -1:
+        j = t.find('m')
+        if j != -1:
+            return t[:j + 1]
+        return t[:i + 1]
+    # Minutes or seconds only.
+    i = t.find('.')
+    if i != -1:
+        i += 1
+        j = t.find('s')
+        if j != -1:
+            e = j - i
+            e = min(1, e)
+            return t[:i + e] + 's'
+        return t[:i] + 's'
+
+def home_status(self, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+
+    try:
+        locked_out, started = lock_home(self)
+    except ComponentFailed as e:
+        s = str(e)
+        self.fault('cannot determine status of "%s" - %s' % (hb.home_path, s))
+        return 1
+
+    if locked_out is None:  # Stopped.
+        return 0
+
+    def long_status():
+        now = datetime.datetime.now(ar.UTC)
+        for k, v in locked_out.items():
+            s = started[k]
+            if s is not None:
+                d = now - started[k]
+                s = '%s ago' % (short_delta(d),)
+            else:
+                s = '(not started)'
+            self.console('%-24s <%d> %s' % (k, v.pid, s))
+
+    def short_status():
+        for k, v in locked_out.items():
+            self.console('%s' % (k,))
+
+    if list_settings.long_listing:
+        long_status()
+    else:
+        short_status()
+    return 0
+
+def role_history(self, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+
+    def long_history():
+        for s in hb.role_start_stop:
+            start = ar.world_to_text(s.start)
+            if s.stop is None:
+                self.console('%s ... ?' % (start,))
+                continue
+            stop = ar.world_to_text(s.stop)
+            if isinstance(s.returned, ar.Incognito):
+                self.console('%s ... %s (%s)' % (start, stop, s.returned.type_name))
+            else:
+                self.console('%s ... %s (%s)' % (start, stop, s.returned.__class__.__name__))
+
+    def short_history():
+        for s in hb.role_start_stop:
+            now = datetime.datetime.now(ar.UTC)
+            d = now - s.start
+            start = '%s ago' % (short_delta(d),)
+            if s.stop is None:
+                self.console('%s ... ?' % (start,))
+                continue
+            d = s.stop - s.start
+            stop = short_delta(d)
+            if isinstance(s.returned, ar.Incognito):
+                self.console('%s ... %s (%s)' % (start, stop, s.returned.type_name))
+            else:
+                self.console('%s ... %s (%s)' % (start, stop, s.returned.__class__.__name__))
+
+    if list_settings.long_listing:
+        long_history()
+    else:
+        short_history()
+    return 0
+
+def from_last(last):
+    d = datetime.datetime.now(ar.UTC)
+
+    if last == START_OF.MONTH:
+        f = datetime.datetime(d.year, d.month, 1, tzinfo=d.tzinfo)
+    elif last == START_OF.WEEK:
+        dow = d.weekday()
+        dom = d.day - 1
+        if dom >= dow:
+            f = datetime.datetime(d.year, d.month, d.day - dow, tzinfo=d.tzinfo)
+        elif d.month > 1:
+            t = dow - dom
+            r = calendar.monthrange(d.year, d.month - 1)
+            f = datetime.datetime(d.year, d.month - 1, r[1] - t, tzinfo=d.tzinfo)
+        else:
+            t = dow - dom
+            r = calendar.monthrange(d.year - 1, 12)
+            f = datetime.datetime(d.year - 1, 12, r[1] - t, tzinfo=d.tzinfo)
+    elif last == START_OF.DAY:
+        f = datetime.datetime(d.year, d.month, d.day, tzinfo=d.tzinfo)
+    elif last == START_OF.HOUR:
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, tzinfo=d.tzinfo)
+    elif last == START_OF.MINUTE:
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=d.minute, tzinfo=d.tzinfo)
+    elif last == START_OF.HALF:
+        t = d.minute % 30
+        m = d.minute - t
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+    elif last == START_OF.QUARTER:
+        t = d.minute % 15
+        m = d.minute - t
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+    elif last == START_OF.TEN:
+        t = d.minute % 10
+        m = d.minute - t
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+    elif last == START_OF.FIVE:
+        t = d.minute % 5
+        m = d.minute - t
+        f = datetime.datetime(d.year, d.month, d.day, hour=d.hour, minute=m, tzinfo=d.tzinfo)
+    else:
+        return None
+    return f
+
+def role_log(self, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+
+    begin, end = None, None
+    if log_settings.from_ is not None:
+        begin = log_settings.from_
+    elif log_settings.last is not None:
+        begin = from_last(log_settings.last)
+        if begin is None:
+            self.fault('cannot resolve <last>')
+            return 1
+    elif log_settings.start is not None:
+        if role.count('.') > 0:
+            self.fault('log from <start> requires an entry <role>')
+            return 1
+        try:
+            s = hb.role_start_stop[log_settings.start]
+        except IndexError:
+            self.fault('<start>[%d] does not exist (%d entries)' % (log_settings.start, len(hb.role_start_stop)))
+            return 1
+        begin = s.start
+        end = s.stop        # May be none, i.e. still running.
+    elif log_settings.back is not None:
+        d = datetime.datetime.now(ar.UTC)
+        t = datetime.timedelta(seconds=log_settings.back)
+        begin =  d - t
+
+    count = None
+    if log_settings.to is not None:
+        end = log_settings.to
+    elif log_settings.span is not None:
+        t = datetime.timedelta(seconds=log_settings.span)
+        end = begin + t
+    elif log_settings.count is not None:
+        count = log_settings.count
+    # Else
+    #   end remains as the default None or
+    #   the stop part of a start-stop.
+    
+    # Now that <begin> and <end> have been established, a
+    # few more sanity checks.
+    if begin is None:
+        self.fault('cannot log "%s" - no <begin>' % (role,))
+        return 1
+
+    if end is not None and end < begin:
+        self.fault('cannot log "%s" - <end> is before <begin>' % (role,))
+        return 1
+
+    try:
+        for t in read_log(hb.role_logs, begin, end, count):
+            self.console(t)
+    except Exception as e:
+        s = str(e)
+        self.fault('cannot log "%s" - %s' % (role, s))
+
+    return 0
+
+def home_folder(self, selected, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if role is None:
+        role = [e for e in hb.entry_list()]
+    else:
+        role = [role]
+
+    for r in role:
+        b = ar.breakpath(r)
+        role = b[1]
+        if not hb.role_exists(role):
+            self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+            return 1
+        hb.open_role(None, None)
+        d = {
+            'bin': hb.bin.path,
+            'settings': hb.settings.path,
+            'logs': hb.role_logs.path,
+            'tmp': hb.role_tmp.path,
+            'model': hb.role_model.path,
+            'resource': hb.role_resource.path,
+        }
+        self.console('%-24s %s' % (role, d[selected]))
+
+def store(v, pretty=False):
+    codec = ar.CodecJson(pretty_format=pretty)
+    t = ar.UserDefined(type(v))
+    s = codec.encode(v, t)
+    if pretty:
+        s += '\n'
+    return s
+
+def recover(s, c):
+    codec = ar.CodecJson()
+    t = ar.UserDefined(type(c))
+    v = codec.decode(s, t)
+    return v
+
+def get_property(self, selected, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+    property = {
+        'retry': hb.role_retry,
+    }
+
+    try:
+        p = property[selected]
+    except KeyError:
+        self.fault('property "%s" does not exist' % (selected,))
+        return 1
+    if p is None:
+        self.fault('property "%s" is not set (role "%s", home "%s")' % (selected, role, hb.home_path))
+        return 1
+
+    try:
+        s = store(p, pretty=True)
+    except ar.CodecFailed as e:
+        s = str(e)
+        self.fault('cannot encode property "%s", %s)' % (selected, s))
+        return 1
+
+    sys.stdout.write(s)
+    return 0
+
+def set_property(self, selected, role, home, j):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+    property = {
+        'retry': (hb.role_retry_file, hb.role_retry),
+    }
+
+    try:
+        f, c = property[selected]
+    except KeyError:
+        self.fault('property "%s" does not exist' % (selected,))
+        return 1
+    if f is None:
+        self.fault('property "%s" cannot be set (role "%s", home "%s")' % (selected, role, hb.home_path))
+        return 1
+
+    try:
+        p, v = recover(j, c)
+    except ar.CodecFailed as e:
+        s = str(e)
+        self.fault('cannot decode property "%s", %s)' % (selected, s))
+        return 1
+
+    try:
+        s = f.store(p)
+    except ar.FileFailure as e:
+        s = str(e)
+        self.fault('cannot set property "%s", %s)' % (selected, s))
+        return 1
+
+    return 0
+
+def edit_property(self, selected, role, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+    if not hb.role_exists(role):
+        self.fault('role "%s" (%s) does not exist or has unexpected contents' % (role, hb.home_path))
+        return 1
+    hb.open_role(None, None)
+    property = {
+        'retry': (hb.role_retry_file, hb.role_retry),
+    }
+
+    try:
+        f, c = property[selected]
+    except KeyError:
+        self.fault('property "%s" does not exist' % (selected,))
+        return 1
+    if f is None:
+        self.fault('property "%s" cannot be set (role "%s", home "%s")' % (selected, role, hb.home_path))
+        return 1
+
+    code = 0
+    try:
+        fd, name = tempfile.mkstemp()
+        os.close(fd)
+
+        # Prepare materials for editor.
+        temporary = ar.File(name, ar.UserDefined(type(c)), decorate_names=False)
+        temporary.store(c)
+
+        # Setup detection of change.
+        modified = os.stat(name).st_mtime
+
+        # Run the editor.
+        editor = os.getenv('ANSAR_EDITOR') or 'vi'
+        a = self.create(ar.Utility, editor, name)
+        self.assign(a, editor)
+        m = self.select(ar.Completed)
+        value = m.value
+        if isinstance(value, ar.Faulted):
+            s = str(value)
+            self.fault('unexpected editor behaviour, %s' % (s,))
+            raise Completion(1)
+        elif isinstance(value, ar.Aborted):
+            self.fault('editor interrupted')
+            raise Completion(1)
+
+        # Was the file modified?
+        if os.stat(name).st_mtime == modified:
+            self.fault('property not modified')
+            raise Completion(0)
+
+        # Validate contents and update the runtime.
+        a, _ = temporary.recover()
+        f.store(a)
+    except KeyboardInterrupt:
+        pass
+    except SystemExit:
+        pass
+    except ar.CodecFailed as e:
+        s = str(e)
+        self.fault('cannot encode/decode "%s", %s' % (property, s))
+        code = 1
+    except ar.FileFailure as e:
+        s = str(e)
+        self.fault('cannot read/write "%s", %s' % (property, s))
+        code = 1
+    except Completion as c:
+        code = c.value
+    except Exception as e:
+        s = str(e)
+        self.fault('unexpected exception, %s' % (s,))
+        code = 1
+    finally:
+        os.remove(name)
+    return code
+
+#
+# .
+def deploy_executable(self, executable, home):
+    hb.basic_plan(home)
+    if not hb.plan_exists():
+        self.fault('home at "%s" does not exist or has unexpected contents' % (hb.home_path,))
+        return 1
+    hb.open_plan()
+
+    source = ar.breakpath(executable)
+
+    def uses_executable(e):
+        b = ar.breakpath(e)
+        role = b[1]
+        hb.role_exists(role)
+        hb.open_role(None)
+
+        target = ar.breakpath(hb.role_executable)
+        if target[1] != source[1] or target[2] != source[2]:
+            return False
+        if target[0] == source[0]:
+            return False
+        return True
+
+    def status(selection):
+        # Attempt to lock all the selected entries
+        for s in selection:
+            b = ar.breakpath(s)
+            role = b[1]
+            hb.role_exists(role)
+            hb.open_role(None)
+
+            a = self.create(ar.lock_and_hold, hb.role_entry.path, 'lockup')
+            self.assign(a, hb.role)
+
+        # Process the results of locking. Attempts either
+        # succeed (Ready) or fail (Completed-LockedOut).
+        locked, running  = {}, {}
+        w = self.working()
+        for i in range(w):
+            m = self.select(ar.Stop, ar.Ready, ar.Completed)
+            if isinstance(m, ar.Stop):
+                abort(self)
+                return None, None
+            if isinstance(m, ar.Ready):     # Locked, this one is inactive.
+                r = self.progress()
+                locked[r] = self.return_address
+            # Locker has completed.
+            r = self.debrief()
+            value = m.value
+            if isinstance(value, ar.LockedOut):     # Active.
+                running[r] = value
+                continue
+            abort(self)
+            s = 'unexpected locking (%r)' % (value,)
+            raise ComponentFailed(s, None)
+
+    def terminate(running):
+        # Terminate the entries that could not be locked.
+        for k, v in running.items():
+            os.kill(v.pid, signal.SIGINT)
+
+    def unlock(locked):
+        n = len(locked)
+        for k, v in locked.items():
+            self.send(ar.Stop(), v)
+
+    def start(running):
+        for role in running.keys():
+            hb.role_exists(role)
+            hb.open_role(None)
+            self.create(ar.Process, ...)
+            self.select(ar.Stop, ar.Completed)
+
+    # Process control.
+    # Need a list of roles;
+    # a) all roles in a home
+    # b) a single role entered on the command-line, converted to list-of-1
+    # c) all roles using a particular executable
+    # Determine status of a selection of roles
+    # a) role is inactive, i.e. lock_and_hold sends a Ready
+    # b) role is running, i.e. lock_and_hold completes with LockedOut
+    # Terminate the Ready runners, i.e. clear the locks
+    # Perform some operation, e.g. copy new executable
+    # Start a selection of roles, e.g. previously running
+    matching = [e for e in hb.entry_list() if uses_executable(e)]
+    locked, running = status(matching)
+    terminate(running)
+    unlock(locked)
+    #copy(executable, bin)
+
+    # Expect a response for each entry;
+    # Stop - external intervention
+    # Ready - lock was successful and object waiting
+    # Completed - the lock terminated, i.e. was locked out.
+    running = {}
+    w = self.working()
+    for i in range(w):
+        m = self.select(ar.Stop, ar.Ready, ar.Completed)
+        if isinstance(m, ar.Stop):
+            abort(self)
+            return None
+        if isinstance(m, ar.Ready):     # This one is inactive.
+            continue
+        # Locker has completed.
+        r = self.debrief()
+        value = m.value
+        if isinstance(value, ar.LockedOut):     # Active.
+            running[r] = value
+            continue
+        abort(self)
+        s = 'unexpected locking (%r)' % (value,)
+        raise ComponentFailed(s, None)
+
+    if len(running) > 0:
+        for k, v in running.items():
+            os.kill(v.pid, signal.SIGINT)
+    
+    return 0
+    
+# $ ansar [-<flag>=<value> --<setting>=<value> ...] sub [-<flag>=<value> --<setting>=<value> ...] [word ...]
+#
+# <flags> and <settings> are long and short form assignments from the command-line to
+# a registered message, e.g. an application settings object. This is needed for both
+# control of the ansar command and for values associated with each sub-command. This
+# implies that there are separate "name spaces", i.e. there can be <flags> or <settings>
+# that appear the same (e.g. -l) but mean different things in different spaces (e.g.
+# --ansar-logs, --last and --long_listing). There are distinct spaces associated with
+# $ ansar and then each distinct sub-command.
+# 
+
+def ansar(self):
+    try:
+        redirect = ar.component_args(component)
+        executable, sub, word, ls = ar.sub_args(settings)
+    except ValueError as e:
+        s = str(e)
+        self.fault('cannot process command line - {error}'.format(error=s))
+        return 1
+
+    #
+    #.
+    af.console = True
+
+    def create():
+        path = word_else(0, word, DEFAULT_HOME)
+        return create_home(self, path, redirect)
+
+    def add():
+        executable = word_else(0, word, None)
+        if executable is None:
+            self.fault('add-an-entry needs an <executable>')
+            return 1
+        executable = os.path.abspath(executable)
+        bp = ar.breakpath(executable)
+        role = word_else(1, word, '%s-0' % (bp[1],))
+        home = word_else(2, word, DEFAULT_HOME)
+        lf = ['--%s=%s' % (k, v) for k, v in ls[0].items()]
+        sf = ['-%s=%s' % (k, v) for k, v in ls[1].items()]
+        lf.extend(sf)
+        return add_role(self, executable, role, home, lf)
+
+    def update():
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if role is None:
+            self.fault('update-an-entry needs a <role>')
+            return 1
+        lf = ['--%s=%s' % (k, v) for k, v in ls[0].items()]
+        sf = ['-%s=%s' % (k, v) for k, v in ls[1].items()]
+        lf.extend(sf)
+        return update_role(self, role, home, lf)
+
+    def delete():
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if role is None:
+            self.fault('delete-an-entry needs a <role>')
+            return 1
+        return delete_role(self, role, home)
+
+    def list_():
+        ar.arg_values(list_settings, ls)
+        home = word_else(0, word, DEFAULT_HOME)
+        return list_home(self, home)
+
+    def destroy():
+        home = word_else(0, word, DEFAULT_HOME)
+        return destroy_home(self, home)
+
+    def start():
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if not role or role.count('.') > 0:
+            self.fault('start-an-entry needs an entry <role>')
+            return 1
+        lf = ['--%s=%s' % (k, v) for k, v in ls[0].items()]
+        sf = ['-%s=%s' % (k, v) for k, v in ls[1].items()]
+        lf.extend(sf)
+        return start_role(self, role, home, lf)
+
+    def run():
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if not role or role.count('.') > 0:
+            self.fault('run-an-entry needs an entry <role>')
+            return 1
+        lf = ['--%s=%s' % (k, v) for k, v in ls[0].items()]
+        sf = ['-%s=%s' % (k, v) for k, v in ls[1].items()]
+        lf.extend(sf)
+        return run_role(self, role, home, lf)
+
+    def stop():
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if not role or role.count('.') > 0:
+            self.fault('stop-an-entry needs an entry <role>')
+            return 1
+        return stop_role(self, role, home)
+
+    def status():
+        ar.arg_values(list_settings, ls)
+        home = word_else(0, word, DEFAULT_HOME)
+        return home_status(self, home)
+
+    def history():
+        ar.arg_values(list_settings, ls)
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if not role or role.count('.') > 0:
+            self.fault('history-of-an-entry needs an entry <role>')
+            return 1
+        return role_history(self, role, home)
+
+    def log():
+        ar.arg_values(log_settings, ls)
+        role = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if not role:
+            self.fault('log needs a <role>')
+            return 1
+
+        # Initial sanity checks and a default <begin>.
+        f = [log_settings.from_, log_settings.last, log_settings.start, log_settings.back]
+        c = len(f) - f.count(None)
+        if c == 0:
+            log_settings.back = ar.text_to_span('5m')   # Default query of last 5 mins.
+        elif c != 1:
+            self.fault('log accepts one of <from>, <last>, <start> or <back>')
+            return 1
+
+        t = [log_settings.to, log_settings.span, log_settings.count]
+        c = len(t) - t.count(None)
+        if c == 0:
+            pass        # Default is query to end-of-log or end of start-stop.
+        elif c != 1:
+            self.fault('log accepts one of <to>, <span> or <count>')
+            return 1
+
+        return role_log(self, role, home)
+
+    def folder():
+        #ar.arg_values(log_settings, ls)
+        selected = word_else(0, word, None)
+        role = word_else(1, word, None)
+        home = word_else(2, word, DEFAULT_HOME)
+        if selected is None:
+            self.fault('folder needs a <home-sub-folder>')
+            return 1
+        return home_folder(self, selected, role, home)
+
+    def get():
+        selected = word_else(0, word, None)
+        role = word_else(1, word, None)
+        home = word_else(2, word, DEFAULT_HOME)
+        if selected is None:
+            self.fault('get needs a <property>')
+            return 1
+        if role is None:
+            self.fault('get needs a <role>')
+            return 1
+        return get_property(self, selected, role, home)
+
+    def set_():
+        ar.arg_values(set_settings, ls)
+        selected = word_else(0, word, None)
+        role = word_else(1, word, None)
+        home = word_else(2, word, DEFAULT_HOME)
+        if selected is None:
+            self.fault('get needs a <property>')
+            return 1
+        if role is None:
+            self.fault('get needs a <role>')
+            return 1
+        
+        j = set_settings.encoding or sys.stdin.read()
+
+        return set_property(self, selected, role, home, j)
+
+    def edit():
+        selected = word_else(0, word, None)
+        role = word_else(1, word, None)
+        home = word_else(2, word, DEFAULT_HOME)
+        if selected is None:
+            self.fault('edit needs a <property>')
+            return 1
+        if role is None:
+            self.fault('edit needs a <role>')
+            return 1
+        
+        return edit_property(self, selected, role, home)
+
+    def deploy():
+        executable = word_else(0, word, None)
+        home = word_else(1, word, DEFAULT_HOME)
+        if executable is None:
+            self.fault('deploy needs an <executable>')
+            return 1
+        executable = os.path.abspath(executable)
+        
+        return deploy_executable(self, executable, home)
+
+    table = jump_table(
+        create, add, update, delete, list_, destroy,
+        start, run, stop, status, history, log,
+        folder,
+        get, set_, edit,
+#       deploy,
+    )
+
+    # start, stop, run, status, log, show/examine, file
+    # import, export, edit
+
+    sub_command = sub
+    if sub_command is None:
+        self.fault('no sub-command provided')
+        return 1
+
+    hb.running_in_host(executable)
+    try:
+        f = table[sub_command]
+    except KeyError:
+        self.fault('unknown sub-command "%s"' % (sub_command,))
+        return 1
+
+    try:
+        code = f()
+    except ComponentFailed as e:
+        s = str(e)
+        self.fault('cannot complete "{sub}" command, {error}'.format(sub=sub_command, error=s))
+        code = 1
+    except ValueError as e:
+        s = str(e)
+        self.fault('cannot perform "{sub}" command, {error}'.format(sub=sub_command, error=s))
+        code = 1
+    return code
+
+ar.bind(ansar)
+
+#
+#
+def jump_table(*args):
+    t = {a.__name__.rstrip('_'): a for a in args}
+    return t
+
+def word_else(i, w, d):
+    if i < len(w):
+        return w[i]
+    return d
+
+#
+#
+PID = os.getpid()
+
+def log_to_command_line(log):
+    if log.tag[-1] not in settings.tags:
+        return
+    
+    if not settings.debug:
+        p = log.text
+        p += '\n'
+    else:
+        mark = time.strftime('%Y-%m-%dT%H:%M:%S', log.stamp)
+        name = log.name.split('.')[-1]
+        state = log.state
+        if state is None:
+            p = '[%06d] %s %s <%08x>%s - %s\n' % (PID, mark, log.tag, log.address[-1], name, log.text)
+        else:
+            p = '[%06d] %s %s <%08x>%s[%s] - %s\n' % (PID, mark, log.tag, log.address[-1], name, state, log.text)
+    sys.stderr.write(p)
+    sys.stderr.flush()
+
+#
+#
+def main():
+    ar.command(ansar, log_to_command_line)
+
+if __name__ == '__main__':
+    main()
+

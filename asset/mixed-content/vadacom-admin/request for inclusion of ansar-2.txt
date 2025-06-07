@@ -1,0 +1,79 @@
+I have spent some time reading text and code, analysing and discussing - first the "load
+distribution" task and then also the "auto software update" task. Both turn out to be
+significant bodies of work and especially the latter. I feel like I have been scratching
+away at something that was quite "do-able" when one more scratch revealed it to be a
+full-sized challenge.
+
+My starting point with some actual coding is to create async objects (i.e. using ansar)
+with names like;
+
+	* SubProcessingManager
+	* DiscreteScheduling
+	* SoftwareUpdating
+
+Both DiscreteScheduling and SoftwareUpdating would receive updates from the license_server
+in response to user selections/clicks on the vpnmanager2 console. The former would have
+a to-do list of tasks (i.e. subprocesses) to run and a current schedule of those times
+that are suitable for running different tasks, according to the resources that each task
+shares with others, such as the CPU and LAN. The latter would manage the "apt-get" processes
+related to different packages+versions clicked by the user.
+
+Essentially I dont think this arrangement is much different to what anyone might come
+up with, though I would hope that using ansar I could knock out a good implementation
+in a competitive timeframe.
+
+Which brings me to a couple of higher-level questions.
+
+The first is technical - do we need full, async network messaging for this task? As
+I understand the requirements my answer is "yes". This work will involve ongoing
+management of collections of child processes. A quality implementation will have
+messages (progress notifications and helpful error messages) moving between the
+children and the parent. This is quite distinct to the messaging happening within
+the vx-license-client itself. That is "in-process" messaging where messages move
+between threads, never travelling across a network transport to a completely
+separate process.
+
+At the moment ansar does not include the "across a network transport" part. That was
+mostly because of the volume of code involved. Inclusion of ansar networking code
+would have slowed down the adoption of ansar into the vadacom codebase. Without a
+solid introduction into fully async messaging with ansar it might have turned users
+off completely. Work such as managerclient and now ldap and phonebooks have helped
+to prove the efficacy of ansar as a software library and hopefully softened attitudes
+towards true async coding. I believe the decision to carry out the proof-of-concept
+job with managerclient has turned out well.
+
+Network messaging is a much bigger scope. It includes areas such as;
+
+	* async interfacing with network devices
+	* network memory data models
+	* protocol versioning
+	* session management
+	* service discovery
+	* publish and subscribe configurations
+
+The second question is about code-sharing and legal agreements. If I am right about
+the need for full async network messaging then ansar at Vadacom needs to be populated
+with networking code from my repos. I am happy to carry out this work and for the code
+to be subject to an acquisition process like we went through with the first body of
+code. I assume that all the legal agreements that were established previously would
+continue to apply. I would retain full intellectual property and Vadacom would continue to
+enjoy free usage rights.
+
+Use of ansar in more than one repo (i.e. webman, vpnmanager and vx-license-server)
+forces the need for sharing/distribution of the library. After considering the
+different options I am most in favour of putting it into one of the code-sharing
+cloud services.
+
+Can keep working on the internal parts of vx-license-client and license_server for
+a few days. After that, feedback required to move the #2444 task forward.
+
+Cheers,
+Scott
+
+
+
+
+
+
+
+

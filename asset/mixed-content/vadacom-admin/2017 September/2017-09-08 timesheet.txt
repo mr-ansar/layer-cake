@@ -1,0 +1,10 @@
+9-11
+completed all logging integration and functional testing
+12-5
+refactored all module names and use of import for code review
+many issues here but prob for the best
+as of EOW still stuck on getting it to run - assignment and then
+read access to variables across modules is a bit dodgy
+a new strategy to allow looseness (import *) during dev and then
+lock it down after modules are stable
+hope the reviewer likes it

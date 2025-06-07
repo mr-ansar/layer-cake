@@ -1,0 +1,68 @@
+--long-form-argument[=json-value]
+-sf[=json-value]
+
+optional =json-value
+default to the initializer
+empty list implies all defaults
+and adding --store-settings forces a reset
+
+
+--role-name ........... persistent name within group
+--group-name .......... persistent group
+--redirect-logs ....... redirect to outside group
+--redirect-settings ...
+--redirect-model ......
+--store-settings
+--get-settings
+--put-settings
+--edit-settings
+--factory-reset
+--dump-settings
+--save-settings
+--pure-object
+--call-signature ...... input/output
+--debug-level
+--home-path
+--point-of-origin ..... START_ORIGIN=1, START_CHILD=2, RUN_ORIGIN=3, RUN_CHILD=4
+--help ................ docstring + hints to output
+--get-api ............ show API/RPC details
+--dump-input
+--input-file
+--output-file
+--group-pid
+
+PLUS
+args from the function/class.__art__
+
+def create(object_type):
+	art = object_type.__art__
+	isinstance(RoutineRuntime) or machine
+	argv = sys.argv
+	cake, kw = args_to_cake_and_object(args, art)
+	
+	if role_name or group_name:
+		load_persistent_image()
+	daemonize()
+	factory_reset()
+	standard_input()
+	start_logs()
+
+	start_up(logs, tunings)
+	# atexit
+	# Root
+	# Support services
+	# Signal handling
+	
+	with channel() as c:
+		value = object_type(c, **kw)
+		if isinstance(value, Faulted):
+			if value.exit_status is not None:
+				PT.exit_status = value.exit_status
+			PT.completed_value = (value, UserDefined(c))
+		elif Any:
+			PT.completed_value = value
+		elif:
+			PT.completed_value = (value, return_type)
+	
+	# Cleanup, stdout and sys.exit in atexit.
+

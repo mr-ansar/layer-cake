@@ -1,0 +1,48 @@
+2021  git clone git@github.com:mr-ansar/ansar-services.git
+ 2022  cd ansar-services
+ 2023  git status
+ 2024  ls -a
+ 2025  ls ../ansar-testing
+ 2026  cp ../ansar-testing/Makefile 
+ 2027  cp ../ansar-testing/Makefile .
+ 2028  cp ../ansar-testing/directory-lan-settings .
+ 2029  cp ../ansar-testing/directory-host-settings .
+ 2030  cp ../ansar-testing/group-directory-host-settings .
+ 2031  cp ../ansar-testing/group-directory-lan-settings .
+ 2032  ls
+ 2033  ls -l
+ 2034* cp ../ansa .
+ 2035  cp ../ansar-testing/REQUIREMENTS .
+ 2036  cat REQUIREMENTS 
+ 2037  ls -a
+ 2038  python3 -m venv .dev
+ 2039  source .dev/bin/activate
+ 2040  pip3 install pyinstaller ansar-connect
+ 2041  pip3 freeze
+ 2042  make directory-host-service directory-lan-service
+ 2043  make directory-lan-service
+ 2044  make clean-directory-lan clean-directory-host clean-home
+ 2045  sudo touch /etc/systemd/system/ansar-directory-lan.service
+ 2046  make clean-directory-lan clean-directory-host clean-home
+ 2047  ls
+ 2048  echo *.service *-start *-stop
+ 2049  rm *.service *-start *-stop
+ 2050  ls -a
+ 2051  make clean-home
+ 2052  make directory-host-service directory-lan-service
+ 2053  make clean-directory-host
+ 2054  ls /etc/systemd/system
+ 2055  ls
+ 2056  make clean-home
+ 2057  make directory-host-service directory-lan-service
+ 2058  ansar list
+ 2059  ansar list -ll -ar -g
+ 2060  ls
+ 2061  sudo systemctl start ansar-directory-host.service 
+ 2062  sudo systemctl status ansar-directory-host.service 
+ 2063  ansar log directory-host
+ 2064  ls -l
+ 2065  history
+(.dev) scott@seneca:~/gh/ansar-services$ 
+
+

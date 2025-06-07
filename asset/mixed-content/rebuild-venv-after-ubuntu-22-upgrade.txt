@@ -1,0 +1,1013 @@
+
+Notes:
+	A whole lot of this history log is not needed. Its the tail part where things
+	get useful. Where I created the last venv and populate it with packages
+	in DEVELOPMENT. Then there is also the hassle of getting vscode to recognize
+	the new venv. Need to create that new venv from with the vscode terminal.
+	Then it detects the creation and asks if you want to make it current. These
+	funny details seem to be the easiest way to get vscode to use the right venv.
+	The symptom of the broken venv was that unit testing couldnt even start, i.e.
+	found no tests and complained about lack of the pytest tool. Even though it
+	was installed. It just hadnt decided to use the right venv for execution of
+	sub-commands.
+
+ 1124  git status .
+ 1125  make package_build 
+ 1126  git status .
+ 1127  git diff FROM
+ 1128  git commit -m 'Drop migrate func.' FROM
+ 1129  git status .
+ 1130  git diff src/ansar/encode/file.py
+ 1131  git commit -m 'Remove migrate function and refactor upgrade/migrate args to new version strategy.' src/ansar/encode/file.py
+ 1132  git status .
+ 1133  git diff src/ansar/encode/folder.py
+ 1134  git commit -m 'Refactor upgrade/migrate to new version strategy.' src/ansar/encode/folder.py
+ 1135  git status .
+ 1136  git diff test
+ 1137  git commit -m 'Refactor upgrade/migrate to new version strategy.' test
+ 1138  git status .
+ 1139  git push
+ 1140  git status .
+ 1141  git diff src
+ 1142  git commit -m 'Removed decoded_type and remote_version - redundant.' src
+ 1143  git status .
+ 1144  make package_build 
+ 1145  git status .
+ 1146  git diff FROM
+ 1147  git commit -m 'Added Document, removed find_type.' FROM
+ 1148  git status .
+ 1149  git diff src/ansar/encode/codec.py
+ 1150  git diff src/ansar/encode/message.py
+ 1151  git commit -m 'Removed find_type.' src/ansar/encode/message.py
+ 1152  git status .
+ 1153  git diff src/ansar/encode/codec.py
+ 1154  git diff test/message_test.py
+ 1155  git commit -m 'Switch from find_type to effective_type.' test/message_test.py
+ 1156  git status .
+ 1157  git diff test
+ 1158  git status .
+ 1159  git diff src/ansar/encode/codec.py
+ 1160  git status .
+ 1161  make package_build 
+ 1162  git status .
+ 1163  git diff FROM
+ 1164  git commit -m 'Changed from FROM to released_document.' FROM
+ 1165  git status .
+ 1166  git diff src
+ 1167  git commit -m 'Exporting get_history and get_version.' src
+ 1168  git status .
+ 1169  git diff test
+ 1170  git commit -m 'Improving tests for new version strategy.' test
+ 1171  git status .
+ 1172  git diff src
+ 1173  git add src
+ 1174  git commit -m 'Initial version.' src
+ 1175  git status .
+ 1176  git push
+ 1177  make package_build 
+ 1178  git status .
+ 1179  git diff FROM
+ 1180  git commit -m 'Moved version funcs from codec to message.' FROM
+ 1181  git status .
+ 1182  git diff src/ansar/encode/codec.py
+ 1183  git status .
+ 1184  git commit -m 'Moved version funcs from codec to message.' src/ansar/encode/codec.py src/ansar/encode/message.py
+ 1185  git status .
+ 1186  git diff src/ansar/encode/release.py
+ 1187  git commit -m 'Removed import of codec.' src/ansar/encode/release.py
+ 1188  git diff
+ 1189  git status .
+ 1190  git diff test
+ 1191  git commit -m 'Added StoredDocument message and removed released_document call.' test
+ 1192  git status .
+ 1193  git push
+ 1194  make package_build 
+ 1195  python
+ 1196  make package_build 
+ 1197  git status .
+ 1198  git diff FROM
+ 1199  git commit -m 'Removed current_version.' FROM
+ 1200  git commit -m 'Removed trailing newlines - pkg tools dont like them.' DESCRIPTION 
+ 1201  git status .
+ 1202  git diff src/ansar/encode/codec.py
+ 1203  git commit -m 'Comments around version slicing.' src/ansar/encode/codec.py
+ 1204  git diff src/ansar/encode/message.py
+ 1205  git commit -m 'Removed current_version.' src/ansar/encode/message.py
+ 1206  git status .
+ 1207  git push
+ 1208  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1209  /home/scott/repo/ansar-encode/.dev/bin/python /home/scott/repo/ansar-encode/test/version_test.py
+ 1210  cd repo/ansar-encode/
+ 1211  git status .
+ 1212  git diff src/ansar/encode/codec.py
+ 1213  git commit -m 'Rework versioning wrt version/unversioned.' src/ansar/encode/codec.py
+ 1214  git status .
+ 1215  git diff src/ansar/encode/message.py
+ 1216  git commit -m 'Rework versioning wrt version/unversioned.' src/ansar/encode/message.py
+ 1217  git status .
+ 1218  git diff src/ansar/encode/release.py
+ 1219  git commit -m 'Rework versioning wrt version/unversioned.' src/ansar/encode/release.py
+ 1220  git status .
+ 1221  git diff test/version_test.py
+ 1222  git commit -m 'Reworked handling of version/unversioned. Added test for released_document CodingProblem.' test/version_test.py
+ 1223  git status .
+ 1224  git add test/version_message.py 
+ 1225  git diff
+ 1226  git status .
+ 1227  git commit -m 'Initial version.' test
+ 1228  git status .
+ 1229  git push
+ 1230  git log --onelin
+ 1231  git log --oneline
+ 1232  git status .
+ 1233  git diff src
+ 1234  git commit -m 'Remove fake initial version. There is now versioned/unversioned.' src
+ 1235  git status .
+ 1236  git push
+ 1237  git status
+ 1238  python
+ 1239  python3
+ 1240  git status .
+ 1241  git commit -m 'Clean impl of compile_history and related unit tests.' src test
+ 1242  git status .
+ 1243  git push
+ 1244  printenv > /tmp/tmp-7518hpPobkzPQ5a3txt
+ 1245  cd repo/ansar-encode/
+ 1246  git status .
+ 1247  git diff
+ 1248  git commit -m 'Cleaned out unused vars and added comments.' src
+ 1249  git status 
+ 1250  git push
+ 1251  git status .
+ 1252  make package_build 
+ 1253  source .dev/bin/activate
+ 1254  make package_build 
+ 1255  git status .
+ 1256  git commit -m 'Added get_slice.' FROM
+ 1257  git commit -m 'Added AddMoveDelete test type and all coding problem tests.' src test
+ 1258  git status .
+ 1259  git push
+ 1260  cd repo/ansar-encode/
+ 1261  git status .
+ 1262  git diff 
+ 1263  git status .
+ 1264  git diff src/ansar/encode/codec.py
+ 1265  git status .
+ 1266  git diff src/ansar/encode/codec.py
+ 1267  git commit -m 'Fix subtleties of slicing and array size mismatches.' src/ansar/encode/codec.py
+ 1268  git status .
+ 1269  git commit -m 'Adjust tests for slicing and array size mismatches.' test
+ 1270  git status .
+ 1271  git push
+ 1272  git status .
+ 1273  git log --oneline
+ 1274  git status .
+ 1275  git diff
+ 1276  git status .
+ 1277  git commit -m 'Final impl and unit tests for enforcing none using slicing.' src test
+ 1278  git status .
+ 1279  git push
+ 1280  git status .
+ 1281  git 
+ 1282  git status .
+ 1283  git commit -m 'Clearer names and some comments on slicing.' src
+ 1284  git status .
+ 1285  git push
+ 1286  git status .
+ 1287  git commit -m 'Fixed lack of pops before continue in p2w_message loop.' src'
+ 1288  git commit -m 'Fixed lack of pops before continue in p2w_message loop.' src
+ 1289  git push
+ 1290  git status .
+ 1291  git commit -m 'Added __all__ decl to release module..' src
+ 1292  git push
+ 1293  git status .
+ 1294  cd repo/ansar-encode/
+ 1295  git status .
+ 1296  git diff
+ 1297  git status .
+ 1298  git d
+ 1299  git status .
+ 1300  git commit -m 'Move messge decls from version_test to version_message.' test
+ 1301  git push
+ 1302  git status .
+ 1303  git diff 
+ 1304  git commit -m 'Minor comment and final place for registration of doc in a unit test..' src test
+ 1305  git status .
+ 1306  git push
+ 1307  git status .
+ 1308  git diff
+ 1309  git status .
+ 1310  git commit -m 'Minor improvements and added unit tests for versioning/slicing.' src test'
+ 1311  git commit -m 'Minor improvements and added unit tests for versioning/slicing.' src test
+ 1312  git status .
+ 1313  git push
+ 1314  cd test
+ 1315  python3
+ 1316  source .dev/bin/activate
+ 1317  python3
+ 1318  source .dev/bin/activate
+ 1319  cd ..
+ 1320  source .dev/bin/activate
+ 1321  python3
+ 1322  cd test
+ 1323  python3
+ 1324  cd repo/ansar-encode/
+ 1325  git status .
+ 1326  git diff
+ 1327  source .dev/bin/activate
+ 1328  python3
+ 1329  cd test
+ 1330  python3
+ 1331  cd ..
+ 1332  git status .
+ 1333  rm test.txt test/test.txt 
+ 1334  git commit -m 'Added proof of command to extract registered types and verify.' test
+ 1335  git push
+ 1336  git status .
+ 1337  git commit -m 'Minor name improvement.' test
+ 1338  git status .
+ 1339  echo git clone git@ansar.gitlab.com:scott-ansar/ansar.git
+ 1340  cd ..
+ 1341  ls
+ 1342  ls ansar-encode/
+ 1343  ls alternate
+ 1344  ls ansar
+ 1345  ls ansar/ansar
+ 1346  ls
+ 1347  ls ansar
+ 1348  mv ansar ansar-keep
+ 1349  git clone git@ansar.gitlab.com:scott-ansar/ansar.git
+ 1350  git status .
+ 1351  cd ansar-encode/
+ 1352  git status .
+ 1353  git push
+ 1354  git fetch
+ 1355  git checkout main
+ 1356  git pull
+ 1357  git branch
+ 1358  ls
+ 1359  make package_b
+ 1360  make package_build 
+ 1361  make code_test 
+ 1362  make code_coverage
+ 1363  make show_coverage
+ 1364  make package_build 
+ 1365  make package
+ 1366  git status .
+ 1367  git commit -m 'Added entry_points to setup.py.' setup.py 
+ 1368  git status .
+ 1369  make package
+ 1370  git status .
+ 1371  git push
+ 1372  make package_push
+ 1373  git status .
+ 1374  make clean
+ 1375  make package_build 
+ 1376  exit
+ 1377  cd repo/ansar-encode/
+ 1378  ls
+ 1379  make package_build 
+ 1380  source .dev/bin/activate
+ 1381  make package_build 
+ 1382  git status .
+ 1383  git diff setup.py
+ 1384  cd src/ansar
+ 1385  ls
+ 1386  python -m build
+ 1387  cd ../..
+ 1388  ls
+ 1389  python -m build
+ 1390  which ansar-releasing
+ 1391  find ~ -name ansar-\* -print
+ 1392  cd src/ansar
+ 1393  ls
+ 1394  cd ..
+ 1395  cp command/show_release.py ansar/encode
+ 1396  tree
+ 1397  cd ..
+ 1398  python -m build
+ 1399  pip3 freeze
+ 1400  pip3 install -e .
+ 1401  which ansar-releasing 
+ 1402  vi `which ansar-releasing`
+ 1403  ansar-releasing 
+ 1404  cd src/ansar
+ 1405  mkdir command
+ 1406  cp encode/show_release.py command
+ 1407  make package_build
+ 1408  cd ../..
+ 1409  make package_build
+ 1410  ansar-releasing 
+ 1411  make package_build 
+ 1412  ansar-releasing 
+ 1413  ansar-releasing x
+ 1414  python3
+ 1415  ls
+ 1416  cat test.txt 
+ 1417  cd test
+ 1418  ls
+ 1419  ansar-releasing version_test.py ../test.txt 
+ 1420  ls
+ 1421  ls ../test/txt
+ 1422  ls ..
+ 1423  find .. -name test.txt -print
+ 1424  ls ../test.txt
+ 1425  mv ../test.txt .
+ 1426  ls
+ 1427  python3
+ 1428  ls
+ 1429  ls version_test.py 
+ 1430  python3
+ 1431  ansar-releasing version_test.py test.txt 
+ 1432  ls
+ 1433  ansar-releasing version_test.py test.txt 
+ 1434  ansar-releasing /home/scott/repo/ansar-encode/test/version_test.py test.txt 
+ 1435  ls version_test.py 
+ 1436  ansar-releasing version_test.py test.txt 
+ 1437  ls /home/scott/repo/ansar-encode/test
+ 1438  ls /home/scott/repo/ansar-encode/test/version_test.py 
+ 1439  ansar-releasing version_test.py test.txt 
+ 1440  cd ..
+ 1441  ansar-releasing test/version_test.py test/test.txt 
+ 1442  mv test/test.txt .
+ 1443  ansar-releasing test/version_test.py test.txt 
+ 1444  mv test/test.txt .
+ 1445  ansar-releasing test/version_test.py test.txt 
+ 1446  ansar-releasing test/version_test.py
+ 1447  ansar-releasing test/version_test.py version_test.txt
+ 1448  ls
+ 1449  cat test.txt 
+ 1450  ansar-releasing test/version_test.py version_test.txt
+ 1451  rm version_test.txt
+ 1452  ls
+ 1453  rm test.txt
+ 1454  ansar-releasing test/version_test.py release.txt
+ 1455  ls
+ 1456  cp test/next-release.txt test.txt
+ 1457  ansar-releasing test/version_test.py test.txt
+ 1458  cp test/next-release.txt test.txt
+ 1459  ansar-releasing test/version_test.py test.txt
+ 1460  cp test/next-release.txt test.txt
+ 1461  ansar-releasing test/version_test.py test.txt
+ 1462  echo $?
+ 1463  ansar-releasing test/version_test.py test.txt
+ 1464  ansar-releasing test/version_test.py version_test.txt
+ 1465  ls
+ 1466  cat version_test.txt 
+ 1467  rm version_test.txt 
+ 1468  ansar-releasing test/version_test.py version_test.txt
+ 1469  cat version_test.txt 
+ 1470  ansar-releasing test/version_test.py version_test.txt
+ 1471  ansar-releasing -a test/version_test.py version_test.txt
+ 1472  ansar-releasing -a test/.py version_test.txt
+ 1473  ansar-releasing -a test/version_test.py version_test.txt
+ 1474  rm version_test.txt 
+ 1475  ls version_test.txt 
+ 1476  cat version_test.txt 
+ 1477  ansar-releasing -a test/version_test.py version_test.txt
+ 1478  cat version_test.txt 
+ 1479  ansar-releasing -a test/version_test.py version_test.txt
+ 1480  python3
+ 1481  git status .
+ 1482  git add src/ansar/command/show_release.py 
+ 1483  git status .
+ 1484  rm test.txt test/next-release.txt test/release.txt test/version_test.txt version_test.txt
+ 1485  git status .
+ 1486  git commit -m 'Started the ansar-release command.' src
+ 1487  git status .
+ 1488  git push
+ 1489  git log --oneline
+ 1490  git status .
+ 1491  exit
+ 1492  ls
+ 1493  cat next-release.txt 
+ 1494  rm next-release.txt 
+ 1495  ls
+ 1496  cat next-release.txt 
+ 1497  ansar-release version_test.py test.txt 
+ 1498  exit
+ 1499  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1500  cd repo/ansar-encode/
+ 1501  make package
+ 1502  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1503  make package
+ 1504  git status .
+ 1505  git commit -m 'Bump year of copyright.' src/ansar/encode/{file,folder,release,xml}.py
+ 1506  git status 
+ 1507  git add src/ansar/encode/framework.py
+ 1508  git status .
+ 1509  git commit -m 'Moved command_args from CLI show_release to framework.' src FROM
+ 1510  git status .
+ 1511  git push
+ 1512  make package
+ 1513  ansar-release test/version_test.py version_test.txt 
+ 1514  pip3 install -e .
+ 1515  ansar-release test/version_test.py version_test.txt 
+ 1516  pip3 freeze
+ 1517  make package_build
+ 1518  ansar-releasing test/version_test.py version_test.txt 
+ 1519  ls
+ 1520  cat version_test.txt 
+ 1521  ansar-releasing test/version_test.py version_test.txt 
+ 1522  ansar-releasing -a test/version_test.py version_test.txt 
+ 1523  git status .
+ 1524  rm test/next-release.txt version_test.txt 
+ 1525  ls
+ 1526  git status .
+ 1527  git push
+ 1528  ansar-releasing -a test/version_test.py version_test.txt 
+ 1529  cat version_test.txt 
+ 1530  git commit -m 'Removed the temp file created by exec fragment.' src
+ 1531  git status .
+ 1532  git push
+ 1533  cd repo/ansar-encode/
+ 1534  git fetch
+ 1535  git checkout 12-determine-behaviour-of-incognitos-in-new-versioning-engine
+ 1536  git status .
+ 1537  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1538  make
+ 1539  make code_style 
+ 1540  make
+ 1541  make code_style 
+ 1542  make code_doc
+ 1543  make
+ 1544  make clean
+ 1545  make package_push
+ 1546  git status .
+ 1547  git commit -m 'Code-doc style fixes.' src
+ 1548  git status .
+ 1549  git push
+ 1550  make package_push
+ 1551  git status .
+ 1552  rm test.txt 
+ 1553  make package_push
+ 1554  make package
+ 1555  make show_doc
+ 1556  make doc
+ 1557  make package
+ 1558  git status .
+ 1559  git diff src/ansar/encode/codec.py
+ 1560  git commit -m 'Rename address/aliased to pointer in shipment.' src/ansar/encode/codec.py test
+ 1561  git status .
+ 1562  make doc
+ 1563  make doc_examples
+ 1564  make doc_build
+ 1565  make doc_push
+ 1566  make doc_build
+ 1567  make package_build
+ 1568  make doc_build 
+ 1569  make doc_push
+ 1570  make doc_build 
+ 1571  make doc_push
+ 1572  make doc_build doc_push
+ 1573  make doc_examples
+ 1574  make doc_build doc_push
+ 1575  cd doc/source
+ 1576  cd -
+ 1577  make doc_build doc_push
+ 1578  make doc_examples 
+ 1579  make doc_build doc_push
+ 1580  make doc_examples doc_build doc_push
+ 1581  git status .
+ 1582  make clean
+ 1583  make doc
+ 1584  make doc_examples doc_build doc_push
+ 1585  make clean
+ 1586  make doc
+ 1587  make doc_examples doc_build doc_push
+ 1588  make -xvdoc_examples
+ 1589  make -xv doc_examples
+ 1590  make --trace doc_examples
+ 1591  make --trace doc_example
+ 1592  make --trace doc_examples
+ 1593  make doc
+ 1594  make clean doc
+ 1595  make doc_push
+ 1596  make doc_build doc_push
+ 1597  make
+ 1598  make package
+ 1599  make clean
+ 1600  make package
+ 1601  make doc_example doc_build doc_push
+ 1602  make doc_examples doc_build doc_push
+ 1603  make doc_build doc_push
+ 1604  make package_build
+ 1605  cd repo/ansar-enc
+ 1606  cd repo/ansar-encode
+ 1607  ls
+ 1608  cat flag.json
+ 1609  cat array-of-pointer.json 
+ 1610  cat linked-list.json 
+ 1611  cat linked-loop.json 
+ 1612  cat map-loop.json 
+ 1613  find . -name "doc_every*" -print
+ 1614  cd doc/source/
+ 1615  ./run-and-save 
+ 1616  alias python python3
+ 1617  alias
+ 1618  alias python=python3
+ 1619  alias
+ 1620  ./run-and-save 
+ 1621  cd -
+ 1622  source .dev/bin/activate
+ 1623  cd -
+ 1624  ./run-and-save 
+ 1625  ls
+ 1626  cd -
+ 1627  ls
+ 1628  cat doc.json 
+ 1629  cat job.json 
+ 1630  git status .
+ 1631  git commit -m 
+ 1632  git commit -m 'Bring original docs up to new release - mostly the versioning changes.' doc/source
+ 1633  git status .
+ 1634  git push
+ 1635  pip3 install -e .
+ 1636  ansar-releasing
+ 1637  ansar-releasing test/version_test.py test.txt
+ 1638  ls
+ 1639  cat test.txt
+ 1640  vi /home/scott/repo/ansar-encode/doc/source/versions-upgrading-and-migration.rst
+ 1641  python3
+ 1642  pip freeze
+ 1643  ansar-releasing status
+ 1644  ansar-releasing status test/version_test.py 
+ 1645  ansar-releasing status
+ 1646  ansar-releasing status x
+ 1647  ansar-releasing status test/version_test.py 
+ 1648  ansar-releasing check test/version_test.py version_test.release
+ 1649  echo $?
+ 1650  ansar-releasing check test/version_test.py version_test.release
+ 1651  echo $?
+ 1652  cat *.release
+ 1653  ansar-releasing check test/version_test.py version_test.release
+ 1654  cat *.release
+ 1655  ls
+ 1656  ls -l version_test.release 
+ 1657  rm version_test.release 
+ 1658  ansar-releasing status test/version_test.py 
+ 1659  ansar-releasing status test/version_test.x 
+ 1660  ansar-releasing status test/version_test.py
+ 1661  ls
+ 1662  ls *.release
+ 1663  ansar-releasing check test/version_test.py version_test.release
+ 1664  cat *.release
+ 1665  ansar-releasing check test/version_test.py version_test.release
+ 1666  echo $?
+ 1667  vi *.release
+ 1668  ansar-releasing check test/version_test.py version_test.release
+ 1669  vi *.release
+ 1670  ansar-releasing check test/version_test.py version_test.release
+ 1671  ansar-releasing status test/version_test.py
+ 1672  vi *.release
+ 1673  ansar-releasing status test/version_test.py
+ 1674  ansar-releasing check test/version_test.py version_test.release
+ 1675  vi *.release
+ 1676  ansar-releasing check test/version_test.py version_test.release
+ 1677  ansar-releasing status test/version_test.py
+ 1678  vi *.release
+ 1679  ansar-releasing -a status test/version_test.py
+ 1680  ansar-releasing -a check test/version_test.py version_test.release
+ 1681  echo $?
+ 1682  ansar-releasing what
+ 1683  ansar-releasing -a check test/version_test.py version_test.release
+ 1684  ansar-releasing -a set test/version_test.py version_test.release
+ 1685  vi *.release
+ 1686  cat *.release
+ 1687  ansar-releasing -a check test/version_test.py version_test.release
+ 1688  ansar-releasing -a set test/version_test.py version_test.release
+ 1689  cat *.release
+ 1690  ansar-releasing -a check test/version_test.py version_test.release
+ 1691  ansar-releasing what
+ 1692  cat *.release
+ 1693  ansar-releasing what
+ 1694  cat job.json
+ 1695  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1696  make package_build
+ 1697  make doc_build doc_push
+ 1698  cd repo/ansar-encode/
+ 1699  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1700  make package_build 
+ 1701  python3
+ 1702  git status .
+ 1703  git diff src/ansar/encode/codec.py
+ 1704  git commit -m 'Major rework of encode, decode ops and Incognito interaction.' src/ansar/encode/codec.py
+ 1705  git status .
+ 1706  git diff src/ansar/encode/message.py
+ 1707  git commit -m 'Incognito now has saved_pointers and no version.' src/ansar/encode/message.py
+ 1708  git status .
+ 1709  git diff src/ansar/encode/portable.py
+ 1710  git commit -m 'Any expression now has a list of possibles.' src/ansar/encode/portable.py
+ 1711  git status .
+ 1712  git diff src/ansar/encode/release.py
+ 1713  git commit -m 'Added the reaching of Any.possibles.' src/ansar/encode/release.py
+ 1714  git status .
+ 1715  git diff test/version_test.py
+ 1716  git commit -m 'Changes to error messages from history compiler.' test/version_test.py
+ 1717  git status .
+ 1718  tm test.txt version_test.txt 
+ 1719  git status .
+ 1720  rm test.txt version_test.txt 
+ 1721  git status .
+ 1722  git push
+ 1723  git status .
+ 1724  git diff src/ansar/encode/codec.py
+ 1725  git commit -m 'Fixes and comments incl. alias_space per encode op.' src/ansar/encode/codec.py
+ 1726  git push
+ 1727  git status .
+ 1728  git diff src/ansar/encode/file.py
+ 1729  git commit -m 'Make file migrate conditional.' src/ansar/encode/file.py
+ 1730  git diff test/file_test.py
+ 1731  git commit -m 'Get upgrade and migrate working properly.' test/file_test.py
+ 1732  git status .
+ 1733  git commit -m 'Get upgrade and migrate working properly.' test/folder_test.py
+ 1734  git status .
+ 1735  git push
+ 1736  git help
+ 1737  git rebase help
+ 1738  git rebase --help
+ 1739  git fetch
+ 1740  git checkout main
+ 1741  git pull
+ 1742  git status .
+ 1743  git branch
+ 1744  git checkout 12-determine-behaviour-of-incognitos-in-new-versioning-engine 
+ 1745  git status .
+ 1746  git fetch
+ 1747  git status .
+ 1748  git checkout main
+ 1749  git status .
+ 1750  git rebase 12-determine-behaviour-of-incognitos-in-new-versioning-engine
+ 1751  git status .
+ 1752  git log --oneline
+ 1753  git pull
+ 1754  git status .
+ 1755  git log --oneline
+ 1756  git status .
+ 1757  git push
+ 1758  git status .
+ 1759  git log --oneline
+ 1760  history
+ 1761  git status .
+ 1762  cd test
+ 1763  cp codec_test.py incognito_test.py
+ 1764  cd ..
+ 1765  git status .
+ 1766  git add test/incognito_test.py
+ 1767  git status .
+ 1768  git commit -m 'More detailed checking of pointers and Incognitos.' test
+ 1769  git status .
+ 1770  git push
+ 1771  git status .
+ 1772  git diff test
+ 1773  git commit -m 'Added a multi-incognito case, with distinct pointer info.' test
+ 1774  git status .
+ 1775  git push
+ 1776  python3
+ 1777  git status .
+ 1778  git checkout src/ansar/encode/codec.py
+ 1779  python3
+ 1780  git status .
+ 1781  git diff src/ansar/encode/codec.py
+ 1782  git commit -m 'Fixed any_stack operation movement of pointer values from any to incognito and back.' src/ansar/encode/codec.py
+ 1783  git status .
+ 1784  git diff test/incognito_test.py
+ 1785  git commit -m 'Add MessageWithAny class that includes PointerTypes and a pointer object as a member.' test/incognito_test.py
+ 1786  git status .
+ 1787  git push
+ 1788  git status .
+ 1789  git commit -m 'Added clarifying comment to nested Any unit test.' test
+ 1790  git push
+ 1791  make
+ 1792  git status .
+ 1793  python3
+ 1794  cat job.json 
+ 1795  git status .
+ 1796  git commit -m 'Fix lack of 1-to-4 range for an ISO year - datetime says can be 1.' src/ansar/encode
+ 1797  git commit -m 'Add sub-commands status check and set.' src/ansar/command
+ 1798  git status .
+ 1799  git commit -m 'Nearly finished new versioning section.' doc/source
+ 1800  git status .
+ 1801  git push
+ 1802  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1803  make doc_build doc_push
+ 1804  make test
+ 1805  make doc_build doc_push
+ 1806  make doc_examples 
+ 1807  make doc_build doc_push
+ 1808  make doc_examples 
+ 1809  make doc_build doc_push
+ 1810  make doc_examples 
+ 1811  make doc_build doc_push
+ 1812  make clean
+ 1813  make doc
+ 1814  make doc_examples 
+ 1815  make doc_build doc_push
+ 1816  cd repo
+ 1817  ls
+ 1818  cd ansar-encode/
+ 1819  ls
+ 1820  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1821  git status .
+ 1822  git status -u
+ 1823  git ls --help
+ 1824  git files --help
+ 1825  git ls-files
+ 1826  git ls-files --help
+ 1827  git ls-files --others
+ 1828  git status -uq
+ 1829  git status -u
+ 1830  git status --help
+ 1831  rm array-of-pointer.json doc.json flag.json job.json linked-list.json linked-loop.json map-loop.json test.txt version_test.release
+ 1832  git status .
+ 1833  git status -s
+ 1834  git status -su
+ 1835  python3
+ 1836  vi job.json
+ 1837  vi job.xml
+ 1838  vi job.json
+ 1839  cd repo/ansar-encode/
+ 1840  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1841  python3
+ 1842  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1843  git status .
+ 1844  git diff FROM
+ 1845  git commit -m 'Added is_structural.' FROM
+ 1846  git status .
+ 1847  git diff src/ansar/command/show_release.py
+ 1848  git commit -m 'Fix indenting and spaces.' src/ansar/command/show_release.py
+ 1849  git status .
+ 1850  git diff src/ansar/encode/codec.py
+ 1851  git commit -m 'Raise exception if none detected where structure expected.' src/ansar/encode/codec.py
+ 1852  git status .
+ 1853  git diff src/ansar/encode/message.py
+ 1854  git commit -m 'Rename type_details to object_schema.' src/ansar/encode/message.py
+ 1855  git status .
+ 1856  git diff src/ansar/encode/portable.py
+ 1857  git commit -m 'Added is_structural.' src/ansar/encode/portable.py
+ 1858  git status .
+ 1859  git diff test/codec_test.py
+ 1860  git commit -m 'Added tests for detecting None as structural value.' test/codec_test.py
+ 1861  git status .
+ 1862  git commit -m 'Completed update up to more-about-types.' doc
+ 1863  git status .
+ 1864  rm job.* test.txt
+ 1865  git status .
+ 1866  git push
+ 1867  make package
+ 1868  git status .
+ 1869  git push
+ 1870  cat job.json
+ 1871  git status .
+ 1872  git diff src/ansar/encode/message.py
+ 1873  git commit -m 'Move to default of None for simple type.' src/ansar/encode/message.py
+ 1874  git status 
+ 1875  git diff testest.py
+ 1876  git commit -m 'Move to default of None for simple type.' test
+ 1877  git status .
+ 1878  git commit -m 'Versioning and default of None for simple types.' doc
+ 1879  git status .
+ 1880  git push
+ 1881  rm job.json test.txt 
+ 1882  git status .
+ 1883  cat job.json 
+ 1884  cat schedule.json 
+ 1885  git status .
+ 1886  git commit -m 'Completed more-about-types with versioning and use of None updates' doc
+ 1887  git status .
+ 1888  git push
+ 1889  rm job.json schedule.json 
+ 1890  git status .
+ 1891  make package
+ 1892  cat job.json 
+ 1893  git status .
+ 1894  git commit -m 'Added migrate function.' FROM'
+ 1895  git commit -m 'Added migrate function.' FROM
+ 1896  git status .
+ 1897  git checkout src/ansar/encode/__init__.py
+ 1898  git diff src/ansar/encode/file.py
+ 1899  mkdir spool
+ 1900  vi spool/b2c08bf5-99e0-41ad-810b-095a9715f48c.json
+ 1901  git status .
+ 1902  vi spool/b2c08bf5-99e0-41ad-810b-095a9715f48c.json
+ 1903  git status .
+ 1904  git diff test/file_test.py
+ 1905  git commit -m 'Update to the new style of upgrade-migrate.' test
+ 1906  git status .
+ 1907  git commit -m 'Update to the new style of upgrade-migrate.' src
+ 1908  git status .
+ 1909  git commit -m 'Fixed upgrade and migrate code and doc.' doc
+ 1910  git status .
+ 1911  git push
+ 1912  rm -rf job.json spool test.txt 
+ 1913  git status .
+ 1914  make package
+ 1915  make doc
+ 1916  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1917  make package
+ 1918  make doc_build doc_push
+ 1919  make doc_examples
+ 1920  make doc_build doc_push
+ 1921  make doc_examples
+ 1922  make doc_build doc_push
+ 1923  make doc_examples
+ 1924  make doc_build doc_push
+ 1925  make doc_examples
+ 1926  make doc_build doc_push
+ 1927  make clean
+ 1928  make doc_build doc_push
+ 1929  git status .
+ 1930  git commit -m 'Refactoring upgrade and migrate, code and doc.' doc src
+ 1931  git status .
+ 1932  git add src
+ 1933  git commit -m 'Refactoring upgrade and migrate, code and doc.' src
+ 1934  git status .
+ 1935  git push
+ 1936  make package
+ 1937  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1938  make doc
+ 1939  make package
+ 1940  pip3 freeze
+ 1941  pip freeze
+ 1942  python
+ 1943  python3
+ 1944  deactivate 
+ 1945  sudo apt-get update
+ 1946  sudo apt-get install python3-pip
+ 1947  which pip
+ 1948  which pip3
+ 1949  pip freeze
+ 1950  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1951  make package
+ 1952  pip --version
+ 1953  pip freeze
+ 1954  which pip
+ 1955  ls -a
+ 1956  deactivate 
+ 1957  source /home/scott/repo/ansar-encode/.dev/bin/activate
+ 1958  echo python -m pip uninstall pip
+ 1959  which pip
+ 1960  python -m pip uninstall pip
+ 1961  pip freeze
+ 1962  deactivate 
+ 1963  python --version
+ 1964  python3 -m venv .dev-ubuntu-22
+ 1965  sudo apt install python3.10-venv
+ 1966  python3 -m venv .dev-ubuntu-22
+ 1967  echo source .dev-ubuntu-22/bin/activate
+ 1968  history
+ 1969  source .dev-ubuntu-22/bin/activate
+ 1970  pip --version
+ 1971  pip freeze
+ 1972  which pip
+ 1973  history
+ 1974  python --version
+ 1975  wc REFERENCES DEVELOPMENT 
+ 1976  diff REFERENCES DEVELOPMENT 
+ 1977  history
+ 1978  sort REFERENCES > REFERENCES.s
+ 1979  sort DEVELOPMENT > DEVELOPMENT.s
+ 1980  diff REFERENCES.s DEVELOPMENT.s 
+ 1981  rm *.s
+ 1982  python -m pip install DEVELOPMENT 
+ 1983  python -m pip install -e .
+ 1984  make doc
+ 1985  python -m pip install pycodestyle
+ 1986  make doc
+ 1987  which pycodestyle
+ 1988  echo $PATH
+ 1989  ls /home/scott/repo/ansar-encode/.dev-ubuntu-22/bin
+ 1990  ls /home/scott/repo/ansar-encode/.dev-ubuntu-22/bin/pycodestyle 
+ 1991  ls -l /home/scott/repo/ansar-encode/.dev-ubuntu-22/bin/pycodestyle 
+ 1992  pycodestyle
+ 1993  deactivate 
+ 1994  source .dev-ubuntu-22/bin/activate
+ 1995  make doc
+ 1996  make show_command
+ 1997  exit
+ 1998  cd repo/ansar-encode
+ 1999  ls
+ 2000  which pycodestyle
+ 2001  ls -a
+ 2002  source .dev-ubuntu-22
+ 2003  source .dev-ubuntu-22/bin/activate
+ 2004  which pycodestyle
+ 2005  make show_command
+ 2006  echo `which pycodestyle`
+ 2007  $(shell which pycodestyle)
+ 2008  sudo apt install pycodestyle
+ 2009  make show_command
+ 2010  which pycodestyle
+ 2011  python -m pip uninstall pycodestyle
+ 2012  which pycodestyle
+ 2013  pycodestyle --version
+ 2014  echo $PATH
+ 2015  make show_command
+ 2016  deactivate
+ 2017  which pycodestyle
+ 2018  source .dev-ubuntu-22/bin/activate
+ 2019  which pydocstyle
+ 2020  deactivate 
+ 2021  which pydocstyle
+ 2022  sudo apt install pydocstyle
+ 2023  which pydocstyle
+ 2024  which pycodestyle
+ 2025  source .dev-ubuntu-22/bin/activate
+ 2026  make show_command
+ 2027  deactivate 
+ 2028  sudo apt install coverage
+ 2029  source .dev-ubuntu-22/bin/activate
+ 2030  python -m pip install coverage
+ 2031  make show_command
+ 2032  python -m pip freeze
+ 2033  python -m pip -a freeze
+ 2034  python -m pip freeze --all
+ 2035  python -m pip import DEVELOPMENT
+ 2036  python -m pip install DEVELOPMENT
+ 2037  python -m pip uninstall DEVELOPMENT
+ 2038  python -m pip install -r DEVELOPMENT
+ 2039  make show_command
+ 2040  python -m pip freeze --all
+ 2041  which bump-version
+ 2042  make package_build
+ 2043  ansar-releasing
+ 2044  bump-version
+ 2045  find . -name bump-version -print
+ 2046  which bump-version
+ 2047  python -m pip uninstall -e .
+ 2048  python -m pip freeze
+ 2049  python -m pip uninstall ansar_encode
+ 2050  python -m pip install -e .
+ 2051  which bump-version
+ 2052  find .. -name bump-version -print
+ 2053  ls .dev-ubuntu-22/bin
+ 2054  deactivate 
+ 2055  python3 -m venv .ubuntu-22
+ 2056  source .ubuntu-22/bin/activate
+ 2057  deactivate 
+ 2058  which pycodestyle
+ 2059  which pydocstyle
+ 2060  which bump-version
+ 2061  which ansar-releasing
+ 2062  source .ubuntu-22/bin/activate
+ 2063  python -m pip install -r DEVELOPMENT
+ 2064  python -m pip freeze
+ 2065  deactivate 
+ 2066  sudo apt install libffi-dev
+ 2067  python3 -m venv .dev-post-upgrade-22
+ 2068  source .dev-post-upgrade-22/bin/activate
+ 2069  python -m pip install -r DEVELOPMENT
+ 2070  make show_command
+ 2071  which ansar-releasing
+ 2072  python -m pip install -e .
+ 2073  which ansar-releasing
+ 2074  which bump-version
+ 2075  find .. -name bump-version -print
+ 2076  cat ../ansar-encode/.dev/bin/bump-version
+ 2077  ls ..
+ 2078  python -m pip install -e ../project-tool
+ 2079  which bump-version
+ 2080  make show_command
+ 2081  history
+ 2082  make doc
+ 2083  git status .
+ 2084  git diff Makefile
+ 2085  git checkout Makefile
+ 2086  git diff doc/source/stored-by-class/job_basic.json
+ 2087  git checkout doc/source
+ 2088  git status .
+ 2089  ls -a
+ 2090  git status .
+ 2091  rm -rf .dev-ubuntu-22 .ubuntu-22
+ 2092  git status .
+ 2093  git commit -m 'Added new venv name.' .gitignore 
+ 2094  git status .
+ 2095  git push
+ 2096  make doc
+ 2097  sphinx-build --version
+ 2098  python -m pip install sphinx -u
+ 2099  python -m pip install Sphinx -U
+ 2100  make doc
+ 2101  git status .
+ 2102  git checkout doc/source
+ 2103  git status .
+ 2104  git push
+ 2105  make doc
+ 2106  python -m pip freeze
+ 2107  python -m pip freeze > DEV.txt
+ 2108  vi DEV.txt 
+ 2109  diff DEVELOPMENT DEV.txt 
+ 2110  grep pytz DEVELOPMENT 
+ 2111  cp DEV.txt DEVELOPMENT 
+ 2112  git status .
+ 2113  git commit -m 'Update pkgs after rebuild devenv for ubuntu-22.' DEVELOPMENT 
+ 2114  git status .
+ 2115  rm DEV.txt
+ 2116  git status .
+ 2117  git checkout doc/source
+ 2118  git status .
+ 2119  git push
+ 2120  git show_doc
+ 2121  git doc_show
+ 2122  make show_doc
+ 2123  history > ~/Documents/rebuild-venv-after-ubuntu-22-upgrade.txt

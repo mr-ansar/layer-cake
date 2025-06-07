@@ -1,0 +1,34 @@
+Boolean		Y/N							true, false
+Byte		0-255							1#1, 255#1
+Character	nul-tilde						\0, ~, \128
+Rune		any symbol from any language
+Integer2	−32,768...32,767					
+Integer4	-2,147,483,648...2,147,483,647
+Integer8	-9,223,372,036,854,775,808...9,223,372,036,854,775,807
+Unsigned2	0...65535
+Unsigned4	0...4,294,967,295
+Unsigned8	0...18446744073709551615
+Float4		-3.4e38...3.4e38
+Float8		1.7e-308...1.7e308
+Enumeration	READY (1)
+Block		[bbbbb]
+String		[cccccccccc]
+Unicode		[sssssss]
+ClockTime	2024/10/17T10:32:17.22
+TimeSpan	2d
+WorldTime	2024/10/17T10:32:17.22
+TimeDelta	4m
+UUID		a415ad6d-26cf-4da8-8565-ae0831fe1167
+ArrayOf		[10,9,8,6]
+VectorOf	[9,17,22,10,9,8,6]
+SetOf		(10,9,8,6)
+MapOf		{a:5, b:10}
+DequeOf		<12,45,2,7,128>
+UserDefined	{a=b, c=d}
+Type		some.module.type
+PointerTo	[*] to a class-instance
+TargetAddress	[breadcrumbs being consumed]
+Address		[breadcrumbs being added]
+Word		[parsed into generic word]
+Any		an instance, incognito or null
+

@@ -1,0 +1,58 @@
+import dateutil
+import datetime
+from dateutil.tz import gettz
+
+time_zones = [
+	('no name', None),
+	('IANA', 'Pacific/Auckland'),
+	('Windows', 'Egypt Standard Time'),
+	('TZ style', 'AEST-10AEDT-11,M10.1.0/2,M4.1.0/3'),
+]
+
+for name, arg in time_zones:
+	print('*** %s ***' % (name,))
+	if arg is None:
+		tz = gettz()
+	else:
+		tz = gettz(arg)
+	if tz is None:
+		continue
+	if hasattr(tz, "display"):
+		tz.display()
+	type(tz)
+	isinstance(tz, datetime.tzinfo)
+	isinstance(tz, dateutil.tz.tzfile)
+	dt = datetime.datetime(2022, 9, 11, tzinfo=tz)
+	f = dt.isoformat()
+	rt = datetime.datetime.fromisoformat(f)
+	print('*** %s recovered ***' % (name,))
+	isinstance(rt.tzinfo, datetime.tzinfo)
+	isinstance(rt.tzinfo, dateutil.tz.tzfile)
+	dt == rt
+	dt.tzinfo == rt.tzinfo
+	
+
+<class 'dateutil.tz.tz.tzfile'>
+True
+True
+'NZST'
+'/etc/localtime'
+
+<class 'dateutil.tz.tz.tzfile'>
+True
+True
+'NZST'
+'/usr/share/zoneinfo/Pacific/Auckland'
+
+<class 'NoneType'>
+False
+False
+
+<class 'dateutil.tz.tz.tzstr'>
+True
+False
+'AEST'
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+AttributeError: 'tzstr' object has no attribute '_filename'
+>>>

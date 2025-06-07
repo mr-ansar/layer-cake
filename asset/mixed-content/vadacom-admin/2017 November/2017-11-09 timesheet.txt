@@ -1,0 +1,12 @@
+10-1
+documentation, reading, fixing
+minor code fixes
+2-6
+documentation, reading, fixing
+minor code fixes
+discuss with nic
+logging change to dev.cfg to limit quantity of logging
+testing
+pushed
+write up redmine notes
+assign to gerwin for review

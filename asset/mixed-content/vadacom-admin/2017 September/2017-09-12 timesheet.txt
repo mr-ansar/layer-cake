@@ -1,0 +1,21 @@
+11-1
+checked all testing and webman operation
+some pre-code review audit details to cleanup.
+all related to the fact i used messaging_demo as my reference
+without making same updates in the test/ansar/test_ansar.py file
+fixed code to point that unit tests run to ok completion.
+but there is a dangling issue with the fact that i cant currently
+shutdown the logging object and the zombie object causes a
+diagnostic from nostest during process shutdown.
+2-3.30
+sprint meetings
+
+3.30-6
+updated redmine moved #2286 to review by nic and updated
+gerwin with details so that he can do so as well.
+checked out gerwins phonebook code and doing diff/review of
+all his changes.
+discussed dangling log thread problem with nic.
+figured out a fix but questionable quality.perhaps better than
+not having it at all (added sleep).
+

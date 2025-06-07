@@ -1,0 +1,94 @@
+Nic Bellamy  12:29 PM
+Still got an issue after that patch - sipIdentity is null in all returned responses. Details added to https://bitbucket.org/vadacom/graphql-neo4j-service/pull-requests/200/extra-with-clauses-to-break-cartesian
+Example:
+       "entries": [
+         {
+           "displayName": null,
++          "extension": "500",
+           "familyName": "Lastname Suffix",
+           "formattedName": "Firstname Lastname Suffix",
+           "givenName": "Firstname",
+-          "guid": "6bf05e12-cc20-428e-8067-b8096f5adc57",
++          "guid": "2ff9de79-e2a0-4da6-8d19-c34c8f9a18d5",
+           "nickName": null,
+-          "number": "500",
+-          "sipIdentity": "evident-phoenix_28a8hsZB"
++          "sipIdentity": null
+         },
+
+Scott Woods  12:49 PM
+can we please switch to refactor-hardphones-for-blfs (graphql and dev-conf)? that is the right way to go. it is no more significant code-wise than the "patching".
+12:50
+it makes no sense to put more effort into fixing a different query when code based on a query that is operational and proven is sitting there to be used.
+
+Nic Bellamy  12:51 PM
+sw/refactor-hardphones-for-blfs this one
+12:51
+?
+12:56
+My understanding is that branch hasn't gotten as far as being a pull request for review; yes, duplication we'll quickly throw away is painful, but for a hotfix really need to keep changes minimal. Not 100% opposed to the idea of using that branch instead, but need to understand where it's at and test it further
+
+Scott Woods  12:57 PM
+its been an MR (https://gitlab.com/vadacom/nextvoice/device-configuration/-/merge_requests/28) for a week with you listed as a reviewer. it has been a subject in a few phonebook task reviews.
+
+Nic Bellamy  12:58 PM
+ahh, damn repo separation. Primary for graphql is still bitbucket
+
+Scott Woods  1:00 PM
+its the more appropriate direction. i will continue fixing the hotfix and if you dont like the MR then i think i will have this ready.
+New
+
+Nic Bellamy  1:07 PM
+Only known issue with hotfix side is the null sipIdentity; hopefully that's not a major
+
+Scott Woods  1:08 PM
+yep. new output;
+{
+  "data": {
+    "hardphoneCustomerPhonebook": {
+      "name": "Customer wide phonebook",
+      "description": "Automatically Maintained Customer Wide Phonebook",
+      "sipDomain": "7546177028.example.com",
+      "entries": [
+        {
+          "guid": "51471757-f54e-494f-9515-a6abd7e5f41f",
+          "extension": "500",
+          "sipIdentity": "smiling-jennet-Bmxfm92Y",
+          "familyName": "Lastname Suffix",
+          "givenName": "Firstname",
+          "formattedName": "Firstname Lastname Suffix",
+          "displayName": null,
+          "nickName": null
+        },
+        {
+          "guid": "55725db0-0df2-44d4-87a2-d7137a6d7397",
+          "extension": "700",
+          "sipIdentity": "well-bonefish-nh3JPoyv",
+          "familyName": "Me One",
+          "givenName": "Delete",
+          "formattedName": "Delete Me One",
+          "displayName": null,
+          "nickName": null
+        },
+
+
+
+
+
+
+Nic Bellamy  1:08 PM
+Sweet, let me know when pushed
+
+Scott Woods  1:10 PM
+pushed.
+
+Scott Woods  1:21 PM
+ironic really. if there hadnt been the confusion about repos (and the missed MR), this bug would have been quietly silenced.
+
+
+
+
+
+
+
+

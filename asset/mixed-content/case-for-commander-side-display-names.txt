@@ -1,0 +1,46 @@
+The recent work to improve the user-experience for acrobits softphone users was
+interesting. Specifically it was to ensure that the display of the users
+identifying information did not present a blank in the "display name" field.
+
+The motivation was clear enough. The optimal solution is less clear due to
+variety of contexts in which the identifying information is presented and also
+due to the nature of distributed computing.
+
+Firstly its worth clarifying that this message is focused on the need to display
+something useful about a *person*, i.e. someone with a family name, given name
+and title, etc. There are other circumstances that may look the same but are
+excluded, e.g. the *logical contact* such as an administrator, where the contact
+technicalities are needed but the personal identifying information may be
+withheld.
+
+There is a defined minimum of personally identifying information
+required at creation and update time, of a *person*. This allows for a
+flexibility where some communities of users are less formal than others.
+
+There is the potential to automate construction of "full" or "formal"
+names as entry forms are populated. This is effective and perhaps the
+best in a cost/benefit analysis. The entry form detects that partial info
+has been added and automatically fills in a "formatted name" or "display
+name" by combining separate elements of identifying info.
+
+Another approach can be adopted or added to the base approach. This is
+where a similar automation exists in the commander component. It could
+detect partial data entry and automate the setting of a "autoDisplayName"
+or something similar. The entry form presents the partial data and the
+commander augments that data with the extra name when writing the dataset
+to the database. The synthesized name becomes available to every
+consumer of the identifying information. It *does not* override anything
+else in the database. Use by each individual consumer is optional.
+
+The advantages of synthesis within the commander are that the algorithm
+for constructing the name from separate parts should be well-known and
+located in one place. At code level this would typically be a function
+that is made available to all creators, updaters and consumers. In a
+distributed system that uses multiple development languages, that approach
+is not realistic.
+
+
+
+
+
+

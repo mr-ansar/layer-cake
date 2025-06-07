@@ -1,0 +1,8 @@
+11-1
+messaging documentaton for nic
+2 case studies
+thwarted attempt at standup - everyone busy
+
+2-6
+completion of first 2 studies
+added a 3rd - using ldap as interesting/real example.

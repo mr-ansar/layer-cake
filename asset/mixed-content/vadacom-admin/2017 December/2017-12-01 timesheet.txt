@@ -1,0 +1,13 @@
+11-1
+battling windows,tapi,studio,outlook,c++
+mostly docs
+eventually reported to nic
+on nics suggestion have ditched the .htm approach
+with its nested folder of files
+switched to .pdf junked the others.
+1-6
+battling windows,tapi,studio,outlook,c++
+final rebuild, install, verify
+docs sorted
+shortcuts sorted
+operationally good with oddness

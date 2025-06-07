@@ -1,0 +1,9 @@
+7-11
+minor cleanups in ldap
+helped gerwin with ansar usage
+reviewed gerwins technical info about system codes and networking for #2444
+12-4
+discussed details and options with gerwin
+compiled summary of current situation
+proposal to come
+

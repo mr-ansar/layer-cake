@@ -1,0 +1,38 @@
+went to a funeral on tues. setting aside the personal tragedy of it, i did get to
+catch up with a few people i have not seen for a long time. i had worked with one
+of these many years ago and he mentioned something that i had forgotten - he
+remembered me as a coding perfectionist.
+
+i completely acknowledge the fact that what we have is the best it can be, and
+the hours of expert effort it has taken to even have that. the current development
+process is only as good as it is because certain people have compromised any
+idea of a normal life - many thanks to them.
+
+there are downstream consequences that i am sure we are all aware of, but until
+i thought about how i used to write software it wasnt that clear to me. here
+are the consequences that i can think of, downstream of the fact we do not have
+device testing capability;
+
+* development velocity
+* minor coding errors reaching test engineers and causing unnecessary cycles
+* frustration
+* loss of professional respect
+* reduced code quality
+
+the final item is perhaps more subtle than the others. here's my theory. in normal
+development there is a fast edit-run-debug cycle that happens on the local desktop.
+anything outside of that loop is different because it takes longer and delays are
+distractions. my own style of coding is to get it pretty close to release quality
+on the desktop. when i think its ready for submission to the next stage (e.g. review)
+only then do i make the code presentable and clean up the comments. thats simply
+because you dont want to make the necessary investment until the code is really
+really close to "done".
+
+because there is not the confidence that "release quality" has been reached, i.e. that
+only happens *after* its been through review and testing, that "pre-submit" work
+doesnt happen. because the cycle to make changes takes so long, it doesnt get done
+afer it passes review and testing, either.
+
+
+
+

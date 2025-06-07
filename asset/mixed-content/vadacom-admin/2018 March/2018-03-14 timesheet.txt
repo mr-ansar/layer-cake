@@ -1,0 +1,14 @@
+7-11
+immersed in vpn manager
+discussion with gerwin
+intracacies of amqp exchanges, queues, routes and interfacing
+boxes involved
+distributed amqp
+public interfaces vs private
+12-4
+immersed in vpn manager
+discussion with gerwin
+verify dataflows through components
+esp sync/async handling of receive and send
+ready to add code
+

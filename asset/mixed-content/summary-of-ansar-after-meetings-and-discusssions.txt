@@ -1,0 +1,268 @@
+Thanks to those who have arranged different contacts and also the various people
+that have been prepared to discuss my project over the last few months. I have
+limited recipients to those who showed interest.
+
+VALUE PROPOSITION AND USE CASES
+I believe Ansar to be the most advanced and complete toolset for writing networking
+software. I say this because it is the solution to every problem I have encountered
+over decades of work in software development - especially telephony - and because I
+have debated the completeness and effectiveness with a wide range of technical people
+over the last few months. Stick around for the later paragraphs where I attempt to
+substantiate this claim. There is also a quick reference for the Ansar suite at the
+end of this summary.
+
+As a value proposition, Ansar has two aspects;
+
+* it is a productivity tool
+
+* and it is a feature enabler
+
+The list of benefits is quite long but does include project level items such as
+shorter time-to-market, lower bug counts and delivery of features and behaviours
+that would otherwise be difficult or impossible.
+
+The obvious problem with the first aspect is that it is hard to sell. It is about
+benefits that will be accrued over time and the related metrics are not readily
+available. Nobody runs two projects side-by-side using different toolsets to see
+which delivers the best product in the least time.
+
+The second aspect is where Ansar is used as the basis for advanced features and
+behaviours. Except for specific benefits such as WAN operation and rigorous session
+management, this claim derives from adoption of an asynchronous foundation. The
+list of benefits is again extensive but this aspect is also hard to sell. Even
+though the software industry is making steps towards asynchronous operation
+(e.g. WebSockets/WebTransport and async options of FastAPI and gRPC) because
+of the undeniable need, there is still a heavy inertia in the development
+community.
+
+At this point I have to note that my claims of a "special approach to software
+operation" derive from decades of work by others, i.e. "on the shoulders of
+giants". The ITU-T has been evolving the best engineering practices for developing
+hugely distributed systems for a long time. This has produced industry standards
+(i.e. SDL) that I have used in the implementation of Ansar. The wider software
+community is slowly realizing the need for the innate sophistication of such work,
+as an inevitable consequence of the current focus on cloud services. Browser apps
+are in a hurry to offer the most compelling user experience and this places more
+demands on the relationship between browser and backend. So far, industry attempts
+to improve that relationship have been confined to one piece of the puzzle (e.g.
+Websockets/WebTransport et al). There has also been work in the browser
+environments to support this evolution (e.g Angular). According to the reference
+work at the ITU-T, there is still some way to go.
+
+The use cases for Ansar within the current software landscape are;
+
+* development of backends - the collections of processes inside cloud services
+
+* development of WAN features
+
+Ansar is a very good match with the requirements of backend development. I have
+recently added further capabilities - HTTP integration - that reduces the
+work required by users committed to legacy-style communications.
+
+The match around WAN is muddied by the fact that most modern software solutions
+are being delivered as cloud-based rather than customer-premises. There is a
+less obvious need for networking where both the client and the server can be
+anywhere on the Internet. Taking the example of remote weather stations, the
+cloud-service arrangement would have the stations connect to a data collection API
+at a public address exposed by the service. If the customer is maintaining their
+own operations hardware and admin then Ansar is a clear match, allowing seamless
+networking between the customer site and the weather stations. This is achieved
+without the need for network admin, i.e. static IPs at the customer site and
+firewall configuration.
+
+Adding to the confusion are services known by names like SQS, AMQP, IoT and
+MQTT. Cloud services certainly make use of such WAN services and they have
+fundamental architectural similarities to the WAN architecture of Ansar, so
+Ansar WAN is not ruled out as a technology relevant to cloud services. For
+reasons outside the scope of this summary they are not the same. Ansar offers
+homogeneity across all network messaging, i.e. anything that works across a
+LAN will also work across the Internet. The same claim cannot be made for a
+solution that uses FastAPI (HTTP) for its internal LAN messaging and then for
+whatever reason, needs to deliver the same functionality across the Internet.
+Switching from HTTP to something like SQS is a non-trivial development task,
+and thats assuming the new software is not required to support both.
+
+The closest thing to a reference site is the cloud service that supports
+Ansar WAN activity. This is currently a collection of eight processes all
+written in Python using Ansar for all communications. Four of the processes
+are in a scalable group that can adapt to the demands of WAN activity. Other
+processes include a front-end (the public API), a database manager, a
+subscriber manager and a WAN connection manager. Courtesy of the built-in
+service discovery this collection can be redeployed across a configurable
+number of hosts.
+
+At the latest check the WAN cloud service has been in continuous operation
+for 41 days. Since the offical launch of the service, downtime has been
+related to upgrades rather then unplanned outages.
+
+FUNDING FURTHER DEVELOPMENT
+The most pressing question for Ansar is how to fund further development and
+support. It has been a long road and for the last 2 years - full time. The
+cloud service that must exist to support Ansar WAN activity cannot continue
+as a free, public service.
+
+Within the constraints of the two identified use cases, the potential for any
+kind of revenue stream to support development is low. The Ansar software
+required for development of backend software is already in the public domain.
+Developers get to download the software and the downstream benefits are
+free. The immediate potential for adoption of Ansar WAN is low, though this
+may change with wide acceptance of Ansar within the developer community. Until
+there is a real understanding of Ansar WAN messaging versus alternatives such
+as SQS in that community, then projects with WAN requirements will be
+automatically turning to the latter even though Ansar has a good chance of
+winning a feature comparison.
+
+Until that wide acceptance occurs and there are substantial numbers of
+subscribers to the WAN service, the WAN service is a cost rather than a
+revenue stream. The service has been reduced in scale to a point where
+operational costs are at a minimum. There would need to be hundreds of
+subscribers prepared to pay $20 per month before that income would become
+significant. There has been a trickle of subscribers who test the claims
+made in documentation and then move on. Feedback has been in the
+nature of "yep - it works, but where is it?", the question being a reference
+to the lack of a website and mobile apps. Others were more direct about
+the lack of provenance. There is a need for the reassurance of big names
+and "virtual bricks-and-mortar".
+
+The realistic options are;
+
+* partner with an organization with advanced backend requirements
+
+* partner with an organization with extensive WAN requirements
+
+* sponsorship by stakeholders, e.g. Python Software Foundation
+
+A partnership involving WAN requirements introduces the possibility of
+a private WAN service. The current WAN service can be deployed to an
+IAAS account owned by the partner organization, increasing security and
+providing better performance guarantees.
+
+I currently have a project underway that is intended to promote the use
+of Ansar within the global developer community. I am hopeful that this
+will reach a significant audience. I will also be communicating directly
+with the PSF.
+
+ADDING SUBSTANCE TO THE CLAIM
+If I combine all the questions from all the technical discussions into a single
+list and check them against the Ansar feature list, the score is 100%. To be fair
+some of the "ticks" would be the source of further debate but the underlying
+issues were often about changes that would be required in existing systems or
+organizations. Moving to a new toolset is disruptive. There were also discussions
+like "mine is faster than yours" and in some cases Ansar would be the loser. These
+comparisons are a bit "apples and oranges". It is definitely going to be faster to
+send a piece of text across a network, than it is to send a fully managed message
+that contains a piece of text.
+
+There are significant features of Ansar that were not even touched on. These address
+issues in the style of "if your software doesnt do X then problem Y will occur at
+random points in the life of your product" (e.g. stale or discarded IP mappings).
+A discussion that managed to cover everything would be extremely long. I mention
+this firstly because it sounds good but it also because it hints at the scope of
+Ansar. Not only is it advanced and complete but it takes on the full scope of what
+robust network software must consider. Stated another way, if you have an extensive
+set of networking requirements, you either use Ansar or you integrate a long list
+of discrete technologies. Realistically you will be writing additional code
+alongside that custom integration, to reach the level of functionality that comes
+for free in Ansar. An example of those would be automated connection recovery with
+exponential backoff (with context sensitive delays).
+
+The scope of Ansar extends way beyond sending and receiving messages. It is an off-
+the-shelf, one-stop-shop that implements a runtime framework across whatever your
+scope of operations might be. Of course, its also possible to cherry-pick from
+the full range of features. Ansar supports integration of the async runtime into
+existing non-async apps.
+
+QUICK REFERENCE
+This is a fairly complete list of the features and behaviours within the Ansar
+suite of libraries. This is aimed at the more technical reader but entries are
+still necessarily brief. Hopefully they contain the right hints.
+
+TRADITIONAL NETWORK MESSAGING
+* async listen() and connect() primitives
+* async connected/closed/abandoned notifications
+* async, bi-directional application messaging
+* fully automated serialization
+    * rich set of built-in types, e.g. datetime, UUID
+    * complete set of container types, e.g. array, vector, map, deque
+    * user-defined types, e.g. class Subscriber
+    * nested types, e.g. map of UUID to vector of Subscribers
+    * graphs, e.g. genealogy
+    * graphs with cycles, e.g. street map
+    * object addresses
+* no complexity or size limits on transmission
+* defensive size constraints on receive
+* return address always available to receiver
+* sending to anywhere within the connection graph
+* advanced input message processing, i.e. SDL
+* optional, automated creation of session objects
+* FSM-based sessions
+* flag-enabled, public key cryptography
+* flag-enabled, automated, discreet connection keep-alives
+
+AUTOMATED SESSION MANAGEMENT
+* automated session recovery
+    * exponential backoff
+    * address sensitive delays, i.e. loopback vs private vs public
+    * async ready notifications
+* groups of declared sessions, i.e. a process with multiple connects and multiple listens
+* option to start application object when all sessions are ready
+
+DIRECTORY-BASED NETWORK MESSAGING
+* async publish() and subscribe() primitives
+* matches subscriptions to publications
+* async available/cleared/dropped notifications
+* fan-out connection to multiple publications matching pattern
+* published services bound to ephemeral ports, i.e. zero-conf networking
+* same messaging, serialization, session objects as listen/connect
+* always encrypted
+* always with keep-alives
+* supporting directory infrastructure
+    * host-level pub-sub directory utility
+    * lan-level pub-sub directory utility
+    * wan-level pub-sub directory cloud service
+* scoped networking
+    * publish at selectable scope, e.g. limit to HOST or LAN
+    * subscribe to selectable scope
+    * auto selection of nearest, i.e. HOST is "nearest"
+    * discreet adoption of optimal connection method, i.e. TCP transport or WAN relay
+    * auto fallback to next-nearest
+    * auto promotion to nearer on availability
+    * configuration and support CLI
+
+ASYNCHRONOUS APPLICATIONS
+* creation of main async object
+* optional loading of configuration settings
+* optional serialization of command line overrides
+* optional serialization of environment variables
+* optional serialization of input stream
+* construction of async runtime
+    * async log manager
+    * timer circuitry
+    * async sockets I/O
+    * async publish/subscribe manager
+* create() primitive to create sub-objects
+* send() primitive for sending messages to other objects incl over network
+* support for objects as procedural functions
+* support for objects as FSMs
+* support for objects as threads
+* support for shared threads
+* support for objects as processes
+* support for concurrency
+* automated, always-on, logging of all messaging
+* optional serialization of output stream
+* async application termination, control-c mapped to stop message
+* optional execution within managed group
+    * managed storage (dedicated folders) for group members
+    * process orchestration CLI
+    * managed software/configuration updates
+
+FILE AND FOLDER OPERATIONS
+* file store() and recover() primitives
+* read/write application messages from/to system files
+* same serialization as networking, e.g. receive message over network and write to file
+* folder store() and recover() primitives
+* read/write maps of application messages from/to folders of files
+* add/update/remove application messages from folders of files
+* same serialization as networking, e.g. receive message over network and add to folder
+* folder iteration and searching primitives
+

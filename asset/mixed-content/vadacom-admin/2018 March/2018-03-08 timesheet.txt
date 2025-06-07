@@ -1,0 +1,8 @@
+6-11
+reading and understanding vpn manager codebase
+db (libvpnmanager.model)
+pika - current and async usage
+12-4
+put proposal to gerwin.
+review and modify
+send to nic

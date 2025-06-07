@@ -1,0 +1,78 @@
+
+# Entry point for packaging. The
+# $ ansar command starts here.
+def main():
+    ar.create_object(ansar, log_to_debug)
+    # Object only. Logs must be considered
+    # as they are a by-product of any async
+    # operation (and useful). Exit with one
+    # of standard integer codes.
+
+def main():
+    ar.create_tool(ansar, settings (or None), log_to_debug (or log_to_nowhere), upgrade (or no_upgrade))
+    # An object is created and performs the work indicated in settings.
+    # An absence of settings indicates that the object requires no initialization
+    # and that work will come from elsewhere, e.g. over the network.
+
+def main():
+    ar.create_component(ansar, settings (or None), upgrade (or no_upgrade))
+    # An object is created and performs the work indicated in settings.
+    # An absence of settings indicates that the object requires no initialization
+    # and that work will come from elsewhere, e.g. over the network.
+
+
+create_root()
+stop_root()
+
+create_object(object) ---> exit code <--- no input pipe (no arg processing)
+create_tool(object, settings, logs) ---> standard out supported by exit code <--- settings from $HOME/.ansar/exe, explicit file, input pipe or compiled
+create_component(object, settings) ---> response object supported by exit code <--- settings from <home>/settings/role, explicit file, input pipe or compiled
+
+
+CREATE OBJECT
+
+	$ app [custom arg handling...] (exit code and argv-0 error diagnostic) 
+
+
+CREATE TOOL
+
+	$ app [built-in settings handling] [words passed to object] (built-in user integration, response on stdout, supported by exit code) <--- words else stdin for declared task type
+
+
+CREATE COMPONENT
+
+	$ app [built-in settings handling] [words passed to object] (built-in home integration, response on stdout, supported by exit code) <--- words else stdin for declared task type
+
+
+APP
+
+* routine or machine
+* settings (at user or home, standards such as help)
+* tmp, model, resource (at user or home)
+* work/job/task/load/program/... (list of words else stdin)
+* output (to list-of-files or stdout)
+* logs (to console or home)
+*
+
+
+if __name__ == '__main__':
+	ar.create_object(app, logs=log_to_debug)
+
+
+if __name__ == '__main__':
+	ar.create_tool(app, settings=settings, job=TypeOfJob, logs=log_to_debug, upgrade=no_upgrade)
+
+
+if __name__ == '__main__':
+	ar.create_component(app, settings=settings, job=TypeOfJob, upgrade=no_upgrade)
+
+settings ........ come from command-line flags or file in user folders or home folders, can be edited
+job ............. a unit of work as a list of files or stdin (could be declared any to support vari-input)
+output .......... results of efforts on stdout, to be consumed by parent or redirected to file (any to include failures and vari-response)
+logs ............ either to console for non-components or to role in a home
+
+
+
+
+
+ 

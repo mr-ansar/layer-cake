@@ -1,0 +1,7 @@
+7-11
+sent specification work for scheduling/update
+filling in code for scheduling state machine
+minor discussion with gerwin re python programming
+12-4
+filling in code for scheduling state machine
+meeting with nic+gerwin re async messaging and design of maintenance scheduling

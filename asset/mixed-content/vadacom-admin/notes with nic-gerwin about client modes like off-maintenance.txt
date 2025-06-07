@@ -1,0 +1,60 @@
+recent messaging;
+kk
+
+Scott Woods [2:55 PM]
+do i need to represent the likes of this as well? does there need to be an configurable+extensible facility where someone enters in constraints such as "large DRBD resync"?
+
+"This have caused a service outage on at least one occasion - for Matrix Security on Monday October 30th 2017, where the postgresql vacuum coincided with a large DRBD resync on the storage nodes."
+
+Gerwin van de Steeg [2:56 PM]
+i don't know.. ask NicB, but most likely you will need to
+since a DRBD resync will hit the IO hard, and a postgres vacuum hits the IO hard, and the 2 don't like each other
+
+Scott Woods [2:58 PM]
+for sure. for this to have actual value there would be agreement from third parties about when they do something like "large resync"? else it could all be for naught....
+the "large DRBD resync" represents a fixed contraint that relates to a subset of the clients. there would need to be modelling of this and any other similar constraints. sound about right?
+
+Nic Bellamy [3:07 PM]
+an ideal would be some kind of "maintenance mode" whereby all automagic processes are suspended for the duration
+
+Scott Woods [3:10 PM]
+ah. simpler perhaps. if comms with clients is reliable.
+
+Nic Bellamy [3:13 PM]
+the hosts themselves have no way of knowing if, eg. they're on DRBD storage, even less if it's currently being resynced, which is info only available to the host OS and the humans
+
+Scott Woods [3:15 PM]
+switching of mode across a set of hosts would be by reseller or customer or something that constrained it to proper set? tag? :slightly_smiling_face:
+
+Nic Bellamy [3:16 PM]
+we probably want some kind of "tag" idea, so we can mark all the systems running on a particular cluster with a tag
+
+Scott Woods [3:19 PM]
+eerrrrrrrm yeah. can see it being the most effective. with some clever marking page that allows "select/select-mine/select-others/select-all/.../invert" type stuff. k.
+marking a set of hosts would become a job and the author of the marking would need notification of completion?
+marking a set of hosts would become a job and the author of the marking would need notification of completion?
+
+Nic Bellamy [3:38 PM]
+as in a job that each host would need to acknowledge?
+
+Scott Woods [3:39 PM]
+yeah.
+
+Nic Bellamy [3:40 PM]
+fire-and-forget would probably be acceptable ("no new jobs until the maintenance period has ended"). Also need to keep in mind that sometimes an issue requiring maintenance may make it so the hosts _can't_ respond
+
+Scott Woods [3:45 PM]
+hmmm. have two responses to that. 1) best to be hopeful and it will certainly be fine for those hosts with no problems 2) fire a round into the jungle and assume that all threats have run away. it will be fine to move forward or at least it cant make things worse.
+not sure which one i am dealing with.
+
+Nic Bellamy [3:46 PM]
+unless there's a way to have both modes; randomly lob a round over the wall mode + careful cross t's dot i's mode
+
+Scott Woods [3:48 PM]
+its probably present in the single feature, i.e. some failure of the careful cross t's and dot i's  is an informed version of lobbing over the wall.
+
+Nic Bellamy [3:49 PM]
+yeah I suppose, as long as one host failing doesn't hold up the grenade for any of the other hosts
+
+Scott Woods [3:49 PM]
+haha. exactly. will record these notes.

@@ -1,0 +1,56 @@
+[01746083] 2023-06-25T20:05:59.456 > <0000000c>SocketSelect - Forward Ack to <0000000e> (from <0000000d>)
+[01746083] 2023-06-25T20:05:59.456 < <0000000e>client - Received Ack from <0000000d>
+[01746083] 2023-06-25T20:05:59.456 > <0000000e>client - Sent Enquiry to <0000000d>
+[01746083] 2023-06-25T20:05:59.456 < <0000000d>SocketProxy[NORMAL] - Received Enquiry from <0000000e>
+[01746083] 2023-06-25T20:05:59.458 > <0000000c>SocketSelect - Forward Ack to <0000000e> (from <0000000d>)
+[01746083] 2023-06-25T20:05:59.458 < <0000000e>client - Received Ack from <0000000d>
+[01746083] 2023-06-25T20:05:59.458 > <0000000e>client - Sent Enquiry to <0000000d>
+[01746083] 2023-06-25T20:05:59.458 < <0000000d>SocketProxy[NORMAL] - Received Enquiry from <0000000e>
+[01746083] 2023-06-25T20:05:59.461 > <0000000c>SocketSelect - Forward Ack to <0000000e> (from <0000000d>)
+[01746083] 2023-06-25T20:05:59.461 < <0000000e>client - Received Ack from <0000000d>
+[01746083] 2023-06-25T20:05:59.461 > <0000000e>client - Sent Enquiry to <0000000d>
+[01746083] 2023-06-25T20:05:59.461 < <0000000d>SocketProxy[NORMAL] - Received Enquiry from <0000000e>
+[01746083] 2023-06-25T20:05:59.463 > <0000000c>SocketSelect - Forward Ack to <0000000e> (from <0000000d>)
+[01746083] 2023-06-25T20:05:59.463 < <0000000e>client - Received Ack from <0000000d>
+[01746083] 2023-06-25T20:05:59.463 > <0000000e>client - Sent Enquiry to <0000000d>
+[01746083] 2023-06-25T20:05:59.463 < <0000000d>SocketProxy[NORMAL] - Received Enquiry from <0000000e>
+[01746083] 2023-06-25T20:05:59.465 > <0000000c>SocketSelect - Forward Ack to <0000000e> (from <0000000d>)
+[01746083] 2023-06-25T20:05:59.465 < <0000000e>client - Received Ack from <0000000d>
+[01746083] 2023-06-25T20:05:59.465 > <0000000e>client - Sent Enquiry to <0000000d>
+[01746083] 2023-06-25T20:05:59.465 < <0000000d>SocketProxy[NORMAL] - Received Enquiry from <0000000e>
+[01746083] 2023-06-25T20:05:59.466 < <0000000e>client - Received T1 from <00000003>
+[01746083] 2023-06-25T20:05:59.466 X <0000000e>client - Destroyed
+[01746083] 2023-06-25T20:05:59.466 < <0000000d>SocketProxy[NORMAL] - Received Close from <0000000e>
+[01746083] 2023-06-25T20:05:59.466 X <0000000d>SocketProxy[NORMAL] - Destroyed
+[01746083] 2023-06-25T20:05:59.466 > <0000000c>SocketSelect - Forward Closed to <0000000b> (from <0000000e>)
+[01746083] 2023-06-25T20:05:59.466 < <0000000b>main - Received Closed from <0000000e>
+[01746083] 2023-06-25T20:05:59.466 X <0000000c>SocketSelect - Destroyed
+[01746083] 2023-06-25T20:05:59.466 < <0000000b>main - Received Completed from <0000000c>
+[01746083] 2023-06-25T20:05:59.466 X <0000000b>main - Destroyed
+[01746083] 2023-06-25T20:05:59.466 < <0000000a>Retry[ATTEMPTING] - Received Completed from <0000000b>
+[01746083] 2023-06-25T20:05:59.466 ^ <0000000a>Retry[ATTEMPTING] - Pausing for 3.000000 seconds
+[01746083] 2023-06-25T20:05:59.466 > <0000000a>Retry[ATTEMPTING] - Sent StartTimer to <00000003>
+[01746083] 2023-06-25T20:06:02.470 < <0000000a>Retry[PAUSING] - Received T1 from <00000003>
+[01746083] 2023-06-25T20:06:02.471 + <0000000f>main - Created by <0000000a>
+[01746083] 2023-06-25T20:06:02.472 + <00000010>SocketSelect - Created by <0000000f>
+[01746083] 2023-06-25T20:06:02.472 < <00000010>SocketSelect - Received Start from <0000000f>
+[01746083] 2023-06-25T20:06:02.472 > <00000010>SocketSelect - Sent SocketChannel to <0000000f>
+[01746083] 2023-06-25T20:06:02.473 < <0000000f>main - Received SocketChannel from <00000010>
+[01746083] 2023-06-25T20:08:13.014 + <00000011>SocketProxy[INITIAL] - Created by <00000010>
+[01746083] 2023-06-25T20:08:13.014 + <00000012>client - Created by <00000010>
+[01746083] 2023-06-25T20:08:13.015 > <00000012>client - Sent StartTimer to <00000003>
+[01746083] 2023-06-25T20:08:13.015 > <00000012>client - Sent Enquiry to <00000011>
+[01746083] 2023-06-25T20:08:13.015 < <00000011>SocketProxy[INITIAL] - Received Start from <00000010>
+[01746083] 2023-06-25T20:08:13.015 < <00000011>SocketProxy[NORMAL] - Received Enquiry from <00000012>
+[01746083] 2023-06-25T20:08:13.016 > <00000010>SocketSelect - Sent NotConnected to <0000000f>
+[01746083] 2023-06-25T20:08:13.017 ! <00000010>SocketSelect - unhandled exception "file descriptor cannot be a negative integer (-1)" (ValueError('file descriptor cannot be a negative integer (-1)'))
+[01746083] 2023-06-25T20:08:13.017 X <00000010>SocketSelect - Destroyed
+[01746083] 2023-06-25T20:08:13.017 < <0000000f>main - Received NotConnected from <00000010>
+[01746083] 2023-06-25T20:08:13.017 < <0000000f>main - Received Completed from <00000010>
+[01746083] 2023-06-25T20:08:13.017 X <0000000f>main - Destroyed
+[01746083] 2023-06-25T20:08:13.018 < <0000000a>Retry[ATTEMPTING] - Received Completed from <0000000f>
+[01746083] 2023-06-25T20:08:13.018 X <0000000a>Retry[ATTEMPTING] - Destroyed
+[01746083] 2023-06-25T20:08:13.018 < <00000009>start_vector - Received Completed from <0000000a>
+[01746083] 2023-06-25T20:08:13.018 X <00000009>start_vector - Destroyed
+[01746083] 2023-06-25T20:08:13.116 < <00000008>lock_and_hold - Received Stop from <00000001>
+[01746083] 2023-06-25T20:08:13.119 X <00000008>lock_and_hold - Destroyed

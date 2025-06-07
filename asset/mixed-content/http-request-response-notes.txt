@@ -1,0 +1,43 @@
+*** MAKE A REQUEST (url-encoded) ***
+
+POST /cgi-bin/process.cgi HTTP/1.1
+User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+Host: www.tutorialspoint.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: length
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+licenseID=string&content=string&/paramsXML=string
+
+Request line
+Zero or more header fields
+CRLF
+Message body (no CRLF, Content-Length and Content-Type)
+
+*** MAKE A REQUEST (xml) ***
+
+POST /cgi-bin/process.cgi HTTP/1.1
+User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+Host: www.tutorialspoint.com
+Content-Type: text/xml; charset=utf-8
+Content-Length: length
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://clearforest.com/">string</string>
+
+*** RETURN A RESPONSE (xml) ***
+
+HTTP/1.1 200 OK\r\n
+Content-Length: 55\r\n
+Content-Type: text/xml\r\n
+Last-Modified: Wed, 12 Aug 1998 15:03:50 GMT\r\n
+Accept-Ranges: bytes\r\n
+ETag: “04f97692cbd1:377”\r\n
+Date: Thu, 19 Jun 2008 19:29:07 GMT\r\n
+\r\n
+<55-character response>

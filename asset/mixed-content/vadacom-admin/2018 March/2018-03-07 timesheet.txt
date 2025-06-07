@@ -1,0 +1,7 @@
+7-11
+reading and understanding vpn manager codebase
+as a basis for implementation of #2444 - load distribution
+12-4
+reading and understanding vpn manager codebase
+as a basis for implementation of #2444 - load distribution
+discussion gerwin - clarifications, proposals

@@ -1,0 +1,80 @@
+********* RUN THE SERVER
+
+Administrator@EC2AMAZ-FLJI8LR MINGW64 ~
+$ py server.py -dl=DEBUG
+[00004808] 2024-05-25T17:25:45.360 + <0000000a>SocketSelect - Created by <00000001>
+[00004808] 2024-05-25T17:25:45.360 < <0000000a>SocketSelect - Received Start from <00000001>
+[00004808] 2024-05-25T17:25:45.360 > <0000000a>SocketSelect - Sent SocketChannel to <00000001>
+[00004808] 2024-05-25T17:25:45.360 + <0000000b>PubSub[INITIAL] - Created by <00000001>
+[00004808] 2024-05-25T17:25:45.360 < <0000000b>PubSub[INITIAL] - Received Start from <00000001>
+[00004808] 2024-05-25T17:25:45.360 + <0000000c>object_vector - Created by <00000001>
+[00004808] 2024-05-25T17:25:45.375 ~ <0000000c>object_vector - Executable "C:\Users\Administrator\server.py" as object process (4808)
+[00004808] 2024-05-25T17:25:45.375 ~ <0000000c>object_vector - Working folder "C:\Users\Administrator"
+[00004808] 2024-05-25T17:25:45.375 ~ <0000000c>object_vector - Running object "__main__.server"
+[00004808] 2024-05-25T17:25:45.375 ~ <0000000c>object_vector - Class threads (3) "subscribed" (3),"published" (2),"connect-to-peer" (1)
+[00004808] 2024-05-25T17:25:45.375 + <0000000d>server - Created by <0000000c>
+[00004808] 2024-05-25T17:25:45.375 ~ <0000000a>SocketSelect - Listening on "127.0.0.1:50101", requested "127.0.0.1:50101"
+[00004808] 2024-05-25T17:25:45.375 > <0000000a>SocketSelect - Sent Listening to <0000000d>
+[00004808] 2024-05-25T17:25:45.375 < <0000000d>server - Received Listening from <0000000a>
+[00004808] 2024-05-25T17:34:31.387 + <0000000e>SocketProxy[INITIAL] - Created by <0000000a>
+[00004808] 2024-05-25T17:34:31.387 ~ <0000000a>SocketSelect - Accepted "127.0.0.1:50626", requested "127.0.0.1:50101"
+[00004808] 2024-05-25T17:34:31.387 > <0000000a>SocketSelect - Forward Accepted to <0000000d> (from <0000000e>)
+[00004808] 2024-05-25T17:34:31.387 < <0000000e>SocketProxy[INITIAL] - Received Start from <0000000a>
+[00004808] 2024-05-25T17:34:31.387 < <0000000d>server - Dropped Accepted from <0000000e>
+[00004808] 2024-05-25T17:34:31.387 > <0000000a>SocketSelect - Forward Enquiry to <0000000d> (from <0000000e>)
+[00004808] 2024-05-25T17:34:31.387 < <0000000d>server - Received Enquiry from <0000000e>
+[00004808] 2024-05-25T17:34:31.387 > <0000000d>server - Sent Ack to <0000000e>
+[00004808] 2024-05-25T17:34:31.387 < <0000000e>SocketProxy[NORMAL] - Received Ack from <0000000d>
+
+********* RUN THE CLIENT
+
+Administrator@EC2AMAZ-FLJI8LR MINGW64 ~
+$ py client.py -dl=DEBUG
+[00002192] 2024-05-25T17:34:31.387 + <0000000a>SocketSelect - Created by <00000001>
+[00002192] 2024-05-25T17:34:31.387 < <0000000a>SocketSelect - Received Start from <00000001>
+[00002192] 2024-05-25T17:34:31.387 > <0000000a>SocketSelect - Sent SocketChannel to <00000001>
+[00002192] 2024-05-25T17:34:31.387 + <0000000b>PubSub[INITIAL] - Created by <00000001>
+[00002192] 2024-05-25T17:34:31.387 < <0000000b>PubSub[INITIAL] - Received Start from <00000001>
+[00002192] 2024-05-25T17:34:31.387 + <0000000c>object_vector - Created by <00000001>
+[00002192] 2024-05-25T17:34:31.387 ~ <0000000c>object_vector - Executable "C:\Users\Administrator\client.py" as object process (2192)
+[00002192] 2024-05-25T17:34:31.387 ~ <0000000c>object_vector - Working folder "C:\Users\Administrator"
+[00002192] 2024-05-25T17:34:31.387 ~ <0000000c>object_vector - Running object "__main__.client"
+[00002192] 2024-05-25T17:34:31.387 ~ <0000000c>object_vector - Class threads (3) "subscribed" (3),"published" (2),"connect-to-peer" (1)
+[00002192] 2024-05-25T17:34:31.387 + <0000000d>client - Created by <0000000c>
+[00002192] 2024-05-25T17:34:31.387 + <0000000e>SocketProxy[INITIAL] - Created by <0000000a>
+[00002192] 2024-05-25T17:34:31.387 ~ <0000000a>SocketSelect - Connected to "127.0.0.1:50101", at local address "127.0.0.1:50626"
+[00002192] 2024-05-25T17:34:31.387 > <0000000a>SocketSelect - Forward Connected to <0000000d> (from <0000000e>)
+[00002192] 2024-05-25T17:34:31.387 < <0000000e>SocketProxy[INITIAL] - Received Start from <0000000a>
+[00002192] 2024-05-25T17:34:31.387 < <0000000d>client - Received Connected from <0000000e>
+[00002192] 2024-05-25T17:34:31.387 > <0000000d>client - Sent Enquiry to <0000000e>
+[00002192] 2024-05-25T17:34:31.387 > <0000000d>client - Sent StartTimer to <00000003>
+[00002192] 2024-05-25T17:34:31.387 < <0000000e>SocketProxy[NORMAL] - Received Enquiry from <0000000d>
+[00002192] 2024-05-25T17:34:31.387 > <0000000a>SocketSelect - Forward Ack to <0000000d> (from <0000000e>)
+[00002192] 2024-05-25T17:34:31.387 > <0000000d>client - Sent CancelTimer to <00000003>
+[00002192] 2024-05-25T17:34:31.387 < <0000000d>client - Received Ack from <0000000e>
+[00002192] 2024-05-25T17:34:31.387 X <0000000d>client - Destroyed
+[00002192] 2024-05-25T17:34:31.387 < <0000000c>object_vector - Received Completed from <0000000d>
+[00002192] 2024-05-25T17:34:31.387 X <0000000c>object_vector - Destroyed
+[00002192] 2024-05-25T17:34:31.514 < <0000000b>PubSub[NORMAL] - Received Stop from <00000001>
+[00002192] 2024-05-25T17:34:31.514 X <0000000b>PubSub[NORMAL] - Destroyed
+[00002192] 2024-05-25T17:34:31.514 > <0000000a>SocketSelect - Sent Close to <0000000e>
+[00002192] 2024-05-25T17:34:31.514 < <0000000e>SocketProxy[NORMAL] - Received Close from <0000000a>
+[00002192] 2024-05-25T17:34:31.514 X <0000000e>SocketProxy[NORMAL] - Destroyed
+
+********* CLIENT HAS COMPLETED
+********* RUNTIME HAS INITIATED SHUTDOWN (PROXY IS DESTROYED)
+********* CLIENT IS UNRESPONSIVE TO CONTROL-C
+********* SERVER RESPONDS TO CONTROL-C BUT ENDS UP IN SAME PART OF RUNTIME 
+********* KILL THE SERVER
+
+[00002192] 2024-05-25T17:34:31.514 X <0000000e>SocketProxy[NORMAL] - Destroyed
+[00002192] 2024-05-25T17:42:47.935 ! <0000000a>SocketSelect - Socket termination [10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call
+[00002192] 2024-05-25T17:42:47.935 > <0000000a>SocketSelect - Forward Closed to <0000000d> (from <0000000e>)
+[00002192] 2024-05-25T17:42:47.935 X <0000000a>SocketSelect - Destroyed
+Ack()
+
+********* CLIENT POPS OUT OF BLOCKED STATE
+
+
+
+

@@ -1,0 +1,15 @@
+11-1
+trying different manual approaches to dispatch table construction
+several hassles with staticmethod mechanism.
+discussions with nic and team.
+chucked all that noble approach and went for global funcs and assignment of class.mapping.
+hassles with testing proved to be due to LAN preventing host-to-host comms.
+discussed with gerwin.
+2-6
+reconfigured vms (dt_vada_1 and vadaxchange) to  use interfaces as proscribed by gerwin
+a few bounces and reconfigs later and everything now working
+using host-only network interfaces that uses vm host as gateway+dhcp
+finished upgrade of ansar and managerclient to the new manual mapping.
+upgraded manager client to non-star (import ansar as ml) import.
+tested on pbx and also test_ansar unit tests.
+added the full ansar logging model and implemented mapping to webman Logger.

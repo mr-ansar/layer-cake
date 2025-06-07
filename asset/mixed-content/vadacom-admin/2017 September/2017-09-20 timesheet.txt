@@ -1,0 +1,9 @@
+11-1
+Started coding proposed ldap design into existing branch files
+only temp and un-runnable as ansar is not merged/available
+prototyped the ldap request acceptor and the ldap reader
+working on state transitions
+2-6
+completed transition functions and state machine for ldap acceptor
+timesheet and invoicing
+ 

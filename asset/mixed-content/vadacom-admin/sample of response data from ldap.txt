@@ -1,0 +1,26 @@
+2017-12-11 10:52:01,725 webman.main.message_layer INFO [A^]<0000001e>
+ldap_reader
+Result type: 101,
+dat: [
+('ou=Company Phonebook,dc=default,dc=vadacom',
+	{
+		'objectClass': ['top', 'organizationalUnit', 'vadacomPhonebook'],
+		'vadacomGUID': ['7a919f11-0827-517d-8126-94ab768548b4'],
+		'ou': ['Company Phonebook']}
+),
+('ou=Personal Phonebook,uid=ada_aitken,ou=People,dc=default,dc=vadacom',
+	{
+		'objectClass': ['top', 'organizationalUnit', 'vadacomPhonebook'],
+		'vadacomGUID': ['5acc3dfd-7981-59cd-a30a-8dec25b8fb7d'],
+		'ou': ['Personal Phonebook']
+	}
+),
+('ou=Mobile Phonebook,uid=ada_aitken,ou=People,dc=default,dc=vadacom',
+	{
+		'objectClass': ['top', 'organizationalUnit', 'vadacomPhonebook'],
+		'vadacomGUID': ['b093c48a-4b56-5410-b020-ce2ed88c1979'],
+		'ou': ['Mobile Phonebook']
+	}
+)
+],
+id: 2

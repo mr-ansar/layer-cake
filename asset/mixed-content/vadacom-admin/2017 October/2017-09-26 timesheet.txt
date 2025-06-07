@@ -1,0 +1,11 @@
+11-1
+review of #2244 - pass
+discussed with ben esp value of doing further uat.
+
+2-6
+sprint meetings
+#2183 filters not behaving to expectation.
+queried enpei regarding changes to buddy startup
+rebuild test env - non-trivial cos buddy and because buddy-only and i have no tagged version of webman at same point
+buddy up
+few attempts at webman but so far - buddy logins do not complete.

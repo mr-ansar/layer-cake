@@ -1,0 +1,9 @@
+7-11
+complete summary for #2444
+sent to nic and gerwin
+review vpn manager code
+license manager
+12-4
+discuss possibilities with gerwin
+discover that all requirements for #2444 are on dev roadmap for vpn manager
+discuss the addition of load-management and auto-update with gerwin.

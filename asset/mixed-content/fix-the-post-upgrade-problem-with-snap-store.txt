@@ -1,0 +1,17 @@
+scott@seneca:~/repo/ansar-encode$ sudo snap refresh
+All snaps up to date.
+scott@seneca:~/repo/ansar-encode$ snap refresh --time
+timer: 00:00~24:00/4
+last: today at 06:08 NZST
+next: today at 14:31 NZST
+scott@seneca:~/repo/ansar-encode$ date
+Tue 13 Sep 2022 07:18:20 NZST
+scott@seneca:~/repo/ansar-encode$ snap refresh --list
+Name        Version           Rev  Size  Publisher   Notes
+snap-store  41.3-63-gbd822db  592  48MB  canonical✓  -
+scott@seneca:~/repo/ansar-encode$ sudo killall snap-store
+scott@seneca:~/repo/ansar-encode$ sudo snap refresh
+snap-store 41.3-63-gbd822db from Canonical✓ refreshed
+scott@seneca:~/repo/ansar-encode$ sudo snap refresh
+All snaps up to date.
+scott@seneca:~/repo/ansar-encode$ 

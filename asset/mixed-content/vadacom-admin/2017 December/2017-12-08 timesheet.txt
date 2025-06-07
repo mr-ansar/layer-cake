@@ -1,0 +1,13 @@
+10-1
+review for ben
+minor feedback, re-assigned to ben
+back to ldap.
+short discuss with gerwin
+1-6
+several iterations before a reasonably function version
+of the sketch that i had in place before ansar arrived
+only glitch so far is that LDAP client lib does not run
+as expected so doesnt match the operational model that
+i placed around it,e.g. it appears that you cannot call
+the result2 function if there are no calls currently
+pending. what a crock.

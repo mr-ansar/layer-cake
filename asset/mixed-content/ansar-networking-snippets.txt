@@ -1,0 +1,25 @@
+ssh mr-ansar@192.168.1.XXX <<<<<<<<<<<<<<<<<<<<<<
+ssh -i ~/.ssh/custom_key_name mr-ansar@192.168.1.XXX <<<<<<<<<<<<<<<<<<<<<<
+
+/etc/netplan/00-installer-config.yaml
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    enp0s3:
+      addresses:
+      - 192.168.1.XXX/24              <<<<<<<<<<<<<<<< CHANGE
+      nameservers:
+        addresses:
+        - 192.168.1.1
+        - 192.168.1.1
+        search: []
+      routes:
+      - to: default
+        via: 192.168.1.1
+  version: 2
+~                                                                                                                                                                                                                  
+~ 
+
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILeLu1JHDdQFY8exXYyFLKjY2kB1Cc5SvR38t8O9EQkb scott.suzuki@gmail.com
+

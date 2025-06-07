@@ -1,0 +1,10 @@
+7-11, 12-4
+building .debs
+understanding of dh_helper processes
+proper configuration of files to achieve actual file contents
+successful creation of deb
+need to deal with specifics of webman distribution
+i.e. .py vs .pyc
+ran into problem with running package creation on ubuntu 16.04
+consult with gerwin/nic
+sprint reviews

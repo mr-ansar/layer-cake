@@ -1,0 +1,55 @@
+# Three different implementations
+# of tzinfo -
+# dateutil.timezone
+# tzfile, tzstr, tzwin, tzrange (dateutil.tz.gettz)
+# ZoneInfo (zoneinfo)
+
+from datetime import datetime, timedelta, timezone
+from dateutil.tz import gettz
+from zoneinfo import ZoneInfo
+
+# Naive
+# UTC
+# LA (gettz)
+# LA (timezone)
+# LA (TimeZone)
+
+
+dt1 = datetime(2020, 10, 31, 12)
+dt2 = datetime(2020, 10, 31, 12, tzinfo=timezone.utc)
+dt3 = datetime(2020, 10, 31, 12, tzinfo=gettz("America/Los_Angeles"))
+
+# Handcode a dt at the same moment but using basic tzinfo impl.
+# Need the offest of another to use as initializer for basic.
+td3 = dt3.tzinfo.utcoffset(dt3)
+tz4 = timezone(td3)
+dt4 = datetime(2020, 10, 31, 12, tzinfo=tz4)
+dt5 = datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles"))
+
+dt1 != dt2
+dt2 != dt3
+dt3 == dt4
+dt4 == dt5
+
+tz6 = ZoneInfo("Pacific/Auckland")
+dt6 = datetime(2020, 10, 31, 12, tzinfo=tz6)
+
+dt1.astimezone(tz6) == dt6	# Naive, assumes dt1 is in system time, i.e. Auckland
+dt2.astimezone(tz6) != dt6	# Moving a dt from UTC to Auckland will produce a different dt.
+dt3.astimezone(tz6) != dt6	# Ditto.
+dt4.astimezone(tz6) != dt6
+dt5.astimezone(tz6) != dt6
+
+for s, t in [('1) naive', dt1), ('2) utc', dt2), ('3) gettz', dt3), ('4) timezone', dt4), ('5) ZoneInfo', dt5), ('6) ZoneInfo (auckland)', dt6)]:
+	print(s, type(t), type(t.tzinfo))
+
+for s, t in [('1) naive', dt1), ('2) utc', dt2), ('3) gettz', dt3), ('4) timezone', dt4), ('5) ZoneInfo', dt5), ('6) ZoneInfo (auckland)', dt6)]:
+	print(s, type(t.tzinfo))
+	tz = t.tzinfo
+	if tz is None:
+		continue
+	print(tz.tzname(t))
+	if hasattr(tz, '_fname'):
+		print(tz._fname)
+
+

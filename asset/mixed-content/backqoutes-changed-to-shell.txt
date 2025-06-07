@@ -1,0 +1,17 @@
+Scott Woods  11:33 AM
+@planet you mentioned in the meeting that i had been using mismatched shell syntax (i.e. bash vs sh). which specific piece of syntax was that?
+
+Nic Bellamy  11:35 AM
+You'd specified #! /bin/sh but were using things like $(cmd) that only work in bash. Fine if /bin/sh == /bin/bash, not otherwise. Just need to ensure interpretor is bash, no issue with you using bash features
+
+Scott Woods  11:53 AM
+Use of "$(command)" was added by you in commit d4d8674. i had been using the older back quotes.
+
+
+
+
+
+
+Nic Bellamy  11:58 AM
+ahh ok, must have been something else in the syntax then, I forget what
+I just remember it failed on my system where /bin/sh -> /bin/dash

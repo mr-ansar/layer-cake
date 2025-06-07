@@ -1,0 +1,16 @@
+11-1
+implementing justins suggested layout
+started with standard templates
+reworked into buildable, browsable state
+connected automod/function/method directives
+2-6
+checked with nic re status of doc review
+populated basic docs with docstring content
+reorg into more traditional arangement
+quick tour - once the review is completed
+reference manual - explicit access to implementation + docstrings
+case studies - transfer of ansar dot txt,ie. maybe never
+all builds and looking good
+structuring,links, polishing/correcting text.
+
+

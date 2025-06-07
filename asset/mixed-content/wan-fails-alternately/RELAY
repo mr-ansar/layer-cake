@@ -1,0 +1,240 @@
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ ansar log relay-0 --back=1h
+2024-08-07T20:57:11.462 > <0000000f>SocketSelect - Forward RelayLookup to <00000015> (from <00000019>)
+2024-08-07T20:57:11.462 < <00000015>Relay[READY] - Received RelayLookup from <00000019>
+2024-08-07T20:57:11.462 _ <00000015>Relay[READY] - Matched/installed relay [4e60fc76-97c1-4ca7-91c7-ba9701bb098e] at "ansar-mx.net:5200" (1 tokens)
+2024-08-07T20:57:11.462 > <00000015>Relay[READY] - Sent RelayRedirect to <00000019>
+2024-08-07T20:57:11.462 < <00000019>SocketProxy[NORMAL] - Received RelayRedirect from <00000015>
+2024-08-07T20:57:11.877 + <00000168>SocketProxy[INITIAL] - Created by <0000000f>
+2024-08-07T20:57:11.877 ~ <0000000f>SocketSelect - Accepted (encrypted) "119.224.19.145:57732", requested "0.0.0.0:5200"
+2024-08-07T20:57:11.877 < <00000168>SocketProxy[INITIAL] - Received Start from <0000000f>
+2024-08-07T20:57:11.880 > <0000000f>SocketSelect - Sent Hellman to <00000168>
+2024-08-07T20:57:11.880 > <0000000f>SocketSelect - Forward Accepted to <00000015> (from <00000168>)
+2024-08-07T20:57:11.881 < <00000168>SocketProxy[NORMAL] - Received Hellman from <0000000f>
+2024-08-07T20:57:11.881 < <00000015>Relay[READY] - Received Accepted from <00000168>
+2024-08-07T20:57:11.881 ~ <00000015>Relay[READY] - Providing relay services to "119.224.19.145:57732"
+2024-08-07T20:57:12.085 > <0000000f>SocketSelect - Forward RouteByRelay to <00000015> (from <00000168>)
+2024-08-07T20:57:12.085 > <0000000f>SocketSelect - Forward OpenLoop to <00000015> (from <00000168>)
+2024-08-07T20:57:12.085 < <00000015>Relay[READY] - Received RouteByRelay from <00000168>
+2024-08-07T20:57:12.085 < <00000015>Relay[READY] - Received OpenLoop from <00000168>
+2024-08-07T20:57:16.219 > <0000000f>SocketSelect - Forward CloseLoop to <00000015> (from <00000168>)
+2024-08-07T20:57:16.220 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <00000168>)
+2024-08-07T20:57:16.220 < <00000015>Relay[READY] - Received CloseLoop from <00000168>
+2024-08-07T20:57:16.220 ^ <00000015>Relay[READY] - Unexpected message "<ansar.connect.directory.CloseLoop object at 0x7f8d1876db90>" directed at relay
+2024-08-07T20:57:16.220 < <00000015>Relay[READY] - Received CloseRelay from <00000168>
+2024-08-07T20:57:16.220 _ <00000015>Relay[READY] - Closed relay [4e60fc76-97c1-4ca7-91c7-ba9701bb098e]
+2024-08-07T20:57:16.223 > <0000000f>SocketSelect - Sent Stop to <00000168>
+2024-08-07T20:57:16.223 > <0000000f>SocketSelect - Forward Abandoned to <00000015> (from <00000168>)
+2024-08-07T20:57:16.223 < <00000015>Relay[READY] - Received Abandoned from <00000168>
+2024-08-07T20:57:16.223 ~ <00000015>Relay[READY] - Abandoning service to "119.224.19.145:57732"
+2024-08-07T20:57:16.224 < <00000168>SocketProxy[NORMAL] - Received Stop from <0000000f>
+2024-08-07T20:57:16.224 X <00000168>SocketProxy[NORMAL] - Destroyed
+2024-08-07T20:59:29.733 > <0000000f>SocketSelect - Forward RelayLookup to <00000015> (from <00000019>)
+2024-08-07T20:59:29.733 < <00000015>Relay[READY] - Received RelayLookup from <00000019>
+2024-08-07T20:59:29.733 _ <00000015>Relay[READY] - Matched/installed relay [d2591741-8a9e-4e6b-96f0-405e8f11efed] at "ansar-mx.net:5200" (1 tokens)
+2024-08-07T20:59:29.733 > <00000015>Relay[READY] - Sent RelayRedirect to <00000019>
+2024-08-07T20:59:29.734 < <00000019>SocketProxy[NORMAL] - Received RelayRedirect from <00000015>
+2024-08-07T20:59:30.141 + <00000169>SocketProxy[INITIAL] - Created by <0000000f>
+2024-08-07T20:59:30.142 ~ <0000000f>SocketSelect - Accepted (encrypted) "119.224.19.145:50012", requested "0.0.0.0:5200"
+2024-08-07T20:59:30.142 < <00000169>SocketProxy[INITIAL] - Received Start from <0000000f>
+2024-08-07T20:59:30.144 > <0000000f>SocketSelect - Sent Hellman to <00000169>
+2024-08-07T20:59:30.144 > <0000000f>SocketSelect - Forward Accepted to <00000015> (from <00000169>)
+2024-08-07T20:59:30.145 < <00000015>Relay[READY] - Received Accepted from <00000169>
+2024-08-07T20:59:30.145 ~ <00000015>Relay[READY] - Providing relay services to "119.224.19.145:50012"
+2024-08-07T20:59:30.145 < <00000169>SocketProxy[NORMAL] - Received Hellman from <0000000f>
+2024-08-07T20:59:30.346 > <0000000f>SocketSelect - Forward RouteByRelay to <00000015> (from <00000169>)
+2024-08-07T20:59:30.346 > <0000000f>SocketSelect - Forward OpenLoop to <00000015> (from <00000169>)
+2024-08-07T20:59:30.346 < <00000015>Relay[READY] - Received RouteByRelay from <00000169>
+2024-08-07T20:59:30.346 < <00000015>Relay[READY] - Received OpenLoop from <00000169>
+2024-08-07T20:59:34.479 > <0000000f>SocketSelect - Forward CloseLoop to <00000015> (from <00000169>)
+2024-08-07T20:59:34.479 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <00000169>)
+2024-08-07T20:59:34.479 > <0000000f>SocketSelect - Sent Stop to <00000169>
+2024-08-07T20:59:34.479 > <0000000f>SocketSelect - Forward Abandoned to <00000015> (from <00000169>)
+2024-08-07T20:59:34.479 < <00000015>Relay[READY] - Received CloseLoop from <00000169>
+2024-08-07T20:59:34.479 ^ <00000015>Relay[READY] - Unexpected message "<ansar.connect.directory.CloseLoop object at 0x7f8d1877ef90>" directed at relay
+2024-08-07T20:59:34.479 < <00000015>Relay[READY] - Received CloseRelay from <00000169>
+2024-08-07T20:59:34.479 _ <00000015>Relay[READY] - Closed relay [d2591741-8a9e-4e6b-96f0-405e8f11efed]
+2024-08-07T20:59:34.479 < <00000015>Relay[READY] - Received Abandoned from <00000169>
+2024-08-07T20:59:34.479 ~ <00000015>Relay[READY] - Abandoning service to "119.224.19.145:50012"
+2024-08-07T20:59:34.479 < <00000169>SocketProxy[NORMAL] - Received Stop from <0000000f>
+2024-08-07T20:59:34.479 X <00000169>SocketProxy[NORMAL] - Destroyed
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ ansar log relay-0 --back=1h^C
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ ansar log relay-1 --back=1h
+2024-08-07T20:56:21.904 > <0000000f>SocketSelect - Forward RelayLookup to <00000015> (from <00000019>)
+2024-08-07T20:56:21.904 < <00000015>Relay[READY] - Received RelayLookup from <00000019>
+2024-08-07T20:56:21.904 _ <00000015>Relay[READY] - Matched/installed relay [1f7f669e-eca4-44c9-b65a-aa7ce2066a6f] at "ansar-mx.net:5201" (1 tokens)
+2024-08-07T20:56:21.904 > <00000015>Relay[READY] - Sent RelayRedirect to <00000019>
+2024-08-07T20:56:21.905 < <00000019>SocketProxy[NORMAL] - Received RelayRedirect from <00000015>
+2024-08-07T20:56:22.120 > <0000000f>SocketSelect - Forward InboundByRelay to <00000015> (from <0000014d>)
+2024-08-07T20:56:22.120 < <00000015>Relay[READY] - Received InboundByRelay from <0000014d>
+2024-08-07T20:56:22.674 + <00000162>SocketProxy[INITIAL] - Created by <0000000f>
+2024-08-07T20:56:22.674 ~ <0000000f>SocketSelect - Accepted (encrypted) "119.224.19.145:41496", requested "0.0.0.0:5201"
+2024-08-07T20:56:22.674 < <00000162>SocketProxy[INITIAL] - Received Start from <0000000f>
+2024-08-07T20:56:22.680 > <0000000f>SocketSelect - Sent Hellman to <00000162>
+2024-08-07T20:56:22.680 > <0000000f>SocketSelect - Forward Accepted to <00000015> (from <00000162>)
+2024-08-07T20:56:22.680 < <00000015>Relay[READY] - Received Accepted from <00000162>
+2024-08-07T20:56:22.680 ~ <00000015>Relay[READY] - Providing relay services to "119.224.19.145:41496"
+2024-08-07T20:56:22.680 < <00000162>SocketProxy[NORMAL] - Received Hellman from <0000000f>
+2024-08-07T20:56:22.889 > <0000000f>SocketSelect - Forward RouteByRelay to <00000015> (from <00000162>)
+2024-08-07T20:56:22.889 > <0000000f>SocketSelect - Forward OpenLoop to <00000015> (from <00000162>)
+2024-08-07T20:56:22.889 < <00000015>Relay[READY] - Received RouteByRelay from <00000162>
+2024-08-07T20:56:22.889 < <00000015>Relay[READY] - Received OpenLoop from <00000162>
+2024-08-07T20:56:22.889 ~ <00000015>Relay[READY] - Brokered relay "1f7f669e-eca4-44c9-b65a-aa7ce2066a6f", subscriber loop at (31, 354), publisher agent at (28, 333)
+2024-08-07T20:56:22.889 > <00000015>Relay[READY] - Forward OpenLoop to <0000014d> (from <00000162>)
+2024-08-07T20:56:22.889 < <0000014d>SocketProxy[NORMAL] - Received OpenLoop from <00000162>
+2024-08-07T20:56:23.095 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:23.096 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:23.304 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:23.304 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:23.510 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:23.510 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:23.713 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:23.713 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:23.915 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:23.915 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:24.117 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:24.117 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:24.318 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:24.318 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:24.521 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:24.521 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:24.722 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:24.722 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:24.924 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:24.924 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:25.126 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:25.126 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:25.328 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:25.329 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:25.530 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:25.530 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:25.729 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:25.729 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:25.931 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:25.931 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:26.133 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:26.133 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:26.335 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:26.335 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:26.537 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:26.538 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:26.739 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:26.739 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:26.942 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:26.942 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:27.143 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:27.143 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:27.346 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:27.346 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:27.548 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:27.548 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:27.750 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000162>)
+2024-08-07T20:56:27.750 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000162>
+2024-08-07T20:56:27.951 > <0000000f>SocketSelect - Forward Relay to <00000162> (from <0000014d>)
+2024-08-07T20:56:27.952 < <00000162>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:56:28.026 > <0000000f>SocketSelect - Forward CloseLoop to <00000015> (from <00000162>)
+2024-08-07T20:56:28.026 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <00000162>)
+2024-08-07T20:56:28.027 < <00000015>Relay[READY] - Received CloseLoop from <00000162>
+2024-08-07T20:56:28.027 ^ <00000015>Relay[READY] - Unexpected message "<ansar.connect.directory.CloseLoop object at 0x7f00e8491ad0>" directed at relay
+2024-08-07T20:56:28.027 < <00000015>Relay[READY] - Received CloseRelay from <00000162>
+2024-08-07T20:56:28.027 _ <00000015>Relay[READY] - Closed relay [1f7f669e-eca4-44c9-b65a-aa7ce2066a6f]
+2024-08-07T20:56:28.034 > <0000000f>SocketSelect - Sent Stop to <00000162>
+2024-08-07T20:56:28.034 > <0000000f>SocketSelect - Forward Abandoned to <00000015> (from <00000162>)
+2024-08-07T20:56:28.034 < <00000162>SocketProxy[NORMAL] - Received Stop from <0000000f>
+2024-08-07T20:56:28.034 X <00000162>SocketProxy[NORMAL] - Destroyed
+2024-08-07T20:56:28.034 < <00000015>Relay[READY] - Received Abandoned from <00000162>
+2024-08-07T20:56:28.034 ~ <00000015>Relay[READY] - Abandoning service to "119.224.19.145:41496"
+2024-08-07T20:56:28.034 > <00000015>Relay[READY] - Sent CloseLoop to <0000014d>
+2024-08-07T20:56:28.034 < <0000014d>SocketProxy[NORMAL] - Received CloseLoop from <00000015>
+2024-08-07T20:56:28.238 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <0000014d>)
+2024-08-07T20:56:28.239 < <00000015>Relay[READY] - Received CloseRelay from <0000014d>
+2024-08-07T20:56:28.239 ? <00000015>Relay[READY] - Close for unknown relay [1f7f669e-eca4-44c9-b65a-aa7ce2066a6f]
+2024-08-07T20:57:57.179 > <0000000f>SocketSelect - Forward RelayLookup to <00000015> (from <00000019>)
+2024-08-07T20:57:57.179 < <00000015>Relay[READY] - Received RelayLookup from <00000019>
+2024-08-07T20:57:57.179 _ <00000015>Relay[READY] - Matched/installed relay [51b014e3-cee6-4313-ace0-ec2cde3ae912] at "ansar-mx.net:5201" (1 tokens)
+2024-08-07T20:57:57.179 > <00000015>Relay[READY] - Sent RelayRedirect to <00000019>
+2024-08-07T20:57:57.179 < <00000019>SocketProxy[NORMAL] - Received RelayRedirect from <00000015>
+2024-08-07T20:57:57.394 > <0000000f>SocketSelect - Forward InboundByRelay to <00000015> (from <0000014d>)
+2024-08-07T20:57:57.394 < <00000015>Relay[READY] - Received InboundByRelay from <0000014d>
+2024-08-07T20:57:57.589 + <00000163>SocketProxy[INITIAL] - Created by <0000000f>
+2024-08-07T20:57:57.589 ~ <0000000f>SocketSelect - Accepted (encrypted) "119.224.19.145:48202", requested "0.0.0.0:5201"
+2024-08-07T20:57:57.589 < <00000163>SocketProxy[INITIAL] - Received Start from <0000000f>
+2024-08-07T20:57:57.591 > <0000000f>SocketSelect - Sent Hellman to <00000163>
+2024-08-07T20:57:57.591 > <0000000f>SocketSelect - Forward Accepted to <00000015> (from <00000163>)
+2024-08-07T20:57:57.591 < <00000015>Relay[READY] - Received Accepted from <00000163>
+2024-08-07T20:57:57.591 ~ <00000015>Relay[READY] - Providing relay services to "119.224.19.145:48202"
+2024-08-07T20:57:57.591 < <00000163>SocketProxy[NORMAL] - Received Hellman from <0000000f>
+2024-08-07T20:57:57.794 > <0000000f>SocketSelect - Forward RouteByRelay to <00000015> (from <00000163>)
+2024-08-07T20:57:57.794 > <0000000f>SocketSelect - Forward OpenLoop to <00000015> (from <00000163>)
+2024-08-07T20:57:57.794 < <00000015>Relay[READY] - Received RouteByRelay from <00000163>
+2024-08-07T20:57:57.794 < <00000015>Relay[READY] - Received OpenLoop from <00000163>
+2024-08-07T20:57:57.794 ~ <00000015>Relay[READY] - Brokered relay "51b014e3-cee6-4313-ace0-ec2cde3ae912", subscriber loop at (31, 355), publisher agent at (28, 333)
+2024-08-07T20:57:57.794 > <00000015>Relay[READY] - Forward OpenLoop to <0000014d> (from <00000163>)
+2024-08-07T20:57:57.795 < <0000014d>SocketProxy[NORMAL] - Received OpenLoop from <00000163>
+2024-08-07T20:57:58.002 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:57:58.002 < <00000163>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:57:58.207 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000163>)
+2024-08-07T20:57:58.207 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000163>
+2024-08-07T20:57:58.409 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:57:58.409 < <00000163>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:57:58.609 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000163>)
+2024-08-07T20:57:58.609 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000163>
+2024-08-07T20:57:58.811 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:57:58.811 < <00000163>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:57:59.011 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000163>)
+2024-08-07T20:57:59.011 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000163>
+2024-08-07T20:57:59.212 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:57:59.212 < <00000163>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:57:59.412 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000163>)
+2024-08-07T20:57:59.412 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000163>
+2024-08-07T20:57:59.613 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:57:59.613 < <00000163>SocketProxy[NORMAL] - Received Relay from <0000014d>
+2024-08-07T20:57:59.827 > <0000000f>SocketSelect - Forward Relay to <0000014d> (from <00000163>)
+2024-08-07T20:57:59.827 < <0000014d>SocketProxy[NORMAL] - Received Relay from <00000163>
+2024-08-07T20:57:59.888 > <0000000f>SocketSelect - Forward CloseLoop to <00000015> (from <00000163>)
+2024-08-07T20:57:59.889 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <00000163>)
+2024-08-07T20:57:59.889 < <00000015>Relay[READY] - Received CloseLoop from <00000163>
+2024-08-07T20:57:59.889 ^ <00000015>Relay[READY] - Unexpected message "<ansar.connect.directory.CloseLoop object at 0x7f00e8492190>" directed at relay
+2024-08-07T20:57:59.889 < <00000015>Relay[READY] - Received CloseRelay from <00000163>
+2024-08-07T20:57:59.889 _ <00000015>Relay[READY] - Closed relay [51b014e3-cee6-4313-ace0-ec2cde3ae912]
+2024-08-07T20:57:59.889 > <0000000f>SocketSelect - Sent Stop to <00000163>
+2024-08-07T20:57:59.889 > <0000000f>SocketSelect - Forward Abandoned to <00000015> (from <00000163>)
+2024-08-07T20:57:59.889 < <00000015>Relay[READY] - Received Abandoned from <00000163>
+2024-08-07T20:57:59.889 ~ <00000015>Relay[READY] - Abandoning service to "119.224.19.145:48202"
+2024-08-07T20:57:59.889 > <00000015>Relay[READY] - Sent CloseLoop to <0000014d>
+2024-08-07T20:57:59.890 < <00000163>SocketProxy[NORMAL] - Received Stop from <0000000f>
+2024-08-07T20:57:59.890 X <00000163>SocketProxy[NORMAL] - Destroyed
+2024-08-07T20:57:59.890 < <0000014d>SocketProxy[NORMAL] - Received CloseLoop from <00000015>
+2024-08-07T20:58:00.033 > <0000000f>SocketSelect - Forward Relay to <00000163> (from <0000014d>)
+2024-08-07T20:58:00.238 > <0000000f>SocketSelect - Forward CloseRelay to <00000015> (from <0000014d>)
+2024-08-07T20:58:00.238 < <00000015>Relay[READY] - Received CloseRelay from <0000014d>
+2024-08-07T20:58:00.238 ? <00000015>Relay[READY] - Close for unknown relay [51b014e3-cee6-4313-ace0-ec2cde3ae912]
+(.cloud) admin@ip-172-31-89-173:~/gh/ansar-wan/src/ansar$ 
+
+

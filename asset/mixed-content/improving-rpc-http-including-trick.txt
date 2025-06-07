@@ -1,0 +1,935 @@
+Improving On RPC/HTTP
+True Asynchronous Networking - A Developer's Notes
+Have you ever thought about sending a message from the listen end of a network transport to the connect  end, and then remembered - RPC doesnt support that? Have you then mused over it for the thousandth time and asked yourself - there's a perfectly good transport there, why can't I?
+This question is inevitable if you spend a lot of time writing network messaging software and given the nature of network communications. There are two independent processes connected by a network transport. While the connection is traditionally initiated by the client for a defined set of interactions (i.e. the API), in fundamental ways the relationship is open and symmetrical; network transports are quite capable of passing messages in either direction and at any time. Events other than client-side (e.g. ButtonClicked) can originate in the server and there can be an obvious and immediate need to advise the client (e.g. TheSkyIsFalling).
+This issue is acknowledged and associated efforts towards a solution are broadly referred to as push technologies. There have been various strategies adopted over the years, such as long-polling and there are supporting libraries. Underlying networking technologies have also been through significant upgades, e.g. HTTP/2 and HTTP/3, allowing for a more sophisticated interaction between clients and servers.
+However, it's important to note that push technology is just a formalization of a workaround. A patch over the fact that the combination of RPC and HTTP does not allow the free and unconstrained use of the underlying transport. Workarounds are good in that they allow stuff to get done, but they are also not the final word.
+A real solution would require two parts. Firstly, there needs to be a new network  protocol, and secondly there needs to be some asynchronous message handling. The latter is something like the OSI application layer and the former is the network plumbing needed to support it.
+This article uses code examples, diagrams and associated notes to show how this solution would operate. Crucial differences to the more traditional approach are highlighted. The design manages to solve several networking challenges at the same time,  e.g. server-side events and multiplexing, a consequence of addressing the root cause of a problem rather than adding workarounds.
+For any network developer comfortable with threads and queues (a given), turning this design into running code is anything from a few days to a few weeks work, depending on skill level and how ambitious the work becomes. For coders that love solving tricky interactions with message pumps, it will all come quite naturally.
+For more immediate proof of the potential, an implementation of the solution already exists. A series of code examples that verify specific features and associated claims, appears towards the end of the article.
+All code examples can be executed by pasting them into a Python interpreter session or as a Python command. Run the following commands to create the basic environment;
+cd demo-folder
+python3 -m venv .env
+source .env/bin/activate
+pip3 install requests
+pip3 install ansar-connect
+The ansar-connect library is the existing implementation imported by code examples later in this article.
+Some Asynchronous Message Handling
+A simple example of traditional RPC looks like (save as requests-demo.py);
+import requests
+FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+response = requests.get(FAKE_COMPANIES)  # Send and receive.
+decoded = response.json()                # Decode.
+names = [c['name'] for c in decoded]     # Process.
+print(f'{len(names)} companies processed')
+The application initiates an RPC using the requests library. Once the response is received it decodes the contents into usable application data and then processes that data.
+This style of networking has the following problems;
+there is no feedback to the user during long delays,
+the application is "blocked" and cannot perform other work,
+the application is coupled to the technical details of networking, e.g. HTTP and JSON decoding.
+
+What about wrapping the network activity in a message pump and sending the URL string? This might look something like this (save as requests-queue-demo.py);
+import threading
+import queue
+import requests
+
+request_queue = queue.Queue()
+
+def request_worker():
+    while True:
+        url = request_queue.get()
+        response = requests.get(url)
+        decoded = response.json()
+        names = [c['name'] for c in decoded]
+        print(f'{len(names)} companies processed')
+        request_queue.task_done()
+
+# Start the worker in its own thread.
+t = threading.Thread(target=request_worker, daemon=True)
+t.start()
+
+# The application.
+FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+request_queue.put(FAKE_COMPANIES)
+request_queue.put(FAKE_COMPANIES)
+request_queue.put(FAKE_COMPANIES)
+
+# Block until all requests are completed.
+request_queue.join()
+Network activity is now contained within a separate thread. This has the following impacts on the application;
+the application no longer blocks,
+the applicaton is no longer coupled to the networking details.
+
+Sending a URL to the request queue is immediately successful and the application is then free to initiate further activity. Under the hood, requests are still a blocking operation but it is accurate to say that the application can move on to other work - in this case, sending further URLs. Implementing non-blocking operation of the request_worker (i.e. asynchronous networking) is addressed in later paragraphs.
+There is one obvious drawback to this approach. There is no ability for the application to process the responses to its requests. What if we put the application in a message pump (save as application-queue-demo.py)?
+import threading
+import queue
+import requests
+
+request_queue = queue.Queue()
+application_queue = queue.Queue()
+
+def request_worker():
+  while True:
+    url = request_queue.get()
+    response = requests.get(url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    application_queue.put(names)
+
+# Start the worker in its own thread.
+t = threading.Thread(target=request_worker, daemon=True)
+t.start()
+
+# The application.
+def application():
+  FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+  request_queue.put(FAKE_COMPANIES)
+  request_queue.put(FAKE_COMPANIES)
+  request_queue.put(FAKE_COMPANIES)
+  names = application_queue.get()
+  print(f'{len(names)} companies processed')
+  names = application_queue.get()
+  print(f'{len(names)} companies processed')
+  names = application_queue.get()
+  print(f'{len(names)} companies processed')
+
+# Start the application in its own thread.
+t = threading.Thread(target=application, daemon=True)
+t.start()
+t.join()
+Responses are placed in the application_queue for the application to receive at the next convenient moment.
+Implementing a send primitive can clean up the code quite a bit (save as sending.py);
+import threading
+import queue
+
+queue_map  = {}
+queue_lock = threading.RLock()
+queue_id = 1
+
+def create_queue():
+  global queue_lock, queue_id, queue_map
+  with queue_lock:
+    qid = queue_id
+    queue_id += 1
+    q = queue.Queue()
+    queue_map[qid] = q
+  return qid
+
+def get_queue(qid):
+  global queue_lock, queue_id, queue_map
+  with queue_lock:
+    q = queue_map.get(qid, None)
+  return q
+
+def send(message, to_qid, from_qid):
+  q = get_queue(to_qid)
+  if q is None:
+    return
+  mf = [message, from_qid]
+  q.put(mf)
+Sending is based around queue ids. This is because in multi-threading contexts, ids are safer than object references. The send primitive resolves the to_qid to the actual queue (or None) and adds the message, augmented with the from_qid for the originating party. This establishes a nice convention where the receiver of a message always has the address of the sender available for responses (save as sending-demo.py).
+import threading
+import requests
+from sending import create_queue, get_queue, send
+
+request_id = create_queue()
+
+def request_worker():
+  global request_id
+  request_queue = get_queue(request_id)
+  while True:
+    url, from_id = request_queue.get()
+    response = requests.get(url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    send(names, from_id, request_id)     # Reply to sender.
+
+# Start the worker in its own thread.
+t = threading.Thread(target=request_worker, daemon=True)
+t.start()
+
+# The application.
+application_id = create_queue()
+
+def application():
+  global application_id
+  application_queue = get_queue(application_id)
+
+  FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+  send(FAKE_COMPANIES, request_id, application_id)
+  send(FAKE_COMPANIES, request_id, application_id)
+  send(FAKE_COMPANIES, request_id, application_id)
+
+  names, from_id = application_queue.get()
+  print(f'{len(names)} companies processed')
+  names, from_id = application_queue.get()
+  print(f'{len(names)} companies processed')
+  names, from_id = application_queue.get()
+  print(f'{len(names)} companies processed')
+
+# Start the application in its own thread.
+t = threading.Thread(target=application, daemon=True)
+t.start()
+t.join()
+The request_worker no longer sends responses to the hardcoded application_queue. Instead it uses the from id provided by the send primitive, making the service it provides available to any code that uses send.
+A more explicit demonstration of concurrency is to run multiple instances of functions like worker (save as concurrency-demo.py);
+import threading
+import requests
+from sending import create_queue, get_queue, send
+
+request_id = create_queue()
+
+def request_worker():
+  global request_id
+  request_queue = get_queue(request_id)
+  while True:
+    url, from_id = request_queue.get()
+    response = requests.get(url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    send(names, from_id, request_id)
+
+# Start the worker in its own thread.
+t = threading.Thread(target=request_worker, daemon=True)
+t.start()
+
+def worker(qid):
+  queue = get_queue(qid)
+  FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+  send(FAKE_COMPANIES, request_id, qid)
+  names, from_id = queue.get()
+  print(f'{len(names)} companies processed by worker {qid}')
+
+# The application.
+application_id = create_queue()
+
+def application():
+  global application_id
+  application_queue = get_queue(application_id)
+  qid_1 = create_queue()
+  qid_2 = create_queue()
+  qid_3 = create_queue()
+  t1 = threading.Thread(target=worker, args=(qid_1,), daemon=True)
+  t2 = threading.Thread(target=worker, args=(qid_2,), daemon=True)
+  t3 = threading.Thread(target=worker, args=(qid_3,), daemon=True)
+  t1.start()
+  t2.start()
+  t3.start()
+  t1.join()
+  t2.join()
+  t3.join()
+
+# Start the application in its own thread.
+t = threading.Thread(target=application, daemon=True)
+t.start()
+t.join()
+To verify the multi-threaded nature of the solution, run the demo;
+$ python3 concurrency-demo.py
+11 companies processed by worker 3
+11 companies processed by worker 4
+11 companies processed by worker 5
+As is, the code samples are simple enough but also weakened by the presence of implementation details, i.e. for threading and queues. This drawback can be addressed with a quality library implementation. Refer to later paragraphs for examples.
+Network Plumbing
+As mentioned in earlier paragraphs, the requests.get is a blocking operation and to fully realize the potential of the asynchronous application messaging in the previous section, the network messaging also needs to be fully asynchronous.
+Including implementation of asynchronous, bi-directional networking would turn this article into a long book. Instead a coding challenge is presented. The core ideas are simple;
+a successful connect operation creates a socket and a queue, and returns a new queue id to the client application,
+a successful accept operation creates a socket and a queue, and returns a new queue id to the server application,
+sending to the connect/accept queue ids causes an encode/send combination to the associated socket,
+all network messages are in the form [type, message, to, from],
+received blocks are decoded and completed messages are sent to the "to" queue ids.
+
+A single network message format is used, i.e. there are no distinct messages for requests and responses. This is depicted below;
+The SEND primitive is always transferring an application message within a process. A SEND is faked on the receipt of a complete network message (i.e. [type, encoded message, to, from]) - the recipient of this faked SEND has no awareness that the message originated at the remote end of a network transport, and replying to the accepted id just starts a new sequence in the reverse direction.
+All application messaging is based on queue ids. Through the transfer of messages onto a network transport by network send machinery and faking of SENDs within the network receive machinery, the scope of that messaging extends beyond the process boundary.
+A fully-typed application message is recovered from the type and encoded message during the receive process, e.g. GetSubscriber and Subscriber. Together with the use of queue ids within the domain of each process, this creates a system for message exchange that is entirely at the OSI application layer - the application does not depend on the network message format and network messaging does not depend on any particular application message type.
+Modification Of Message Addresses
+The techniques for message addressing described here are taken from the ansar-connect software library. This library is published under the MIT License, Copyright ©, 2020–2025 Scott Woods.
+The trickiest part is the maintenance of the id information as it passes across the network and into the remote process. The queue ids from one process are obviously meaningless in another process. As the network machinery recovers the application message at the receiving end, it also modifies the from id , but rather than substituting the queue id for the connected or accepted queue, it appends that id to the list of from ids. This process is referred to as layer 7 aliasing.
+Yes, that's right - the addresses appearing in this diagram are lists of ids.  The SEND primitive always uses the most recently appended id to determine where a message needs to go.
+When a connected or accepted address is passed to the SEND primitive as the to address (e.g. when the server responds to the GetSubscriber message in the earlier diagram), the message lands in the network machinery and is shipped across the transport. In the network machinery at the remote end, the most recent id is removed from the to list of ids, revealing the local id.
+To summarize;
+all SEND addresses are lists of queue ids,
+a newly created queue - client, server, connected or accepted - has an address that is a list with a single id, i.e. [id],
+the SEND always uses the most recently added id for the local lookup,
+the receiving machinery strips the most recent id from each to address and appends the id for the connect/accept object to each from address, before performing the fake SEND,
+where the stripping of the most recent id from a to address results in an empty list, this is taken as a synonym for the associated client or server.
+
+This addressing strategy is crucial to the full asynchronicity of the network messaging. It specifically allows for multiple RPCs to be pending (i.e. request sent but response not yet received), over a single transport.
+This is true even when the responses are generated out-of-order, e.g. response #1 takes overly long causing the response #2 to be sent by the server first, i.e. there can be a multiplexing of requests from different threads in a client.
+For the network coding warrior, this is enough information to guide an implementation. Expect to have fun with asynchronous sockets I/O, framing of on-the-wire messages, encoding/decoding and addresses.
+How It Looks With A Supporting Library
+Previous code samples have been proof-of-concept quality only. The quantity of technical details required to properly manage queues and threads is not ideal and a likely source of maintenance headaches. There needs to be a supporting library that packages these concepts and automates those details as much as possible.
+As a taste of how asynchronous code can look, consider this improved version of the first request_worker and application functions (save as application-ansar-demo.py);
+import ansar.connect as ar
+import requests
+
+# Declare the application messages.
+class Lookup(object):
+  def __init__(self, url=None):
+    self.url = url
+
+class Companies(object):
+  def __init__(self, names=None):
+    self.names = names or []
+
+ar.bind(Lookup, object_schema={'url': str})
+ar.bind(Companies, object_schema={'names': ar.VectorOf(str)})
+
+# Worker to run the requests in a separate thread.
+def request_worker(self):
+  while True:
+    m = self.select(Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    response = requests.get(m.url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    self.reply(Companies(names))
+
+ar.bind(request_worker)
+
+# The application.
+def application(self):
+  worker = self.create(request_worker)
+  url = "http://fake-json-api.mock.beeceptor.com/companies"
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  def responses():
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    return ar.Ack()
+  r = responses()
+  self.send(ar.Stop(), worker)
+  self.select(ar.Completed)
+  return r
+
+ar.bind(application)
+
+if __name__ == '__main__':
+  ar.create_object(application)
+
+This is cleaner. All the technical details associated with threading and queues have been cleared out and there is now formal definition of the application messages, Lookup and Companies. Typically these would be defined in a separate module that is then imported by client and server implementations.
+A special parameter is passed to each function and this provides access to most of the messaging features, e.g.self.send and self.select. The former is an optimal version of the SEND primitive introduced earlier, that replaces direct access to the Queue.put method, while the latter is an input mechanism that replaces direct access to the Queue.get method.
+New instances of workers, e.g. request_worker and application, can be initiated using the self.create method. This is where queues are created and threads started. The special function ar.create_object is used to initiate the first such instance.
+Both the application messages and the worker functions are registered with the library using ar.bind. This is mostly about preparing information for the builtin logging (see below). In the case of application messages there is also the ability to declare complex type information, i.e. object_schema.
+The more explicit demonstration of concurrency now looks like this (save as concurrency-ansar-demo.py);
+import ansar.connect as ar
+import requests
+
+# Declare the application messages.
+class Lookup(object):
+  def __init__(self, url=None):
+    self.url = url
+
+class Companies(object):
+  def __init__(self, names=None):
+    self.names = names or []
+
+ar.bind(Lookup, object_schema={'url': str})
+ar.bind(Companies, object_schema={'names': ar.VectorOf(str)})
+
+# Worker to run the requests in a separate thread.
+def request_worker(self):
+  while True:
+    m = self.select(Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    response = requests.get(m.url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    self.reply(Companies(names))
+
+ar.bind(request_worker)
+
+FAKE_COMPANIES = "http://fake-json-api.mock.beeceptor.com/companies"
+
+def worker(self, rw):
+  self.send(Lookup(FAKE_COMPANIES), rw)
+  m = self.select(Companies, ar.Stop)
+  if isinstance(m, ar.Stop):
+    return ar.Nak()
+  self.console(f'{len(m.names)} companies retrieved')
+  return ar.Ack()
+
+ar.bind(worker)
+
+def application(self):
+  # The requests thread.
+  rw = self.create(request_worker)
+  # Start the clients.
+  w1 = self.create(worker, rw)
+  w2 = self.create(worker, rw)
+  w3 = self.create(worker, rw)
+  # Wait for their completion.
+  self.select(ar.Completed)
+  self.select(ar.Completed)
+  self.select(ar.Completed)
+  # Explicit stop of request worker.
+  self.send(ar.Stop(), rw)
+  self.select(ar.Completed)
+  return ar.Ack()
+
+ar.bind(application)
+
+if __name__ == '__main__':
+  ar.create_object(application)
+Running this example with the debug-level flag activates the internal logging (edited for brevity). Note that the self.console method has replaced the previous use of print;
+$ python3 concurrency-ansar-demo.py --debug-level=DEBUG
+...
+... 00:38:39.884 + <00000015>object_vector - Created by <00000001>
+... 00:38:39.884 ~ <00000015>object_vector - Executable ".../concurrency-ansar-demo.py" as object process (201578)
+... 00:38:39.884 ~ <00000015>object_vector - Working folder ".../demo-folder"
+... 00:38:39.884 ~ <00000015>object_vector - Running object "__main__.application"
+... 00:38:39.884 ~ <00000015>object_vector - Class threads (12) ...
+... 00:38:39.884 + <00000016>application - Created by <00000015>
+... 00:38:39.884 + <00000017>request_worker - Created by <00000016>
+... 00:38:39.884 + <00000018>worker - Created by <00000016>
+... 00:38:39.884 > <00000018>worker - Sent Lookup to <00000017>
+... 00:38:39.884 + <00000019>worker - Created by <00000016>
+... 00:38:39.884 > <00000019>worker - Sent Lookup to <00000017>
+... 00:38:39.884 < <00000017>request_worker - Received Lookup from <00000018>
+... 00:38:39.885 + <0000001a>worker - Created by <00000016>
+... 00:38:39.885 > <0000001a>worker - Sent Lookup to <00000017>
+... 00:38:40.225 > <00000017>request_worker - Sent Companies to <00000018>
+... 00:38:40.225 < <00000017>request_worker - Received Lookup from <00000019>
+... 00:38:40.228 < <00000018>worker - Received Companies from <00000017>
+... 00:38:40.228 ^ <00000018>worker - 11 companies retrieved
+... 00:38:40.228 X <00000018>worker - Destroyed
+... 00:38:40.228 < <00000016>application - Received Completed from <00000018>
+... 00:38:40.564 > <00000017>request_worker - Sent Companies to <00000019>
+... 00:38:40.564 < <00000017>request_worker - Received Lookup from <0000001a>
+... 00:38:40.567 < <00000019>worker - Received Companies from <00000017>
+... 00:38:40.567 ^ <00000019>worker - 11 companies retrieved
+... 00:38:40.567 X <00000019>worker - Destroyed
+... 00:38:40.567 < <00000016>application - Received Completed from <00000019>
+... 00:38:40.899 > <00000017>request_worker - Sent Companies to <0000001a>
+... 00:38:40.900 < <0000001a>worker - Received Companies from <00000017>
+... 00:38:40.900 ^ <0000001a>worker - 11 companies retrieved
+... 00:38:40.900 X <0000001a>worker - Destroyed
+... 00:38:40.900 < <00000016>application - Received Completed from <0000001a>
+... 00:38:40.900 > <00000016>application - Sent Stop to <00000017>
+... 00:38:40.901 < <00000017>request_worker - Received Stop from <00000016>
+... 00:38:40.901 X <00000017>request_worker - Destroyed
+... 00:38:40.901 < <00000016>application - Received Completed from <00000017>
+... 00:38:40.901 X <00000016>application - Destroyed
+... 00:38:40.901 < <00000015>object_vector - Received Completed from <00000016>
+... 00:38:40.901 X <00000015>object_vector - Destroyed
+... 00:38:40.986 < <00000014>PubSub[NORMAL] - Received Stop from <00000001>
+... 00:38:40.986 X <00000014>PubSub[NORMAL] - Destroyed
+... 00:38:40.987 X <00000013>SocketSelect - Destroyed
+Every number formatted like  <00000018> is effectively a queue id. Searching for every appearance of that particular id will verify the operation of the associated worker instance.
+Truly Asynchronous Network Messaging
+The potential benefits of concurrency are being constrained by the use of the requests library for client-to-server messaging. Switching to something like the aiohttp library would remove that constraint but this is actually a solution based on creating and maintaining multiple HTTP connections to the server - it's another workaround.
+A design for truly asynchronous messaging was presented earlier in this article, that supports the multiplexing of concurrent activity over a single network transport. To validate this design we need an implementation (i.e. ansar.connect) and three modules created in the demo-folder - a message definition module, a server and a client. Save the following as api.py;
+import ansar.connect as ar
+
+# Declare the application messages.
+class Lookup(object):
+  def __init__(self, url=None):
+    self.url = url
+
+class Companies(object):
+  def __init__(self, names=None):
+    self.names = names or []
+
+# For later.
+class TheSkyIsFalling(object): pass
+
+ar.bind(Lookup, object_schema={'url': str})
+ar.bind(Companies, object_schema={'names': ar.VectorOf(str)})
+ar.bind(TheSkyIsFalling)
+Save the following as server.py.
+import ansar.connect as ar
+import api
+
+FAKE_COMPANIES = [
+  "Sawayn Inc",
+  "responsible-lunge.name",
+  "Cummerata Group",
+  "Koelpin - Torp",
+  "Ratke, Walker and Sporer",
+  "Ratke Group",
+  "Haley, Erdman and Marvin",
+  "Hickle, McCullough and Von",
+  "Kulas - Lind",
+  "Mayert - Gulgowski",
+  "candid-trigger.name",
+  "Jerde - Bednar",
+  "Casper, Towne and Heidenreich",
+]
+
+def server(self):
+  a = ar.HostPort('127.0.0.1', 5090)
+  ar.listen(self, a)
+  m = self.select(ar.Listening, ar.NotListening, ar.Stop)
+  if isinstance(m, ar.NotListening):
+    return m
+  elif isinstance(m, ar.Stop):
+    return ar.Aborted()
+
+  # Just received an ar.Listening message.
+  while True:
+    m = self.select(api.Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    self.reply(api.Companies(names=FAKE_COMPANIES))
+
+ar.bind(server)
+
+if __name__ == '__main__':
+  ar.create_object(server)
+To establish a listening socket the server calls the ar.listen function, providing the self variable as the first parameter. If this is successful the library responds with a Listening message. Run the server in its own shell using;
+$ python3 server.py --debug-level=DEBUG
+Save the following code as client.py;
+import ansar.connect as ar
+import api
+
+def worker(self, rw):
+  self.send(api.Lookup(), rw)
+  m = self.select(api.Companies, ar.Stop)
+  if isinstance(m, ar.Stop):
+    return ar.Nak()
+  for name in m.names:
+    company = name
+  return ar.Ack()
+
+ar.bind(worker)
+
+def client(self):
+  a = ar.HostPort('127.0.0.1', 5090)
+  ar.connect(self, a)
+  m = self.select(ar.Connected, ar.NotConnected, ar.Stop)
+  if isinstance(m, ar.NotConnected):
+    return m
+  elif isinstance(m, ar.Stop):
+    return ar.Aborted()
+
+  # Just received the Connected message.
+  # Save where it came from.
+  rw = self.return_address
+
+  # Start the workers.
+  w1 = self.create(worker, rw)
+  w2 = self.create(worker, rw)
+  w3 = self.create(worker, rw)
+  # Wait for their completion.
+  self.select(ar.Completed)
+  self.select(ar.Completed)
+  self.select(ar.Completed)
+  # Explicit close of transport.
+  self.send(ar.Close(), rw)
+  self.select(ar.Closed)
+  return ar.Ack()
+
+ar.bind(client)
+
+if __name__ == '__main__':
+  ar.create_object(client)
+To initiate a connection the client calls the ar.connect function, providing the self variable as the first parameter. If this is successful the library responds with a Connected message. At this point the client has the address of the internal "connected queue" available as self.return_address. A matching process occurs in the server where an Accepted message is sent to the function instance that called ar.listen. Run it with the logging enabled;
+$ python3 client.py --debug-level=DEBUG
+... 01:37:25.254 + <00000016>client - Created by <00000015>
+... 01:37:25.254 + <00000017>SocketProxy[INITIAL] - Created by <00000013>
+... 01:37:25.254 ~ <00000013>SocketSelect - Connected to "127.0.0.1:5090", at local address "127.0.0.1:34516"
+... 01:37:25.254 > <00000013>SocketSelect - Forward Connected to <00000016> (from <00000017>)
+... 01:37:25.255 < <00000017>SocketProxy[INITIAL] - Received Start from <00000013>
+... 01:37:25.255 < <00000016>client - Received Connected from <00000017>
+... 01:37:25.255 + <00000018>worker - Created by <00000016>
+... 01:37:25.255 > <00000018>worker - Sent Lookup to <00000017>
+... 01:37:25.255 + <00000019>worker - Created by <00000016>
+... 01:37:25.255 < <00000017>SocketProxy[NORMAL] - Received Lookup from <00000018>
+... 01:37:25.255 > <00000019>worker - Sent Lookup to <00000017>
+... 01:37:25.255 < <00000017>SocketProxy[NORMAL] - Received Lookup from <00000019>
+... 01:37:25.255 + <0000001a>worker - Created by <00000016>
+... 01:37:25.256 > <0000001a>worker - Sent Lookup to <00000017>
+... 01:37:25.256 < <00000017>SocketProxy[NORMAL] - Received Lookup from <0000001a>
+... 01:37:25.256 > <00000013>SocketSelect - Forward Companies to <00000018> (from <00000017>)
+... 01:37:25.256 < <00000018>worker - Received Companies from <00000017>
+... 01:37:25.256 X <00000018>worker - Destroyed
+... 01:37:25.256 > <00000013>SocketSelect - Forward Companies to <00000019> (from <00000017>)
+... 01:37:25.256 > <00000013>SocketSelect - Forward Companies to <0000001a> (from <00000017>)
+... 01:37:25.257 < <00000019>worker - Received Companies from <00000017>
+... 01:37:25.257 X <00000019>worker - Destroyed
+... 01:37:25.257 < <00000016>client - Received Completed from <00000018>
+... 01:37:25.257 < <00000016>client - Received Completed from <00000019>
+... 01:37:25.257 < <0000001a>worker - Received Companies from <00000017>
+... 01:37:25.257 X <0000001a>worker - Destroyed
+... 01:37:25.257 < <00000016>client - Received Completed from <0000001a>
+... 01:37:25.257 > <00000016>client - Sent Close to <00000017>
+... 01:37:25.257 < <00000017>SocketProxy[NORMAL] - Received Close from <00000016>
+... 01:37:25.257 X <00000017>SocketProxy[NORMAL] - Destroyed
+... 01:37:25.257 > <00000013>SocketSelect - Forward Closed to <00000016> (from <00000017>)
+... 01:37:25.257 < <00000016>client - Received Closed from <00000017>
+... 01:37:25.257 X <00000016>client - Destroyed
+... 01:37:25.257 < <00000015>object_vector - Received Completed from <00000016>
+... 01:37:25.257 X <00000015>object_vector - Destroyed
+... 01:37:25.355 < <00000014>PubSub[NORMAL] - Received Stop from <00000001>
+... 01:37:25.355 X <00000014>PubSub[NORMAL] - Destroyed
+... 01:37:25.355 X <00000013>SocketSelect - Destroyed
+Ack()
+Following the trail of the single worker <00000018>, this is reduced to;
+<00000018>worker - Created by <00000016>
+<00000018>worker - Sent Lookup to <00000017>
+..
+<00000017>SocketProxy[NORMAL] - Received Lookup from <00000018>
+...
+<00000013>SocketSelect - Forward Companies to <00000018> (from <00000017>)
+<00000018>worker - Received Companies from <00000017>
+<00000018>worker - Destroyed
+...
+<00000016>client - Received Completed from <00000018>
+This shows the complete lifecycle from its creation by the client <00000016>, through to the Completed message sent to its parent on termination. There is the Lookup request being sent to the SocketProxy - this is where the application message is placed on the outbound queue of the network transport. There is also the Companies response message being forwarded from the SocketProxy to the worker - this is the "faked SEND" described in an earlier section.
+Multiplexing capability is verified by the fact that all 3 Lookup messages travel across the transport before the first Companies message is received in response, and that all 3 Companies messages are properly routed to their respective worker queues.
+Managing The Number Of Threads
+Every instance of a function represents a thread and threads are a finite, platform resource. There are delays associated with their creation and termination, and large numbers of threads can adversely affect platform performance.
+There are asynchronous designs that would demand large numbers of function instances, making them ostensibly impractical. The supporting library provides FSMs (Finite State Machines) as an alternative to functions. FSMs do not require a thread per instance.
+Each FSM is composed of a class and a set of related transition functions. The library arranges for the calling of those transition functions, as messages are received by the FSM instance. This encourages an innately asynchronous style of programming but they are also an overkill in some situations. In general, simple situations that will not create large, uncontrolled numbers of instances (i.e. functions or FSMs), may benefit from a function-based implementation. Where complex interactions are involved (or large numbers of interactions) - perhaps with long sequences of exchanged messages - FSMs come into their own.
+For examples of FSMs refer to library documentation. FSMs also appear in further articles linked in a later section.
+Implementing Real Concurrency
+If you have made it this far then perhaps you appreciate the significance of the material presented up to this point. The network transport now does nothing more than transport messages, simplifying the network layer and allowing asynchronous, bi-directional sending. 
+To truly exploit the benefits of the programming environment created by this material, there is also the need for concurrency in the applications. This refers to the clients and servers that adopt this approach to asynchronicity and networking.
+One indication that concurrency is happening is the presence of multi-threading or multi-processing in the fulfilment of a network request. A simple demonstration of this looks like (save as server-concurrency-demo.py);
+import ansar.connect as ar
+import api
+import random
+
+random.seed()
+
+FAKE_COMPANIES = [
+  "Sawayn Inc",
+  "responsible-lunge.name",
+  "Cummerata Group",
+  "Koelpin - Torp",
+  "Ratke, Walker and Sporer",
+  "Ratke Group",
+  "Haley, Erdman and Marvin",
+  "Hickle, McCullough and Von",
+  "Kulas - Lind",
+  "Mayert - Gulgowski",
+  "candid-trigger.name",
+  "Jerde - Bednar",
+  "Casper, Towne and Heidenreich",
+]
+
+def worker(self, return_address):
+  s = random.uniform(1.5, 3.0)
+  self.start(ar.T1, s)
+  self.select(ar.T1, ar.Stop)
+  self.send(api.Companies(names=FAKE_COMPANIES), return_address)
+
+ar.bind(worker)
+
+def server(self):
+  a = ar.HostPort('127.0.0.1', 5090)
+  ar.listen(self, a)
+  m = self.select(ar.Listening, ar.NotListening, ar.Stop)
+  if isinstance(m, ar.NotListening):
+    return m
+  elif isinstance(m, ar.Stop):
+    return ar.Aborted()
+
+  while True:
+    m = self.select(api.Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    self.create(worker, self.return_address)
+
+ar.bind(server)
+
+if __name__ == '__main__':
+  ar.create_object(server)
+Terminate the previous server with a control-c and start the concurrent version;
+... 15:12:37.111 < <00000016>server - Dropped Abandoned from <00000023>
+... 15:12:37.111 < <00000023>SocketProxy[NORMAL] - Received Stop from <00000013>
+... 15:12:37.111 X <00000023>SocketProxy[NORMAL] - Destroyed
+^C... 00:24:22.931 < <00000015>object_vector - Received Stop from <00000001>
+... 00:24:22.931 > <00000015>object_vector - Sent Stop to <00000016>
+... 00:24:22.931 < <00000016>server - Received Stop from <00000015>
+...
+... 00:24:22.933 X <00000013>SocketSelect - Destroyed
+server: aborted (user or software interrupt)
+$ python3 server-concurrency-demo.py --debug-level=DEBUG
+An instance of worker is created to fulfill each Lookup request. As each instance of a function is given its own platform thread, running the client provided earlier against this implementation, will quickly result in the creation of 3 threads. The worker includes a random delay of 1.5 to 3.0 seconds. Those delays will run concurrently resulting in a client that will take 1.5 to 3.0 seconds to complete, rather than the 4.5 to 9.0 seconds it would take to run the requests sequentially.
+Internal timing machinery is used, rather than say a call to time.sleep. Use of the latter puts the calling thread in a blocking state, whereas use of self.start(ar.T1, s) and self.select(ar.T1, ar.Stop) ensures the thread remains interruptible.
+Concurrency And Asynchronicity In Applications
+Attending to concurrency at the client end of a request-response exchange is often more involved, when compared to the server end. The underlying issue is more generally one of asynchronicity, as the client end must consider multiple messaging scenarios, e.g. receiving the response to a request and receiving unsolicited messages (i.e. server-side events). Applications (e.g. browser-based Javascript) are afflicted with the same difficulties as they are typically assuming the client role. More sophisticated networking, where applications initiate one or more connections and establish one or more listening sockets, is outside the scope of this article. Refer to links at the end of this section for further information.
+Consider this earlier implementation of application;
+def application(self):
+  worker = self.create(request_worker)
+  url = "http://fake-json-api.mock.beeceptor.com/companies"
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  def responses():
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    m = self.select(Companies, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    print(f'{len(m.names)} companies retrieved')
+    return ar.Ack()
+  r = responses()
+  self.send(ar.Stop(), worker)
+  self.select(ar.Completed)
+  return r
+
+ar.bind(application)
+There is no way to guarantee that the first instance of Companies is the response to the first sending of FAKE_COMPANIES. This code executes successfully but does not consider the possible disordering of responses. There is also no provision for the arrival of a server-side event, during its interactions with the request_worker. 
+The networking model defined in this article facilitates several techniques for resolving these issues. Except for the simplest cases the use of functions is discouraged. Adopting a procedural approach to a manifestly asynchronous scenario is strategically questionable, especially when there is a more appropriate alternative.
+As an introduction to FSMs, consider this quick translation of the application function (save as stateless-application-demo.py) ;
+import ansar.connect as ar
+import requests
+
+# Declare the application messages.
+class Lookup(object):
+  def __init__(self, url=None):
+    self.url = url
+
+class Companies(object):
+  def __init__(self, names=None):
+    self.names = names or []
+
+class TheSkyIsFalling(object): pass
+
+ar.bind(Lookup, object_schema={'url': str})
+ar.bind(Companies, object_schema={'names': ar.VectorOf(str)})
+ar.bind(TheSkyIsFalling)
+
+# Worker to run the requests in a separate thread.
+def request_worker(self):
+  while True:
+    m = self.select(Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    response = requests.get(m.url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    self.reply(Companies(names))
+
+ar.bind(request_worker)
+
+# The application.
+class Application(ar.Point, ar.Stateless):
+    def __init__(self):
+        ar.Point.__init__(self)
+        ar.Stateless.__init__(self)
+        self.lookups = 0
+
+def Application_Start(self, message):
+  worker = self.create(request_worker)
+  url = "http://fake-json-api.mock.beeceptor.com/companies"
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  self.send(Lookup(url), worker)
+  self.lookups = 3
+
+def Application_Companies(self, message):
+  self.lookups -= 1
+  if self.lookups < 1:
+    self.complete(ar.Ack())
+
+def Application_TheSkyIsFalling(self, message):
+  self.warning('Abandon ship')
+
+ar.bind(Application, [ar.Start, Companies, TheSkyIsFalling])
+
+if __name__ == '__main__':
+  ar.create_object(Application)
+This implementation actually uses the simpler ar.Stateless variant of FSMs. For the full state-based approach to messaging there is the ar.StateMachine class. As a pair of classes and as collections of instances, they are referred to as machines.
+The application function has been replaced with the Application class and 3 functions, all with names that start with Application_. Execution begins with the standard call to ar.create_object, but rather than creating queues and starting threads, machine instances lay in wait for the arrival of messages. When a Companies message is sent as a response, the library arranges for the execution of the appropriate handler function, i.e. Application_Companies.  A special library message (ar.Start) is sent to every machine immediately after instantiation (e.g. Application.__init__), to give each of them an opportunity to initiate their own internal activities. Calling the self.complete method causes a self-termination of the machine and in this case, the termination of the process.
+This is the first technique for implementation of asynchronous applications. It brings the following benefits;
+innate breakdown of the task, 
+distinct processing of responses and server-side events.
+
+This technique solves the issue of unsolicited messages such as TheSkyIsFalling but it does little to improve the situation with respect to handling of responses. All 3 instances of Companies are dispatched to the same function, prompting the need for a counter, and there is still no strategy for the proper processing of disordered responses.
+One technique that should not be used is the injection of any kind of request id into the outgoing request. This pollutes all requests with implementation detail and is an approach made redundant by the following paragraphs.
+A clue to the clean implementation of request-response sequences is in the earlier code that used the worker function;
+def worker(self, rw):
+  self.send(Lookup(FAKE_COMPANIES), rw)
+  m = self.select(Companies, ar.Stop)
+  if isinstance(m, ar.Stop):
+    return ar.Nak()
+  self.console(f'{len(m.names)} companies retrieved')
+  return ar.Ack()
+
+ar.bind(worker)
+There is no confusion around the instance of Companies received by the call to self.select as there is only one pending instance of Lookup - each instance of worker creates a unique context for the receipt of a message. A slight reworking of this function could deliver a response back to the Application;
+def worker(self, request, rw):
+  self.send(request, rw)
+  m = self.select(Companies, ar.Stop)
+  if isinstance(m, ar.Stop):
+    return ar.Aborted()
+  self.console(f'{len(m.names)} companies retrieved')
+  return m
+
+ar.bind(worker)
+There is an additional parameter request and the Companies message is passed back to the parent as the return value. To side-step the overhead of queues and threads, a machine-based version of this modifiedworker is provided by the library, i.e. ar.GetResponse. A better implementation of request-response based on this new direction looks like;
+import ansar.connect as ar
+import requests
+
+# Declare the application messages.
+class Lookup(object):
+  def __init__(self, url=None):
+    self.url = url
+
+class Companies(object):
+  def __init__(self, names=None):
+    self.names = names or []
+
+class TheSkyIsFalling(object): pass
+
+ar.bind(Lookup, object_schema={'url': str})
+ar.bind(Companies, object_schema={'names': ar.VectorOf(str)})
+ar.bind(TheSkyIsFalling)
+
+# Worker to run the requests in a separate thread.
+def request_worker(self):
+  while True:
+    m = self.select(Lookup, ar.Stop)
+    if isinstance(m, ar.Stop):
+      return ar.Aborted()
+    response = requests.get(m.url)
+    decoded = response.json()
+    names = [c['name'] for c in decoded]
+    self.reply(Companies(names))
+
+ar.bind(request_worker)
+
+# The application.
+class Application(ar.Point, ar.Stateless):
+    def __init__(self):
+        ar.Point.__init__(self)
+        ar.Stateless.__init__(self)
+        self.lookups = 0
+
+def Application_Start(self, message):
+  worker = self.create(request_worker)
+  url = "http://fake-json-api.mock.beeceptor.com/companies"
+
+  def done(value):
+    self.lookups += 1
+    if self.lookups >= 3:
+      self.complete(ar.Ack())
+
+  a = self.create(ar.GetResponse, Lookup(url), worker)
+  b = self.create(ar.GetResponse, Lookup(url), worker)
+  c = self.create(ar.GetResponse, Lookup(url), worker)
+  self.then(a, done)
+  self.then(b, done)
+  self.then(c, done)
+
+def Application_Completed(self, message):
+  d = self.debrief(self.return_address)
+  if isinstance(d, ar.OnCompleted):
+    d(message.value)
+
+def Application_TheSkyIsFalling(self, message):
+  self.warning('Abandon ship')
+
+ar.bind(Application, [ar.Start, ar.Completed, TheSkyIsFalling])
+
+if __name__ == '__main__':
+  ar.create_object(Application)
+This jumps around a fair bit but the overarching concepts are not so difficult. A machine (i.e. an instance of GetResponse) is used to create a unique context for sending the request and the "id" of that context, i.e. the address returned by self.create, is used as the key for saving a callback function. When the machine terminates a Completed message is generated. That same key is available as self.return_address and is used to lookup the saved function. The response is available as message.value and is passed on to the callback function in d(message.value).
+This is the second technique for implementation of asynchronous client code. It leverages the combination of machines and callbacks to create a different style of programming. The essential flow of control looks like;
+key = self.create(ar.GetResponse, request, who),
+self.then(key, callback),
+Application_Completed(self, message),
+d = self.debrief(key),
+d(message.value),
+callback(response).
+
+As will be seen below, this is the basis for very expressive and efficient networking.
+Some of the blame for the quantity of code in the example must be shouldered by the presence of multiple requests originating from the Application. The library steps up again with ar.Concurrently - a machine that accepts a list of requests and returns a list of results as a single operation. A final version of the asynchronous networking client looks like (save as final-client-demo.py);
+import ansar.connect as ar
+import api
+
+class Client(ar.Point, ar.Stateless):
+  def __init__(self):
+    ar.Point.__init__(self)
+    ar.Stateless.__init__(self)
+
+def Client_Start(self, message):
+  a = ar.HostPort('127.0.0.1', 5090)
+  ar.connect(self, a)
+
+def Client_Connected(self, message):
+  def done(value):
+    if isinstance(value, list):
+      self.console(f'{len(value)} responses processed')
+      self.complete(ar.Ack())
+    self.complete(ar.Nak())
+
+  rw = self.return_address
+
+  a = self.create(ar.Concurrently,
+    (api.Lookup(), rw),
+    (api.Lookup(), rw),
+    (api.Lookup(), rw)
+  )
+  self.then(a, done)
+
+def Client_NotConnected(self, message):
+  self.complete(message)
+
+def Client_Completed(self, message):
+  d = self.debrief(self.return_address)
+  if isinstance(d, ar.OnCompleted):
+    d(message.value)
+
+def Client_TheSkyIsFalling(self, message):
+  self.warning('Abandon ship')
+
+CLIENT_DISPATCH = [
+  ar.Start,
+  ar.Connected, ar.NotConnected,
+  ar.Completed,
+  api.TheSkyIsFalling
+]
+
+ar.bind(Client, CLIENT_DISPATCH)
+
+if __name__ == '__main__':
+  ar.create_object(Client)
+Complexities associated with 3 simultaneous requests have been delegated to the ar.Concurrently machine. A single callback is saved using self.then and when activated in Client_Completed, the value passed to done is a 3-element array, where each ordinal element is the response to the matching ordinal request.
+The body of done is in a priviliged position. It has the results of multiple requests, conveniently collated and available as value. They have been gathered from a variety of remote servers (potentially) and in an optimally concurrent fashion. Achieving this sophistication with traditional programming techniques is a daunting thought.
+Further information on asynchronous network programming can be found in the series of articles provided below. They also introduce integration with HTTP but the techniques remain relevant.
+Start with a quality server,
+create a matching client and evolve this into a full, bells-and-whistles networking component,
+and then add the smarts to cope with the ups and downs of distributed computing.
+
+Blocking Functions In An Asynchronous Process
+The use of functions in all code examples was a choice. The library used for demonstration provides for several different styles of asynchronous programming, e.g. machines. Functions are familiar and there is no giant leap to imagine a framework that automatically creates a thread for each instance of a running function. However, functions are also procedural and the calls to input methods such as self.select appear to be blocking in nature. Together, this might seem at odds with the overall goal of asynchronicity.
+To maintain asynchronicity there are a few implementation details and usage conventions;
+each asynchronous use of a function gets its own platform thread,
+interaction between a function instance and rest of the world is generally through the sending and receiving of messages, e.g. self.send and self.select,
+functions that perform other I/O (e.g. reading a file) must consider how this might affect responsiveness,
+special techniques exist for writing functions that "spin", e.g. reading a very long file block by block, to ensure they remain interruptible,
+every use of a receiving method must include handling of the ar.Stop message; this preserves the expected response to a control-c interruption.
+
+Conclusions
+This article started with the notion that RPC has imposed a constrained model over the use of a network transport. A solution was offered, along with code examples and some design notes for a small trick in the networking. An existing implementation was used as evidence that the solution can be turned into running code.
+There is obvious value in the exchange of a request and response message, but this is (almost) the smallest example of how networks can be used. The implementation used here provides the self.ask(request, (response-type-1, response-type-2), address) method which is a shorthand for sending and receiving a pair of messages, i.e. an RPC. With the network messaging agnostic to what travels across the transport, all models of application messaging are accommodated, including RPC. Servers can still provide an RPC-based API but they can now also send alarm messages (e.g. TheSkyIsFalling) at any time. RPC responses and alarm messages would be addressed to different points in the client.
+Separation of application messaging from network messaging is a major reorganization of how network transports are used. The transport is no longer dedicated to a particular application, e.g. FTP or SIP, or even a particular model of exchange, e.g. RPC. Such concerns are moved to the application layer - the network messaging described here is perfectly happy moving SIP messages such as Invite, Ringing, OK and Bye across the transport. It is also happy moving FTP messages such as User, Pass and Acct across the same transport. In fact, it is quite capable of supporting any application messaging (e.g. SIP, FTP and RPC) over the same transport, at the same time.
+Of course, the FTP application messages mentioned above would be logically equivalent to the FTP messages described in RFC 959, but not compatible on-the-wire. An implementation using the supporting library and based on Postel's work would benefit from the proven nature of the design, but would not deliver inter-operability with RFC implementations.
+The messaging between a browser and a website is a special case. This is reflected in the name of the associated protocol, i.e. the HyperText Transfer Protocol. It is optimized for the exchange of website related materials, such as files of HTML and resources such as images. It also supports generic RPC through features such as HTTP request and response messages, query parameters and JSON content. Due to the fact that the transport is carrying HTTP on-the-wire (i.e. rather than generic, asynchronous, bi-directional network messaging), browser-to-website communications are committed to only the interactions that HTTP supports. It seems quite inappropriate to impose this constraint on non-website related communications.
+There is more to the issue of HTTP than what the protocol can and can't do. There are also the client and server implementations, most significantly web browsers such as Google Chrome, Firefox and Safari, and webservers such as Nginx, Apache and Microsoft IIS. There are also the millions of deployments of these software products and the individual configuration of those deployments.
+The point of all this is that the world wide web is a massive, living, breathing (i.e. messaging) eco-system that changes very slowly. Eventually there may be support for truly asynchronous networking between the browser (i.e. Javascript) and the website, perhaps supported by features such as HTTP/3 streams. In the meantime, there are definitely other areas of distributed computing that can benefit from asynchronous, bi-directional messaging, e.g. image processing involving a few hundred processes - and complex IPC - within a single host, or a process and control system within a LAN. With the HTTP integration introduced in earlier links, this also includes the messaging internal to a website backend.

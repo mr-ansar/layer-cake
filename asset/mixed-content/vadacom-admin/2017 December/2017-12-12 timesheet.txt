@@ -1,0 +1,14 @@
+11-1
+quick review of tapi
+redmine
+started code review for ben - clearing out of unused files
+review with nic
+2-4, 6-9.30
+discuss ldap/phbk with gerwin on chat
+drop review to unblock gerwins progress
+cherry-picked onto new -v2 ldap branch as indicated by gerwin
+fixed minor mismatches in coding, i.e. ansar api had been upgraded
+eventually realized i was starting actual impl of async ldap/phbk work
+this was sketched out as much as possible but never ran cos ansar under review.
+queried gerwin whether he wants me to complete that phase. keen to do so.
+

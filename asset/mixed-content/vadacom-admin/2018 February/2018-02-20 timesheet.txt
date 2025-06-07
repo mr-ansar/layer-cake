@@ -1,0 +1,5 @@
+9.30-12.30
+went in to whangarei library
+conversion of ldap and phonebook to LDAPException
+1.30-4.30
+trying to run ldap test with broken kb.

@@ -1,0 +1,10 @@
+11-1
+more rst doc for functions/classes/methods
+nic still has google doc under review
+2-6
+sprint meetings
+actual review of docstrings so far,i.e.as on web browser
+making related edits.
+
+
+

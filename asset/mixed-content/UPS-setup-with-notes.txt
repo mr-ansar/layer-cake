@@ -1,0 +1,89 @@
+ Final result is that there are 2 services running - nut-server and nut-monitor.
+ The first one interfaces with the UPS to acquire its current view of the world
+ and the second one monitors the first. If it sees that power is about to come
+ to an end (i.e. there is no mains power and the battery is about to fail) then
+ it initiates a shutdown on the local host.
+ 
+ The command history reflects multiple attempts to get the pair of services
+ working properly. Some of the difficulties were definitely due to following
+ an installation procedure that was obviously out-of-date. The architecture
+ of "nuts" has clearly changed along the way.
+ 
+NOTE:
+a copy of the nut configuration files from /etc are stored alongside this
+file.
+ 
+ 2013  sudo apt install nut
+ 2014  lsusb 
+ 2015  ls
+ 2016  ls ups*
+ 2017  cat ups.conf 
+ 2018  sudo vi /etc/nut.conf
+ 2019  sudo vi /etc/nut/upsd.users
+ 2020  sudo vi /etc/nut/upsmon.conf
+ 2021  sudo service nut-server restart
+ 2022  sudo service nut-server status
+ 2023  sudo ipsc defender@localhost
+ 2024  sudo upsc defender@localhost
+ 2025  vi /etc/nut.conf
+ 2026  vi /etc/ups.conf
+ 2027  sudo vi /etc/ups.conf
+ 2028  sudo vi /etc/upsmon.conf
+ 2029  sudo service nut-server restart
+ 2030  sudo service nut-server status
+ 2031  sudo vi /etc/nut/nut.conf
+ 2032  sudo service nut-server restart
+ 2033  systemctl status nut-server.service
+ 2034  journalctl -xeu nut-server.service
+ 2035  ls /etc
+ 2036  ls /etc/nut*
+ 2037  sudo vi /etc/nut/ups.conf
+ 2038  sudo service nut-server restart
+ 2039  sudo service nut-server status
+ 2040  sudo upsc defender@localhost
+ 2041  sudo upsc --help defender@localhost
+ 2042  sudo upsc -l
+ 2043  sudo upsc -L
+ 2044  sudo upsc defender@localhost
+ 2045  sudo upsdrvctl start
+ 2046  sudo vi /etc/nut/ups.conf
+ 2047  sudo upsdrvctl start
+ 2048  sudo upsc defender@localhost
+ 2049  sudo upscmd -u admin -p ducatipanigale defender test.battery.start.quick 
+ 2050  history | grep service
+ 2051  systemctl status nut-server.service
+ 2052  journalctl -xeu nut-server.service
+ 2053  ps -eaf | grep nutmon
+ 2054  ls /etc/nut*
+ 2055  sudo /etc/nut/upsmon.conf
+ 2056  sudo vi /etc/nut/upsmon.conf
+ 2057  history | grep service
+ 2058  sudo service nut-monitor restart
+ 2059  sudo service nut-monitor status
+ 2060  sudo vi /etc/nut/upsmon.conf
+ 2061  sudo service nut-monitor restart
+ 2062  sudo service nut-monitor status
+ 2063  history | grep upsd.users
+ 2064  sudo vi /etc/nut/upsd.users
+ 2065  history | grep upsd.users
+ 2066  ls /etc/nut
+ 2067  sudo vi /etc/nut/upsmon.conf
+ 2068  history | grep upsd.users
+ 2069  history | grep service
+ 
+ Think this is were the 2 services were finally satisfied with the configuration
+ 
+ 2070  sudo service nut-server restart
+ 2071  sudo service nut-server status
+ 2072  sudo service nut-monitor.service status
+ 2073  sudo service nut-monitor status
+ 2074  history | grep service
+ 2075  history | grep ups
+ 2076  sudo upsc defender@localhost
+ 2077  sudo service nut-monitor status
+ 2078  history | grep journal
+ 2079  journalctl -xeu nut-monitor.service
+ 2080  history
+scott@seneca:~$ 
+
+

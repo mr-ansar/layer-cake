@@ -1,0 +1,11 @@
+10-1
+battling windows,tapi,studio,outlook,c++
+discovered difference in logs between client-app originated termination vs tapi driver initiated.
+client-app includes a lineDrop whereas driver-based doesnt
+2-6
+battling windows,tapi,studio,outlook,c++
+tried all possible permutations of automated termination
+same results
+wrote summary for nic
+move on to next redmine
+

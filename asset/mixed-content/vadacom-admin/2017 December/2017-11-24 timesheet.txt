@@ -1,0 +1,9 @@
+11-1
+Long day of making net adaptors work and
+finally get a tapi makecall across to the vadaxchange vm
+see the activity in rasterisk
+use pjsua to run a sip endpoint from the console
+verified activity in the calling a-party
+nic happy with that level of verification
+2-6
+same as above

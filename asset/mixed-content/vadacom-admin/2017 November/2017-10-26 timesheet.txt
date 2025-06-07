@@ -1,0 +1,19 @@
+11-1
+very minor spelling mistakes
+damn prob with _build folder being in repo "came back". fixed "again".
+standup with nic.
+general discussion
+agreed to rebase current email branch from develop and use latest frontend repo
+2-6
+verified rebase commands - multiple times
+missed one "git pull --rebase"
+needed after the "git fetch" and before the "git rebase develop"
+so had to do it a second time
+there were conflicts with damn arg ordering changes i hadmade
+resolved in first rebase not notified in second
+somehow ended up in the source (!!!!) so webman wouldnt load
+bah. wonderful
+then fun trying to fix same-old-buddy-start problem - no tab content after login complete.
+tried many fixes
+eventually saw the page populate, i.e. no fix needed just wait for several mins for page to populate.
+argh. fun with hairloss thrown in.

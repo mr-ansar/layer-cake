@@ -1,0 +1,4 @@
+ansar-cloud -dl=DEBUG sign_up --login-email=sfbirchall756@gmail.com --login-secret=w1lly-w0nka --directory-name=Testing --developer-email=aaron@cornelius.com --device-name="Quality Assurance"
+ansar-cloud list_account
+ansar-cloud --pure-object directory_access --directory-id=XXX > cloud-access.json
+

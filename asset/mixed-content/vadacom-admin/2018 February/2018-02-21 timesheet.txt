@@ -1,0 +1,8 @@
+9.30-12.30
+went in to whangarei library
+ldap testing and network adaptors
+2.30-4.30
+ldap testing and network adaptors
+fixed network adaptors courtesy of gerwin
+refined understanding of kb mapping problem
+its specific to a vm. created new vm and no key problem.

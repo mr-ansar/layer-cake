@@ -1,0 +1,13 @@
+11-1
+learning rst
+learning sphinx
+learning doc build process at vadacom
+tried different tools, e.g. rst2pdf
+generated some docs
+2-6
+checked with nic re status of doc review
+discuss different tech points with justin
+attempted different builds
+considered different insertions of messaging lib
+accepted justins suggestion of doc/messaging folder
+custom conf.py and index.rst

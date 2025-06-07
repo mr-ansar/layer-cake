@@ -1,0 +1,21 @@
+/etc/NetworkManager/system-connections/Wired connection 1.nmconnection
+[connection]
+id=Wired connection 1
+uuid=2a2a842e-34d8-3633-8a7c-98d0f73cb62d
+type=ethernet
+autoconnect-priority=-999
+interface-name=eth0
+timestamp=1708700587
+
+[ethernet]
+
+[ipv4]
+address1=192.168.1.179/24
+method=manual
+
+[ipv6]
+addr-gen-mode=default
+method=auto
+
+[proxy]
+
