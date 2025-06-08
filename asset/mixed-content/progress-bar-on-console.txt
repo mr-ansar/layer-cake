@@ -1,4 +1,0 @@
-how to monitor memory usage and present a "progress bar" style representation
-on a console
-
-https://stackoverflow.com/questions/276052/how-to-get-current-cpu-and-ram-usage-in-python

@@ -1,8 +1,0 @@
-7-11, 12-4
-sorting different account options - github/lab/bitbucket
-ready in gitlab
-copy materials to ansar folder ready for insertion into gitlab
-augment existing materials with material for PyPI distro and .deb distro
-minor discussions with nic re approach details and tools, impact of diff techniques
-migrate docs to pypi and debian
-

@@ -1,6 +1,0 @@
-7-11, 12-4
-building .debs
-understanding of dh_helper processes
-makefiles
-folder layouts
-

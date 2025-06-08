@@ -1,8 +1,0 @@
-7-11
-conversion of ldap and phonebook to LDAPException
-keyboard starts strange mapping behaviour
-2-4
-ran out of cellular data. made different attempts to connect to wifis
-went in to whangarei library
-connected there
-now dealing with broken network adaptors as well

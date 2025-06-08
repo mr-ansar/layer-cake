@@ -1,2 +1,0 @@
-version_message.AddMoveDelete:version_message.AddMoveDelete/0.2
-version_message.StoredContainer:version_message.StoredContainer/0.2,version_message.StoredPlain/0.0,version_message.StoredAuto/0.0

@@ -1,7 +1,0 @@
-501  cd webman
-502  /opt/python/bin/nosetests -v ~/webman/test/webman/util/test_role.py (SKIP)
-503  export PYTHONPATH=/opt/python/lib/python2.7/site-packages/compat
-504  /opt/python/bin/nosetests -v ~/webman/test/webman/util/test_role.py
-505  ./load-test-data.py
-506  ./clean.sh
-507  /opt/python/bin/nosetests -v ~/webman/test/webman/util/test_role.py

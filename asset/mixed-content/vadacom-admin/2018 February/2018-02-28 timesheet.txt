@@ -1,8 +1,0 @@
-7-11
-minor ldap
-discuss with gerwin
-move to others
-#2444 pushed to stu
-reviewed understanding of maintenance tasks
-12-4
-notes for maint task

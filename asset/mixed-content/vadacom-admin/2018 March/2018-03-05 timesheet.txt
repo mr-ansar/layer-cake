@@ -1,8 +1,0 @@
-7-11
-writing summary for #2444
-minor discussion with nic and gerwin
-12-4
-writing summary for #2444
-helped gerwin with understanding of ansar - addresses vs instances of ansar objects.
-gerwin helped with #2444 esp talk of networking, messaging
-refs to vpn manager

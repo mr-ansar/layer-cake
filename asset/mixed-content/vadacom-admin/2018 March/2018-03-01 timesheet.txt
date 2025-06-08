@@ -1,8 +1,0 @@
-7.30-11
-minor ldap review+fix, pushed
-write notes for #2444
-12-4
-write notes for #2444
-send to nic
-dicuss current intentions/directions with nic
-discuss current comms+ids with gerwin

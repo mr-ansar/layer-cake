@@ -1,8 +1,0 @@
-11-1
-heaps of fun with getting win10 and ubuntu dev vms loaded, configured
-got openvpn working on the new ubuntu
-got the win10 working to the point that downloading is possible  
-2-6
-eventually realized that laptop does not have the resources (cpu/ram) to support
-both win10 tapi activity and ubuntu webman activity
-

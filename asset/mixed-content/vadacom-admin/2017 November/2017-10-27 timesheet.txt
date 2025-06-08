@@ -1,8 +1,0 @@
-11-1
-scan for every instance of 'REPORT' looking for intiation of report(and emailing)
-create a table of data+parameter names and uses for all the different report types
-2-6
-compile the set of useful values,i.e. understandable and generic across more than 1 report
-compose a possible email body, each section/line being conditional on presence of data/parameter values
-minor questions from nic re messaging review
-posed email body layout to developer_private

@@ -1,6 +1,0 @@
-9-1
-battling windows,tapi,studio,outlook,c++
-1-6
-battling windows,tapi,studio,outlook,c++
-mostly outlook
-managed to verification of suspected problem- tapi clients dont like sequences of calls with new driver

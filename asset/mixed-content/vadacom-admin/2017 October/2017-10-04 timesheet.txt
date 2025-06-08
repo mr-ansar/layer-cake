@@ -1,5 +1,0 @@
-11-1
-Final case study - more complete LDAP server
-2-5
-Complete case study
-Add the final best practise, caveats section

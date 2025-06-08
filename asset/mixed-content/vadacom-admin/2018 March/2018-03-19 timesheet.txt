@@ -1,8 +1,0 @@
-8-11
-clojure video
-maintenance task and update modeling/documenting
-12-4
-maintenance task and update modeling/documenting
-admin - redmine and timesheets.
-
-

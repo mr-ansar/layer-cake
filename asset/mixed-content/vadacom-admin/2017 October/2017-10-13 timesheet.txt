@@ -1,9 +1,0 @@
-11-1
-Completed rst content for
-core, lifecycle modules
-
-2-5
-added the MESSAGE PROCESSING AND ERRORS
-section to the google doc
-checked with nic regarding progress of review(s)
-no "go" on managerclient yet.

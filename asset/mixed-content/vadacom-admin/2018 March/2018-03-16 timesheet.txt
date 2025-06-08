@@ -1,8 +1,0 @@
-7-11
-discussion with gerwin and nic
-discussion of how the current license client messaging precludes any real async interaction with server
-the amqp interfacing is rpc and includes putting main thread to sleep and arbitrary "naps".
-developing specification/user stories for maintenance scheduling and software update
-
-12-4
-developing specification/user stories for maintenance scheduling and software update
