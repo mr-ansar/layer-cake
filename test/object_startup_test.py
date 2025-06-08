@@ -94,7 +94,7 @@ class TestObjectStartup(TestCase):
 	def test_is_role(self):
 		role = join('good', 'role', 'one')
 		# Unsure about where to point this in testing context.
-		resource = join('good', 'resource', 'one')
+		resource = join('good', 'resource')
 		r = open_role(role, resource)
 		assert isinstance(r, HomeRole)
 
