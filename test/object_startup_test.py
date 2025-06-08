@@ -74,6 +74,7 @@ class TestObjectStartup(TestCase):
 		f.file('executable_file', Unicode()).store('xyz.py')
 
 		f = lc.Folder('good')
+		f = f.folder('role')
 		f = f.folder('one')
 		f.file('unique_id', UUID()).store(uuid.uuid4())
 		f.file('start_stop', DequeOf(UserDefined(StartStop))).store(deque())
@@ -91,9 +92,10 @@ class TestObjectStartup(TestCase):
 		assert r is None
 
 	def test_is_role(self):
-		role = join('good', 'one')
-		role = join('good', 'one')
-		r = open_role(role)
+		role = join('good', 'role', 'one')
+		# Unsure about where to point this in testing context.
+		resource = join('good', 'resource', 'one')
+		r = open_role(role, resource)
 		assert isinstance(r, HomeRole)
 
 	def test_no_home(self):
