@@ -54,6 +54,16 @@ AMBIGUOUS = {
 
 EMPTY = {}
 
+#
+#
+def sub(self, word, remainder):
+	return None
+
+lc.bind(sub)
+
+table = [
+	sub,
+]
 
 class TestPocArgs(TestCase):
 	def test_process_flags(self):
@@ -120,3 +130,37 @@ class TestPocArgs(TestCase):
 			assert False
 		except ValueError as e:
 			assert True
+
+	def test_function_table(self):
+		try:
+			executable, arguments, word = command_sub_arguments(single, table, override_arguments=['blah', '--a=10', 'sub'])
+			assert "blah" in executable
+			assert "a" in arguments
+			assert word[0][1] == sub
+		except ValueError as e:
+			assert False
+
+	def test_command_variables(self):
+		environment_variables = {
+			'LC_V_A': '10',
+			'LC_V_B': '9.9',
+			'LC_V_C': 'z',
+		}
+		e = Environment()
+
+		try:
+			command_variables(e, environment_variables=environment_variables)
+		except ValueError as e:
+			assert False
+
+		assert e.a == 10
+		assert e.b == 9.9
+		assert e.c == 'z'
+
+class Environment(object):
+	def __init__(self, a: int=0, b: float=1.5, c: str='x'):
+		self.a = a
+		self.b = b
+		self.c = c
+
+lc.bind(Environment)

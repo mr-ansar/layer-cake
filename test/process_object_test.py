@@ -401,3 +401,14 @@ class TestProcessObject(TestCase):
 		assert isinstance(m.value, lc.Faulted)
 		response = str(m.value)
 		assert 'no settings available' in response
+
+	def test_str_name(self):
+		# test_main.main is a procedure - no declared return type.
+		with lc.channel() as ch:
+			ch.create(lc.ProcessObject, 'group_cake')
+			m, i = ch.select(lc.Returned, lc.Stop)
+
+		assert isinstance(m, lc.Returned)
+		assert isinstance(m.value, lc.Faulted)
+		assert 'cannot open' in m.value.condition
+		assert m.created_type == lc.ProcessObject

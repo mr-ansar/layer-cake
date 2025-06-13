@@ -142,3 +142,22 @@ class TestObjectStartup(TestCase):
 		PB.exit_status = None
 		tear_down()
 		lc.remove_folder('.layer-cake')
+
+	def test_disk(self):
+		lc.create(say_hi, sticky=True)
+		PB.exit_status = None
+
+		r = lc.resource()
+		m = lc.model()
+		t = lc.tmp()
+
+		assert isinstance(r, lc.Folder)
+		assert isinstance(m, lc.Folder)
+		assert isinstance(t, lc.Folder)
+
+		assert 'resource' in r.path
+		assert 'model' in m.path
+		assert 'tmp' in t.path
+
+		tear_down()
+		lc.remove_folder('.layer-cake')
