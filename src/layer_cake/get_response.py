@@ -144,14 +144,14 @@ def Concurrently_Returned(self, message):
 	
 	self.complete(Faulted(f'unexpected get completion'))
 
-COLLECTIVELY_DISPATCH = [
+CONCURRENTLY_DISPATCH = [
 	Start,
 	Returned,
 	T1,
 	Stop,
 ]
 
-bind_stateless(Concurrently, COLLECTIVELY_DISPATCH, thread='concurrently')
+bind_stateless(Concurrently, CONCURRENTLY_DISPATCH, thread='concurrently')
 
 
 #
@@ -182,22 +182,19 @@ class Sequentially(Point, Stateless):
 		return a
 
 def Sequentially_Start(self, message):
-	def begin():
-		a = self.next_step()
-		self.then(a, step)
-
-	def step(value):
+	def step(self, value, kv):
 		if isinstance(value, Faulted):
 			self.complete(value)
 		self.orderly.append(value)
 
 		a = self.next_step()
-		self.then(a, step)
+		self.on_return(a, step)
 
 	if self.seconds is not None:
 		self.start(T1, self.seconds)
 
-	begin()
+	a = self.next_step()
+	self.on_return(a, step)
 
 def Sequentially_T1(self, message):
 	self.abort(TimedOut(message))
