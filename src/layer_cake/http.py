@@ -31,7 +31,10 @@ from .convert_memory import *
 from .convert_signature import *
 from .message_memory import *
 from .bind_type import *
+from .command_startup import *
 from .virtual_codec import *
+from .json_codec import *
+from .noop_codec import *
 from .virtual_point import *
 from .point_runtime import *
 from .point_machine import *
@@ -39,8 +42,6 @@ from .point_machine import *
 __all__ = [
 	'HttpRequest',
 	'HttpResponse',
-	'stream_form',
-	'recover_form',
 	'ApiServerStream',
 	'ApiClientStream',
 	'ApiClientSession',
@@ -135,71 +136,6 @@ SERVER_SLASH_VERSION = 'Ansar-API-server/1.0'
 CLIENT_SLASH_VERSION = 'Ansar-API-client/1.0'
 
 LARGE_BODY = 256 * 1024
-
-# Auto conversion of a member in an object to
-# a representation in a form.
-
-D2S = {
-	Boolean:		lambda d: 'true' if d else 'false',
-	Character:	lambda d: d,
-	Rune:		lambda d: d,
-	Integer2:	lambda d: str(d),
-	Integer4:	lambda d: str(d),
-	Integer8:	lambda d: str(d),
-	Byte:		lambda d: str(d),
-	Unsigned2:	lambda d: str(d),
-	Unsigned4:	lambda d: str(d),
-	Unsigned8:	lambda d: str(d),
-	Float4:		lambda d: str(d),
-	Float8:		lambda d: str(d),
-	String:		lambda d: d,
-	Unicode:		lambda d: d,
-	ClockTime:	lambda d: clock_to_text(d),
-	WorldTime:	lambda d: world_to_text(d),
-	TimeSpan:	lambda d: span_to_text(d),
-	TimeDelta:	lambda d: delta_to_text(d),
-	UUID:		lambda d: str(d),
-}
-
-def stream_form(k, v, d):
-	c = D2S.get(type(v), None)
-	if c:
-		return c(d)
-	return None
-
-# Auto conversion of a representation in a form to
-# a member in an object.
-
-S2D = {
-	Boolean:	lambda s: s == 'true',
-	Character:	lambda s: s,
-	Rune:		lambda s: s,
-	Integer2:	lambda s: int(s),
-	Integer4:	lambda s: int(s),
-	Integer8:	lambda s: int(s),
-	Byte:		lambda s: int(s),
-	Unsigned2:	lambda s: int(s),
-	Unsigned4:	lambda s: int(s),
-	Unsigned8:	lambda s: int(s),
-	Float4:		lambda s: float(s),
-	Float8:		lambda s: float(s),
-	String:		lambda s: s,
-	Unicode:		lambda s: s,
-	ClockTime:	lambda s: text_to_clock(s),
-	WorldTime:	lambda s: text_to_world(s),
-	TimeSpan:	lambda s: text_to_span(s),
-	TimeDelta:	lambda s: text_to_delta(s),
-	UUID:		lambda s: uuid.UUID(s),
-	Type:		lambda s: signature_to_portable(s),
-}
-
-def recover_form(k, v, d):
-	c = S2D.get(type(v), None)
-	if c:
-		return c(d)
-	elif isinstance(v, Enumeration):
-		return v.element[d]
-	return None
 
 # Stream the representation of an HTTP request onto the
 # byte sequence provided.
@@ -648,24 +584,27 @@ class ApiServerStream(object):
 				schema = tom.__art__.schema
 				message = tom()
 				a = query.split('&')
-				for kv in a:
-					if not kv:
-						continue
-					equals = kv.find('=')
-					if equals < 0:
-						raise ValueError(f'unexpected field "{kv}" query')
-					k = kv[:equals]
-					v = kv[equals + 1:]
-					q = unquote_plus(v)
+				try:
+					c = CodecJson()
+					for kv in a:
+						if not kv:
+							continue
+						equals = kv.find('=')
+						if equals < 0:
+							raise ValueError(f'unexpected field "{kv}" query')
+						k = kv[:equals]
+						v = kv[equals + 1:]
+						q = unquote_plus(v)
 
-					s = schema.get(k, None)
-					if s is None:
-						raise ValueError(f'unknown key "{k}" in "{name}" query')
+						t = schema.get(k, None)
+						if t is None:
+							raise ValueError(f'unknown key "{k}" in "{name}" query')
+						d = decode_argument(c, q, t)
+						setattr(message, k, d)
+				except CodecError as e:
+					s = str(e)
+					raise ValueError(f'no conversion for "{k}" ({s})')
 
-					d = recover_form(k, s, q)
-					if d is None:
-						raise ValueError(f'no conversion for "{k}" ({q})')
-					setattr(message, k, d)
 
 				return message, to_address, return_address
 
@@ -677,22 +616,25 @@ class ApiServerStream(object):
 					d = body.decode('utf-8')
 					a = d.split('&')
 
-					for kv in a:
-						equals = kv.find('=')
-						if equals < 0:
-							raise ValueError(f'unexpected field "{kv}" x-www-form')
-						k = kv[:equals]
-						v = kv[equals + 1:]
-						q = unquote_plus(v)
+					try:
+						c = CodecJson()
+						for kv in a:
+							equals = kv.find('=')
+							if equals < 0:
+								raise ValueError(f'unexpected field "{kv}" x-www-form')
+							k = kv[:equals]
+							v = kv[equals + 1:]
+							q = unquote_plus(v)
 
-						s = schema.get(k, None)
-						if s is None:
-							raise ValueError(f'unknown key "{k}" in "{name}" x-www-form')
+							t = schema.get(k, None)
+							if t is None:
+								raise ValueError(f'unknown key "{k}" in "{name}" x-www-form')
 
-						d = recover_form(k, s, q)
-						if d is None:
-							raise ValueError(f'no conversion for "{k}" ({q})')
-						setattr(message, k, d)
+							d = decode_argument(c, q, t)
+							setattr(message, k, d)
+					except CodecError as e:
+						s = str(e)
+						raise ValueError(f'no conversion for "{k}" ({s})')
 
 				return message, to_address, return_address
 
@@ -1039,17 +981,18 @@ class ApiClientStream(object):
 			content_type = 'application/x-www-form-urlencoded'
 			schema = tom.__art__.schema
 			ks = []
-			for k, v in schema.items():
-				# Form representation of null is to omit.
-				d = getattr(m, k, None)
-				if d is None:
-					continue
-				# Apply auto conversions.
-				s = stream_form(k, v, d)
-				if s is None:
-					raise ValueError(f'cannot stream "{k}" x-www-form')
-				q = quote_plus(s)
-				ks.append(f'{k}={q}')
+			try:
+				c = CodecNoop()
+				for k, t in schema.items():
+					# Form representation of null is to omit.
+					d = getattr(m, k, None)
+					if d is None:
+						continue
+					s = encode_argument(c, d, t)
+					q = quote_plus(s)
+					ks.append(f'{k}={q}')
+			except (CodecError, ValueError) as e:
+				raise ValueError(f'cannot stream "{k}" x-www-form')
 
 			if ks:
 				form = '&'.join(ks)
