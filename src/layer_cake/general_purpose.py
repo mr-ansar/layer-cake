@@ -108,6 +108,7 @@ def short_delta(d):
 			e = min(1, e)
 			return t[:i + e] + 's'
 		return t[:i] + 's'
+	return t
 
 #
 class CreateFrame(object):
