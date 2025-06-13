@@ -1040,10 +1040,10 @@ class Codec(object):
 
 		# Encode/decode collections
 		self.walking_stack = []
-		self.aliased_pointer = {}		   # Encoding.
-		self.portable_pointer = {}		  # Both.
+		self.aliased_pointer = {}		# Encoding.
+		self.portable_pointer = {}		# Both.
 		self.pointer_reference = set()
-		self.decoded_pointer = {}		   # Decoding.
+		self.decoded_pointer = {}		# Decoding.
 		self.patch_work = []
 		self.pointer_alias = STARTING_ALIAS
 		self.alias_space = 'default'
