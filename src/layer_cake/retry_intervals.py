@@ -75,13 +75,20 @@ bind(RetryIntervals)
 # Coroutine to generate the sequence
 # implied by first_steps and regular_steps.
 def intervals_only(retry):
+	limit = retry.step_limit
 	for i in retry.first_steps:
+		limit -= 1
+		if limit < 1:
+			return
 		yield i
 	if retry.regular_steps is None:
 		return
 	# For ever perhaps capped by
 	# limit.
 	while True:
+		limit -= 1
+		if limit < 1:
+			return
 		yield retry.regular_steps
 
 # Wrap it in another coroutine that implements
