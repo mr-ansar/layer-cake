@@ -56,6 +56,7 @@ __all__ = [
 	'storage_manifest',
 	'storage_selection',
 	'storage_walk',
+	'show_listings',
 	'storage_delta',
 	'DeltaMachine',
 	'RemoveFolder',
