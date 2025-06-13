@@ -94,15 +94,20 @@ def break_arguments(arguments):
 	word, flags = process_flags(arguments[1:])
 	return executable, word, flags
 
-def verbatim(s, w, t):
+# Conversion of data between dicts of json text and a user-defined
+# object, i.e. class. The type of each named member controls the
+# encode/decode operation.
+def w2p(c, w, t):
 	return w
 
-DEQUOTED = {
+# A map of types that are passed as json strings, e.g. times, UUIDs
+# and enums.
+ENQUOTED = {
 	Character: w2p_string,
-	Rune: verbatim,
+	Rune: w2p,
 	Block: w2p_block,
 	String: w2p_string,
-	Unicode: verbatim,
+	Unicode: w2p,
 	Enumeration: w2p_enumeration,
 	ClockTime: w2p_clock,
 	TimeSpan: w2p_span,
@@ -115,24 +120,32 @@ DEQUOTED = {
 
 def decode_argument(c, s, t):
 	'''Convert the json text into a python value based on type. Return decoded value.'''
-	q = DEQUOTED.get(type(t), None)
+	q = ENQUOTED.get(type(t), None)
 	if q is not None:
-		d = q(c, s, t)
+		d = q(c, s, t)				# Direct call to the internal conversion.
 	elif s is None:
 		if isinstance(t, Boolean):	# Empty bool is True.
 			return True
 		return None
 	else:
-		j = f'{{"value": {s} }}'	# Wrap in standard JSON.
+		# Everything else is processed as a standard JSON
+		# object. Which means the encoding needs to be
+		# inserted into the broader packaging of an object.
+		# Pointers are not supported.
+		j = f'{{"value": {s} }}'
 		d = c.decode(j, t)
 	return d
 
-ENQUOTED = {
+def p2w(c, p, t):
+	return p
+
+DEQUOTED = {
+	#Boolean: lambda c, p, t: 'true' if p else 'false',
 	Character: p2w_string,
-	Rune: verbatim,
+	Rune: p2w,
 	Block: p2w_block,
 	String: p2w_string,
-	Unicode: verbatim,
+	Unicode: p2w,
 	Enumeration: p2w_enumeration,
 	ClockTime: p2w_clock,
 	TimeSpan: p2w_span,
@@ -145,7 +158,7 @@ ENQUOTED = {
 
 def encode_argument(c, p, t):
 	'''Convert the python value into JSON text based on type. Return encoded string.'''
-	q = ENQUOTED.get(type(t), None)
+	q = DEQUOTED.get(type(t), None)
 	if q is not None:
 		s = q(c, p, t)
 	elif p is None:
@@ -350,19 +363,20 @@ def command_sub_arguments(object_type, object_table, override_arguments=None, st
 		raise ValueError(f'unknown arguments ({r})')
 	return executable, objected, word
 
-def command_variables(factory_variables):
+def command_variables(factory_variables, environment_variables=None):
 	'''Scan environment for values matching the given schema. Update the given values.'''
 	if factory_variables is None:
 		return
 
-	environment = {k[5:].replace('-', '_'): v for k, v in os.environ.items()
+	environ = environment_variables or os.environ
+	environment_variables = {k[5:].replace('-', '_'): v for k, v in environ.items()
 		if k.startswith('LC_V_')}
 
 	schema = type_schema(factory_variables)
 	c = CodecJson()
 	for k, t in schema.items():
 		K = k.upper()
-		e = environment.get(K, None)
+		e = environment_variables.get(K, None)
 		if e is None:
 			continue
 		try:
