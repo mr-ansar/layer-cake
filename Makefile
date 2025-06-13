@@ -40,7 +40,7 @@ code_coverage:
 	coverage run -m pytest
 	coverage json
 	jq .totals.percent_covered_display coverage.json | sed 's/"//g' > coverage_percent
-	PERCENT=`cat coverage_percent`; if test $$PERCENT -lt 85; then echo "red"; elif test $$PERCENT -lt 95; then echo "amber"; else echo "brightgreen"; fi > coverage_colour
+	PERCENT=`cat coverage_percent`; if test $$PERCENT -lt 75; then echo "amber"; elif test $$PERCENT -lt 85; then echo "brightgreen"; else echo "deepskyblue"; fi > coverage_colour
 	coverage html
 
 clean::
