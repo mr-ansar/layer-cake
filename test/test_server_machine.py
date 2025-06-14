@@ -22,7 +22,7 @@ class Server(lc.Point, lc.Stateless):
 def Server_Start(self, message):
 	lc.listen(self, self.server_address)
 	self.library = self.create(lc.ProcessObject, Library, role_name='library')
-	self.spool = self.create(lc.ProcessObjectSpool, Library, role_name='spool', process_count=32)
+	self.spool = self.create(lc.ObjectSpool, lc.ProcessObject, Library, role_name='spool-{i}', object_count=32)
 
 def Server_Xy(self, message):
 	convention = message.convention

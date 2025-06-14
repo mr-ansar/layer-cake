@@ -14,11 +14,12 @@ table_type = lc.def_type(list[list[float]])
 class CallingConvention(Enum):
 	CALL=1
 	THREAD=2
-	PROCESS=3
-	LIBRARY=4
-	SPOOL=5
-	FLOOD=6
-	SOAK=7
+	THREAD_SPOOL=3
+	PROCESS=4
+	LIBRARY=5
+	PROCESS_SPOOL=6
+	FLOOD=7
+	SOAK=8
 
 DEFAULT_CONVENTION = CallingConvention.CALL
 

@@ -19,8 +19,9 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 	# 2. manage a private server, i.e. a loadable library, and
 	# 3. manage a job spool, i.e. a cluster of libraries.
 	lc.listen(self, server_address, api_server=SERVER_API)
+	thread_spool = self.create(lc.ObjectSpool, library, object_count=2)
 	lib = self.create(lc.ProcessObject, library, role_name='library')
-	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=2)
+	process_spool = self.create(lc.ObjectSpool, lc.ProcessObject, library, role_name='spool-{i}', object_count=2)
 
 	# Run a live network service, library and spool.
 	while True:
@@ -69,6 +70,11 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 			self.on_return(a, respond, return_address=return_address)
 			continue
 
+		elif convention == CallingConvention.THREAD_SPOOL:
+			a = self.create(lc.GetResponse, request, thread_spool)
+			self.on_return(a, respond, return_address=return_address)
+			continue
+
 		elif convention == CallingConvention.PROCESS:
 			a = self.create(lc.ProcessObject, texture, x=request.x, y=request.y)
 			self.on_return(a, respond, return_address=return_address)
@@ -79,18 +85,18 @@ def server(self, server_address: lc.HostPort=None, flooding: int=64, soaking: in
 			self.on_return(a, respond, return_address=return_address)
 			continue
 
-		elif convention == CallingConvention.SPOOL:
-			a = self.create(lc.GetResponse, request, spool)
+		elif convention == CallingConvention.PROCESS_SPOOL:
+			a = self.create(lc.GetResponse, request, process_spool)
 			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.FLOOD:
-			a = self.create(flood, spool, request, flooding)
+			a = self.create(flood, process_spool, request, flooding)
 			self.on_return(a, respond, return_address=return_address)
 			continue
 
 		elif convention == CallingConvention.SOAK:
-			a = self.create(soak, spool, request, flooding, soaking)
+			a = self.create(soak, process_spool, request, flooding, soaking)
 			self.on_return(a, respond, return_address=return_address)
 			continue
 

@@ -21,7 +21,7 @@ def server(self, server_address: lc.HostPort=None):
 	# Build a spool of libraries.
 	lc.listen(self, server_address, api_server=SERVER_API)
 	lib = self.create(lc.ProcessObject, library, role_name='library')
-	spool = self.create(lc.ProcessObjectSpool, library, role_name='spool', process_count=4)
+	spool = self.create(lc.ObjectSpool, lc.ProcessObject, library, role_name='spool-{i}', object_count=4)
 
 	# Run a live network service.
 	while True:
