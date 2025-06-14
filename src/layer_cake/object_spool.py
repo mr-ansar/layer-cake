@@ -44,6 +44,7 @@ from .point_machine import *
 from .bind_type import *
 from .object_collector import *
 from .object_directory import *
+from .process_object import *
 from .get_response import *
 
 __all__ = [
@@ -66,11 +67,12 @@ class ObjectSpool(Point, StateMachine):
 	:param name: name of the executable file
 	:type name: str
 	"""
-	def __init__(self, object_type, *args, object_count=8, size_of_spool=512, responsiveness=None, **settings):
+	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_spool=512, responsiveness=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_type = object_type
 		self.args = args
+		self.role_name = role_name
 		self.object_count = object_count
 		self.size_of_spool = size_of_spool
 		self.responsiveness = responsiveness
@@ -94,7 +96,7 @@ class ObjectSpool(Point, StateMachine):
 			self.shard += 1
 			divisor = 4 if self.average < self.boundary_2 else 10
 			if self.shard % divisor == 0:
-				self.send(Overloaded('Reduced responsiveness from spool thread'), return_address)
+				self.send(Overloaded('Reduced responsiveness from spool objects'), return_address)
 				return
 
 		idle = self.idle_object.popleft()
@@ -112,10 +114,17 @@ def ObjectSpool_INITIAL_Start(self, message):
 
 	if pc < 1 or (sos is not None and sos < 1) or (r is not None and r < 0.5):
 		self.complete(Faulted(f'cannot start the spool with the given parameters (count={pc}, size={sos}, responsiveness={r})'))
-	
+
+	role_name = self.role_name
+
 	for i in range(pc):
-		a = self.create(self.object_type, *self.args, **self.settings)
-		self.assign(a, i)
+		if role_name:
+			r = role_name.format(i=i)
+			a = self.create(self.object_type, *self.args, role_name=r, **self.settings)
+		else:
+			r = f'spool-{i}'
+			a = self.create(self.object_type, *self.args, **self.settings)
+		self.assign(a, r)
 		self.idle_object.append(a)
 
 	return SPOOLING
@@ -169,14 +178,17 @@ def ObjectSpool_SPOOLING_Returned(self, message):
 	seconds = spread_out(32.0)
 
 	def restart(self, value, args):
-		i = args.i
-		a = self.create(self.object_type, *self.args, **self.settings)
-		self.assign(a, i)
+		role_name = args.role_name
+		if self.role_name:
+			a = self.create(self.object_type, *self.args, role_name=role_name, **self.settings)
+		else:
+			a = self.create(self.object_type, *self.args, **self.settings)
+		self.assign(a, role_name)
 		self.idle_object.append(a)
 
 	# Run a no-op with the desired timeout.
 	a = self.create(GetResponse, Enquiry(), NO_SUCH_ADDRESS, seconds=seconds)
-	self.on_return(a, restart, i=d)
+	self.on_return(a, restart, role_name=d)
 	return SPOOLING
 
 def ObjectSpool_SPOOLING_Stop(self, message):
