@@ -94,6 +94,24 @@ def break_arguments(arguments):
 	word, flags = process_flags(arguments[1:])
 	return executable, word, flags
 
+def includes_pointer(t):
+	"""."""
+	if isinstance(t, (ArrayOf, VectorOf, DequeOf, SetOf)):
+		return includes_pointer(t.element)
+	elif isinstance(t, MapOf):
+		return includes_pointer(t.value) or includes_pointer(t.key)
+	elif isinstance(t, UserDefined):
+		x = t.element.__art__
+		for k, v in x.schema.items():
+			if includes_pointer(v):
+				return True
+		return False
+	elif isinstance(t, PointerTo):
+		return True
+	elif isinstance(t, Any):
+		return True
+	return False
+
 # Conversion of data between dicts of json text and a user-defined
 # object, i.e. class. The type of each named member controls the
 # encode/decode operation.
@@ -127,11 +145,12 @@ def decode_argument(c, s, t):
 		if isinstance(t, Boolean):	# Empty bool is True.
 			return True
 		return None
+	elif includes_pointer(t):
+		# Forced to adopt the full encoding layout.
+		d = c.decode(s, t)
 	else:
-		# Everything else is processed as a standard JSON
-		# object. Which means the encoding needs to be
-		# inserted into the broader packaging of an object.
-		# Pointers are not supported.
+		# Encoding needs to be inserted into the broader
+		# packaging of an object.
 		j = f'{{"value": {s} }}'
 		d = c.decode(j, t)
 	return d
@@ -164,8 +183,11 @@ def encode_argument(c, p, t):
 	elif p is None:
 		if isinstance(t, Boolean):
 			return 'true'
-		e = portable_to_signature(t)
-		raise ValueError(f'empty value for type "{e}"')
+		return 'null'
+	elif includes_pointer(t):
+		# Forced to adopt the full encoding layout.
+		j = CodecJson()
+		s = j.encode(p, t)
 	else:
 		w = c.encode(p, t)
 		s = json.dumps(w['value'])
