@@ -1,0 +1,93 @@
+{
+    "value": [
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-22T19:08:25.795209",
+            "stop": "2025-06-22T19:52:11.628851"
+        },
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-22T19:52:16.213126",
+            "stop": "2025-06-23T02:42:32.169159"
+        },
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-23T02:42:37.587194",
+            "stop": "2025-06-23T03:06:20.552548"
+        },
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-23T03:06:26.53133",
+            "stop": "2025-06-23T03:43:01.124986"
+        },
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-23T03:43:06.225943",
+            "stop": "2025-06-24T00:32:02.176013"
+        },
+        {
+            "returned": [
+                "layer_cake.point_runtime.Aborted",
+                {
+                    "condition": "aborted",
+                    "error_code": null,
+                    "exit_status": null,
+                    "explanation": "user or software interrupt"
+                },
+                []
+            ],
+            "start": "2025-06-24T00:32:12.737652",
+            "stop": "2025-06-24T03:55:07.527204"
+        },
+        {
+            "returned": null,
+            "start": "2025-06-24T03:56:29.715323",
+            "stop": null
+        }
+    ]
+}
