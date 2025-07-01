@@ -207,33 +207,16 @@ lc.bind(list_)
 
 #
 #
-def update(self, search, remainder, group_role: bool=False, sub_roles: bool=False):
+def update(self, search, remainder, group_role: bool=True, sub_roles: bool=True):
 	'''Update details of existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 	home_path = os.path.abspath(home_path)
 
 	cannot_update = f'cannot update "{home_path}"'
 
-	home = home_listing(self, home_path, search, sub_roles=sub_roles)
+	home = home_listing(self, home_path, search, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_update, f'does not exist or contains unexpected/incomplete materials')
-
-	elif group_role:
-		a = self.create(lc.ProcessObject, GROUP_EXECUTABLE,
-			home_path=home_path,
-			role_name=GROUP_ROLE, top_role=True,
-			update_role=True,
-			remainder_args=remainder)
-		m = self.input()
-		if not isinstance(m, lc.Returned):
-			return lc.Faulted(cannot_update, f'unexpected process response {m}')
-
-		if isinstance(m.value, lc.Faulted):
-			return m.value
-
-		if not isinstance(m.value, lc.CommandResponse):
-			return lc.Faulted(cannot_update, f'not a proper command response {m.value}')
-		return None
 
 	r = ','.join(home.keys())
 	self.console('update', roles=r, home_path=home_path)
@@ -732,7 +715,7 @@ class TimeFrame(Enum):
 
 def log(self, word, remainder, clock: bool=False,
 	rewind: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
-	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=False, sub_roles: bool=False):
+	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=True, sub_roles: bool=True):
 	'''List logging records for the specified process definition. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
 	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
@@ -865,7 +848,7 @@ lc.bind(log, span=lc.TimeSpan(), back=lc.TimeSpan())
 
 #
 #
-def edit(self, word, remainder, group_role: bool=False):
+def edit(self, word, remainder, group_role: bool=True, sub_roles: bool=True):
 	'''Edit the configuration of the specified process defintion. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
 	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
@@ -877,7 +860,7 @@ def edit(self, word, remainder, group_role: bool=False):
 
 	cannot_edit = f'cannot edit "{role_name}"'
 
-	home = lc.open_home(home_path, grouping=group_role)
+	home = lc.open_home(home_path, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_edit, f'does not exist or contains unexpected/incomplete materials')
 
