@@ -799,8 +799,9 @@ class Buffering(Player):
 				continue
 
 			if qf.execution_trace:
-				if r:
-					t = portable_to_tag(r[2])
+				art = getattr(m, '__art__', None)
+				if art:
+					t = art.path
 				else:
 					t = type(m)
 				self.log(USER_TAG.RECEIVED, f'Dropped "{t}" from <{a}>')
