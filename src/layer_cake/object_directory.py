@@ -29,6 +29,7 @@ __docformat__ = 'restructuredtext'
 from datetime import datetime
 import uuid
 import re
+from .get_local_ip import get_local_ip
 
 from .general_purpose import *
 from .command_line import *
@@ -853,6 +854,32 @@ def delete_route(route_id, routing):
 		return r
 	return None
 
+four_octets = re.compile(r'([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)')
+
+def directory_at_lan():
+	d = get_local_ip()
+	if not d:
+		return None
+
+	m = four_octets.match(d)
+	if not m:
+		return None
+
+	if d.startswith('192.168.'):
+		leading_octets = '192.168.0'
+	elif d.startswith('172.'):
+		octet_2 = int(m[2])
+		if octet_2 < 16 or octet_2 > 31:
+			return None
+		leading_octets = '172.16.0'
+	elif d.startswith('10.'):
+		leading_octets = '10.0.0'
+	else:
+		return None
+
+	a = f'{leading_octets}.195'
+	return HostPort(a, DIRECTORY_PORT)
+
 RECONNECT_DELAY = [1.0, 8.0, 32.0, 120.0]	# 1-based indexing from enum, i.e. [0] is not used.
 GRACE_BEFORE_CLEARANCE = 8.0
 
@@ -912,7 +939,10 @@ class ObjectDirectory(Threaded, StateMachine):
 		if self.directory_scope in (ScopeOfDirectory.PROCESS, ScopeOfDirectory.GROUP):
 			self.connect_to_directory = DIRECTORY_AT_HOST
 		elif self.directory_scope  == ScopeOfDirectory.HOST:
-			self.connect_to_directory = DIRECTORY_AT_LAN
+			a = directory_at_lan()
+			if a is None:
+				return
+			self.connect_to_directory = a
 		else:
 			return
 
