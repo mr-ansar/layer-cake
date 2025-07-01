@@ -29,6 +29,7 @@ from urllib.parse import quote_plus, unquote_plus
 from .virtual_memory import *
 from .convert_memory import *
 from .convert_signature import *
+from .convert_type import *
 from .message_memory import *
 from .bind_type import *
 from .command_startup import *
@@ -553,11 +554,11 @@ class ApiServerStream(object):
 		body = self.body
 
 		# Handling details.
-		api_server = self.transport.parent.request.api_server
+		http_server = self.transport.parent.request.http_server
 		default_to_request = self.transport.parent.request.default_to_request
 
 		def lookup(name):
-			for a in api_server:
+			for a in http_server:
 				if name == a.__art__.name:
 					return a
 			return None
@@ -692,10 +693,12 @@ def ApiClientSession_READY_Unknown(self, message):
 	# remote end or another request from a local object.
 	if self.return_address[-1] == self.proxy_address[-1]:	# Response from remote.
 		if self.pending:									# Yes there is a matching request.
-			m, r = self.pending.popleft()
-			self.send(message, r)							# Send response to original client.
+			m, t, r = self.pending.popleft()
+			c = cast_to(message, self.received_type)
+			self.send(c, r)									# Send response to original client.
 			if self.pending:								# A waiting request?
-				m, r = self.pending[0]
+				m, t, r = self.pending[0]
+				c = cast_to(m, t)
 				self.send(m, self.proxy_address)
 		else:
 			#t = tof(message)
@@ -703,8 +706,8 @@ def ApiClientSession_READY_Unknown(self, message):
 	elif len(self.pending) > PENDING_REQUESTS:
 		self.reply(HttpResponse(status_code=400, reason_phrase='Client Error', body=b'Request queue overflow'))
 	else:
-		mr = (message, self.return_address)				# Request from local client.
-		self.pending.append(mr)							# Remember.
+		mtr = (message, self.received_type, self.return_address)				# Request from local client.
+		self.pending.append(mtr)							# Remember.
 		if len(self.pending) == 1:						# Nothing pending.
 			self.send(message, self.proxy_address)
 	return READY
@@ -959,21 +962,21 @@ class ApiClientStream(object):
 		transport = self.transport
 		codec = transport.codec
 		encoded_bytes = transport.encoded_bytes
-		api_client = transport.parent.request.api_client
-		ansar_server = transport.parent.request.ansar_server
+		http_client = transport.parent.request.http_client
+		layer_cake_json = transport.parent.request.layer_cake_json
 		tom = type(m)
 		art = tom.__art__
 
 		# Client is sending an explicit HTTP request.
 		# Add the barest automation, e.g. prepend path, content type and length.
 		if isinstance(m, HttpRequest):
-			request_uri = f'{api_client}{m.request_uri}'
+			request_uri = f'{http_client}{m.request_uri}'
 			stream_request(encoded_bytes,
 				method=m.method, request_uri=request_uri, http=m.http,
 				header=m.header, body=m.body)
 			return
 
-		if ansar_server:
+		if layer_cake_json:
 			content_type = 'application/json'
 			e = codec.encode(m, UserDefined(tom))
 			body = e.encode('utf-8')
@@ -1000,7 +1003,7 @@ class ApiClientStream(object):
 			else:
 				body = None
 
-		request_uri = f'{api_client}{art.name}'
+		request_uri = f'{http_client}{art.name}'
 		stream_request(encoded_bytes,
 			method='POST', request_uri=request_uri,
 			header={'Content-Type': content_type},
@@ -1069,7 +1072,7 @@ class ApiClientStream(object):
 		return_address = transport.return_proxy
 		to_address = transport.local_termination
 
-		ansar_server = transport.parent.request.ansar_server
+		layer_cake_json = transport.parent.request.layer_cake_json
 
 		http = self.http.decode('ascii')
 		code = self.code.decode('ascii')
@@ -1078,7 +1081,7 @@ class ApiClientStream(object):
 		content_type = self.header.get('Content-Type', None)
 		body = self.body
 
-		if not ansar_server:
+		if not layer_cake_json:
 			# Compile elements into local message and send.
 			message = HttpResponse(http=http, status_code=code, reason_phrase=reason,
 				header=self.header,
