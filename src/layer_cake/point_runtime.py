@@ -55,6 +55,7 @@ __all__ = [
 	'Aborted',
 	'TimedOut',
 	'TemporarilyUnavailable',
+	'Busy',
 	'Overloaded',
 	'OutOfService',
 	'SelectTable',
@@ -198,6 +199,10 @@ class TemporarilyUnavailable(Faulted):
 		self.unavailable = unavailable or []
 		self.request = request
 
+class Busy(Faulted):
+	def __init__(self, condition=None, explanation=None):
+		Faulted.__init__(self, condition, explanation)
+
 class Overloaded(Faulted):
 	def __init__(self, text=None, request=None):
 		Faulted.__init__(self, text)
@@ -230,6 +235,13 @@ bind_message(TemporarilyUnavailable,
 	exit_status=Integer8(),
 	unavailable=VectorOf(Unicode()),
 	request=Unicode(),
+)
+
+bind_message(Busy,
+	condition=Unicode(),
+	explanation=Unicode(),
+	error_code=Integer8(),
+	exit_status=Integer8(),
 )
 
 bind_message(Overloaded,
