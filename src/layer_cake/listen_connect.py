@@ -90,22 +90,22 @@ class CLEARING: pass
 # via the control channel.
 class ListenForStream(object):
 	def __init__(self, lid: UUID=None, requested_ipp: HostPort=None, encrypted: bool=False,
-			api_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
+			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
 		self.lid = lid
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
-		self.api_server = api_server or []
+		self.http_server = http_server or []
 		self.default_to_request = default_to_request
 		self.ansar_client = ansar_client
 
 class ConnectStream(object):
 	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False, self_checking: bool=False,
-			api_client: str=None, ansar_server: bool=False):
+			http_client: str=None, layer_cake_json: bool=False):
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
 		self.self_checking = self_checking
-		self.api_client = api_client
-		self.ansar_server = ansar_server
+		self.http_client = http_client
+		self.layer_cake_json = layer_cake_json
 
 class StopListening(object):
 	def __init__(self, lid: UUID=None):
@@ -969,10 +969,10 @@ def open_stream(self, parent, s, opened):
 
 	if isinstance(parent, TcpClient):
 		self_checking = parent.self_checking()
-		if parent.request.api_client:
+		if parent.request.http_client:
 			ts = ApiClientStream
 	elif isinstance(parent, TcpServer):
-		if len(parent.request.api_server) > 0:
+		if len(parent.request.http_server) > 0:
 			ts = ApiServerStream
 
 	transport = TcpTransport(ts, parent, controller_address, opened)
@@ -1553,7 +1553,7 @@ AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
 def listen(self, requested_ipp, encrypted: bool=False,
-			api_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
+			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number.
@@ -1564,8 +1564,8 @@ def listen(self, requested_ipp, encrypted: bool=False,
 	:type requested_ipp: HostPort
 	:param encrypted: is the client encrypting
 	:type encrypted: bool
-	:param api_server: declared list of expected messages (i.e. request URIs)
-	:type api_server: list of classes
+	:param http_server: declared list of expected messages (i.e. request URIs)
+	:type http_server: list of classes
 	:param default_to_request: convert unknown request names into HttpRequests
 	:type default_to_request: bool
 	:param ansar_client: is the remote client ansar-enabled
@@ -1574,17 +1574,17 @@ def listen(self, requested_ipp, encrypted: bool=False,
 	lid: UUID=None
 	requested_ipp: HostPort=None
 	encrypted: bool=False
-	api_server: list[Type]=None
+	http_server: list[Type]=None
 	default_to_request: bool=True
 	ansar_client: bool=False
 	"""
 	lid = uuid.uuid4()
-	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, api_server=api_server, default_to_request=default_to_request, ansar_client=ansar_client)
+	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, http_server=http_server, default_to_request=default_to_request, ansar_client=ansar_client)
 	TS.channel.send(ls, self.object_address)
 	return lid
 
 def connect(self, requested_ipp, encrypted: bool=False, self_checking: bool=False,
-			api_client: str=None, ansar_server: bool=False):
+			http_client: str=None, layer_cake_json: bool=False):
 	"""
 	Initiates a network connection to the specified IP
 	address and port number.
@@ -1597,12 +1597,12 @@ def connect(self, requested_ipp, encrypted: bool=False, self_checking: bool=Fals
 	:type encrypted: bool
 	:param self_checking: enable periodic enquiry/ack to verify transport
 	:type self_checking: bool
-	:param api_client: leading part of the outgoing request URI
-	:type api_client: str
-	:param ansar_server: is the remote server ansar-enabled
-	:type ansar_server: bool
+	:param http_client: leading part of the outgoing request URI
+	:type http_client: str
+	:param layer_cake_json: is the remote server ansar-enabled
+	:type layer_cake_json: bool
 	"""
-	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, self_checking=self_checking, api_client=api_client, ansar_server=ansar_server)
+	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, self_checking=self_checking, http_client=http_client, layer_cake_json=layer_cake_json)
 	TS.channel.send(cs, self.object_address)
 
 def stop_listening(self, lid):
