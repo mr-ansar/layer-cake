@@ -74,6 +74,16 @@ bind(RetryIntervals)
 
 # Coroutine to generate the sequence
 # implied by first_steps and regular_steps.
+def no_limit(retry):
+	for i in retry.first_steps:
+		yield i
+
+	if retry.regular_steps is None:
+		return
+
+	while True:
+		yield retry.regular_steps
+
 def intervals_only(retry):
 	limit = retry.step_limit
 	for i in retry.first_steps:
@@ -111,7 +121,7 @@ def smart_intervals(retry):
 		return r + c
 
 	if limit is None:
-		for r in intervals_only(retry):
+		for r in no_limit(retry):
 			yield cooked(r)
 		return
 
