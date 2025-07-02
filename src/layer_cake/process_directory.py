@@ -68,7 +68,7 @@ def create_directory(root):
 
 def stop_directory(root):
 	root.send(Stop(), PD.directory)
-	root.select()
+	root.select(Returned)
 
 AddOn(create_directory, stop_directory)
 
