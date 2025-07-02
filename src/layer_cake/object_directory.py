@@ -48,8 +48,10 @@ from .get_response import *
 
 __all__ = [
 	'scope_type',
+	'DIRECTORY_PORT',
 	'DIRECTORY_AT_HOST',
 	'DIRECTORY_AT_LAN',
+	'directory_at_lan',
 	'ConnectTo',
 	'AcceptAt',
 	'PublishAs',
@@ -1291,16 +1293,6 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.send(PublishedDirectory(published, subscribed), self.connected.proxy_address)
 
 def ObjectDirectory_INITIAL_Start(self, message):
-	if self.accept_directories_at.host is None:
-		# Auto-configure the listen side according to the
-		# where this directory is sitting in the hierarchy.
-		if self.directory_scope == ScopeOfDirectory.LAN:
-			self.accept_directories_at = HostPort('0.0.0.0', DIRECTORY_PORT)
-		elif self.directory_scope == ScopeOfDirectory.HOST:
-			self.accept_directories_at = DIRECTORY_AT_HOST
-		# GROUP - see Enquiry and auto_connect
-		# PROCESS/LIBRARY - see PublishAs/SubscribeTo/Enquiry and auto_connect
-
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
 		connect(self, self.connect_to_directory)
