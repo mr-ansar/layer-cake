@@ -23,16 +23,7 @@
 
 """Directory at the LAN scope.
 
-Run the pub-sub name service at the LAN level. Connected to by directories at
-HOST level, i.e. as part of the ObjectDirectory.auto_connect(), driven by the
-pub-sub activity within associated, underlying PROCESS(es).
-
-This directory needs an HTTP/web interface for the management
-of WAN connection credentials. This is the second level where
-WAN connectivity is supported, and possible the better configuration
-from a security pov.
-
-The other level supporting WAN connectivity is at HOST.
+Run the pub-sub name service at the LAN level.
 """
 __docformat__ = 'restructuredtext'
 
@@ -42,20 +33,38 @@ import layer_cake as lc
 #
 class INITIAL: pass
 class RUNNING: pass
+class CLEARING: pass
 
 class Lan(lc.Threaded, lc.StateMachine):
-	def __init__(self):
+	def __init__(self, directory_at_lan: lc.HostPort=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
+		self.directory_at_lan = directory_at_lan
 
 def Lan_INITIAL_Start(self, message):
+	# Does not try to infer listening IP. Its either an argument or its all interfaces.
+	accept_directories_at = self.directory_at_lan or lc.HostPort('0.0.0.0', lc.DIRECTORY_PORT)
+
+	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.LAN,
+		accept_directories_at=accept_directories_at)
+	
+	self.assign(self.directory, 1)
 	return RUNNING
 
+def Lan_RUNNING_Returned(self, message):
+	f = lc.Faulted('directory terminated')
+	self.complete(f)
+
 def Lan_RUNNING_Faulted(self, message):
-	self.complete(message)
+	self.abort(message)
+	return CLEARING
 
 def Lan_RUNNING_Stop(self, message):
-	self.complete(lc.Aborted())
+	self.abort(lc.Aborted())
+	return CLEARING
+
+def Lan_CLEARING_Returned(self, message):
+	self.complete(self.aborted_value)
 
 LAN_DISPATCH = {
 	INITIAL: (
@@ -63,7 +72,11 @@ LAN_DISPATCH = {
 		()
 	),
 	RUNNING: (
-		(lc.Faulted, lc.Stop),
+		(lc.Returned, lc.Faulted, lc.Stop),
+		()
+	),
+	CLEARING: (
+		(lc.Returned,),
 		()
 	),
 }
@@ -72,16 +85,7 @@ lc.bind(Lan, LAN_DISPATCH)
 
 # For package scripting.
 def main():
-	# Explicit scope is processed in ObjectDirectory_INITIAL_Start
-	# Unless there is an explicit argument this will open a listen
-	# port at 0.0.0.0:DIRECTORY_PORT (e.g. 54195). HOST directories
-	# will be configured to connect to the 195 host in the appropriate
-	# private IP address range (e.g. 10.0.0.1, 192.168.0.1). The
-	# listen at "any" (0.0.0.0) will catch all connections to the
-	# DIRECTORY_PORT. The IP of the connecting machine is extracted
-	# from the sockets interface and this is the value distributed
-	# to matching subscribers.
-	lc.create(Lan, scope=lc.ScopeOfDirectory.LAN)
+	lc.create(Lan)
 
 if __name__ == '__main__':
 	main()

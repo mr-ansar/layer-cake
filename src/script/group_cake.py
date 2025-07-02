@@ -52,10 +52,14 @@ class RETURNING: pass
 class GROUP_RETURNING: pass
 
 class Group(lc.Threaded, lc.StateMachine):
-	def __init__(self, *search, retry: lc.RetryIntervals=None, one_and_all=False, main_role: str=None):
+	def __init__(self, *search,
+			directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None,
+			retry: lc.RetryIntervals=None, one_and_all=False, main_role: str=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
+		self.directory_at_host = directory_at_host
+		self.directory_at_lan = directory_at_lan
 		self.retry = retry
 		self.one_and_all = one_and_all
 		self.main_role = main_role
@@ -68,13 +72,21 @@ class Group(lc.Threaded, lc.StateMachine):
 		self.ephemeral = None			# The connect_to_directory value for child processes.
 		self.interval = {}				# Interval iterators for each role.
 		self.group_returned = {}		# Values returned by self-terminating processes
-		self.main_returned = None
 
 def Group_INITIAL_Start(self, message):
 	if self.search:
 		s = ', '.join(self.search)
 		self.trace(f'Search "{s}"')
-	self.send(lc.Enquiry(), lc.PD.directory)	# Request the accept_directories_at value.
+
+	connect_to = self.directory_at_host or self.directory_at_lan
+	accept_at = lc.HostPort('127.0.0.1', 0)
+
+	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.GROUP,
+		connect_to_directory=connect_to,
+		accept_directories_at=accept_at)
+	self.assign(self.directory, 0)
+
+	self.send(lc.Enquiry(), self.directory)
 	return ENQUIRING
 
 def Group_ENQUIRING_HostPort(self, message):
@@ -137,8 +149,7 @@ def Group_RUNNING_Returned(self, message):
 		if not self.working():					# Includes ProcessObjects and restart callbacks.
 			self.complete(message.value)
 
-		self.abort()
-		self.main_returned = message.value
+		self.abort(message.value)
 		return RETURNING
 
 	#
@@ -187,16 +198,14 @@ def Group_RUNNING_Faulted(self, message):
 	if not self.working():
 		self.complete(message)
 
-	self.abort()
-	self.main_returned = message.value
+	self.abort(message.value)
 	return RETURNING
 
 def Group_RUNNING_Stop(self, message):
 	if not self.working():
 		self.complete(lc.Aborted())
 
-	self.abort()
-	self.main_returned = lc.Aborted()
+	self.abort(lc.Aborted())
 	return RETURNING
 
 def Group_RETURNING_Returned(self, message):
@@ -205,7 +214,7 @@ def Group_RETURNING_Returned(self, message):
 		pass
 
 	if not self.working():					# Includes ProcessObjects and restart callbacks.
-		self.complete(self.main_returned)
+		self.complete(self.aborted_value)
 
 	return RETURNING
 
