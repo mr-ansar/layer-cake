@@ -138,7 +138,7 @@ def ObjectSpool_INITIAL_Start(self, message):
 			a = self.create(self.object_type, *self.args, role_name=r, **self.settings)
 		else:
 			r = f'spool-{i}'
-			a = self.create(self.object_type, *self.args, **self.settings)
+			a = self.create(self.object_type, *self.args, role_name=r, **self.settings)
 		self.assign(a, r)
 		self.idle_object.append(a)
 
