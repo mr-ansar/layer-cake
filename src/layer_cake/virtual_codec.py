@@ -698,6 +698,8 @@ def w2p_pointer(c, a, t):
 
 def w2p_type(c, w, t):
 	p = lookup_signature(w)
+	if p is None:
+		raise ValueError(f'unknown type "{w}"')
 	return p
 
 def w2p_array(c, w, t):
