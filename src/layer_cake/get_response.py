@@ -38,6 +38,7 @@ from .bind_type import *
 __all__ = [
 	'CreateFrame',
 	'GetResponse',
+	'Delay',
 	'Concurrently',
 	'Sequentially',
 ]
@@ -91,6 +92,31 @@ GET_RESPONSE_DISPATCH = [
 ]
 
 bind_stateless(GetResponse, GET_RESPONSE_DISPATCH, thread='get-response')
+
+#
+class Delay(Point, Stateless):
+	"""Object that does nothing to specified seconds."""
+	def __init__(self, seconds=None):
+		Point.__init__(self)
+		Stateless.__init__(self)
+		self.seconds = seconds
+
+def Delay_Start(self, message):
+	self.start(T1, self.seconds)
+
+def Delay_T1(self, message):						# Too slow.
+	self.complete(TimedOut(message))
+
+def Delay_Stop(self, message):					# Interruption.
+	self.complete(Aborted())
+
+DELAY_DISPATCH = [
+	Start,
+	T1,
+	Stop,
+]
+
+bind_stateless(Delay, DELAY_DISPATCH, thread='delay')
 
 #
 class Concurrently(Point, Stateless):
