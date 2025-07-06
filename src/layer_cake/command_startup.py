@@ -251,6 +251,8 @@ def extract_arguments(schema, ls):
 			try:
 				d = decode_argument(c, v, t)	# Matched.
 				extracted[r] = to_any(d, t)
+			except ValueError as e:
+				raise ValueError(f'cannot decode value for "{k}" ({e})')
 			except KeyError as e:
 				raise ValueError(f'cannot decode value for "{k}" ({e.args[0]} does not exist)')
 			except CodecError as e:
@@ -274,6 +276,8 @@ def extract_arguments(schema, ls):
 			try:
 				d = decode_argument(c, v, x)
 				extracted[t] = to_any(d, x)
+			except ValueError as e:
+				raise ValueError(f'cannot decode value for "{k}" ({e})')
 			except KeyError as e:
 				raise ValueError(f'cannot decode value for "{k}" ({e.args[0]} does not exist)')
 			except CodecError as e:
@@ -404,6 +408,8 @@ def command_variables(factory_variables, environment_variables=None):
 		try:
 			v = decode_argument(c, e, t)
 			setattr(factory_variables, k, v)
+		except ValueError as e:
+			raise ValueError(f'cannot decode value for "{k}" ({e})')
 		except CodecError as e:
 			s = str(e)
 			raise ValueError(f'cannot process variable "{K}" ({k}) - {s}')
