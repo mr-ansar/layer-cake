@@ -119,6 +119,9 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	rt.return_type = routine_return
 	rt.api = api
 
+	install_portable(UserDefined(routine))
+
+
 def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
 	"""Set the runtime flags for the given async object type.
 
@@ -383,6 +386,7 @@ def bind(object_type, *args, **kw_args):
 			else:
 				pce = f'cannot bind {object_type} - unknown machine type'
 				raise PointConstructionError(pce)
+			install_portable(UserDefined(object_type))
 		else:
 			bind_point(object_type, *args, **kw_args)
 	elif not is_message_class(object_type):
