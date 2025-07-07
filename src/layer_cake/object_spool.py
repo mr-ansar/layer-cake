@@ -133,12 +133,14 @@ def ObjectSpool_INITIAL_Start(self, message):
 	role_name = self.role_name
 
 	for i in range(oc):
-		if role_name:
+		if self.object_type == ProcessObject:
+			if not role_name:
+				role_name = 'spool-{i}'
 			r = role_name.format(i=i)
 			a = self.create(self.object_type, *self.args, role_name=r, **self.settings)
 		else:
-			r = f'spool-{i}'
-			a = self.create(self.object_type, *self.args, role_name=r, **self.settings)
+			r = i
+			a = self.create(self.object_type, *self.args, **self.settings)
 		self.assign(a, r)
 		self.idle_object.append(a)
 
