@@ -61,7 +61,20 @@ class CreateFrame(object):
 
 #
 class GetResponse(Point, Stateless):
-	"""Object to that sends request and returns response as completion."""
+	"""
+	Delegated request-response.
+
+	Send the request to the given address and expect a
+	response. Pass the response back as the return value
+	for this object.
+
+	:param request: message to be sent
+	:type request: :ref:`message<lc-message>`
+	:param server_address: where to send the message
+	:type server_address: :ref:`address<lc-address>`
+	:param seconds: acceptable delay (optional)
+	:type seconds: float
+	"""
 	def __init__(self, request, server_address, seconds=None):
 		Point.__init__(self)
 		Stateless.__init__(self)
