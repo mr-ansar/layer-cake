@@ -66,14 +66,17 @@ __all__ = [
 #
 #
 class Start(object):
-	"""First message received by every async machine, from creator to child."""
+	"""Notification sent to new object, from parent."""
 	pass
 
 class Returned(object):
-	"""Last message sent, from child to creator.
+	"""
+	Notification sent to parent, from terminating object.
 
-	:param value: return value for an async object
+	:param value: value returned by the asynchronous object
 	:type value: any
+	:param created_type: type of the parent
+	:type created_type: :ref:`object type<lc-object-type>`
 	"""
 	def __init__(self, value=None, created_type=None):
 		self.value = value
@@ -93,7 +96,7 @@ bind_message(Returned, value=Any(), created_type=Type())
 #
 #
 class Stop(object):
-	"""Initiate teardown in the receiving object."""
+	"""Initiate termination in the receiving object."""
 	pass
 
 class Pause(object):
@@ -111,11 +114,11 @@ bind_message(Resume)
 #
 #
 class Ready(object):
-	"""Report a positive state."""
+	"""Report a state of readiness."""
 	pass
 
 class NotReady(object):
-	"""Report a positive state."""
+	"""Report that currently not ready."""
 	pass
 
 bind_message(Ready, copy_before_sending=False)
@@ -166,7 +169,18 @@ bind_message(Anything, copy_before_sending=False,
 #
 #
 class Faulted(object):
-	"""Generic error signal to interested party."""
+	"""
+	Generic error signal to interested party.
+	
+	:param condition: description of fault
+	:type condition: str
+	:param explanation: description of cause (optional)
+	:type explanation: str
+	:param error_code: internal error code (optional)
+	:type error_code: int
+	:param exit_status: recommended exit status (optional)
+	:type exit_status: int
+	"""
 	def __init__(self, condition: str=None, explanation: str=None, error_code: int=None, exit_status: int=None):
 		self.condition = condition or 'fault'
 		self.explanation = explanation
@@ -181,10 +195,23 @@ class Faulted(object):
 bind_message(Faulted)
 
 class Aborted(Faulted):
+	"""
+	Asynchronous object received a :class:`~.Stop`. Terminating.
+	
+	Derived from :class:`~.Faulted`.
+	"""
 	def __init__(self):
 		Faulted.__init__(self, 'aborted', 'user or software interrupt')
 
 class TimedOut(Faulted):
+	"""
+	Asynchronous object received a timer message.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param timer: timer that was exceeded
+	:type timer: :ref:`object type<lc-object-type>`
+	"""
 	def __init__(self, timer=None):
 		if timer and hasattr(timer, '__art__'):
 			t = timer.__art__.name
@@ -194,21 +221,63 @@ class TimedOut(Faulted):
 		Faulted.__init__(self, 'timed out', f'"{t}" exceeded')
 
 class TemporarilyUnavailable(Faulted):
+	"""
+	Temporarily unable to deliver normal service.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param text: description of reason
+	:type text: str
+	:param unavailable: names of unavailable services
+	:type unavailable: list
+	:param request: request that cannot be fulfilled
+	:type request: :ref:`message<lc-message>`
+	"""
 	def __init__(self, text=None, unavailable=None, request=None):
 		Faulted.__init__(self, text)
 		self.unavailable = unavailable or []
 		self.request = request
 
 class Busy(Faulted):
+	"""
+	Experiencing heavy load, recovery expected. Request is rejected.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param condition: description of load (optional)
+	:type condition: str
+	:param explanation: description of cause (optional)
+	:type explanation: str
+	"""
 	def __init__(self, condition=None, explanation=None):
 		Faulted.__init__(self, condition, explanation)
 
 class Overloaded(Faulted):
+	"""
+	Experiencing heavy load, recovery unknown. Request is rejected.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param text: description of condition (optional)
+	:type text: str
+	:param request: rejected message (optional)
+	:type request: :ref:`message<lc-message>`
+	"""
 	def __init__(self, text=None, request=None):
 		Faulted.__init__(self, text)
 		self.request = request
 
 class OutOfService(Faulted):
+	"""
+	Service not available until further notice. Request is rejected.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param text: description of load (optional)
+	:type text: str
+	:param request: rejected message (optional)
+	:type request: :ref:`message<lc-message>`
+	"""
 	def __init__(self, text=None, request=None):
 		Faulted.__init__(self, text)
 		self.request = request
