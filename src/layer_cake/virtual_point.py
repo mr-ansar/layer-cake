@@ -62,6 +62,8 @@ __all__ = [
 	'PointLog',
 	'OnReturned',
 	'returned_object',
+	'Dispatching',
+	'Buffering',
 	'Threaded',
 	'Channel',
 	'Machine',
@@ -84,7 +86,7 @@ VP = Gas(log_address=NO_SUCH_ADDRESS,
 class T1(object):
 	"""Predeclared timer class.
 
-	A class suitable for passing to Point.start(). The library
+	A class suitable for passing to :meth:`~.Point.start`. The library
 	provides the T1, T2, T3 and T4 timer classes for general use.
 	"""
 	pass
@@ -228,11 +230,17 @@ class OnReturned(object):
 #
 #
 class Point(object):
-	"""The essential async object.
+	"""The base class to all class-based asynchronous objects.
 
 	Methods of this class are the user entry-point for SDL primitives such
-	as send() and start(). There are also methods associated with logging
-	and child object management.
+	as;
+	
+	* :meth:`~.Point.create`
+	* :meth:`~.Point.send`
+	* :meth:`~.Point.reply`
+	* :meth:`~.Point.forward`
+	* :meth:`~.Point.start`
+	* :meth:`~.Point.cancel`
 	"""
 	def __init__(self):
 		self.object_address = NO_SUCH_ADDRESS	# Identity of this object.
@@ -251,68 +259,58 @@ class Point(object):
 		self.aborted_value = None
 
 	def create(self, object_type, *args, object_ending=returned_object, **kw):
-		"""Create a child instance of `object_type`. Return the address of the new object.
+		"""
+		Create a new asynchronous object. Return the address.
 
-		:param object_type: async type to instantiate
-		:type object_type: function or Point-based class
-		:param args: arguments passed to the new object
-		:type args: positional arguments tuple
-		:param kw: arguments passed to the new object
-		:type kw: name arguments dict
-		:rtype: an ansar address or the actual object (e.g. Channel)
+		:param object_type: type of object to instantiate
+		:type object_type: :ref:`object type<lc-object-type>`
+		:param args: positional arguments passed to the new object
+		:type args: tuple
+		:param object_ending: override standard termination (optional)
+		:type object_ending: function
+		:param kw: named arguments passed to the new object
+		:type kw: dict
+		:rtype: :ref:`address<lc-address>`, or channel
 		"""
 		return create_a_point(object_type, object_ending, self.object_address, args, kw)
 
-	def send(self, m, to):
-		"""Transfer a message to an address.
+	def send(self, message, to):
+		"""Transfer a message to the specified address.
 
-		Message delivery is not guaranteed and non-delivery is not
-		notified. There are multiple reasons delivery can fail, e.g. the
-		destination address no longer exists. Unless the reason is a
-		fault within the sending machinery, failure to deliver is not
-		considered an error. Refer to application logs for details on
-		why a particular message failed to reach its intended
-		destination.
-
-		A copy of the message is taken for every actual transfer, i.e.
-		by default remote objects always receive a copy of the message
-		originally presented to ``send()``. Obviously this is behaviour
-		motivated by the multi-threaded runtime context but where it
-		is deemed unnecessary, copying can be disabled on a per-message-type
-		basis. :func:`~.bind.bind_any` for more details.
-
-		:param m: the message to be sent
-		:type m: instance of a registered message
-		:param to: the intended receiver of the message
-		:type to: ansar address
+		:param message: message to be sent
+		:type message: :ref:`message<lc-message>`
+		:param to: intended receiver of the message
+		:type to: :ref:`address<lc-address>`
+		:rtype: None
 		"""
 		pf = self.__art__
 		try:
-			mf = getattr(m, '__art__')
+			mf = getattr(message, '__art__')
 		except AttributeError:
 			mf = None
 		if mf:
-			xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
+			xf = message.timer.__art__ if isinstance(message, (StartTimer, CancelTimer)) else mf
 			if pf.message_trail and xf.message_trail:
 				self.log(USER_TAG.SENT, 'Sent %s to <%08x>' % (mf.name, to[-1]))
 			if mf.copy_before_sending:
-				c = deepcopy(m)
+				c = deepcopy(message)
 				send_a_message(c, to, self.object_address)
 				return
-		send_a_message(m, to, self.object_address)
+		send_a_message(message, to, self.object_address)
 
-	def reply(self, m):
-		"""Send a response to the sender of the current message.
+	def reply(self, message):
+		"""
+		Send a response to the sender of the current message.
 
 		This is a shorthand for ``self.send(m, self.return_address)``. Reduces
 		keystrokes and risk of typos.
 
-		:param m: the message to be sent
-		:type m: instance of a registered message
+		:param message: the message to be sent
+		:type message: :ref:`message<lc-message>`
 		"""
-		self.send(m, self.return_address)
+		self.send(message, self.return_address)
 
-	def forward(self, m, to, return_address):
+	def forward(self, message, to, return_address):
 		"""Send a message to an address, as if it came from a 3rd party.
 
 		Send a message but override the return address with the address of
@@ -323,17 +321,17 @@ class Point(object):
 		to "drop out" of 3-way conversations, leaving simpler and faster 2-way
 		conversations behind.
 
-		:param m: the message to send
-		:type m: instance of a registered message
-		:param to: the intended receiver of the message
-		:type to: ansar address
+		:param message: the message to be sent
+		:type message: :ref:`message<lc-message>`
+		:param to: intended receiver of the message
+		:type to: :ref:`address<lc-address>`
 		:param return_address: the other object
-		:type return_address: ansar address
+		:type return_address: :ref:`address<lc-address>`
 		"""
 		pf = self.__art__
 		try:
-			mf = getattr(m, '__art__')
-			xf = m.timer.__art__ if isinstance(m, (StartTimer, CancelTimer)) else mf
+			mf = getattr(message, '__art__')
+			xf = message.timer.__art__ if isinstance(message, (StartTimer, CancelTimer)) else mf
 		except AttributeError:
 			mf = None
 
@@ -341,17 +339,17 @@ class Point(object):
 			if pf.message_trail and xf.message_trail:
 				self.log(USER_TAG.SENT, 'Forward %s to <%08x> (from <%08x>)' % (mf.name, to[-1], return_address[-1]))
 			if mf.copy_before_sending:
-				c = deepcopy(m)
+				c = deepcopy(message)
 				send_a_message(c, to, return_address)
 				return
-		send_a_message(m, to, return_address)
+		send_a_message(message, to, return_address)
 
 	def start(self, timer, seconds, repeating=False):
 		"""Start the specified timer for this object.
 
 		An instance of the timer class will be sent to this address after the
 		given number of seconds. Any registered message can be used as a timer.
-		Ansar provides the standard timers T1, T2, T3, and T4 for convenience
+		Layer cake provides the standard timers T1, T2, T3, and T4 for convenience
 		and to reduce duplication.
 
 		Timers are private to each async object and there is no limit to the
@@ -365,10 +363,12 @@ class Point(object):
 		the timeout after the sending of a cancellation. Async objects are best
 		written to cope with every possible receive ordering.
 
-		:param timer: the type of the object that will be sent back on timeout
-		:type timer: a registered class
+		:param timer: type of the object that will be sent back on timeout
+		:type timer: class
 		:param seconds: time span before expiry
 		:type seconds: float
+		:param repeating: enable endless repeat
+		:type repeating: bool
 		"""
 		self.send(StartTimer(timer, seconds, repeating), VP.timer_address)
 
@@ -380,7 +380,7 @@ class Point(object):
 		cancellation.
 
 		:param timer: the pending timer
-		:type timer: a registered class
+		:type timer: class
 		"""
 		self.send(CancelTimer(timer), VP.timer_address)
 
@@ -394,25 +394,31 @@ class Point(object):
 		raise Completion(value)
 
 	def assign(self, address, job=True):
-		"""The specified child object is working on the given job.
+		"""The specified child object is associated with the specified job, e.g. callback.
 
-		:param address: the async object
-		:type address: ansar address
+		:param address: address of the child object
+		:type address: :ref:`address<lc-address>`
 		:param job: what the child object is doing on behalf of this object
 		:type job: any
 		"""
 		self.address_job[address] = job
 
 	def working(self):
-		"""Check if there are child objects still active. Returns the count."""
+		"""
+		Check if there are child objects still active. Returns the count.
+
+		:rtype: int
+		"""
 		return len(self.address_job)
 
 	def progress(self, address=None):
-		"""Find the job for the specified address. Return the job or None.
+		"""Find the job associated with the specified child object. Return the job or None.
 
-		:param address: the async object
-		:type address: ansar address
-		:rtype: any or None
+		If no address is provided the current return address is used.
+
+		:param address: address of the child object
+		:type address: :ref:`address<lc-address>`
+		:rtype: any
 		"""
 		a = address or self.return_address
 		try:
@@ -427,7 +433,16 @@ class Point(object):
 			yield v, k
 
 	def abort(self, aborted_value=None):
-		"""Initiate the termination protocol for all pending jobs. Return the count of."""
+		"""
+		Initiate termination of all pending child objects. Return nothing.
+
+		If required, a single value is stored for later retrieval
+		as ``self.aborted_value``.
+
+		:param aborted_value: value to save
+		:type aborted_value: any
+		:rtype: None
+		"""
 		self.aborted_value = aborted_value
 		for _, a in self.running():
 			self.send(Stop(), a)
@@ -435,27 +450,48 @@ class Point(object):
 		return n
 
 	def debrief(self, address=None):
-		"""Find the job associated with the address. Return the job.
+		"""
+		Find the job associated with the child object. Return the job.
 
 		If no address is provided the current return address is used.
 		If a match is found the record is removed, decrementing the
 		number of active jobs.
 
-		:param address: the async object
-		:type address: ansar address
-		:rtype: any or None
+		:param address: address of the child object
+		:type address: :ref:`address<lc-address>`
+		:rtype: any
 		"""
 		a = address or self.return_address
 		c = self.address_job.pop(a, None)
 		return c
 
-	def on_return(self, a, f, **kw):
-		c = OnReturned(f, Gas(**kw))
-		self.assign(a, c)
+	def on_return(self, address, f, **kw):
+		"""
+		Register a callback, to be executed on termination of the object.
 
-	def continuation(self, a, f, g):
-		c = OnReturned(f, g)
-		self.assign(a, c)
+		:param address: address of the child object
+		:type address: :ref:`address<lc-address>`
+		:param f: the function to be called
+		:type f: function
+		:param kw: named arguments to be saved and presented on the callback
+		:type kw: dict
+		"""
+		c = OnReturned(f, Gas(**kw))
+		self.assign(address, c)
+
+	def continuation(self, address, f, args):
+		"""
+		Register a chained callback, to be executed on termination of the object.
+
+		:param address: address of the child object
+		:type address: :ref:`address<lc-address>`
+		:param f: the function to be called
+		:type f: function
+		:param args: named arguments saved by a prior :meth:`~.Point.on_return`
+		:type args: dict
+		"""
+		c = OnReturned(f, args)
+		self.assign(address, c)
 
 	def a_kv(self, a, kv):
 		if len(a) > 0:
@@ -655,12 +691,12 @@ class Player(object):
 		self.get_frame = mtr
 		return mtr[0], mtr[1], mtr[2]
 
-	def pushback(self, m):
+	def pushback(self, message):
 		"""Retain the [message, to, return] triplet for later replay."""
 		mtr = self.get_frame
 		# Cannot verify in the presence of anonymous types.
 		# This pushes back the most recent pull.
-		#if id(m) != id(mtr[0]):
+		#if id(message) != id(mtr[0]):
 		#	return
 		mtr[3] += 1
 		if mtr[3] < MAXIMUM_REPLAYS:
@@ -696,7 +732,13 @@ class Dispatching(Player):
 		"""Construct an instance of Dispatching."""
 
 	def input(self):
-		"""Get a message from replay buffer or fresh from queue. Return message triplet."""
+		"""Block until the next message arrives. Return the value.
+
+		Part of the "save" machinery that can buffer and replay messages. Sets addresses and
+		type information associated with the received message.
+
+		:rtype: message
+		"""
 		m, t, r = self.pull()
 		self.to_address = t
 		self.return_address = r
@@ -707,9 +749,9 @@ class Dispatching(Player):
 		self.received_type = p
 		return m
 
-	def undo(self, m):
+	def undo(self, message):
 		"""Retain the [message, to, return] triplet, using values saved during input."""
-		self.pushback(m)
+		self.pushback(message)
 
 class Buffering(Player):
 	"""Base for any object intending to perform sophisticated I/O, i.e. channels and routines."""
@@ -718,18 +760,21 @@ class Buffering(Player):
 		Player.__init__(self)
 		"""Construct an instance of Buffering."""
 
-	def save(self, m):
+	def save(self, message):
 		"""Retain the [message, to, return] triplet, using values saved during input.
 
-		:param m: message to be saved
-		:type m: message object
+		:param message: message to be saved
+		:type message: message object
 		"""
-		self.pushback(m)
+		self.pushback(message)
 
 	def input(self):
-		"""Get the next message while transparently buffering.
+		"""Block until the next message arrives. Return the value.
 
-		:rtype: message object
+		Part of the "save" machinery that can buffer and replay messages. Sets addresses and
+		type information associated with the received message.
+
+		:rtype: message
 		"""
 		m, t, r = self.pull()
 		self.to_address = t
@@ -843,7 +888,7 @@ class Buffering(Player):
 		return self.ask(Stop(), r, a, saving=saving, seconds=seconds)
 
 class Threaded(Pump, Point, Dispatching):
-	"""Base class for async machines that require dedicated threads.
+	"""Base class for asynchronous machines that require dedicated threads.
 
 	:param blocking: block on queue full
 	:type blocking: bool
@@ -876,9 +921,9 @@ class Machine(object):
 	def __init__(self):
 		"""Construct an instance of Machine."""
 
-	def save(self, m):
+	def save(self, message):
 		"""Retain the [message, to, return] triplet, i.e. call the parent queue."""
-		self.assigned_queue.undo(m)
+		self.assigned_queue.undo(message)
 
 	def received(self, queue, message, return_address):
 		"""A placeholder for erroneous use. Raises a ``PointConstructionError`` exception."""
