@@ -35,7 +35,7 @@ classifiers = [
 	"Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Utilities",
 ]
-dependencies = ["cffi", "PyNaCl"]
+dependencies = ["cffi", "PyNaCl", "ply"]
 
 [project.optional-dependencies]
 dev = ["coverage"]
@@ -50,9 +50,9 @@ dev = ["coverage"]
 
 [project.scripts]
 layer_cake = "script:layer_cake.main"
-group_cake = "script:group_cake.main"
-host_cake = "script:host_cake.main"
-lan_cake = "script:lan_cake.main"
+group-cake = "script:group_cake.main"
+host-cake = "script:host_cake.main"
+lan-cake = "script:lan_cake.main"
 
 [tool.setuptools]
 package-data = { "sample" = ["*.dat"] }
