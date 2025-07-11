@@ -42,6 +42,15 @@ __all__ = [
 
 # Register service or interest in service.
 class ScopeOfDirectory(Enum):
+	"""
+	Enumeration of the scopes within the layer cake directory.
+
+	* LAN - local area network
+	* HOST - networking limited to 127.0.0.0
+	* GROUP - a composite process
+	* PROCESS - a single process
+	* LIBRARY - dynamically loaded process
+	"""
 	WAN=1
 	LAN=2
 	HOST=3
@@ -50,6 +59,15 @@ class ScopeOfDirectory(Enum):
 	LIBRARY=6
 
 class ProcessOrigin(Enum):
+	"""
+	Enumeration of context in the chain of processes.
+
+	* SHELL - running from the command-line
+	* RUN - run an entry in a composite process
+	* RUN_CHILD - run as a subprocess of a composite entry
+	* START - background run, entry in a composite process
+	* START_CHILD - background run, subprocess of a composite entry
+	"""
 	SHELL=1
 	RUN=2
 	RUN_CHILD=3
@@ -58,7 +76,8 @@ class ProcessOrigin(Enum):
 
 #
 class CommandLine(object):
-	"""Standard instructions to a new process.
+	"""
+	Standard instructions to a new process.
 
 	Communicate the context for the new process, e.g. daemon, home/role,
 	settings and parent/child communications.
