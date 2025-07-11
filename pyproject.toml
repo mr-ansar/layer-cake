@@ -49,10 +49,10 @@ dev = ["coverage"]
 "Documentation" = "https://layer-cake.s3.ap-southeast-2.amazonaws.com/0.1.1/index.html"
 
 [project.scripts]
-layer_cake = "script:layer_cake.main"
-group_cake = "script:group_cake.main"
-host_cake = "script:host_cake.main"
-lan_cake = "script:lan_cake.main"
+layer-cake = "script:layer_cake.main"
+group-cake = "script:group_cake.main"
+host-cake = "script:host_cake.main"
+lan-cake = "script:lan_cake.main"
 
 [tool.setuptools]
 package-data = { "sample" = ["*.dat"] }
