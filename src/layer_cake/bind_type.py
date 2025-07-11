@@ -45,32 +45,24 @@ __all__ = [
 
 #
 class PointRuntime(Runtime):
-	"""Settings to control logging and other behaviour, for a Point."""
+	"""
+	Settings to control logging and other behaviour, for a Point.
+
+	:param name: the name of the class being registered
+	:type name: str
+	:param module: the name of the module the class is located in
+	:type module: str
+	:param return_type: hint/portable describing the return type
+	:type return_type: hint/portable
+	:param api: enable API with list of expected messages
+	:type api: list of messages
+	:param flags: named values passed on
+	:type flags: dict
+	"""
 
 	def __init__(self,
 			name, module, return_type=None, api=None,
 			**flags):
-		"""Construct the settings.
-
-		:param name: the name of the class being registered
-		:type name: str
-		:param module: the name of the module the class is located in
-		:type module: str
-		:param value: the application value, e.g. a function
-		:type value: any
-		:param lifecycle: enable logging of created, destroyed
-		:type lifecycle: bool
-		:param message_trail: enable logging of sent
-		:type message_trail: bool
-		:param execution_trace: enable logging of received
-		:type execution_trace: bool
-		:param copy_before_sending: enable auto-copy before send
-		:type copy_before_sending: bool
-		:param not_portable: prevent inappropriate send
-		:type not_portable: bool
-		:param user_logs: log level
-		:type user_logs: int
-		"""
 		super().__init__(name, module, **flags)
 		self.return_type = return_type
 		self.api = api
@@ -78,18 +70,29 @@ class PointRuntime(Runtime):
 
 #
 def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
-	"""Set the runtime flags for the given async function.
+	"""
+	Set the type information and runtime controls for the function.
 
-	:param routine: an async function.
-	:type routine: function
-	:param lifecycle: log all create() and complete() events
+	Values assigned in this function affect the behaviour for all instances of
+	the given type.
+
+	:param routine: function to be registered as a routine
+	:type routine: Python function
+	:param return_type: type description of the return value
+	:type return_type: hint/portable
+	:param api: enable API with list of expected messages
+	:type api: list of classes
+	:param lifecycle: enable log at creation, ending...
 	:type lifecycle: bool
-	:param message_trail: log all send() events
+	:param message_trail: enable log when message is sent
 	:type message_trail: bool
-	:param execution_trace: log all receive events
+	:param execution_trace: enable log when message is received
 	:type execution_trace: bool
-	:param user_logs: the logging level for this object type
-	:type user_logs: enumeration
+	:param user_logs: the logging level for this message type
+	:type user_logs: :class:`~.USER_LOG`
+	:param explicit_schema: explicit type declarations by name
+	:type explicit_schema: dict
+	:rtype: None
 	"""
 	rt = PointRuntime(routine.__name__, routine.__module__,
 		lifecycle=lifecycle,
@@ -123,18 +126,25 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 
 
 def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
-	"""Set the runtime flags for the given async object type.
+	"""
+	Set the type information and runtime controls for the asynchronous object.
 
-	:param point: a class derived from ``Point``.
-	:type point: class
-	:param lifecycle: log all create() and complete() events
-	:type lifecycle: bool
-	:param message_trail: log all send() events
+	Values assigned in this function affect the behaviour for all instances of
+	the given type.
+
+	:param point: instance of an asynchronous object
+	:type point: :class:`~.Point`
+	:param return_type: hint or portable description of the return value
+	:type return_type: hint/portable
+	:param message_trail: enable log when message is sent
 	:type message_trail: bool
-	:param execution_trace: log all receive events
+	:param execution_trace: enable log when message is received
 	:type execution_trace: bool
 	:param user_logs: the logging level for this object type
-	:type user_logs: enumeration
+	:type user_logs: :class:`~.USER_LOG`
+	:param explicit_schema: explicit type declarations by name
+	:type explicit_schema: dict
+	:rtype: None
 	"""
 	rt = PointRuntime(point.__name__, point.__module__,
 		lifecycle=lifecycle,
@@ -198,36 +208,23 @@ def unfold(folded):
 			yield f
 
 def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
-	"""Sets the runtime environment for the given stateless machine. Returns nothing.
+	"""
+	Set the type information and runtime controls for the non-FSM machine.
 
-	This function (optionally) auto-constructs the message
-	dispatch table and also saves control values.
+	Values assigned in this function affect the behaviour for all instances of
+	the given type.
 
-	The dispatch is a simple list of the expected
-	messages::
-
-		dispatch = (Start, Job, Stop)
-
-	Using this list and a naming convention the ``bind``
-	function searches the application for the matching
-	functions and installs them in the appropriate
-	dispatch entry. The naming convention is;
-
-		<`machine name`>_<`expected message`>
-
-	The control values are the same as for Points (see
-	:func:`~.point.bind_point`). This function actually
-	calls the ``bind_point`` function to ensure consistent
-	initialization.
-
-	:param machine: class derived from ``machine.Stateless``
-	:type machine: a class
-	:param dispatch: the list of expected messages
-	:type dispatch: a tuple
-	:param args: the positional arguments to be forwarded
-	:type args: a tuple
-	:param kw_args: the named arguments to be forwarded
-	:type kw_args: a dict
+	:param machine: class to be registered as a machine
+	:type machine: :class:`~.Stateless`
+	:param dispatch: list of expected messages
+	:type dispatch: list
+	:param return_type: hint or portable description of the return value
+	:type return_type: hint/portable
+	:param api: enable API with list of expected messages
+	:type api: list
+	:param kv_args: explicit type declarations by name
+	:type kv_args: dict
+	:rtype: None
 	"""
 	bind_point(machine, return_type=return_type, api=api, **kw_args)
 	if dispatch is None:
@@ -256,10 +253,11 @@ def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
 	machine.__art__.value = (shift, messaging)
 
 def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
-	"""Sets the runtime environment for the given FSM. Returns nothing.
+	"""
+	Set the type information and runtime controls for the FSM machine.
 
-	This function (optionally) auto-constructs the message
-	dispatch table and also saves control values.
+	Values assigned in this function affect the behaviour for all instances of
+	the given type.
 
 	The dispatch is a description of states, expected
 	messages and messages that deserve saving::
@@ -273,26 +271,17 @@ def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
 	Consider ``STATE_2``; The machine will accept 4 messages and
 	will save an additional message, ``Check``.
 
-	Using this list and a naming convention the ``bind``
-	function searches the application for the matching
-	functions and installs them in the appropriate
-	dispatch entry. The naming convention is;
-
-		<`machine name`>_<`state`>_<`expected message`>
-
-	The control values available are the same as for Points
-	(see :func:`~.point.bind_point`). This function
-	actually calls the ``bind_point`` function to ensure
-	consistent initialization.
-
-	:param machine: class derived from ``machine.StateMachine``
-	:type machine: a class
-	:param dispatch: specification of a FSM
-	:type dispatch: a dict of tuples
-	:param args: the positional arguments to be forwarded
-	:type args: a tuple
-	:param kw_args: the named arguments to be forwarded
-	:type kw_args: a dict
+	:param machine: class to be registered as a machine
+	:type machine: :class:`~.StateMachine`
+	:param dispatch: table of current state and expected messages
+	:type dispatch: dict
+	:param return_type: hint or portable description of the return value
+	:type return_type: hint/portable
+	:param api: enable API with list of expected messages
+	:type api: list
+	:param kv_args: explicit type declarations by name
+	:type kv_args: dict
+	:rtype: None
 	"""
 	bind_point(machine, return_type=return_type, api=api, **kw_args)
 	if dispatch is None:
@@ -361,18 +350,17 @@ def bind(object_type, *args, **kw_args):
 	Forwards all arguments on to a custom bind function
 	according to the type of the first argument.
 
-	Refer to **ansar.encode** for registration of messages;
-
-	- :func:`~.point.bind_function`
-	- :func:`~.machine.bind_stateless`
-	- :func:`~.machine.bind_statemachine`
+	- :func:`~.bind_message`
+	- :func:`~.bind_routine`
+	- :func:`~.bind_stateless`
+	- :func:`~.bind_statemachine`
 
 	:param object_type: type of async entity
-	:type object_type: message class, function or Point-based class
-	:param args: arguments passed to the object instance
-	:type args: positional argument tuple
-	:param kw_args: named arguments passed to the object instance
-	:type kw_args: named arguments dict
+	:type object_type: :ref:`object type<lc-object-type>`
+	:param args: arguments passed to special bind function
+	:type args: tuple
+	:param kw_args: named arguments passed to special bind function
+	:type kw_args: dict
 	"""
 	# Damn line length constraint.
 	if isinstance(object_type, types.FunctionType):
