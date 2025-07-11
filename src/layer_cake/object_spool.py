@@ -77,12 +77,29 @@ class SPOOLING: pass
 SPOOL_SPAN = 32
 
 class ObjectSpool(Point, StateMachine):
-	"""An async proxy object that starts and manages one or more standard sub-process.
-
-	:param name: name of the executable file
-	:type name: str
 	"""
-	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_queue=None, responsiveness=None, busy_fraction=10, stand_down=30.0, **settings):
+	Distribute messages across a pool of computing resources.
+
+	:param object_type: type of asynchronous object
+	:type object_type: :ref:`object type<lc-object-type>`
+	:param args: positional arguments to pass on object creation
+	:type args: tuple
+	:param role_name: name of process objects, e.g. spool-{i} or None
+	:type role_name: str
+	:param object_count: number of objects to create
+	:type object_count: int
+	:param size_of_queue: maximum number of pending messages
+	:type size_of_queue: int
+	:param responsiveness: expected performance before imposing busy state
+	:type responsiveness: float
+	:param busy_pass_rate: rate of messages processed in busy state, as a denominator
+	:type busy_pass_rate: int
+	:param stand_down: delay in seconds before restart of terminated object
+	:type stand_down: float
+	:param settings: named arguments to pass on object creation
+	:type settings: dict
+	"""
+	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_queue=None, responsiveness=None, busy_pass_rate=10, stand_down=30.0, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_type = object_type
@@ -91,7 +108,7 @@ class ObjectSpool(Point, StateMachine):
 		self.object_count = object_count
 		self.size_of_queue = size_of_queue
 		self.responsiveness = responsiveness
-		self.busy_fraction = busy_fraction
+		self.busy_pass_rate = busy_pass_rate
 		self.stand_down = stand_down
 		self.settings = settings
 
@@ -110,7 +127,7 @@ class ObjectSpool(Point, StateMachine):
 			pass
 		else:
 			self.shard += 1
-			if self.shard % self.busy_fraction:
+			if self.shard % self.busy_pass_rate:
 				self.send(Busy(f'message rejected by spool (average response time {self.average:.2f})'), return_address)
 				return
 
