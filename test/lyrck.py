@@ -42,7 +42,7 @@ import calendar
 
 #
 GROUP_ROLE = 'group'
-GROUP_EXECUTABLE = 'group_cake'
+GROUP_EXECUTABLE = 'group-cake'
 
 #
 def layer_cake(self, *word):

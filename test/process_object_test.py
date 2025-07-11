@@ -405,7 +405,7 @@ class TestProcessObject(TestCase):
 	def test_str_name(self):
 		# test_main.main is a procedure - no declared return type.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, 'group_cake')
+			ch.create(lc.ProcessObject, 'group-cake')
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
