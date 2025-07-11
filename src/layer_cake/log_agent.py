@@ -50,7 +50,7 @@ class LogAgent(Threaded, Stateless):
 
 	The ``LogAgent`` derives from ``Queue``, i.e. it will enjoy its
 	own dedicated thread. The result is that logs can originate from
-	any runtime Ansar thread and will be collected/serialized at the
+	any runtime layer cake thread and will be collected/serialized at the
 	sole LogAgent instance. The saved log method can enjoy the
 	knowledge that all multi-threading issues are resolved and that
 	logs are buffered in a reliable and robust fashion.
