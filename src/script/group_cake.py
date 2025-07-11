@@ -264,7 +264,7 @@ def main():
 	# is presented with pub-subs for higher levels and no connect
 	# address has been specified, it will auto-connect to
 	# DIRECTORY_AT_HOST (e.g. 127.0.0.1:DIRECTORY_PORT)
-	lc.create(Group, scope=lc.ScopeOfDirectory.GROUP)
+	lc.create(Group)
 
 if __name__ == '__main__':
 	main()
