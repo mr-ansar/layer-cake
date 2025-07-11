@@ -118,32 +118,29 @@ class SPOOLING: pass
 # the correct behaviour from one component to the next.
 
 class ProcessObject(Point, StateMachine):
-	"""An async proxy object that starts and manages a standard sub-process.
+	"""
+	An async proxy object that starts and manages a platform sub-process.
 
-	:param name: name of the executable file
-	:type name: str
-	:param input: object to be passed
-	:type input: type expression
-	:param input_type: explicit type
-	:type input_type: type expression
-	:param output: enable decoding of stdout
-	:type output: bool
-	:param forwarding: enable forwarding of parent stdin
-	:type forwarding: bool
-	:param settings: additional command line arguments
-	:type settings: list of str
-	:param origin: starting context, internal
-	:type origin: enum
-	:param debug: level
-	:type debug: enum
-	:param home_path: location of a home, internal
+	:param object_or_name: object to run as a process or the executable file name
+	:type object_or_name: :ref:`object type<lc-object-type>` or str
+	:param args: positional arguments to be passed to the process
+	:type args: tuple
+	:param origin: processing context
+	:type origin: ProcessOrigin
+	:param home_path: location of a composite process
 	:type home_path: str
-	:param role_name: name within a home, internal
+	:param role_name: name within the composite process
 	:type role_name: str
-	:param upgrade: version translation
-	:type upgrade: function
-	:param kw: addition args passed to Popen
-	:type kw: named args dict
+	:param top_role: enable top-level behaviour
+	:type top_role: bool
+	:param object_api: enable private library behaviour
+	:type object_api: bool
+	:param extra_types: force loading of library types
+	:type extra_types: list
+	:param remainder_args: forward unknown command-line args to process
+	:type remainder_args: tuple
+	:param settings: named arguments to be encoded for the process
+	:type settings: dict
 	"""
 	def __init__(self, object_or_name, *args, origin: ProcessOrigin=None,
 			home_path=None, role_name=None, top_role: bool=False,
