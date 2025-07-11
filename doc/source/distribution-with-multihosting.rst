@@ -20,11 +20,11 @@ all the right processes on all the right hosts. This is a non-trivial issue that
 document. Suffice to say that pubsub is one way to avoid most of the effort and most of the pain that arises
 from making mistakes in this area.
 
-Pubsub is implemented as a small set of networking components; ``group_cake``, ``host_cake`` and ``lan_cake``. At least
+Pubsub is implemented as a small set of networking components; ``group-cake``, ``host-cake`` and ``lan-cake``. At least
 one of these components must be present for pubsub to work. The use of the first is effectively automated, while the latter
 two need to be installed as part of the operational environment. They play a background role similar to DHCP or dynamic
 DNS. Installation requires a few trivial commands, and then all operation is discreet. The most difficult aspect of pubsub
-is the placement of ``lan_cake``. Further detail appears in the following sections.
+is the placement of ``lan-cake``. Further detail appears in the following sections.
 
 A Session With A Published Service
 **********************************
@@ -169,16 +169,16 @@ To run this implementation enter the following commands;
 
 .. code-block:: console
 
-	$ layer_cake create  
-	$ layer_cake add test_server_9.py server  
-	$ layer_cake add test_worker_9.py worker
+	$ layer-cake create  
+	$ layer-cake add test_server_9.py server  
+	$ layer-cake add test_worker_9.py worker
 
 This creates a small hierarchy of sub-folders and files in the ``.layer-cake`` folder. To run all the processes described in
 that folder, use this command line;
 
 .. code-block:: console
 
-	$ layer_cake run --debug-level=DEBUG
+	$ layer-cake run --debug-level=DEBUG
 	<0000000e>ListenConnect - Created by <00000001>
 	<0000000e>ListenConnect - Received Start from <00000001>
 	<0000000e>ListenConnect - Sent SocketChannel to <00000001>
@@ -192,7 +192,7 @@ that folder, use this command line;
 	...
 	<00000015>ProcessObject[INITIAL] - Created by <00000012>
 	<00000015>ProcessObject[INITIAL] - Received Start from <00000012>
-	<00000015>ProcessObject[INITIAL] - .../group_cake .../multihosting/.layer-cake
+	<00000015>ProcessObject[INITIAL] - .../group-cake .../multihosting/.layer-cake
 	...
 	<00000013>ProcessObject[INITIAL] - Created by <00000012>
 	<00000014>ProcessObject[INITIAL] - Created by <00000012>
@@ -206,8 +206,8 @@ that folder, use this command line;
 	<00000013>server - Sent JoinSpool to <00000014>
 	<00000014>ObjectSpool[SPOOLING] - Received JoinSpool from <00000013>
 
-Stepping through the logs it is possible to see the ``layer_cake`` process starting the ``group_cake`` process
-and then the ``group_cake`` process starting the server and worker processes. Confirm that the server has found
+Stepping through the logs it is possible to see the ``layer-cake`` process starting the ``group-cake`` process
+and then the ``group-cake`` process starting the server and worker processes. Confirm that the server has found
 the worker and that the worker is being put to use by the spool;
 
 .. code-block:: console
@@ -230,9 +230,9 @@ the worker and that the worker is being put to use by the spool;
 		]
 	}
 
-The layer\_cake CLI tool is \- among other things \- a process orchestration tool. It provides sub commands for describing a set
+The layer-cake CLI tool is \- among other things \- a process orchestration tool. It provides sub commands for describing a set
 of processes and sub commands for initiating those processes. The result might be called a composite process. This concept is
-strengthened by the discreet inclusion of group\_cake, which provides the supporting pubsub machinery to bring the :func:`server()`
+strengthened by the discreet inclusion of group-cake, which provides the supporting pubsub machinery to bring the :func:`server()`
 and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
@@ -361,17 +361,17 @@ To try out this new arrangement;
 
 .. code-block:: console
 
-	$ layer_cake destroy
-	$ layer_cake create
-	$ layer_cake add test_server_10.py server
-	$ layer_cake add test_worker_10.py worker --count=8
+	$ layer-cake destroy
+	$ layer-cake create
+	$ layer-cake add test_server_10.py server
+	$ layer-cake add test_worker_10.py worker --count=8
 
 An initial destroy command deletes the previous definition of the composite process. The add command accepts a \--count parameter
 that is used to add multiple instances of the same module. Decoration of the instance name with an ordinal number is automated;
 
 .. code-block:: console
 
-	$ layer_cake list --long-listing
+	$ layer-cake list --long-listing
 	server		/home/.../multihosting/test_server_10.py 4/7/500
 	worker-0	/home/.../multihosting/test_worker_10.py 4/7/502
 	worker-1	/home/.../multihosting/test_worker_10.py 4/7/502
@@ -386,7 +386,7 @@ Go ahead and run this latest service;
 
 .. code-block:: console
 
-	$ layer_cake run --debug-level=DEBUG
+	$ layer-cake run --debug-level=DEBUG
 	<0000000e>ListenConnect - Created by <00000001>
 	<0000000e>ListenConnect - Received Start from <00000001>
 	...
@@ -397,7 +397,7 @@ Go ahead and run this latest service;
 	...
 	<0000001c>ProcessObject[INITIAL] - Created by <00000012>
 	<0000001c>ProcessObject[INITIAL] - Received Start from <00000012>
-	<0000001c>ProcessObject[INITIAL] - .../group_cake ... .../.layer-cake
+	<0000001c>ProcessObject[INITIAL] - .../group-cake ... .../.layer-cake
 	<0000001c>ProcessObject[INITIAL] - Started process (1559661)
 	...
 	<00000012>Group[INITIAL] - Created by <00000011>
@@ -422,7 +422,7 @@ A final implementation of multihosting has been included, i.e. ``test_server_11.
 those areas that struggled as load increased. Generally these could be tuned away using configuration values in the network
 service. Under extreme load the network stack will shutdown the listen, resulting in a :class:`~.NotListening` message arriving
 at the :func:`server()`. This final implementation takes a more careful approach to termination, performing a managed
-termination of the spool and the subscription. The layer\_cake update command should be used to configure a restart of
+termination of the spool and the subscription. The ``layer-cake`` update command should be used to configure a restart of
 the process. A new process is probably a better response than trying to recover a potentially compromised process.
 
 Connecting To Multiple Hosts
@@ -432,15 +432,15 @@ At this point there is no more coding to be done. Courtesy of pubsub networking,
 be deployed anywhere on a network and the :func:`server` will find it. However, proper operation will require some initial,
 one-time setup.
 
-The next level of pubsub is provided by ``host_cake``. This enables a wider range of networking scenarios, but still within
-the boundary of a single host. Assuming that the previous demonstration of group\_cake is still running, enter the following
+The next level of pubsub is provided by ``host-cake``. This enables a wider range of networking scenarios, but still within
+the boundary of a single host. Assuming that the previous demonstration of ``group-cake`` is still running, enter the following
 command in a separate shell;
 
 .. code-block:: console
 
-	$ host_cake --debug-level=DEBUG
+	$ host-cake --debug-level=DEBUG
 
-The existing ``group_cake`` process automatically connects to the new ``host_cake`` process. All the service information it
+The existing ``group-cake`` process automatically connects to the new ``host-cake`` process. All the service information it
 is holding is pushed up to the new process. Open another shell and enter the following command;
 
 .. code-block:: console
@@ -448,45 +448,45 @@ is holding is pushed up to the new process. Open another shell and enter the fol
 	$ python3 test_worker_10.py --debug-level=DEBUG
 
 The new :func:`worker()` instance is immediately added to the pool of workers. This demonstrates pubsub without the presence
-of ``group_cake`` in the sense that this application process connects directly to the ``host_cake`` process.
+of ``group-cake`` in the sense that this application process connects directly to the ``host-cake`` process.
 
-There can be any number of composite processes (i.e. ``group_cake``) and application processes connecting to the local ``host_cake``.
-As demonstrated, once ``host_cake`` is in place this community of processes requires zero networking configuration. The local host
+There can be any number of composite processes (i.e. ``group-cake``) and application processes connecting to the local ``host-cake``.
+As demonstrated, once ``host-cake`` is in place this community of processes requires zero networking configuration. The local host
 should be configured with the following commands;
 
 .. code-block:: console
 
 	$ cd <operational-folder>  
-	$ layer_cake create  
-	$ layer_cake add host_cake  
-	$ layer_cake update group --retry='{"regular_steps": 30.0}'
+	$ layer-cake create  
+	$ layer-cake add host-cake  
+	$ layer-cake update group --retry='{"regular_steps": 30.0}'
 
-The update command is used to configure a restart of ``host_cake`` in 30 seconds, in the event that it terminates. Other members
+The update command is used to configure a restart of ``host-cake`` in 30 seconds, in the event that it terminates. Other members
 of the retry argument are available to randomize the delay. At boot-time the host should execute the following command;
 
 .. code-block:: console
 
 	$ cd <operational-folder>  
-	$ layer_cake start
+	$ layer-cake start
 
-The next level of pubsub support is provided by ``lan_cake``. Setup at this level is a bit more involved, especially if the
-operational environment is a strictly controlled network. The new ``lan_cake`` process needs to be located on a machine by
+The next level of pubsub support is provided by ``lan-cake``. Setup at this level is a bit more involved, especially if the
+operational environment is a strictly controlled network. The new ``lan-cake`` process needs to be located on a machine by
 itself. More accurately it cannot be cohabiting a machine with an application process such as ``test_server_10.py``.
 
-The simplest deployment of the ``lan_cake`` process would be to configure the process to run at boot-time, on a dedicated
+The simplest deployment of the ``lan-cake`` process would be to configure the process to run at boot-time, on a dedicated
 host. This might be appropriate use of an SBC, e.g. a Raspberry Pi. Otherwise, this is the least likely scenario and given
-the low resource requirements of the ``lan_cake`` process, probably a squandering of computing power.
+the low resource requirements of the ``lan-cake`` process, probably a squandering of computing power.
 
 The next option is to configure the process to run at boot-time on a dedicated virtual machine, e.g. using VirtualBox. This
 provides the separation that the process needs from all application processes without the cost of dedicated hardware. The
 physical host should be configured to start the virtual machine at boot-time.
 
-Lastly, the ``lan_cake`` process may be installed alongside other server-room software, on a pre-existing host within the
+Lastly, the ``lan-cake`` process may be installed alongside other server-room software, on a pre-existing host within the
 operational network.
 
 If at all practicable, the chosen host should be assigned the standard layer cake LAN IP address. This results in an
 environment where every layer cake process involved in inter-host networking can proceed with zero configuration. This
-applies to all ``host_cake``, ``group_cake`` and application processes that ever run within the target network.
+applies to all ``host-cake``, ``group-cake`` and application processes that ever run within the target network.
 
 The standard layer cake LAN IP is derived from the private address range in use, the primary IP of the local host, a
 defined station number (195) and a defined port number (54195), i.e.
@@ -504,46 +504,46 @@ If the standard layer cake LAN IP cannot be used then every connecting process m
 
 	$ python3 test_worker_10.py --connect-to-directory=’{“host”: “10.0.0.133”, “port”: 29101}’
 
-Installing and configuring ``host_cake`` appropriately on every operational host is one strategy for reducing the
+Installing and configuring ``host-cake`` appropriately on every operational host is one strategy for reducing the
 potential for related problems;
 
 .. code-block:: console
 
-	$ layer_cake update host_cake --directory-at-lan=’{“host”: “10.0.0.133”, “port”: 29101}’
+	$ layer-cake update host-cake --directory-at-lan=’{“host”: “10.0.0.133”, “port”: 29101}’
 
-Instances of ``group_cake`` and application processes on this host will connect to this ``host_cake`` and thereby join
-the directory rooted at the specified address. Once there is a designated lan\_cake machine and it is configured
+Instances of ``group-cake`` and application processes on this host will connect to this ``host-cake`` and thereby join
+the directory rooted at the specified address. Once there is a designated ``lan-cake`` machine and it is configured
 with the proper network address, it also needs to be configured with the following commands;
 
 .. code-block:: console
 
 	$ cd <operational-folder>  
-	$ layer_cake create  
-	$ layer_cake add lan_cake  
-	$ layer_cake update group --retry='{"regular\_steps": 30.0}'
+	$ layer-cake create  
+	$ layer-cake add lan-cake  
+	$ layer-cake update group --retry='{"regular\_steps": 30.0}'
 
 At boot-time the host should execute the following command;
 
 .. code-block::console
 
 	$ cd <operational-folder>
-	$ layer_cake start
+	$ layer-cake start
 
 A Distributed, Hierarchical Directory
 *************************************
 
-Conceptually, the layer cake directory is a tree with ``group_cake``, ``host_cake`` and ``lan_cake`` at the nodes and
-application processes as the terminal leaves. A ``lan_cake`` node is at the root of the tree (i.e. the top of the hierarchy).
+Conceptually, the layer cake directory is a tree with ``group-cake``, ``host-cake`` and ``lan-cake`` at the nodes and
+application processes as the terminal leaves. A ``lan-cake`` node is at the root of the tree (i.e. the top of the hierarchy).
 
 Installation and configuration of the directory is mostly automated. The items that cannot be automated are;
 
-* installation of ``host_cake``,  
-* determining the host for ``lan_cake``,  
-* determining the IP address for the ``lan_cake`` host,  
-* installation of ``lan_cake``.
+* installation of ``host-cake``,  
+* determining the host for ``lan-cake``,  
+* determining the IP address for the ``lan-cake`` host,  
+* installation of ``lan-cake``.
 
 These are all one-time operations performed on an as-needed basis; if you are not multihosting then there is no need
-for ``lan_cake``. Composite processes (i.e. using ``group_cake``) are completely self-contained and don’t require the
+for ``lan-cake``. Composite processes (i.e. using ``group-cake``) are completely self-contained and don’t require the
 presence of other directory components.
 
 The layer cake directory provides service to any layer cake process. This means that the one-time installation and
@@ -580,7 +580,7 @@ processes, subscribers outside the group cannot see the ``super-system:log-store
 
 Where no scope is specified, the default is HOST. For full, automated matching of all subscribers to their intended
 services, this value might have been set at LAN. However, that could easily lead to unintended polling in the search
-for a ``lan_cake`` that will never be installed and inadvertent services leaks, i.e. access to a service that was never
+for a ``lan-cake`` that will never be installed and inadvertent services leaks, i.e. access to a service that was never
 intended to be widely available.
 
 Services with the same name can be registered within the directory. The name ``super-system:log-store`` can be registered
