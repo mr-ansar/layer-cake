@@ -117,6 +117,10 @@ class StateMachine(Machine):
 	handlers according to the current state and the type of the
 	received message.
 
+	Every handler must return the next state. In those cases where
+	the state remains unchanged, return ``self.current_state``. Termination
+	of a machine is by a call to :meth:`~.Point.complete`.
+
 	:param initial: Start state for all instances of derived class
 	:type initial: class
 	"""
