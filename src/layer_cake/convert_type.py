@@ -305,11 +305,29 @@ def install_type(t):
 		return install_portable(t)
 	return install_hint(t)
 
-def def_type(t):
-	p = install_type(t)
+def def_type(hint_or_type):
+	"""
+	Enter the type into the runtime table of known types.
+
+	A layer cake process compiles a full set of known types before
+	the first asynchronous object is created. Python hints are
+	converted into layer cake types before storing.
+
+	:param hint_or_type: a type description
+	:type hint_or_type: Python hint or layer cake type
+	"""
+	p = install_type(hint_or_type)
 	return p
 
 def cast_to(message, p):
+	"""
+	Transform the message for transfer across the network or into storage.
+
+	:param message: the application value
+	:type message: :ref:`message<lc-message>`
+	:param p: portable representation of type
+	:type p: a layer-cake type
+	"""
 	if isinstance(p, UserDefined):
 		return message
 	return (message, p)
