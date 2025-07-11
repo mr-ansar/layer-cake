@@ -48,33 +48,61 @@ __all__ = [
 # Logging levels. Moderate the quantity
 # of logging by its designated significance.
 class USER_LOG(Enum):
-	NONE = 100		# No user logs at all.
-	FAULT = 6		# A definite problem that will compromise the service.
-	WARNING = 5		# Something unexpected that may compromise the service.
-	CONSOLE = 4		# An operational milestone worthy of note.
-	OBJECT = 3		# Async operation.
-	TRACE = 2		# Progress of the service. Suitable for public viewing.
-	DEBUG = 1		# Not suitable for customer or support.
+	"""
+	Enumeration of the levels within the layer cake logging.
+
+	* NONE - no logs at all
+	* FAULT - a definite problem that will compromise the service.
+	* WARNING - something unexpected that may compromise the service.
+	* CONSOLE - an operational milestone worthy of note.
+	* OBJECT - asynchronous operation
+	* TRACE - progress of the service, suitable for public viewing.
+	* DEBUG - not suitable for customer or support.
+	"""
+	NONE = 100
+	FAULT = 6
+	WARNING = 5
+	CONSOLE = 4
+	OBJECT = 3
+	TRACE = 2
+	DEBUG = 1
 
 # Async operation.
 class USER_TAG(Enum):
+	"""
+	Enumeration of the tags used to stamp each log entry.
+
+	* CREATED - new object
+	* DESTROYED - object gone
+	* SENT - object sent a message
+	* RECEIVED - object received a message
+	* STARTED - object started a subprocess
+	* ENDED - subprocess ended
+	* FAULT - compromised operation
+	* WARNING - may be compromised
+	* CONSOLE - application milestone
+	* TRACE - technical notes
+	* DEBUG - developer notes
+	* SAMPLE - formal sample of local data
+	* CHECK - assert a condition
+	"""
 	CREATED = '+'
-	DESTROYED = 'X'	# Provides completion type.
-	SENT = '>'	# Type.
-	RECEIVED = '<'	# ..
-	STARTED = '('	# Sub-process running.
-	ENDED = ')'	# Exited.
+	DESTROYED = 'X'
+	SENT = '>'
+	RECEIVED = '<'
+	STARTED = '('
+	ENDED = ')'
 
 	# Operational significance.
-	FAULT = '!'	# Compromised.
-	WARNING = '?'	# May be compromised.
-	CONSOLE = '^'	# Application milestone.
+	FAULT = '!'
+	WARNING = '?'
+	CONSOLE = '^'
 
-	TRACE = '~'	# Technical, networks, files and devices.
-	DEBUG = '_'	# Developer, raw.
+	TRACE = '~'
+	DEBUG = '_'
 
-	SAMPLE = '&'	# Sample of local data.
-	CHECK = '='	# Check a condition.
+	SAMPLE = '&'
+	CHECK = '='
 
 TAG_LOG = {
 	USER_TAG.FAULT.value: USER_LOG.FAULT,
