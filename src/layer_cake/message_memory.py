@@ -504,26 +504,25 @@ def bind_message(message,
 		message_trail=True, execution_trace=True,
 		copy_before_sending=True, not_portable=False,
 		**object_schema):
-	"""Set the type information and runtime controls for the given message type.
-
-	:param message: a message class.
-	:type message: class
-	:param object_schema: application-supplied type information.
-	:type object_schema: a map of <name,portable declaration> pairs.
-	:param message_trail: log every time this message is sent.
-	:type message_trail: bool
-	:param execution_trace: log every time this message is received.
-	:type execution_trace: bool
-	:param copy_before_sending: make a copy of the message before each send.
-	:type copy_before_sending: bool
-	:param not_portable: prevent serialization/transfer, e.g. of a file handle.
-	:type not_portable: bool
-	:param object_schema: explicit type declarations by name.
-	:type object_schema: dict
-	:return: nothing.
+	"""
+	Set the type information and runtime controls for the given message type.
 
 	Values assigned in this function affect the behaviour for all instances of
 	the given type.
+
+	:param message: class to be registered as a message
+	:type message: class
+	:param message_trail: enable log when message is sent
+	:type message_trail: bool
+	:param execution_trace: enable log when message is received
+	:type execution_trace: bool
+	:param copy_before_sending: enable copying of message before each send
+	:type copy_before_sending: bool
+	:param not_portable: disable serialization/transfer, e.g. of a file handle
+	:type not_portable: bool
+	:param object_schema: explicit type declarations by name
+	:type object_schema: dict
+	:rtype: None
 	"""
 	rt = Runtime(message.__name__, message.__module__,
 		message_trail=message_trail,
