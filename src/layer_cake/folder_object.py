@@ -23,12 +23,12 @@
 
 """Manage folders of files containing encodings of application data.
 
-The :py:class:`~ansar.encode.folder.Folder` class provides for one-time description of folder location and
+The :class:`~.Folder` class provides for one-time description of folder location and
 contents. The description is inherited by any child objects (i.e. ``Files``
 and sub-``Folders``) created, and by operations within the folder.
 
 The class also provides for persistence of maps. Rather than using a file
-to store an entire map, the :py:class:`~ansar.folder.Folder` class can be used to store the
+to store an entire map, the :class:`~.Folder` class can be used to store the
 map on a one-file-per-entry basis.
 """
 
@@ -52,6 +52,7 @@ import re as regex
 from .virtual_memory import *
 from .message_memory import *
 from .make_message import *
+from .convert_type import *
 from .virtual_codec import *
 from .json_codec import *
 from .file_object import *
@@ -102,12 +103,12 @@ def shape_of_folder(path):
 #
 #
 class Folder(object):
-	"""Create and manage a collection of application values, using a folder.
+	"""Create and manage a folder of application encodings.
 
 	:param path: the location in the filesystem
 	:type path: str
-	:param te: formal description of the content
-	:type te: :ref:`type expression<type-expressions>`
+	:param tip: type expression for the content
+	:type tip: :ref:`tip<layer-cake-type-reference>`
 	:param re: formal description of expected file names
 	:type re: a Python regular expression
 	:param encoding: selection of representation, defaults to ``CodecJson``
@@ -125,7 +126,7 @@ class Folder(object):
 	"""
 
 	def __init__(self, path=None,
-			te=None, re=None, encoding=None,
+			tip=None, re=None, encoding=None,
 			pretty_format=True, decorate_names=True,
 			create_default=False, keys_names=None,
 			make_absolute=False, auto_create=True):
@@ -133,16 +134,22 @@ class Folder(object):
 		path = path or '.'
 		if make_absolute:
 			path = os.path.abspath(path)
-		# Retired behaviour. Cant fix
-		# at runtime.
-		#if te:
-		#	te = fix_expression(te, dict())
 		self.path = path
+
 		if re is None:
 			self.re = None
 		else:
 			self.re = regex.compile(re)
-		self.te = te
+
+		if tip is None:
+			self.file_type = None
+		elif isinstance(tip, Portable):
+			self.file_type = tip
+		elif hasattr(tip, '__art__'):
+			self.file_type = UserDefined(tip)
+		else:
+			self.file_type = lookup_type(tip)
+
 		self.encoding = encoding or CodecJson
 		self.pretty_format = pretty_format
 		self.decorate_names = decorate_names
@@ -158,15 +165,15 @@ class Folder(object):
 			if e.errno == errno.EEXIST:
 				return
 
-	def folder(self, name, te=None, re=None, encoding=None,
+	def folder(self, name, tip=None, re=None, encoding=None,
 			pretty_format=None, decorate_names=None, create_default=None,
 			auto_create=None, keys_names=None):
-		"""Create a new :py:class:`~ansar.folder.Folder` object representing a sub-folder at the current location.
+		"""Create a new :class:`~.Folder` object representing a sub-folder at the current location.
 
 		:param path: the name to be added to the saved ``path``
 		:type path: str
-		:param te: formal description of the content
-		:type te: :ref:`type expression<type-expressions>`
+		:param tip: type expression for the content
+		:type tip: :ref:`tip<layer-cake-type-reference>`
 		:param re: formal description of expected file names
 		:type re: a Python regular expression
 		:param encoding: selection of representation, defaults to ``CodecJson``
@@ -182,11 +189,9 @@ class Folder(object):
 		:param auto_create: create folders as necessary, defaults to ``None``
 		:type auto_create: bool
 		:return: a new location in the filesystem
-		:rtype: :py:class:`~ansar.folder.Folder`
+		:rtype: Folder
 		"""
-		#if te:
-		#	te = fix_expression(te, dict())
-		te = te or self.te
+		tip = tip or self.file_type
 		if re is None:
 			self.re = None
 		else:
@@ -199,18 +204,18 @@ class Folder(object):
 		keys_names = keys_names or self.keys_names
 
 		path = os.path.join(self.path, name)
-		return Folder(path, re=re, te=te, encoding=encoding,
+		return Folder(path, re=re, tip=tip, encoding=encoding,
 			pretty_format=pretty_format, decorate_names=decorate_names, create_default=create_default,
 			keys_names=keys_names, make_absolute=False, auto_create=auto_create)
 
-	def file(self, name, te, encoding=None,
+	def file(self, name, tip=None, encoding=None,
 			pretty_format=None, decorate_names=None, create_default=None):
-		"""Create a new :py:class:`~ansar.file.File` object representing a file at the current location.
+		"""Create a new :class:`~.File` object representing a file at the current location.
 
 		:param name: the name to be added to the saved ``path``
 		:type name: str
-		:param te: formal description of the content
-		:type te: :ref:`type expression<type-expressions>`
+		:param tip: type expression for the content
+		:type tip: :ref:`tip<layer-cake-type-reference>`
 		:param encoding: selection of representation, defaults to ``CodecJson``
 		:type encoding: class
 		:param pretty_format: generate human-readable file contents, defaults to ``True``
@@ -220,23 +225,22 @@ class Folder(object):
 		:param create_default: return default instance on file not found, defaults to ``False``
 		:type create_default: bool
 		:return: a new file in the filesystem
-		:rtype: :py:class:`~ansar.file.File`
+		:rtype: File
 		"""
-		# Fixed in File ctor.
-		# te = fix_expression(te, dict())
+		tip = tip or self.file_type
 		encoding = encoding or self.encoding
 		if pretty_format is None: pretty_format = self.pretty_format
 		if decorate_names is None: decorate_names = self.decorate_names
 		if create_default is None: create_default = self.create_default
 
 		path = os.path.join(self.path, name)	# Let the I/O operation decorate.
-		return File(path, te, encoding=encoding,
+		return File(path, tip, encoding=encoding,
 			pretty_format=pretty_format, decorate_names=decorate_names, create_default=create_default)
 
 	def matching(self):
 		"""Scan for files in the folder.
 
-		:return: a sequence of filenames matching the :py:class:`~ansar.folder.Folder` criteria.
+		:return: a sequence of filenames matching the :class:`~.Folder` criteria.
 		:rtype: str
 		"""
 		re = self.re
@@ -259,11 +263,11 @@ class Folder(object):
 			yield f
 
 	def each(self):
-		"""ProcessObject the files in the folder.
+		"""Process the files in the folder.
 
-		:return: a sequence of :py:class:`~ansar.file.File` objects matching
-			the :py:class:`~ansar.folder.Folder` criteria.
-		:rtype: :py:class:`~ansar.file.File`
+		:return: a sequence of :class:`~.File` objects matching
+			the :class:`~.Folder` criteria.
+		:rtype: :class:`~.File`
 		"""
 		# Get a fresh image of folder/slice.
 		# Use a snapshot for iteration to avoid
@@ -272,7 +276,7 @@ class Folder(object):
 		# Visit each named file.
 		# Yield a file object, ready for I/O.
 		for f in matched:
-			yield self.file(f, self.te)
+			yield self.file(f, tip=self.file_type)
 
 	def store(self, values):
 		"""Store a ``dict`` of values as files in the folder.
@@ -286,7 +290,7 @@ class Folder(object):
 		stored = set()
 		for k, v in values.items():
 			name = self.name(v)
-			io = self.file(name, self.te)
+			io = self.file(name, tip=self.file_type)
 			io.store(v)
 			stored.add(name)
 		# Clean out files that look like they
@@ -302,7 +306,7 @@ class Folder(object):
 		A generator function that yields a sequence of tuples that
 		allow the caller to process an entire folder with a clean loop.
 
-		All arguments are forwarded to :py:func:`~ansar.encode.file.recover`.
+		All arguments are forwarded to :meth:`~.file_object.recover`.
 
 		The return value includes the version of the main decoded object, or None
 		if the encoding and decoding applications are at the same version. This value is
@@ -324,9 +328,9 @@ class Folder(object):
 		# Get a fresh image of folder/slice.
 		matched = [f for f in self.matching()]
 		# Visit each named file.
-		# Yield the key, message, version tuple.
+		# Yield the key, message tuple.
 		for f in matched:
-			io = self.file(f, self.te)
+			io = self.file(f, tip=self.file_type)
 			r = io.recover(*args, **kwargs)
 			if self.keys_names is None:
 				k = None
@@ -340,7 +344,7 @@ class Folder(object):
 		:param values: a collection of application values
 		:type values: dict
 		:param item: the value to be added
-		:type item: refer to ``Folder.te``
+		:type item: refer to ``Folder.tip``
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -349,7 +353,7 @@ class Folder(object):
 		key = keys_names[0](item)
 		name = keys_names[1](item)
 
-		io = self.file(name, self.te)
+		io = self.file(name, tip=self.file_type)
 		if key in values:
 			raise ValueError(f'name "{io.name}" already present (add)')
 		io.store(item)
@@ -361,7 +365,7 @@ class Folder(object):
 		:param values: a collection of application values
 		:type values: dict
 		:param item: the value to be updated
-		:type item: refer to ``Folder.te``
+		:type item: refer to ``Folder.tip``
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -370,7 +374,7 @@ class Folder(object):
 		key = keys_names[0](item)
 		name = keys_names[1](item)
 
-		io = self.file(name, self.te)
+		io = self.file(name, tip=self.file_type)
 		if key not in values:
 			raise ValueError(f'name "{io.name}" not an existing entry (update)')
 
@@ -383,7 +387,7 @@ class Folder(object):
 		:param values: a collection of application values
 		:type values: dict
 		:param item: the value to be removed
-		:type item: refer to ``Folder.te``
+		:type item: refer to ``Folder.tip``
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -450,7 +454,7 @@ class Folder(object):
 		"""Generate the stable key for a given application value.
 
 		:param item: an application value
-		:type name: see ``Folder.te``
+		:type name: see ``Folder.tip``
 		:return: the key
 		:rtype: folder dependent
 		"""
@@ -463,7 +467,7 @@ class Folder(object):
 		"""Generate the stable filename for a given application value.
 
 		:param item: an application value
-		:type name: see ``Folder.te``
+		:type name: see ``Folder.tip``
 		:return: the filename
 		:rtype: str
 		"""

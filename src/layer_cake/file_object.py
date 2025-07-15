@@ -46,6 +46,7 @@ import os
 
 from .virtual_memory import *
 from .message_memory import *
+from .convert_type import *
 from .make_message import *
 from .virtual_codec import *
 from .json_codec import *
@@ -57,8 +58,8 @@ class File(object):
 
 	:param name: name of the file
 	:type name: str
-	:param expression: formal description of the content
-	:type expression: :ref:`type expression<type-expressions>`
+	:param tip: type expression for the content
+	:type tip: :ref:`tip<layer-cake-type-reference>`
 	:param encoding: selection of representation, defaults to ``CodecJson``
 	:type encoding: class
 	:param create_default: return default instance if file not found on read, defaults to ``False``
@@ -68,13 +69,19 @@ class File(object):
 	:param decorate_names: auto-append an encoding-dependent extension to the file name, defaults to ``True``
 	:type decorate_names: bool
 	"""
-
-	def __init__(self, name, expression, encoding=None, create_default=False, pretty_format=True, decorate_names=True):
+	def __init__(self, name, tip, encoding=None, create_default=False, pretty_format=True, decorate_names=True):
 		"""Not published."""
 		self.name = name
-		# Cant fix expressions at runtime.
-		#self.fixed = fix_expression(expression, dict())
-		self.fixed = expression
+
+		if tip is None:
+			self.file_type = None
+		elif isinstance(tip, Portable):
+			self.file_type = tip
+		elif hasattr(tip, '__art__'):
+			self.file_type = UserDefined(tip)
+		else:
+			self.file_type = lookup_type(tip)
+
 		self.encoding = encoding
 		self.create_default = create_default
 		self.pretty_format = pretty_format
@@ -99,27 +106,12 @@ class File(object):
 		else:
 			name = self.name
 
-		write_to_file(value, name, self.fixed, encoding=self.encoding,
+		write_to_file(value, name, self.file_type, encoding=self.encoding,
 			decorate_names=self.decorate_names, pretty_format=self.pretty_format)
 
-	def recover(self, upgrade=None, migrate=False, *args, **kwargs):
+	def recover(self, *args, **kwargs):
 		"""Read from the saved ``name``, parse and marshal into an application value.
 
-		Version handling is implemented through the optional ``upgrade``
-		and ``migrate`` parameters. These can be used to automate the
-		runtime promotion of the decoded object from a specific previous version to the
-		version current within the application. Refer to :ref:`versions-upgrading-and-migration`
-		for details.
-
-		The return value includes the version of the main decoded object, or None
-		if the encoding and decoding applications are at the same version. This value is
-		the mechanism by which applications can select different code-paths in support of
-		older versions of encoded materials.
-
-		:param upgrade: promote decoded object
-		:type upgrade: function
-		:param migrate: if true, store any upgraded object
-		:type migrate: bool
 		:param args: remaining positional parameters
 		:type args: tuple
 		:param kwargs: remaining named parameters
@@ -128,10 +120,10 @@ class File(object):
 		:rtype: value matching the saved ``expression`` and a ``str``
 		"""
 		try:
-			r = read_from_file(self.fixed, self.name, encoding=self.encoding, decorate_names=self.decorate_names)
+			r = read_from_file(self.file_type, self.name, encoding=self.encoding, decorate_names=self.decorate_names)
 		except FileNotFoundError:
 			if self.create_default:
-				c = self.fixed
+				c = self.file_type
 				a = make(c)
 				return a
 			raise
