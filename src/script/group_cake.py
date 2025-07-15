@@ -33,7 +33,6 @@ Termination is by intervention (i.e. control-c) or termination of the
 child processes. There are several variations on this general theme;
 
 * termination of all processes, retries optional (the default),
-* termination of any single process, retries optional (see one_and_all),
 * termination of a specified process, retries optional (see main_role).
 """
 __docformat__ = 'restructuredtext'
@@ -54,14 +53,13 @@ class GROUP_RETURNING: pass
 class Group(lc.Threaded, lc.StateMachine):
 	def __init__(self, *search,
 			directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None,
-			retry: lc.RetryIntervals=None, one_and_all=False, main_role: str=None):
+			retry: lc.RetryIntervals=None, main_role: str=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
 		self.directory_at_host = directory_at_host
 		self.directory_at_lan = directory_at_lan
 		self.retry = retry
-		self.one_and_all = one_and_all
 		self.main_role = main_role
 
 		self.home_path = lc.CL.home_path or lc.DEFAULT_HOME
@@ -159,7 +157,7 @@ def Group_RUNNING_Returned(self, message):
 		if not self.working():					# As above.
 			self.complete(self.group_returned)
 
-		if self.one_and_all:
+		if self.main_role is None:
 			self.abort()
 			return GROUP_RETURNING
 
@@ -177,7 +175,7 @@ def Group_RUNNING_Returned(self, message):
 		if not self.working():					# As above.
 			self.complete(self.group_returned)
 
-		if self.one_and_all:
+		if self.main_role is None:
 			self.abort()
 			return GROUP_RETURNING
 
@@ -190,7 +188,7 @@ def Group_RUNNING_Returned(self, message):
 		self.assign(a, args.role)
 
 	# Run a no-op with the desired timeout.
-	a = self.create(lc.GetResponse, lc.Enquiry(), lc.NO_SUCH_ADDRESS, seconds=seconds)
+	a = self.create(lc.Delay, seconds=seconds)
 	self.on_return(a, restart, role=d)
 	return RUNNING
 
