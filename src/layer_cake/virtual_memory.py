@@ -221,7 +221,7 @@ class ArrayOf(Container):
 	"""A fixed-length sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<type-expressions>`
+	:type element: :ref:`type expression<layer-cake-type-reference>`
 	:param size: fixed size.
 	:type size: int
 	"""
@@ -235,7 +235,7 @@ class VectorOf(Container):
 	"""A variable-length sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<type-expressions>`
+	:type element: :ref:`type expression<layer-cake-type-referencepressions>`
 	"""
 
 	def __init__(self, element):
@@ -246,7 +246,7 @@ class DequeOf(Container):
 	"""A double-ended sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<type-expressions>`
+	:type element: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
 	def __init__(self, element):
@@ -257,7 +257,7 @@ class SetOf(Container):
 	"""A collection of unique elements.
 
 	:param element: type of the content, a hash-able value.
-	:type element: :ref:`type expression<type-expressions>`
+	:type element: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
 	def __init__(self, element):
@@ -268,9 +268,9 @@ class MapOf(Container):
 	"""A map of unique, key-value pairs.
 
 	:param key: type of the key, a hash-able value.
-	:type key: :ref:`type expression<type-expressions>`
+	:type key: :ref:`type expression<layer-cake-type-reference>`
 	:param value: type of the content.
-	:type value: :ref:`type expression<type-expressions>`
+	:type value: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
 	def __init__(self, key, value):
@@ -293,7 +293,7 @@ class PointerTo(Container):
 	"""An object that refers to another object.
 
 	:param element: type of the object being pointed to.
-	:type element: :ref:`type expression<type-expressions>`
+	:type element: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
 	def __init__(self, element):
