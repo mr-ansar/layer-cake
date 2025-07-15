@@ -78,8 +78,8 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 
 	:param routine: function to be registered as a routine
 	:type routine: Python function
-	:param return_type: type description of the return value
-	:type return_type: hint/portable
+	:param return_type: type expression for the return value
+	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
 	:type api: list of classes
 	:param lifecycle: enable log at creation, ending...
@@ -90,7 +90,7 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	:type execution_trace: bool
 	:param user_logs: the logging level for this message type
 	:type user_logs: :class:`~.USER_LOG`
-	:param explicit_schema: explicit type declarations by name
+	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
 	:type explicit_schema: dict
 	:rtype: None
 	"""
@@ -103,7 +103,7 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	setattr(routine, '__art__', rt)
 
 	# Replace with identity object, installing as required.
-	explicit_schema = {k: install_portable(v) for k, v in explicit_schema.items()}
+	explicit_schema = {k: install_type(v) for k, v in explicit_schema.items()}
 
 	hints = typing.get_type_hints(routine)
 	routine_hints, routine_return = install_hints(hints)
@@ -134,15 +134,15 @@ def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, m
 
 	:param point: instance of an asynchronous object
 	:type point: :class:`~.Point`
-	:param return_type: hint or portable description of the return value
-	:type return_type: hint/portable
+	:param return_type: type expression for the return value
+	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param message_trail: enable log when message is sent
 	:type message_trail: bool
 	:param execution_trace: enable log when message is received
 	:type execution_trace: bool
 	:param user_logs: the logging level for this object type
 	:type user_logs: :class:`~.USER_LOG`
-	:param explicit_schema: explicit type declarations by name
+	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
 	:type explicit_schema: dict
 	:rtype: None
 	"""
@@ -154,13 +154,13 @@ def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, m
 
 	setattr(point, '__art__', rt)
 
-	explicit_schema = {k: install_portable(v) for k, v in explicit_schema.items()}
+	explicit_schema = {k: install_type(v) for k, v in explicit_schema.items()}
 
 	hints = typing.get_type_hints(point.__init__)
 	point_hints, _ = install_hints(hints)
 
 	if return_type:
-		return_type = install_portable(return_type)
+		return_type = install_type(return_type)
 
 	r = {}
 	for k, a in explicit_schema.items():
@@ -207,7 +207,7 @@ def unfold(folded):
 		else:
 			yield f
 
-def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
+def bind_stateless(machine, dispatch, return_type=None, api=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the non-FSM machine.
 
@@ -218,15 +218,15 @@ def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
 	:type machine: :class:`~.Stateless`
 	:param dispatch: list of expected messages
 	:type dispatch: list
-	:param return_type: hint or portable description of the return value
-	:type return_type: hint/portable
+	:param return_type: type expression for the return value
+	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
 	:type api: list
-	:param kv_args: explicit type declarations by name
+	:param kv_args: names and :ref:`tips<layer-cake-type-reference>`
 	:type kv_args: dict
 	:rtype: None
 	"""
-	bind_point(machine, return_type=return_type, api=api, **kw_args)
+	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
 	if dispatch is None:
 		return
 
@@ -252,7 +252,7 @@ def bind_stateless(machine, dispatch, return_type=None, api=None, **kw_args):
 
 	machine.__art__.value = (shift, messaging)
 
-def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
+def bind_statemachine(machine, dispatch, return_type=None, api=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the FSM machine.
 
@@ -275,15 +275,15 @@ def bind_statemachine(machine, dispatch, return_type=None, api=None, **kw_args):
 	:type machine: :class:`~.StateMachine`
 	:param dispatch: table of current state and expected messages
 	:type dispatch: dict
-	:param return_type: hint or portable description of the return value
-	:type return_type: hint/portable
+	:param return_type: type expression for the return value
+	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
 	:type api: list
-	:param kv_args: explicit type declarations by name
-	:type kv_args: dict
+	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
+	:type explicit_schema: dict
 	:rtype: None
 	"""
-	bind_point(machine, return_type=return_type, api=api, **kw_args)
+	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
 	if dispatch is None:
 		return
 	shift = {}
