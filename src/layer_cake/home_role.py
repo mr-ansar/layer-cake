@@ -36,9 +36,12 @@ from .folder_object import *
 
 __all__ = [
 	'HR',
-	'resource',
-	'model',
-	'tmp',
+	'resource_folder',
+	'model_folder',
+	'tmp_folder',
+	'resource_path',
+	'model_path',
+	'tmp_path',
 ]
 
 HR = Gas(home_path=None, role_name=None,
@@ -54,23 +57,76 @@ HR = Gas(home_path=None, role_name=None,
 # Tmp - read-write, empty on start, private.
 
 # Set in create_role(), open_role() and create_memory_role().
-def resource():
+def resource_folder():
+	"""Application access to the shared, per-executable file space. Return a folder.
+
+	Static, read-only file data associated with the running executable. This is
+	intended to be the folder managed by the :ref:`resource<layer-cake-command-reference-resource>`
+	command but may be explicitly set on the command-line using ``--resource-path``, or it
+	is ``None``.
+
+	:rtype: Folder
+	"""
 	return HR.resource
 
-def model():
+def model_folder():
+	"""Application access to the operational, per-role file space. Return a folder.
+
+	Private, persistent, read-write file data associated with the operational role. This is
+	intended to be the folder managed by the :ref:`model<layer-cake-command-reference-model>`
+	command but may be explicitly set on the command-line using ``--model-path``, or it
+	is the current working folder.
+
+	:rtype: Folder
+	"""
 	return HR.model
 
-# For the CLI context (create_memory_role) the resource member must
-# be set (--resource-path) or its null, and the model member is set
-# (--model-path) or defaults to '.' (cwd). The tmp member is always null.
-# This is a lazy creation of a tmp folder. CLI objects that dont
-# make use of a tmp folder never create one.
 tmp_lock = threading.RLock()
 
-def tmp():
+def tmp_folder():
+	"""Application access to the transient, per-role file space. Return a folder.
+
+	Private, transient, read-write file data associated with the operational *role*. This is
+	a space arranged by the framework, where temporary files can be freely added, modified
+	and deleted. It is part of the *home* folder hierarchy, or - when the process is running
+	from the command-line - it is a folder created within the folders managed by the host
+	platform. The folder is guaranteed to be empty at the startup of every application.
+
+	:rtype: Folder
+	"""
 	with tmp_lock:
 		if not HR.tmp:
 			# Cleanup in create()
 			HR.temp_dir = tempfile.TemporaryDirectory()
 			HR.tmp = Folder(HR.temp_dir.name)
 	return HR.tmp
+
+def resource_path():
+	"""Application access to the shared, per-executable file space. Return the path or None.
+
+	:rtype: str
+	"""
+	f = resource_folder()
+	if isinstance(f, Folder):
+		return f.path
+	return None
+
+def model_path():
+	"""Application access to the operational, per-role file space. Return the path.
+
+	:rtype: str
+	"""
+	f = model_folder()
+	if isinstance(f, Folder):
+		return f.path
+	return None
+
+def tmp_path():
+	"""Application access to the transient, per-role file space. Return the path.
+
+	:rtype: str
+	"""
+	f = tmp_folder()
+	if isinstance(f, Folder):
+		return f.path
+	return None
