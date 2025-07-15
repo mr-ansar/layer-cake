@@ -118,11 +118,11 @@ lc.bind(create)
 
 #
 #
-def add(self, word, remainder, count: int=None, start: int=0):
+def add(self, word, remainder, role_count: int=None, role_start: int=0):
 	'''Add process definition(s) to an existing store. Return Faulted/None.'''
 	executable = word_i(word, 0)
-	role_name = word_i(word, 1) or lc.CL.role_name 
-	home_path = word_i(word, 2) or lc.CL.home_path or lc.DEFAULT_HOME
+	role_name = word_i(word, 1) or lc.CL.role_name
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	if executable is None:
 		return lc.Faulted('cannot add role', 'no module specified')
@@ -141,12 +141,12 @@ def add(self, word, remainder, count: int=None, start: int=0):
 	if home is None:
 		return lc.Faulted(cannot_add, f'home path "{home_path}" does not exist or contains unexpected/incomplete materials')
 
-	if count is None:
+	if role_count is None:
 		role_call = [role_name]
-	elif 1 <= count <= 1000:
-		role_call = [f'{role_name}-{i}' for i in range(start, start + count)]
+	elif 1 <= role_count <= 1000:
+		role_call = [f'{role_name}-{i}' for i in range(role_start, role_start + role_count)]
 	else:
-		return lc.Faulted(cannot_add, 'expecting count in the range 1...1000')
+		return lc.Faulted(cannot_add, 'expecting role_count in the range 1...1000')
 
 	c = set(home.keys()) & set(role_call)
 	if c:
@@ -207,10 +207,12 @@ lc.bind(list_)
 
 #
 #
-def update(self, search, remainder, group_role: bool=True, sub_roles: bool=True):
+def update(self, search, remainder):
 	'''Update details of existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 	home_path = os.path.abspath(home_path)
+	group_role = True
+	sub_roles = True
 
 	cannot_update = f'cannot update "{home_path}"'
 
@@ -243,7 +245,7 @@ lc.bind(update)
 
 #
 #
-def delete(self, search, remainder, all: bool=False):
+def delete(self, search, remainder, all_roles: bool=False):
 	'''Delete existing process definition(s). Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 	home_path = os.path.abspath(home_path)
@@ -251,15 +253,14 @@ def delete(self, search, remainder, all: bool=False):
 	cannot_delete = f'cannot delete from "{home_path}"'
 	if search:
 		home = home_listing(self, home_path, search)
-	elif all:
+	elif all_roles:
 		home = lc.open_home(home_path)
 		if home is None:
 			return lc.Faulted(cannot_delete, f'does not exist or unexpected/incomplete materials')
 	else:
-		return lc.Faulted(cannot_delete, f'no roles specified, use --all?')
+		return lc.Faulted(cannot_delete, f'no roles specified, use --all_roles?')
 
-	s = ','.join(search)
-	self.console('delete', search=s, home_path=home_path)
+	self.console('delete', search=search, home_path=home_path)
 
 	try:
 		running = home_running(self, home)
@@ -295,6 +296,7 @@ lc.bind(delete)
 def destroy(self, word, remainder):
 	'''Remove all trace of an existing store. Return Faulted/None.'''
 	home_path = word_i(word, 0) or lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_destroy = f'cannot destroy "{home_path}"'
 
@@ -446,9 +448,10 @@ lc.bind(start)
 
 #
 #
-def stop(self, word, remainder):
+def stop(self, search, remainder):
 	'''Stop the previously started set of background daemons. Return Faulted/None (immediately).'''
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = os.path.abspath(home_path)
 
 	cannot_stop = f'cannot stop "{home_path}"'
 	home = lc.open_home(home_path)
@@ -553,19 +556,18 @@ lc.bind(status)
 
 #
 #
-def history(self, word, remainder, long_listing: bool=False, group_role: bool=False):
+def history(self, word, remainder, long_listing: bool=False):
 	'''List the the start/stop record for the specified role. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
-
-	if role_name is None and group_role:
-		role_name = GROUP_ROLE
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	group_role = True
+	sub_roles = True
 
 	if role_name is None:
 		return lc.Faulted(f'cannot pull history', f'no role specified')
 	cannot_history = f'cannot pull history for "{role_name}"'
 
-	home = lc.open_home(home_path, grouping=group_role)
+	home = lc.open_home(home_path, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_history, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
 
@@ -621,10 +623,12 @@ class NoFault(object):
 
 lc.bind(NoFault)
 
-def returned(self, word, remainder, start: int=None, timeout: float=None, group_role: bool=False):
+def returned(self, word, remainder, start: int=None, timeout: float=None):
 	'''Print a specific termination value for the specified role. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	group_role = True
+	sub_roles = True
 
 	if role_name is None and group_role:
 		role_name = GROUP_ROLE
@@ -633,7 +637,7 @@ def returned(self, word, remainder, start: int=None, timeout: float=None, group_
 		return lc.Faulted(f'cannot pull return', f'no role specified')
 	cannot_returned = f'cannot pull return for "{role_name}"'
 
-	home = lc.open_home(home_path, grouping=group_role)
+	home = lc.open_home(home_path, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_returned, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
 
@@ -679,11 +683,11 @@ def returned(self, word, remainder, start: int=None, timeout: float=None, group_
 
 	self.start(lc.T2, 1.0)
 	while True:
-		m = self.select(lc.Stop, lc.T1, lc.T2)
+		m, i = self.select(lc.Stop, lc.T1, lc.T2)
 		if isinstance(m, lc.Stop):
 			break
 		elif isinstance(m, lc.T1):
-			return lc.TimedOut()
+			return lc.TimedOut(m)
 		elif isinstance(m, lc.T2):
 			r = role.start_stop.resume()
 			if len(r) < start:
@@ -715,13 +719,12 @@ class TimeFrame(Enum):
 
 def log(self, word, remainder, clock: bool=False,
 	rewind: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
-	to: str=None, span=None, count: int=None, sample: str=None, group_role: bool=True, sub_roles: bool=True):
+	to: str=None, span=None, count: int=None, sample: str=None):
 	'''List logging records for the specified process definition. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
-	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
-
-	if role_name is None and group_role:
-		role_name = GROUP_ROLE
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+	group_role = True
+	sub_roles = True
 
 	if role_name is None:
 		return lc.Faulted(f'cannot log', f'no role specified')
@@ -848,15 +851,15 @@ lc.bind(log, span=lc.TimeSpan(), back=lc.TimeSpan())
 
 #
 #
-def edit(self, word, remainder, group_role: bool=True, sub_roles: bool=True):
+def edit(self, word, remainder):
 	'''Edit the configuration of the specified process defintion. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
 	home_path = word_i(word, 1) or lc.CL.home_path or lc.DEFAULT_HOME
+	group_role = True
+	sub_roles = True
 
 	if role_name is None:
-		if not group_role:
-			return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
-		role_name = GROUP_ROLE
+		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
 
 	cannot_edit = f'cannot edit "{role_name}"'
 
@@ -1148,7 +1151,7 @@ lc.bind(model)
 #
 def script(self, word, remainder,
 		full_path: bool=False, recursive_listing: bool=False, long_listing: bool=False,
-		list_changes: bool=False, role_scripts: bool=False,
+		list_scripts: bool=False, list_executables: bool=False, list_paths: bool=False,
 		make_changes: bool=False, clear_all: bool=False):
 	'''.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
@@ -1159,6 +1162,19 @@ def script(self, word, remainder,
 	home = lc.open_home(home_path, grouping=True, sub_roles=True)
 	if home is None:
 		return lc.Faulted(cannot_script, f'does not exist or contains unexpected/incomplete materials')
+
+	try:
+		running = home_running(self, home)
+		n = len(running)
+		if n and (clear_all or make_changes):
+			r = ','.join(running.keys())
+			return lc.Faulted(cannot_script, f'roles "{r}" are running')
+
+	finally:
+		self.abort()
+		while self.working():
+			m, i = self.select(lc.Returned)
+			self.debrief()
 
 	# Get all executable for every role, then refine that to a map of
 	# unique paths, i.e. where each python module comes from.
@@ -1175,7 +1191,7 @@ def script(self, word, remainder,
 	for p in source_path:
 		for s in os.listdir(p):
 			# Need special handling of "library" module. Allow
-			# the first one through. If present as this level its
+			# the first one through. If present at this level its
 			# intended that they are all empty.
 			if s == '__init__.py':
 				if s in selection:
@@ -1196,24 +1212,28 @@ def script(self, word, remainder,
 	try:
 		target_path = os.path.join(home_path, 'script')
 
-		if list_changes or make_changes:
-			if clear_all or full_path or long_listing or recursive_listing:
+		listing = list_scripts or list_executables or list_paths
+		if not listing and not clear_all:
+			if full_path or long_listing or recursive_listing:
 				return lc.Faulted(cannot_script, 'inappropriate argument(s)')
 
 			source_storage, _ = lc.storage_selection(selection, path=os.getcwd())
 			target_storage, _ = lc.storage_manifest(target_path)
-		elif role_scripts:
-			for k, v in role_executable.items():
-				print(f'{k:24} {v}')
-			return None
-
-		elif clear_all:
-			lc.remove_contents(target_path)
-			return None
-		else:
+		elif list_scripts:
 			printer = get_printer(target_path, full_path, long_listing)
 			for r in list_folder(target_path, recursive_listing):
 				printer(r)
+			return None
+		elif list_executables:
+			for k, v in role_executable.items():
+				print(f'{k:24} {v}')
+			return None
+		elif list_paths:
+			for s in source_path:
+				print(f'{s}')
+			return None
+		elif clear_all:
+			lc.remove_contents(target_path)
 			return None
 
 		storage_delta = [d for d in lc.storage_delta(source_storage, target_storage)]
