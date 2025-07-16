@@ -130,10 +130,13 @@ def convert_hint(hint, then):
 	if t is not None:
 		return t
 
-	if hasattr(hint, '__art__'):
-		return UserDefined(hint)
-	elif issubclass(hint, Enum):
-		return Enumeration(hint)
+	try:
+		if hasattr(hint, '__art__'):
+			return UserDefined(hint)
+		elif issubclass(hint, Enum):
+			return Enumeration(hint)
+	except TypeError:
+		pass
 
 	if isinstance(hint, types.GenericAlias):
 		c = hint.__origin__
