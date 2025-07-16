@@ -123,6 +123,8 @@ SIMPLE_TYPE = {
 	Any: Any(),
 }
 
+from typing import Union, Optional, get_origin, get_args
+
 def convert_hint(hint, then):
 	"""Accept a portable, message, basic type, Python hint or None."""
 
@@ -167,12 +169,16 @@ def convert_hint(hint, then):
 			a0 = convert_hint(a[0], then)
 			then(a0)
 			return DequeOf(a0)
-	elif hint == typing.Optional:
-		return None
 	elif hint == typing.Any:
 		return None
 	elif hint == types.NoneType:
 		return None
+
+	origin = get_origin(hint)
+	if origin:
+		if origin is Union:
+			for a in get_args(hint):
+				print(f'annotation: {a}')
 
 	raise PointConstructionError(f'cannot convert hint "{hint}"')
 
