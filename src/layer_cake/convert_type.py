@@ -178,8 +178,8 @@ def convert_hint(hint, then):
 		origin = get_origin(hint)
 		if origin:
 			if origin is Union:
-				for a in get_args(hint):
-					print(f'annotation: {a}')
+				args = [a for a in get_args(hint)]
+				return convert_hint(args[0], then)
 		return None
 	except (TypeError, ValueError):
 		pass
