@@ -167,6 +167,8 @@ def convert_hint(hint, then):
 			a0 = convert_hint(a[0], then)
 			then(a0)
 			return DequeOf(a0)
+	elif isinstance(hint, typing.Optional):
+		return None
 	elif hint == typing.Any:
 		return None
 	elif hint == types.NoneType:
