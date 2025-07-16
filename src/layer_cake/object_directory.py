@@ -1090,13 +1090,14 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		lp = self.listed_publish.get(listing.published_id, None)
 		if lp is not None:
-			self.warning(f'cannot publish "{name}" (already listed)')
+			self.trace(f'Publish ignored "{name}" (refresh)')
 			return False
 
 		# And search name.
 		lp = self.published.get(name, None)
 		if lp is not None:
-			self.warning(f'cannot publish "{name}" (already matching)')
+			if listing.home_address != lp.home_address:
+				self.warning(f'Cannot publish "{name}" (multiple service addresses)')
 			return False
 
 		if publish:
@@ -1123,7 +1124,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.warning(f'Scope [{self.directory_scope}] not implemented')
 			return False
 
-		self.console(f'Published[{self.directory_scope}]', name=name, listening=listing.listening_ipp)
+		self.console(f'Published "{name}"[{self.directory_scope}] ({listing.listening_ipp})')
 
 		lp = (listing, publish)
 		self.published[name] = lp
@@ -1141,7 +1142,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		ls = self.listed_subscribe.get(listing.subscribed_id, None)
 		if ls is not None:
-			self.warning(f'Cannot subscribe "{search}" (id already listed)')
+			self.trace(f'Subscribe ignored "{search}" (refresh)')
 			return False
 
 		# and search. Build out required structure.
@@ -1152,7 +1153,7 @@ class ObjectDirectory(Threaded, StateMachine):
 				r = re.compile(listing.search)
 			except re.error as e:
 				t = str(e)
-				self.warning(f'Cannot subscribe to {search}[{scope}] ({t})')
+				self.warning(f'Cannot subscribe to "{search}" ({t})')
 				return False
 			s = {}
 			sr = [s, r]
@@ -1162,10 +1163,10 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		# Existence of subscriber.
 		if subscribed_id in s:
-			self.warning(f'Cannot subscribe {search}[{scope}] (already listed)')
+			self.warning(f'Subscribe ignored "{search}" (subscriber already registered)')
 			return False
 
-		self.console(f'Subscribed[{self.directory_scope}]', search=search)
+		self.console(f'Subscribed "{search}"[{self.directory_scope}]')
 
 		ls = (listing, subscribe)
 		s[subscribed_id] = ls
