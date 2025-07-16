@@ -174,11 +174,15 @@ def convert_hint(hint, then):
 	elif hint == types.NoneType:
 		return None
 
-	origin = get_origin(hint)
-	if origin:
-		if origin is Union:
-			for a in get_args(hint):
-				print(f'annotation: {a}')
+	try:
+		origin = get_origin(hint)
+		if origin:
+			if origin is Union:
+				for a in get_args(hint):
+					print(f'annotation: {a}')
+		return None
+	except (TypeError, ValueError):
+		pass
 
 	raise PointConstructionError(f'cannot convert hint "{hint}"')
 
