@@ -66,15 +66,15 @@ class Stateless(Machine):
 		s = portable_to_signature(p)
 		f = shift.get(s, None)			# Explicit match.
 		if f:
-			return m, p, f
+			return m, p, a, f
 
 		if a:
 			for c, f in messaging.items():
 				if isinstance(m, c):		# Base-derived match.
-					return m, p, f
+					return m, p, a, f
 
 		f = shift.get(unknown, None)	# Catch-all.
-		return m, p, f
+		return m, p, a, f
 
 	def received(self, queue, message, return_address):
 		"""Dispatch message to the appropriate handler.
@@ -88,24 +88,25 @@ class Stateless(Machine):
 		:rtype: none
 		"""
 		art = self.__art__
-		m, p, f = self.transition(message)
+		m, p, a, f = self.transition(message)
+		r = return_address[-1]
 		if f is None:
-			if art.execution_trace:
+			if art.message_trail and (not a or a.message_trail):
 				t = portable_to_tag(p)
 				if isinstance(m, Faulted):
 					e = str(m)
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], e))
+					self.log(USER_TAG.RECEIVED, f'Dropped {t} from <{r:08x}>, {e}')
 				else:
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
+					self.log(USER_TAG.RECEIVED, f'Dropped {t} from <{r:08x}>')
 			return
 
-		if art.execution_trace:
+		if art.message_trail and (not a or a.message_trail):
 			t = portable_to_tag(p)
 			if isinstance(m, Faulted):
 				e = str(m)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], e))
+				self.log(USER_TAG.RECEIVED, f'Received {t} from <{r:08x}> {e}')
 			else:
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
+				self.log(USER_TAG.RECEIVED, f'Received {t} from <{r:08x}>')
 
 		self.received_type = p
 		f(self, m)
@@ -139,17 +140,17 @@ class StateMachine(Machine):
 
 		f = shifted.get(s, None)				# Explicit match.
 		if f:
-			return m, p, f
+			return m, p, a, f
 
 		if a:
 			messaged = messaging.get(state, None)
 			if messaged:
 				for c, f in messaged.items():
 					if isinstance(m, c):			# Base-derived match.
-						return m, p, f
+						return m, p, a, f
 
 		f = shifted.get(unknown, None)			# Catch-all.
-		return m, p, f
+		return m, p, a, f
 
 	def received(self, queue, message, return_address):
 		"""Dispatch message to the appropriate handler.
@@ -163,24 +164,25 @@ class StateMachine(Machine):
 		:rtype: none
 		"""
 		art = self.__art__
-		m, p, f = self.transition(self.current_state, message)
+		m, p, a, f = self.transition(self.current_state, message)
+		r = return_address[-1]
 		if f is None:
-			if art.execution_trace:
+			if art.message_trail and (not a or a.message_trail):
 				t = portable_to_tag(p)
 				if isinstance(message, Faulted):
 					e = str(message)
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>, %s' % (t, return_address[-1], e))
+					self.log(USER_TAG.RECEIVED, f'Dropped {t} from <{r:08x}>, {e}')
 				else:
-					self.log(USER_TAG.RECEIVED, 'Dropped %s from <%08x>' % (t, return_address[-1]))
+					self.log(USER_TAG.RECEIVED, f'Dropped {t} from <{r:08x}>')
 			return
 
-		if art.execution_trace:
+		if art.message_trail and (not a or a.message_trail):
 			t = portable_to_tag(p)
 			if isinstance(message, Faulted):
 				e = str(message)
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>, %s' % (t, return_address[-1], e))
+				self.log(USER_TAG.RECEIVED, f'Received {t} from <{r:08x}> {e}')
 			else:
-				self.log(USER_TAG.RECEIVED, 'Received %s from <%08x>' % (t, return_address[-1]))
+				self.log(USER_TAG.RECEIVED, f'Received {t} from <{r:08x}>')
 
 		self.received_type = p
 		self.current_state = f(self, m)
