@@ -1090,14 +1090,16 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		lp = self.listed_publish.get(listing.published_id, None)
 		if lp is not None:
-			self.trace(f'Publish ignored "{name}" (refresh)')
+			if lp.home_address == listing.home_address:
+				self.trace(f'Publish ignored "{name}" (refresh)')
+			else:
+				self.warning(f'Publish ignored "{name}" (same id, multiple addresses)')
 			return False
 
 		# And search name.
 		lp = self.published.get(name, None)
 		if lp is not None:
-			if listing.home_address != lp.home_address:
-				self.warning(f'Cannot publish "{name}" (multiple service addresses)')
+			self.warning(f'Cannot publish "{name}" (multiple ids, same name)')
 			return False
 
 		if publish:
@@ -1142,7 +1144,10 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		ls = self.listed_subscribe.get(listing.subscribed_id, None)
 		if ls is not None:
-			self.trace(f'Subscribe ignored "{search}" (refresh)')
+			if ls.home_address == listing.home_address:
+				self.trace(f'Subscribe ignored "{search}" (refresh)')
+			else:
+				self.warning(f'Subscribe ignored "{search}" (same id, multiple addresses)')
 			return False
 
 		# and search. Build out required structure.
@@ -1163,7 +1168,7 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		# Existence of subscriber.
 		if subscribed_id in s:
-			self.warning(f'Subscribe ignored "{search}" (subscriber already registered)')
+			self.warning(f'Subscribe ignored "{search}" (id already registered)')
 			return False
 
 		self.console(f'Subscribed "{search}"[{self.directory_scope}]')
