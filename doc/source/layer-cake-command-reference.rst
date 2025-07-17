@@ -3,11 +3,6 @@
 Layer Cake Command Reference
 ############################
 
-Documentation for the ``ansar`` command-line tool can be found in the following pages. This is the **ansar-connect** implemetation of the
-tool that is also provided by `ansar-encode <https://pypi.org/project/ansar-encode>`_ and `ansar-create <https://pypi.org/project/ansar-create>`_.
-Refer to the associated documentation for complete information relating to serialization and asynchronous programming, respectively. While this
-documentation focuses on networking operations, some material is repeated for convenient browsing.
-
 Definitions, Acronyms And Abbreviations
 ***************************************
 
@@ -18,39 +13,27 @@ Definitions, Acronyms And Abbreviations
    * - Name
      - Notes
    * - *executable*
-     - A loadable image, a file containing machine instructions.
+     - Normally a Python module ending in ``.py`` but also any executable file, e.g. ``host-cake``.
    * - *process*
      - A loaded image, a running instance of an *executable*.
    * - *role*
      - A name unique within a *home*, a context for a *process*.
-   * - *group*
-     - A name unique within a *home*, a context for one or more *roles*.
    * - *home*
      - A folder, the name of that folder, a collection of *roles* and their associated *processes*.
    * - *encoding*
-     - A full **ansar.encode** representation of complex data, using JSON.
+     - A full **layer-cake** representation of complex data, using JSON.
    * - *settings*
-     - An *encoding*, persistent data loaded by a *process*, tunable operational parameters.
-   * - *input*
-     - An *encoding*, data passed to a *process* at start time.
+     - A set of encodings configured for each role, loaded and passed to the associated process on startup.
    * - *command*
-     - Text typed into a command shell, an *executable* name followed by zero or more *words* and *arguments*.
+     - Text typed into a command shell, an *executable* followed by zero or more *words*, *arguments* and *flags*.
    * - *argument*
-     - An element of a *command*, text structured as --<*name*>=<*value*> (double-dash).
+     - An element of a *command*, text structured as \-\-<*name*>=<*value*> (double-dash).
    * - *flag*
-     - An element of a *command*, short form of an *argument*, -<*initial-letters-of-words*>=<*value*> (single-dash).
+     - An element of a *command*, short form of an *argument*, \-<*initial-letters-of-words*>=<*value*> (single-dash).
    * - *value*
      - A JSON fragment, stripped back alternative to full *encoding*.
    * - *word*
      - An element of a *command*, text not starting with a dash.
-   * - *build*
-     - A folder containing *executables*, the end of a software tool chain.
-   * - *space*
-     - An area of disk within a *role* or *home*, refer to ``create``.
-   * - *snapshot*
-     - A folder containing a copy of *home* folders and files.
-   * - *materials*
-     - Folders and files.
 
 Breakdown Of Commands
 *********************
@@ -58,133 +41,61 @@ Breakdown Of Commands
 Composing Collections Of Processes
 ==================================
 
-* ansar **create** <*home*> *redirects*...
-* ansar **add** <*executable*> <*role*> <*home*> *settings*...
-* ansar **update** <*role*> <*home*> *settings*...
-* ansar **delete** <*role*> <*home*>
-* ansar **list** <*role*> <*home*>
-* ansar **destroy** <*home*>
+* layer-cake :ref:`create<layer-cake-command-reference-create>` <*home*>
+* layer-cake :ref:`add<layer-cake-command-reference-add>` <*executable*> <*role*> <*home*> *settings*...
+* layer-cake :ref:`update<layer-cake-command-reference-update>` <*role*>... *settings*...
+* layer-cake :ref:`edit<layer-cake-command-reference-edit>` <*role*>
+* layer-cake :ref:`delete<layer-cake-command-reference-delete>` <*role*>...
+* layer-cake :ref:`list<layer-cake-command-reference-list>` <*role*>...
+* layer-cake :ref:`destroy<layer-cake-command-reference-destroy>` <*home*>
 
 Managing Operational Processes
 ==============================
 
-* ansar **run** <*role*> <*home*>
-* ansar **start** <*role*> <*home*>
-* ansar **stop** <*group*> <*home*>
-* ansar **status** <*role*> <*home*>
+* layer-cake :ref:`run<layer-cake-command-reference-create>` <*role*>
+* layer-cake :ref:`start<layer-cake-command-reference-start>` <*role*>
+* layer-cake :ref:`stop<layer-cake-command-reference-stop>`
+* layer-cake :ref:`status<layer-cake-command-reference-status>` <*role*>
+* layer-cake :ref:`history<layer-cake-command-reference-history>` <*role*>
+* layer-cake :ref:`returned<layer-cake-command-reference-returned>` <*role*>
+* layer-cake :ref:`log<layer-cake-command-reference-log>` <*role*>
 
 Development Automation
 ======================
 
-* ansar **deploy** <*build*> <*snapshot*> <*home*>
-* ansar **snapshot** <*snapshot*> <*home-*>
-
-
-Network Administration
-======================
-
-* ansar **network** <*group*> <*home*>
-* ansar **ping** <*service*> <*group*> <*home*>
-* ansar **signup**
-* ansar **login**
-* ansar **account**
-* ansar **directory**
+* layer-cake :ref:`resource<layer-cake-command-reference-resource>` <*executable*> <*folder*>...
+* layer-cake :ref:`model<layer-cake-command-reference-model>` <*role*> <*folder*>...
+* layer-cake :ref:`script<layer-cake-command-reference-script>`
 
 General Information
 *******************
 
-The ansar tool creates, modifies and deletes a *home*. It implements a set of sub-commands, identifiable as the first *word*
-on the command line. Each of these sub-commands accepts further information often including an *executable*, *role* and *home*, as
-further *words* on the command line. This positional style of command is concise. There are situations where the approach does
-become problematic. For this reason most sub-commands also support the entry of these entities as explicit *arguments*. Ordering
-of *arguments* has no significance and skipping an argument does not influence assumptions about the next. The use of both is an
-error.
+The **layer-cake** tool creates, modifies, executes and deletes a *home*. It implements a set of sub-commands, identifiable as
+the first *word* on the command line. Each of these sub-commands accepts further information often including an *executable*
+and *role*, as further *words* on the command line. Most sub-commands also support the entry of these entities as
+explicit *arguments*. Ordering of *arguments* has no significance and skipping an argument does not influence assumptions
+about the next.
 
-All commands expect an expression of a *home*, whether as a positional word or an argument. If neither of these is present
-the command will assume the default ``.ansar-home``.
-
-Searching For Roles
-*******************
-
-Several commands (e.g. ``list``, ``status`` and ``set``) operate on one or more *roles*. In these situations the ansar tool uses a
-standard set of criteria to resolve a set of matched roles. These are;
-
-.. list-table::
-   :widths: 25 90
-   :header-rows: 1
-
-   * - Name
-     - Notes
-   * - role-name
-     - *Unique name of a process context, a Python regular expression, or None*.
-   * - executable
-     - *Name of a file in the home bin, or None*.
-   * - invert-search
-     - *Resolve the set of roles not matching the criteria*.
-
-These criteria can be applied in different combinations to uncover different subsets of the available roles.
-Assuming that there are 5 roles in the specified home, with the names snooze-0, snooze-1, zombie-0, zombie-1
-and noop-0;
-
-.. list-table::
-   :widths: 20 20 20 40
-   :header-rows: 1
-
-   * - role-name
-     - executable
-     - invert-search
-     - Notes
-   * - snooze-0
-     - None
-     - False
-     - snooze-0
-   * - None
-     - None
-     - False
-     - *all 5 roles*
-   * - None
-     - snooze
-     - False
-     - snooze-0, snooze-1
-   * - snooze-\\d
-     - None
-     - False
-     - snooze-0, snooze-1
-   * - snooze-\\d
-     - None
-     - True
-     - zombie-0, zombie-1, noop-0
-   * - [a-z]+?-1
-     - None
-     - True
-     - snooze-0, zombie-0, noop-0
-
-When accessing a single role (e.g. command ``get``) the search is expected to return a list of length 1. In a slight
-quirk, this works when the criteria is set to *all* and the home only contains a single role.
+Where no *home* is specified, the default is ``.layer-cake``.
 
 Modification Of Live Files
 **************************
 
-Commands modifying the contents of a *home* such as ``update`` and ``deploy``, must consider the potential for operational processes
-working with those same contents. These commands determine the roles to be affected by their activities and then check for the presence
-of associated processes. By default, detection of even a single associated process terminates the command. Passing the ``--force``
-argument - before the sub-command - gives the command permission to proceed. Detected processes will be terminated and restarted
-after the command is complete.
+Commands modifying the contents of a *home* such as ``update`` and ``script``, must consider running processes. These commands
+determine the roles to be affected by their activities and then check for the presence of associated processes. Detection
+of even a single associated process terminates the command.
 
 Composing Collections Of Processes
 **********************************
 
-.. _ansar-command-reference-create:
+.. _layer-cake-command-reference-create:
 
 CREATE
 ======
 
-    $ ansar create [<*home-path*>] [--<*redirect*>=<*path*> …]
+    $ layer-cake create [<*home-path*>]
 
-Create disk space for the operations of a new composition of processes. The command accepts a *home-path* and zero or
-more *folder redirections*. An attempt to create a home that already exists is an error.
-
-The command accepts the following explicit arguments;
+Create the disk area for a new, empty composite process. The command accepts the following *arguments*;
 
 .. list-table::
    :widths: 25 15 75
@@ -195,56 +106,36 @@ The command accepts the following explicit arguments;
      - Notes
    * - **home-path**
      - string
-     - *folder path, name of the new home*
-   * - **redirect-bin**
+     - *location of the composition*
+   * - **directory-at-host**
      - string
-     - *folder path, external storage of executables*
-   * - **redirect-settings**
+     - *connect to the custom address*
+   * - **directory-at-lan**
      - string
-     - *folder path, external storage of persistent settings*
-   * - **redirect-logs**
-     - string
-     - *folder path, external storage of process activity*
-   * - **redirect-resource**
-     - string
-     - *folder path, external storage of read-only materials*
-   * - **redirect-tmp**
-     - string
-     - *folder path, external storage of empty-on-start, transient file materials*
-   * - **redirect-model**
-     - string
-     - *folder path, external storage of persistent, application file materials*
+     - *connect to the custom address*
+   * - **retry**
+     - :class:`~.RetryIntervals`
+     - *delay before process restart*
+   * - **main-role**
+     - integer
+     - *return the result of the specified role*
 
-The ability to redirect storage areas brings several potential benefits. In general it allows for
-better management of highly-active and/or bulk storage, such as logs. In the case of ``redirect-bin``
-it allows for different variants of the edit-run-debug loop.
+An attempt to create a home that already exists is an error. A custom location for
+the next pubsub scope can be specified as ``directory-at-host`` or ``directory-at-lan``,
+i.e. not both. By default, a composite process makes no pubsub connections. Where a process
+in the composition attemps to register information at a higher scope, the process will
+automatically connect to the default ``host-cake``. Setting a custom location overrides
+the default behaviour.
 
-Redirections for disk management purposes will often be to shared areas. For this reason the command creates a
-unique folder at the specified location. The redirection ``--redirect-logs=/big/fast/disk`` will result in the
-creation of the folder ``/big/fast/disk/ansar-logs-<uuid>``, where *uuid*  is a unique identity assigned
-to each home. A back-link file called ``.ansar-origin`` is added to the new folder as a record of ownership.
-The ``destroy`` command is "redirect aware" and removes all related artefacts.
-
-Redirections to "read-only" storage areas (i.e. ``bin`` and ``resource``) do not cause the creation of unique
-folders.
-
-.. _ansar-command-reference-add:
+.. _layer-cake-command-reference-add:
 
 ADD
 ===
 
-    $ ansar add <*executable*> [<*role-name*> [<*home-path*>]] [--<*name*>=<*value*> …]
+    $ layer-cake add <*executable*> [<*role-name*> [<*home-path*>]] [\-\-<*name*>=<*value*> …]
 
-Capture the details associated with a new process, to be initiated at some later point. Save that information within the specified
-home. The command accepts an *executable*, a *role-name*, a *home-path* and an optional list of *name*\ =\ *value* assignments.
-The *executable* must exist within the appropriate home storage area. The *role-name* is optional and defaults to *executable*-0.
-The command line assignments are used to initialize the persistent settings for the new process. Refer to the ``update`` command
-for further information.
-
-Role names are unique identities for instances of executables. There can only be a single instance of a role name within
-a given home. Attempting to add a role that already exists is an error.
-
-The command also accepts the following explicit arguments;
+Capture the details associated with a new process. Save that information within the specified home. The
+command accepts the following additional arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -255,48 +146,72 @@ The command also accepts the following explicit arguments;
      - Notes
    * - **role-name**
      - string
-     - *role name, explicit name or template*
+     - *name of the process within this composition*
    * - **home-path**
      - string
-     - *folder path, name of the home*
-   * - **start**
-     - integer
-     - *starting index for the internal iteration, default = 0*
-   * - **step**
-     - integer
-     - *amount to increment on every internal iteration, default = 1*
-   * - **count**
-     - integer
-     - *number of internal iterations, default = 1*
-   * - **settings-file**
-     - string
-     - *file path, JSON encoding, definition of role ettings*
-   * - **input-file**
-     - string
-     - *file path, JSON encoding, definition of role input*
+     - *location of the composition*
+   * - **role-count**
+     - int
+     - *number of copies to add*
+   * - **role-start**
+     - int
+     - *base number for decoration of copies*
 
-Other arguments are forwarded to a construction instance of the named executable as *name*\ =\ *value* assignments.
+A typical command includes an *executable*, a *role-name*, a *home-path* and an optional list of *arguments*.
+The *role-name* is optional and defaults to the basename of the *executable*. The command line *arguments* are
+used to initialize the *settings* for the new process.
 
-Internally, the command performs a loop controlled by the ``start``, ``step`` and ``count`` values. On each
-iteration the command uses the *role-name* as a template and performs a substitution, e.g. given the command
-``ansar add server`` the default *role-name* (i.e. ``{executable}-{number}``) becomes ``server-0``. The same
-substitution is also performed on the value part of every command argument. A new role is added on each iteration
-of the loop.
+Role names are unique identities for instances of executables. There can only be a single instance of a role name within
+a given home. Attempting to add a role that already exists is an error.
 
-Every new role is initialized with default settings. The ``settings-file`` argument can be used to override those
-initial values. The input passed to an operational instance of a role is also initialized with a default value.
-The ``input-file`` argument can be used to override that initial value.
+The ``role-count`` argument can be used to add blocks of processes. The command performs a loop controlled by
+the ``role-start`` and ``role-count`` values. On each iteration the command decorates the ``role-name`` with the loop index,
+and then adds the process.
 
-To iniitalize *properties* such as ``retry`` and ``storage``, refer to the ``get`` and ``set`` commands.
+.. _layer-cake-command-reference-update:
 
 UPDATE
 ======
 
-    $ ansar [--force] update [<*role-name*> [<*home-path*>]] [--<*name*>=<*value*> …]
+    $ layer-cake update <*role-name*> --<*name*>=<*value*> …
 
-Update the details associated with an existing role. Save that information within the specified home. The command
-accepts a *role-name*, a *home-path* and a list of *name*\ =\ *value* assignments. Attempting to update a role that
-doesn't exist is an error.
+Update the *settings* associated with an existing role. Save that information within the specified home. The command
+accepts a *role-name* and a list of *arguments*. Attempting to update a role that doesn't exist is an error.
+
+The command accepts the following explicit arguments;
+
+.. list-table::
+   :widths: 25 15 75
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Notes
+   * - **home-path**
+     - string
+     - *folder path, name of the home*
+
+Value strings can contain spaces and newlines, but complex encodings become increasingly difficult to pass
+safely (i.e quote successfully) on the command-line. Consider the :ref:`edit<layer-cake-command-reference-edit>`
+command.
+
+.. _layer-cake-command-reference-edit:
+
+EDIT
+====
+
+    $ layer-cake edit <*role-name*>
+
+Edit the *settings* associated with an existing *role*, in the specified *home*. The command
+opens a session with the **layer-cake** text editor. The session starts with a copies of the
+current values. If the file is modified and the contents can be successfully decoded, the
+*settings* are updated.
+
+To select the text editor, set the ``LC_EDITOR`` environment variable;
+
+.. code-block:: console
+
+	$ LC_EDITOR=nano layer-cake edit server
 
 The command accepts the following explicit arguments;
 
@@ -309,45 +224,27 @@ The command accepts the following explicit arguments;
      - Notes
    * - **role-name**
      - string
-     - *explicit name, search expression or None*
+     - *folder path, name of the home*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
-     - string
-     - *name of an executable within bin*
-   * - **invert-search**
-     - bool
-     - *apply to roles not matching the search criteria*
 
-The standard `search facility <#searching-for-roles>`_ is available. Use of `force <#modification-of-live-files>`_
-may be required.
+Contents of a *settings* file can be complex. Use of the ``update`` command can be the easier way
+to configure a role one setting at a time. Once the *settings* have been populated, the ``edit``
+command can be the quick way to make small changes to existing values.
 
-All -\ -*name*\ =\ *value* settings are forwarded to a construction instance of the executable. The *name* is used
-to assign the *value* to the appropriate member of the settings object retained on behalf of each role. Values
-are presented as JSON *fragments* - where an appropriate JSON encoding would include quotes, these are supplied by
-ansar and should not appear on the command line. Where ``domain`` is a string a proper argument looks like;
-
-.. code::
-
-   ansar update server-0 --domain=company.co.country
-
-Value strings can contain spaces and newlines, but complex encodings become increasingly difficult to pass
-safely (i.e quote successfully) on the command-line. Consider the ``settings`` command.
-
-To modify *properties* such as ``retry`` and ``storage``, refer to the ``get`` and ``set`` commands.
+.. _layer-cake-command-reference-delete:
 
 DELETE
 ======
 
-    $ ansar [--force] delete [<*role-name*> [<*home-path*>]]
+    $ layer-cake delete <*role-name*>
 
-Delete all the files and folders associated with the *role*. This includes materials created by the ansar command
-and those materials created by activities of the operational process. The command also follows any *redirects* specified
-at home creation time, clearing and removing folders at external locations. Attempting to delete a role that
-doesn't exist is an error.
+Delete all the files and folders associated with the *role-name*. This includes materials created by the ``layer-cake`` command
+and those materials created by activities of the operational process. Attempting to delete a role that doesn't exist is
+an error.
 
-The command also accepts the following explicit arguments;
+The command also accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -356,28 +253,21 @@ The command also accepts the following explicit arguments;
    * - Name
      - Type
      - Notes
-   * - **role-name**
-     - string
-     - *role name, explicit name or search expression*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
-     - string
-     - *name of an executable within bin, search criteria*
-   * - **invert-search**
+   * - **all-roles**
      - bool
-     - *apply to roles not matching the search criteria*
+     - *enable deletion of every role*
 
-The standard `search facility <#searching-for-roles>`_ is available. Use of `force <#modification-of-live-files>`_
-may be required.
+.. _layer-cake-command-reference-list:
 
 LIST
 ====
 
-    $ ansar list [<*role-name*> [<*home-path*>]]
+    $ layer-cake list [<*role-name*>]
 
-List the *roles* currently defined in the specified *home*. The command accepts the following explicit arguments;
+List the *roles* currently defined in the specified *home*. The command accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -386,61 +276,52 @@ List the *roles* currently defined in the specified *home*. The command accepts 
    * - Name
      - Type
      - Notes
-   * - **role-name**
-     - string
-     - *role name, explicit name or search expression*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
-     - string
-     - *name of an executable within bin, search criteria*
-   * - **invert-search**
-     - bool
-     - *list roles not matching the search criteria*
    * - **long-listing**
      - bool
-     - *enable a more detailed output*
-   * - **group**
+     - *include role details*
+   * - **group-role**
      - bool
-     - *include group roles within the output*
-   * - **all-roles**
+     - *include the group*
+   * - **sub-roles**
      - bool
-     - *include sub-roles within the output*
+     - *include the sub-roles*
 
-The standard `search facility <#searching-for-roles>`_ is available. The simplest form of the command produces a basic
-list of the roles within the default home;
+The default command produces a basic list of the roles within the default home;
 
 .. code::
 
-   $ ansar list
-   server-0
-   test-client-0
+   $ layer-cake list
+   server
+   client
    $
 
-Passing the ``--long-listing`` argument produces additional information including the *executable* that
+Passing the ``long-listing`` argument produces additional information including the *executable* that
 performs the *role* and some disk usage statistics (*folders*/*files*/*bytes*);
 
 .. code::
 
-   $ ansar list -ll
-   factorial-0              factorial (1/0/0)
-   snooze-0                 snooze (1/0/0)
-   zombie-0                 zombie (1/3/3987)
+   $ layer-cake list -ll
+   factorial                factorial (1/0/0)
+   snooze                   snooze (1/0/0)
+   zombie                   zombie (1/3/3987)
    totals                   (4/3/3987)
    $
 
 The ``-ll`` *flag* shortform was used for the ``long-listing`` *argument*.
 
+.. _layer-cake-command-reference-destroy:
+
 DESTROY
 =======
 
-    $ ansar [--force] delete [<*home-path*>]
+    $ layer-cake destroy [<*home-path*>]
 
-Destroy all the files and folders associated with the *home*. This includes materials created by the ansar command
-and those materials created by activities of the operational processes. The destroy command also follows any
-*redirects* specified at creation time, clearing and removing folders at external locations. Attempting to destroy
-a home that doesn't exist is an error.
+Destroy all the files and folders associated with the *home*. This includes materials created by the layer-cake command
+and those materials created by activities of the operational processes. Attempting to destroy a home that doesn't exist
+is an error.
 
 The command accepts the following explicit arguments;
 
@@ -454,40 +335,31 @@ The command accepts the following explicit arguments;
    * - **home-path**
      - string
      - *folder path, name of the home*
-
-Use of `force <#modification-of-live-files>`_ may be required.
 
 Managing Operational Processes
 ******************************
 
-.. _ansar-command-reference-run:
+.. _layer-cake-command-reference-run:
 
 RUN
 ===
 
-    $ ansar [--debug-level=<*level*>] [--force] run [<*role-name*> ..]
+    $ layer-cake run [<*role-name*> ..]
 
-Run instances of the specified *roles*, from the effective *home*, as a *group* of processes. Direct the resulting
+Run instances of the specified *roles* within the selected *home*, as a *composite process*. Direct the resulting
 processes to operate within the confines of the disk spaces managed by the *home*. Route the logs from all the processes
 to ``stderr`` and wait for completion of every process or a user intervention, i.e. a control-c. A control-c initiates
-a termination protocol with every process still active. The run completes when every process has terminated. Lastly,
-output a summary table including a list of the values returned by each process. Attempting to run a role that doesn't
-exist is an error.
+a termination protocol with every process still active. The run completes when every process has terminated.
 
-An instance of the ``ansar-group`` process is added into every run as a supervisor process. All *role* processes are
-children of the group process. As a supervisor its duties include managing restarts of *roles* as proscribed in its
-settings. Group processes are allocated their own space within the *home*, i.e. a group named ``backend`` will appear
-in the *home* as the ``group.backend`` *role*. Ansar commands can be used to administer group *roles* in the same manner
-as any other *role*, e.g. ``ansar log group.default`` will display any recent activity within the associated ``ansar-group``
-process and ``ansar settings group.default`` can be used to view and update its configuration.
+An instance of the ``group-cake`` process is added into every run in a supervisory role. All *role* processes are
+children of the ``group-cake`` process. As a supervisor its duties include managing restarts of *roles* as configured
+into its *settings*. The ``group-cake`` process can be accessed as the ``group`` role.
 
 An empty list of *roles* implicitly matches all the *roles* within the *home*.
 
-Without a ``--group-name`` argument the *group* defaults to the ``default`` name.
+Without a ``home-path`` argument the *home* defaults to ``.layer-cake`` in the current folder.
 
-Without a ``--home-path`` argument the *home* defaults to ``.ansar-home`` in the current folder.
-
-The command also accepts the following explicit arguments;
+The command also accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -496,80 +368,36 @@ The command also accepts the following explicit arguments;
    * - Name
      - Type
      - Notes
-   * - **role-name**
-     - string
-     - *role name, explicit name or search expression*
-   * - **group-name**
-     - string
-     - *role name, name of an ansar-group role without the group prefix*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
+   * - **main-role**
      - string
-     - *name of an executable within bin, search criteria*
-   * - **invert-search**
-     - bool
-     - *match those roles not matching the search criteria*
-   * - **code-path**
-     - string
-     - *folder path, top of a source tree*
-   * - **test-run**
-     - bool
-     - *enable capture of test reports and output of a test suite*
-   * - **test-analyzer**
-     - string
-     - *name of an executable, called at end-of-run, passed test suite*
-   * - **debug-level**
-     - enum
-     - *enumeration of a common log level, lower level logs discarded*
-   * - **forwarding**
-     - string
-     - *role name, stdin forwarded to the named role*
-
-The standard `search facility <#searching-for-roles>`_ is available. Use of `force <#modification-of-live-files>`_
-may be required.
-
-The presence of the ``test-run``  argument enables additional behaviour. The command assumes that one or more
-of the processes will produce test information. The information is collated and either passed to an execution
-of ``test-analyzer`` or presented on ``stdout``.
-
-A ``code-path`` is assumed to be a folder of associated source files. The folder is searched recursively for any
-python modules. The information gathered is used to augment the module information available in any test reports
-produced by execution of *roles*.
+     - *role selected as the focus role*
 
 By default logging is disabled. Passing a ``debug-level`` argument enables the output of those logs marked
 with the specified level or higher. Log output appears on ``stderr``.
 
-Input presented to the run command on stdin can be directed to one of the matched roles. The ``forwarding``
-argument names the receiving role.
+Assigning a ``main-role`` alters some process orchestration behaviour and causes the composite process to exit
+with the termination value from the named role, rather than the default table of termination values. If the
+``main-role`` terminates it will take down the entire composite process. Without a ``main-role`` the composite
+will continue as long as there is a single remaining process.
 
-.. _ansar-command-reference-start:
+.. _layer-cake-command-reference-start:
 
 START
 =====
 
-    $ ansar [--force] start [<*role-name*> ..]
+    $ layer-cake start [<*role-name*> ..]
 
-Start instances of the specified *roles*, from the given *home*, as a *group* of processes. Do not wait for
+Start instances of the specified *roles*, from the given *home*, as a *composite process*. Do not wait for
 completion - return control back to the shell immediately. Direct the resulting processes to operate within
 the confines of the disk spaces managed by the *home*. Also, direct the processes to send their logs into the
 designated FIFO storage area within the *home*. Attempting to start a role that doesn't exist is an error.
 
-An instance of the ``ansar-group`` process is added into every start as a supervisor process. All *role* processes are
-children of the group process. As a supervisor its duties include managing restarts of *roles* as proscribed in its
-settings. Group processes are allocated their own space within the *home*, i.e. a group named ``backend`` will appear
-in the *home* as the ``group.backend`` *role*. Ansar commands can be used to administer group *roles* in the same manner
-as any other *role*, e.g. ``ansar log group.default`` will display any recent activity within the associated ``ansar-group``
-process and ``ansar settings group.default`` can be used to view and update its configuration.
+For more information about the running of *composite processes* refer to :ref:`run<layer-cake-command-reference-run>`.
 
-An empty list of *roles* implicitly matches all the *roles* within the *home*.
-
-Without a ``--group-name`` argument the *group* defaults to the ``default`` name.
-
-Without a ``--home-path`` argument the *home* defaults to ``.ansar-home`` in the current folder.
-
-The command accepts the following explicit arguments;
+The command accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -578,35 +406,22 @@ The command accepts the following explicit arguments;
    * - Name
      - Type
      - Notes
-   * - **role-name**
-     - string
-     - *role name, explicit name or search expression*
-   * - **group-name**
-     - string
-     - *role name, name of an ansar-group role without the group prefix*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
+   * - **main-role**
      - string
-     - *name of an executable within bin, search criteria*
-   * - **invert-search**
-     - bool
-     - *match those roles not matching the search criteria*
+     - *role selected as the focus role*
 
-The standard `search facility <#searching-for-roles>`_ is available. Use of `force <#modification-of-live-files>`_
-may be required.
-
-.. _ansar-command-reference-stop:
+.. _layer-cake-command-reference-stop:
 
 STOP
 ====
 
-    $ ansar [--force] stop [<*group*> ..]
+    $ layer-cake stop
 
-Stop those processes associated with the specified *groups*, in the effective *home*. An empty list of *groups* implicitly
-matches all the *groups* within the *home*. Without a ``--home-path`` argument the *home* defaults to ``.ansar-home`` in
-the current folder. 
+Stop all running processes, in the selected *home*. Without a ``home-path`` argument the *home* defaults
+to ``.layer-cake`` in the current folder. 
 
 The command also accepts the following explicit arguments;
 
@@ -621,12 +436,12 @@ The command also accepts the following explicit arguments;
      - string
      - *folder path, name of the home*
 
-.. _ansar-command-reference-status:
+.. _layer-cake-command-reference-status:
 
 STATUS
 ======
 
-    $ ansar status [<*role-name*> [<*home-path*>]]
+    $ layer-cake status [<*role-name*>...]
 
 List the *roles* currently active in the specified *home*. The command accepts the following explicit arguments;
 
@@ -637,35 +452,26 @@ List the *roles* currently active in the specified *home*. The command accepts t
    * - Name
      - Type
      - Notes
-   * - **role-name**
-     - string
-     - *role name, explicit name or search expression*
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **executable**
-     - string
-     - *name of an executable within bin, search criteria*
-   * - **invert-search**
-     - bool
-     - *list roles not matching the search criteria*
    * - **long-listing**
      - bool
      - *enable a more detailed output*
-   * - **group**
+   * - **group-role**
      - bool
-     - *include group roles within the output*
-   * - **all-roles**
+     - *include group role within the output*
+   * - **sub-roles**
      - bool
      - *include sub-roles within the output*
 
-The standard `search facility <#searching-for-roles>`_ is available. The simplest form of the command produces a
-basic list of the active roles within the default home;
+The simplest form of the command produces a basic list of the active roles within the default home;
 
 .. code::
 
-   $ ansar status
-   server-0
+   $ layer-cake status
+   server
+   worker
    $
 
 Passing the ``--long-listing`` argument produces additional information including the process ID and
@@ -673,16 +479,18 @@ elapsed runtime of each process;
 
 .. code::
 
-   $ ansar status -ll
-   zombie-0                 <1292610> 5.2s
+   $ layer-cake status -ll
+   zombie                   <1292610> 5.2s
+
+.. _layer-cake-command-reference-history:
 
 HISTORY
 =======
 
-    $ ansar history <*role-name*> [<*home-path*>]
+    $ layer-cake history <*role-name*>
 
-Present the recent process activity associated with the specified *role*, in the given *home*. A *role-name*
-is required. The command accepts the following explicit arguments;
+Present the recent process activity associated with the specified *role*, in the given *home*. The command
+accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -705,7 +513,7 @@ Output includes a start time, elapsed run time and the type of the return value;
 
 .. code::
 
-   $ ansar history zombie-0
+   $ layer-cake history zombie-0
    [0] 9m35.0s ago ... 8m18.8s (Faulted)
    [1] 10.5s ago ... 3.4s (Ack)
    $
@@ -723,7 +531,7 @@ Passing the ``--long-listing`` argument produces explicit start and end times in
 
 .. code::
 
-   $ ansar history zombie-0 -ll
+   $ layer-cake history zombie -ll
    2023-06-08T00:23:48.905221 ... 2021-10-21T06:44:58.965063 (6h21m) Ack
    2021-10-21T06:45:00.068706 ... 2021-10-21T06:53:59.069315 (8m59.0s) Ack
    2021-10-21T06:54:04.938309 ... 2021-10-21T17:45:38.023162 (10h51m) Ack
@@ -732,12 +540,14 @@ Passing the ``--long-listing`` argument produces explicit start and end times in
 
 The question mark ``?`` denotes a process that has not yet returned.
 
+.. _layer-cake-command-reference-returned:
+
 RETURNED
 ========
 
-    $ ansar returned <*role-name*> [<*home-path*>]
+    $ layer-cake returned <*role-name*>
 
-Output the value returned by the process executing on behalf of the *role*, in the specified *home*. A
+Output the value returned by the process executing as the *role*, in the specified *home*. A
 role name is required.
 
 The command accepts the following explicit arguments;
@@ -755,21 +565,21 @@ The command accepts the following explicit arguments;
    * - **home-path**
      - string
      - *folder path, name of the home*
-   * - **timeout**
-     - float
-     - *number of seconds to wait for the completion of an active role*
    * - **start**
      - integer
      - *index into the FIFO of history records*
+   * - **timeout**
+     - float
+     - *number of seconds to wait for the completion of an active role*
 
 The simplest form of the command outputs the JSON encoding of the latest return value;
 
 .. code::
 
-   $ ansar returned zombie-0
+   $ layer-cake returned zombie-0
    {
        "value": [
-           "ansar.create.lifecycle.Ack",
+           "layer-cake.create.lifecycle.Ack",
            {},
            []
        ]
@@ -779,20 +589,21 @@ The simplest form of the command outputs the JSON encoding of the latest return 
 Where the selected role is also active, the command will wait until the associated process completes
 and returns a value. Passing a timeout argument ensures that the command does not wait forever.
 
-.. _ansar-command-reference-log:
+.. _layer-cake-command-reference-log:
 
 LOG
 ===
 
-    $ ansar log <role-name> [<home-path>] [--<beginning>=value] [--<ending>=<value>]
+    $ layer-cake log <role-name> [--<beginning>=value] [--<ending>=<value>]
 
 Output a sequence of logs generated by the *role*, in the specified *home*. The sequence has a beginning
-and an ending point. Both are optional and default to 5 minutes ago and ``None``, respectively. The absence
+and an ending point. Both are optional and output defaults to a page of the most recent logs. The absence
 of an ending (i.e. ``None``) implies “everything from the given starting point”. An attempt to access the
 logs of a non-existent role is an error.
 
 The beginning can be expressed as;
 
+* a count of the most recent lines,
 * a UTC time representation,
 * a local time representation,
 * a latest day, week, etc, e.g. from the beginning of the current week,
@@ -806,7 +617,7 @@ The ending can be expressed as;
 * a forward relative time value,
 * or a count of log records.
 
-The command accepts the following explicit arguments;
+The command accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -824,6 +635,9 @@ The command accepts the following explicit arguments;
    * - **clock**
      - bool
      - *enable entry and output of local times*
+   * - **rewind**
+     - int
+     - *start by counting back the specified number of lines*
    * - **from_**
      - string
      - *ISO format time, either local or UTC depending on "clock"*
@@ -834,13 +648,13 @@ The command accepts the following explicit arguments;
      - integer
      - *index into the FIFO of history records*
    * - **back**
-     - time span
+     - timespan
      - *a negative, relative time value*
    * - **to**
      - string
      - *ISO format time, either local or UTC depending on "clock"*
    * - **span**
-     - time span
+     - timespan
      - *a positive, relative time value*
    * - **count**
      - integer
@@ -850,110 +664,85 @@ Simple use looks like;
 
 .. code::
 
-   $ ansar log zombie-0
+   $ layer-cake log zombie
    2020-11-07T15:52:25.745 + <00000008>lock_and_hold - Created by <00000001>
    2020-11-07T15:52:25.745 > <00000008>lock_and_hold - Sent Ready to <00000001>
    2020-11-07T15:52:25.746 + <00000009>start_vector - Created by <00000001>
    2020-11-07T15:52:25.746 ~ <00000009>start_vector - Executable "/home/dennis/some/project/dist/zombie" as process (1216338)
-   2020-11-07T15:52:25.746 ~ <00000009>start_vector - Working folder "/"
-   2020-11-07T15:52:25.746 ~ <00000009>start_vector - Running object "__main__.zombie"
-   2020-11-07T15:52:25.746 ~ <00000009>start_vector - Class threads (1) "retries" (1)
    2020-11-07T15:52:25.746 + <0000000a>zombie - Created by <00000009>
    2020-11-07T15:52:25.746 ^ <0000000a>zombie - Do nothing until interrupted
    ..
 
-For further information on the logging format and operational considerations refer to
-the `ansar-create <https://pypi.org/project/ansar-create>`_ documentation. Other uses of the ``log`` command
-include (output omitted);
+Other uses of the ``log`` command include (output omitted);
 
 .. code::
 
-   $ ansar log zombie-0 --clock
-   $ ansar log zombie-0 --from_=2020-11-07T16:00:44.565       # note that the trailing underscore is sadly required
-   $ ansar log zombie-0 --last=WEEK
-   $ ansar log zombie-0 --start=0
-   $ ansar log zombie-0 --back=7d10s
-   $ ansar log zombie-0 --to=2020-11-07T17:00
-   $ ansar log zombie-0 --span=30s
-   $ ansar log zombie-0 --count=40
-   $ ansar log zombie-0 --start=1 --count=10
+   $ layer-cake log zombie-0 --clock
+   $ layer-cake log zombie-0 --from_=2020-11-07T16:00:44.565       # note that the trailing underscore is sadly required
+   $ layer-cake log zombie-0 --last=WEEK
+   $ layer-cake log zombie-0 --start=0
+   $ layer-cake log zombie-0 --back=7d10s
+   $ layer-cake log zombie-0 --to=2020-11-07T17:00
+   $ layer-cake log zombie-0 --span=30s
+   $ layer-cake log zombie-0 --count=40
+   $ layer-cake log zombie-0 --start=1 --count=10
 
 Use of the ``clock`` argument causes the output of local time values. To distinguish these from UTC times the ``T`` separator
 between the date and time fields is folded to lowercase. Input time values such as ``from_`` are also assumed to be in
 UTC format. Use of the ``clock`` argument in a distributed working environment is generally perilous.
 
-FOLDER
-======
-
-    $ ansar folder <*space*> <*role-name*> [<*home-path*>]
-
-Output a folder path as selected by the *space* and *role*, within the specified *home*. The defined spaces are those managed
-within a home and potentially *redirected* (refer to the ``create`` command); bin, settings, logs, resource, tmp and model.
-Both the *space* and *role* are required.
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **role-name**
-     - string
-     - *name of the role*
-   * - **home-path**
-     - string
-     - *folder path, name of the home*
-
-The command is a support feature as the exact location of materials can become detailed;
-
-.. code::
-
-   $ ansar folder logs zombie-0
-   /tmp/ansar-logs-8be745af-9813-413f-aa16-dd4b0c975ccd/zombie-0
-
-For some spaces the output folder is the same for all roles, e.g. bin. For the resource space the folder is the same for
-all roles configured with a common executable. To sidestep the many permutations of this scenario, a role is always required.
-
 Development Automation
 **********************
 
-.. _ansar-command-reference-deploy:
+.. _layer-cake-command-reference-resource:
 
-DEPLOY
-======
+RESOURCE
+========
 
-    $ ansar [--force] deploy [<*build-path*> [<*snapshot-path*> [<*home-path*>]]]
+    $ layer-cake resource <*executable*> <*folder*> ...
 
-Perform an optimal update of the *home*, from external *build* and *snapshot* areas. The command examines source and destination areas and computes
-a minimum delta before copying executables and operational files into the appropriate areas of the home. It also evaluates those roles affected
-by the imminent changes. Any processes associated with those roles are optionally terminated before copy activities begin and restarted after they are
-completed.
+Perform a synchronization, copying files from *folders* to the storage area within the *home*. The intention is to automate
+the update of materials from external sources (e.g. repos, archives) to an area of storage dedicated to the named *executable*;
+configuraton files, templates and media files, that do not change at runtime.
 
-The build-path is assumed to be a folder containing executable files. It is at the end of a software build chain. Executables are copied from this
-build area into the home bin. Each ``deploy`` command copies those executables determined to be new or modified, as compared to the contents of
-the home bin.
+Default use of the command lists the changes that would occur;
 
-The snapshot path is an external image of all the persistent materials - the files and folder structures - supporting the operation of the
-home (refer to the ``snapshot`` command for the internal layout of the external image). This is a *global state* of the home, a snapshot of the
-settings, input and application files that underpin the features and behaviours of the collection of processes, associated with that home.
+.. code-block:: console
 
-The pair of commands - ``snapshot`` and ``deploy`` - can be used to *create and maintain* an external image of an operational home. This meshes
-perfectly with the requirements of an efficient edit-run-debug loop. Executables and operational files (in the external image) can be modified
-in a development area and transferred into the home with a single command. All of this is carried out in a "least I/O possible" way and with
-automated management of associated processes.
+	$ layer-cake resource media_server.py ~/media
+	AddFolder(path=/.../media, target=/.../.layer-cake/resource/media_server.py)
+	$
 
-Ideally, the external image exists in a repo alongside the related Python modules. The repo then contains all the code *and* all the file-based
-materials relating to a multi-process configuration. In this scenario an exact replica of a multi-process solution can be instantiated in a few
-minutes, with a clone command and a few make targets. Large files such as databases cannot be included in code repos and will need specific
-handling. Small text files such as the JSON encodings used for settings and input are perfectly suited to a repo existence.
+This says that to synchronize the ``~/media`` folder with the ``../resource/media_server.py`` folder, would require the recursive
+copying of everything in the source folder. To effect the changes just add the ``make-changes`` option;
 
-It also becomes possible to create and maintain multiple external images, e.g. development, QA and production. These can be deployed to
-independent homes or used to switch a single home between entirely different modes of operation.
+.. code-block:: console
 
-The command also accepts the following explicit arguments;
+	$ layer-cake resource media_server.py ~/media --make-changes
+	$ layer-cake resource media_server.py
+	media
+
+Without any materials to synchronize, the command defaults to listing the current contents of the target area. Instances of
+the *executable* have shared, runtime access to the storage area through the :func:`~.resource_path` function.
+
+The ``resource`` command is one of three commands that can be used to streamline the management of file-based materials, i.e.
+materials that are required for the proper execution of the *composite process*;
+
+* ``resource`` ... *copy from external locations into shared, home storage area (read-only)*
+* ``model`` ... *copy from external locations into private, per-role home storage area (read/write)*
+* ``script`` ... *copy Python modules from locations of executables, into home storage area*
+
+By combining these commands, it is also possible to create a portable image of the *composite process* - a single folder
+that can be copied to other locations and executed. The new location only requires the installation of **layer-cake** and
+resolution of whatever dependencies the individual application processes may bring.
+
+The concept of a *composite process* is incomplete without addressing the issue of platform resources, including network
+addresses and disk storage. The former is supported by publish-subscribe networking, while the latter is supported by the
+the :func:`~.resource_path`, :func:`~.model_path` and :func:`~.tmp_path` functions, and the disk areas they provide access
+to. It should be noted that **layer-cake** supports the execution of processes both as a component of a *composite process*
+and as a standalone process. The three supporting functions ensure appropriate behaviour in the different contexts.
+
+The command accepts the following arguments;
 
 .. list-table::
    :widths: 25 15 75
@@ -962,124 +751,239 @@ The command also accepts the following explicit arguments;
    * - Name
      - Type
      - Notes
-   * - **build-path**
-     - string
-     - *folder path to executable files*
-   * - **snapshot-path**
-     - string
-     - *folder path, external image*
    * - **home-path**
      - string
      - *folder path, name of the home*
+   * - **full-path**
+     - bool
+     - *list the full path and name of storage area contents*
+   * - **recursive-listing**
+     - bool
+     - *list content of folders, recursively*
+   * - **long-listing**
+     - bool
+     - *list file attributes*
+   * - **make-changes**
+     - bool
+     - *implement the necessary changes to bring the target area up-to-date*
+   * - **clear-all**
+     - bool
+     - *remove all contents from the target area*
 
-The transfer of materials from the build path into the home is non-destructive, whereas the transfer from the snapshot path into the home is
-destructive. In a "destructive" pass, folders and files not present in the source, are clipped off in the destination. This means that deployment
-can occur from multiple build paths (i.e. repos) into a common home, but only a single storage path can be the source of operational files.
+.. _layer-cake-command-reference-model:
 
-.. _ansar-command-reference-snapshot:
+MODEL
+=====
 
-SNAPSHOT
-========
+    $ layer-cake model <*role*> <*folder*> ...
 
-    $ ansar [--force] snapshot <*snapshot-path*> [<*home-path*>]
+Perform a synchronization, copying files from *folders* to the storage area within the *home*. The intention is to automate
+the update of materials from external sources (e.g. repos) to an area of storage dedicated to the named *role*. These are
+assumed to be operational materials that are likely to change at runtime. As well as synchronizing from the external sources
+to the *home* area it is possible to reverse the direction and take a snapshot of what the role has produced. This might be
+an archiving operation, e.g. taking reference images of a database for later reinstatement.
 
-Perform an optimal update of the *snapshot*, from the latest materials in the *home*. If the ``snapshot-path`` does not exist, the folder is
-created. This is a "sync" of an external image with the current "global state" of a home. The command examines source and destination areas and
-computes a minimum delta before copying operational files out into the appropriate disk areas.
+Default use of the command lists the changes that would occur;
 
-Given a command like ``$ ansar snapshot selfie``, the result looks like;
+.. code-block:: console
 
-.. code:: text
+	$ layer-cake model server ~/db
+	AddFolder(path=/.../db, target=/.../.layer-cake/role/server)
+	$
 
-   selfie
-   selfie/settings-by-role
-   selfie/settings-by-role/snooze-0.json
-   selfie/resource-by-executable
-   selfie/resource-by-executable/snooze
-   selfie/resource-by-executable/zombie
-   selfie/resource-by-executable/factorial
-   selfie/input-by-role
-   selfie/input-by-role/factorial-0.json
-   selfie/model-by-role
-   selfie/model-by-role/factorial-0
-   selfie/model-by-role/snooze-0
-   selfie/model-by-role/zombie-0
+This says that to synchronize the ``~/db`` folder with the ``../role/server`` folder, would require the recursive
+copying of everything in the source folder. To effect the changes just add the ``make-changes`` option;
 
-Where ``snooze`` is an executable with associated *settings*, and ``factorial`` is an executable with associated *input*. Instances of
-these executables (i.e. *roles*) cause the creation of those materials under the names ``selfie/settings-by-role/snooze-0.json`` and
-``selfie/input-by-role/factorial-0.json``, respectively. The folder names immediately under ``selfie`` are related to different areas in
-a home and also describe the structuring of those folders. Materials under the ``resource-by-executable`` are arranged according
-to an *executable*, e.g. ``resource-by-executable/snooze``, whereas materials under ``model-by-role`` are arranged by *role*,
-e.g. ``model-by-role/snooze-0``. This is a simple reflection of the fact that resources are shared by processes started from a common
-executable, while application files under ``model`` are created and maintained by each instance of a process (i.e. a *role*) whatever the
-associated executable might be.
+.. code-block:: console
 
-The contents of the ``selfie`` folder and folders at the next level down, are under the control of ``snapshot``. Folders such
-as ``selfie/model-by-role/snooze-0`` should only be removed as a consequence of an ``ansar delete snooze-0`` command and a
-subsequent ``ansar snapshot selfie``. The latter will clip off the redundant folder under ``model-by-role``. Folders and files below
-the level of e.g. ``selfie/model-by-role/snooze-0`` are "wild west" as far as ansar is concerned. The specific contents are
-executable-dependent.
+	$ layer-cake model server ~/db --make-changes
+	$ layer-cake model server
+	db
+
+Without any materials to synchronize, the command defaults to listing the current contents of the target area. The server
+process has runtime access to the storage area through the :func:`~.model_path` function.
+
+Lastly, to take an image of the operational file materials;
+
+.. code-block:: console
+
+	$ layer-cake model server --get-latest=/home/roger/server-image
+	AddFolder(path=/.../.layer-cake/role/server/model/db, target=/home/roger/server-image)
+	$ layer-cake model server --get-latest=/home/roger/server-image --make-changes
+	$ ls /home/roger/server-image
+	db
+
+Refer to the :ref:`resource<layer-cake-command-reference-resource>` command for further information.
+
+The command accepts the following arguments;
 
 .. list-table::
-   :widths: 25 90
+   :widths: 25 15 75
    :header-rows: 1
 
    * - Name
-     - Contents
-   * - settings-by-role
-     - *.json file per role, persistent application configuration*
-   * - setting-value-by-role
-     - *JSON fragment, folder per-role and per-member, persistent application configuration*
-   * - resource-by-executable
-     - *open range folder per-executable, executable-dependent folders and files*
-   * - input-by-role
-     - *.json file per role, process input*
-   * - model-by-role
-     - *open range folder per-role, executable-dependent folders and files*
+     - Type
+     - Notes
+   * - **home-path**
+     - string
+     - *folder path, name of the home*
+   * - **full-path**
+     - bool
+     - *list the full path and name of storage area contents*
+   * - **recursive-listing**
+     - bool
+     - *list content of folders, recursively*
+   * - **long-listing**
+     - bool
+     - *list file attributes*
+   * - **make-changes**
+     - bool
+     - *implement the necessary changes to bring the target area up-to-date*
+   * - **clear-all**
+     - bool
+     - *remove all contents from the target area*
+   * - **get-latest**
+     - str
+     - *enable a reverse flow, from the home area to the specified path*
 
-For convenience of data entry, the ``setting-value-by-role`` folder can be created and populated manually. Values of the individual
-members of a settings object can be entered into a file, under the appropriate folder structure and this will override the
-global settings in ``settings-by-value``. The arrangement looks like;
+The **layer-cake** library provides file-based persistence for complex application data. Saving a table
+looks like;
 
-.. code::
+.. code-block:: python
 
-   selfie
-   selfie/setting-value-by-role
-   selfie/setting-value-by-role/snooze-0
-   selfie/setting-value-by-role/snooze-0/seconds
+	import layer_cake as lc
 
-Where the ``seconds`` file contains a JSON fragment appropriate to the member type - in this case a float like ``15.0``. JSON
-fragments are simpler than a full JSON encoding and do not include the standard "packaging", e.g. ``{"value": ...}``. Quotes are also
-added automatically around JSON types that require them, e,g. strings. Refer to ``update`` for more details on JSON fragments.
+	table_type = lc.def_type(list[list[float]])
+
+	f = lc.File('table', table_type)
+
+	table = [[1.0, 2.0],[3.0, 4.0]]
+	f.store(table)
+
+This approach to persistence is further supported in the library with the :func:`~.resource_folder`,
+:func:`~.model_folder` and :func:`~.tmp_folder` functions. Further information can be found :ref:`here<folders-and-files>`.
+
+.. _layer-cake-command-reference-script:
+
+SCRIPT
+======
+
+    $ layer-cake script
+
+Perform a synchronization, copying files from *source folders* to the storage area within the *home*. During the initiation
+of a *composite process*, the modules within the home area are given precedence over the *source folders*, recorded during
+the :ref:`add<layer-cake-command-reference-add>` operation.
+
+This command is slightly different to ``resource`` and ``model`` in that the default command performs the analysis
+of source and target areas;
+
+.. code-block:: console
+
+	$ layer-cake script
+	AddFile(path=/.../http_server.py, target=/.../.layer-cake/script)
+	AddFile(path=/.../http_api.py, target=/.../.layer-cake/script)
+	AddFile(path=/.../stats.py, target=/.../.layer-cake/script)
+	$
+
+This says that to synchronize the *source folders* with the *home* area (i.e. ``.layer-cake/script``), would require the
+copying of 3 source files. For some background on exactly what is happening, there are some helpful options;
+
+.. code-block:: console
+
+	$ layer-cake script --list-executables
+	server                   /.../http_server.py
+	stats                    /.../stats.py
+	$
+
+This command provides a list of the references made to Python modules, within the set of *roles*. Non-Python entries -
+or rather any executable not ending in ``.py`` - is not included in the efforts of the ``script`` command. The next
+useful option derives the list of unique folders present in the list of executables;
+
+.. code-block:: console
+
+	$ layer-cake script --list-paths
+	/.../project/src
+	$
+
+The output shows that both of the *executables* from the *roles* originate from the same folder. This list of paths
+becomes the *source folders* for the synchronization with the *home* area. All materials found in these folders is
+copied. To effect the changes just add the ``make-changes`` option;
+
+.. code-block:: console
+
+	$ layer-cake script --make-changes
+	$ layer-cake script --list-script
+	http_server.py
+	http_api.py
+	stats.py
+
+Refer to the :ref:`resource<layer-cake-command-reference-resource>` command for further information.
+
+The command accepts the following arguments;
+
+.. list-table::
+   :widths: 25 15 75
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Notes
+   * - **home-path**
+     - string
+     - *folder path, name of the home*
+   * - **full-path**
+     - bool
+     - *list the full path and name of storage area contents*
+   * - **recursive-listing**
+     - bool
+     - *list content of folders, recursively*
+   * - **long-listing**
+     - bool
+     - *list file attributes*
+   * - **list-scripts**
+     - bool
+     - *list the current contents of the target area*
+   * - **list-executables**
+     - bool
+     - *list all configured references to Python modules*
+   * - **list-paths**
+     - bool
+     - *list the set of unique source folders*
+   * - **make-changes**
+     - bool
+     - *implement the necessary changes to bring the target area up-to-date*
+   * - **clear-all**
+     - bool
+     - *remove all contents from the target area*
 
 Network Administration
 **********************
 
-.. _ansar-command-reference-network:
+.. _layer-cake-command-reference-network:
 
 NETWORK
 =======
 
-    $ ansar network [<*group-name*> [<*home-path*>]]
+    $ layer-cake network [<*group-name*> [<*home-path*>]]
 
 View the network environment for the specified group within the specified home. Adding the ``--connect-scope`` argument also
 provides for configuration of the specified environment, where connections are made from one scope to another scope, always
 in an upward direction. Configuration is persistent and may affect the operation of other groups that share a common
 ancestor, e.g. HOST, LAN or WAN.
 
-The default command lists the network environment for the ``default`` group in the ``.ansar-home`` folder;
+The default command lists the network environment for the ``default`` group in the ``.layer-cake-home`` folder;
 
 .. code::
 
-	$ ansar network
+	$ layer-cake network
 	+ GROUP 127.0.0.1:45489
 
-The simplest configuration command connects the same group to the installed **ansar-host** service;
+The simplest configuration command connects the same group to the installed **layer-cake-host** service;
 
 .. code::
 
-	$ ansar network --connect-scope=GROUP --to-scope=HOST
-	$ ansar network
+	$ layer-cake network --connect-scope=GROUP --to-scope=HOST
+	$ layer-cake network
 	+ HOST 127.0.0.1:32177
 	+ GROUP 127.0.0.1:45489
 
@@ -1118,7 +1022,7 @@ The command accepts the following explicit arguments;
      - *port number, override a default port*
    * - **connect-file**
      - string
-     - *file path, address and credentials for connection to ansar-wan*
+     - *file path, address and credentials for connection to layer-cake-wan*
    * - **connect-disable**
      - bool
      - *flag, enable or disable an upward connect from the specified start location*
@@ -1140,35 +1044,35 @@ switches to the use of the named network environment. The default environment is
 
 Adding the ``--custom-host`` and/or ``--custom-port`` arguments to a ``--connect-scope`` command
 overrides the standard IP and port number values. These must match the configuration created when
-installing the ansar services; **ansar-host** and **ansar-lan**.
+installing the layer-cake services; **layer-cake-host** and **layer-cake-lan**.
 
 Connecting an environment to a WAN service requires an *access file* created by the use of
-the :ref:`ansar directory <ansar-command-reference-directory>` command. This is then combined
+the :ref:`layer-cake directory <layer-cake-command-reference-directory>` command. This is then combined
 with a ``--connect-scope`` argument using the ``--connect-file`` argument;
 
 .. code::
 
-	$ ansar network --connect-scope=GROUP --connect-file=<access-file>
+	$ layer-cake network --connect-scope=GROUP --connect-file=<access-file>
 
 To drop out a section of the network environment, use the ``--connect-disable`` argument;
 
 .. code::
 
-	$ ansar network --connect-scope=GROUP --connect-disable
+	$ layer-cake network --connect-scope=GROUP --connect-disable
 
 This deletes any existing connection for the associated GROUP, returning it to private operation.
 
 PING
 ====
 
-    $ ansar ping <*service*> [<*group*> [<*home*>]]
+    $ layer-cake ping <*service*> [<*group*> [<*home*>]]
 
 Test connectivity from the current host to the specified service, within the specified network environment. The
 command will print a short list of attempts to provoke a response and the time it took to succeed in doing so;
 
 .. code::
 
-	$ ansar ping testing-response-time
+	$ layer-cake ping testing-response-time
 	[LAN] testing-response-time (6 hops)
 	+ received ack after 0.006224s
 	+ received ack after 0.022727s
@@ -1204,14 +1108,14 @@ The command accepts the following explicit arguments;
      - int
      - *number, override for the number of pings*
 
-.. _ansar-command-reference-signup:
+.. _layer-cake-command-reference-signup:
 
 SIGNUP
 ======
 
-    $ ansar signup
+    $ layer-cake signup
 
-All networking at the WAN scope requires an account in the **ansar-wan**. To create an account use the ``signup``
+All networking at the WAN scope requires an account in the **layer-cake-wan**. To create an account use the ``signup``
 command. To access and existing account use the ``login`` command.
 
 The command prompts the user for a list of fields. After entry of the final field the entire set is presented
@@ -1227,14 +1131,14 @@ symbols (e.g. +).
 
 .. note::
 
-	The status of **ansar-wan** can be found `here :ref:<wan-networking-and-supporting-service>`.
+	The status of **layer-cake-wan** can be found `here :ref:<wan-networking-and-supporting-service>`.
 
-.. _ansar-command-reference-login:
+.. _layer-cake-command-reference-login:
 
 LOGIN
 =====
 
-    $ ansar login
+    $ layer-cake login
 
 To recover access to an account, use the login command. Enter an email address and the associated
 password. There is either an error message or silence indicating that the account is open for further
@@ -1256,12 +1160,12 @@ The command accepts the following explicit arguments;
      - UUID
      - *identity, read and display the specified login*
 
-.. _ansar-command-reference-account:
+.. _layer-cake-command-reference-account:
 
 ACCOUNT
 =======
 
-    $ ansar account
+    $ layer-cake account
 
 Access information about the current account or modify the account. The default is a full listing of
 account details (minus sensitive information), related logins and directories. The ``--show-identities``
@@ -1315,12 +1219,12 @@ The account owner is the only identity that can modify the account in this way.
 Adding the ``--show-identities`` argument (or the ``-si`` shorthand flag) to a read command results in the
 inclusion of a UUID for each account entity.
 
-.. _ansar-command-reference-directory:
+.. _layer-cake-command-reference-directory:
 
 DIRECTORY
 =========
 
-    $ ansar directory 
+    $ layer-cake directory 
 
 Directories may be read (the default), updated or exported. Deletion occurs as an account operation
 and can only be performed by the account owner.
@@ -1330,14 +1234,14 @@ Consider the following command;
 
 .. code::
 
-	$ ansar directory --directory-id=765666dc-6cc8-473a-9130-bff9cc378061 --export --access-name=station --export-file=station.access
+	$ layer-cake directory --directory-id=765666dc-6cc8-473a-9130-bff9cc378061 --export --access-name=station --export-file=station.access
 
-This creates a ``station.access`` file in the current directory. The file is passed to the :ref:`ansar network <ansar-command-reference-network>`
+This creates a ``station.access`` file in the current directory. The file is passed to the :ref:`layer-cake network <layer-cake-command-reference-network>`
 command to configure a connection from a GROUP, HOST or LAN to the selected directory.
 
 .. code::
 
-	$ ansar network --connect-scope=LAN --connect-file=station.access
+	$ layer-cake network --connect-scope=LAN --connect-file=station.access
 
 The command accepts the following explicit arguments;
 

@@ -1,4 +1,4 @@
-.. distribution-with-multihosting:
+.. _distribution-with-multihosting:
 
 Distribution With Multihosting
 ##############################
@@ -364,9 +364,9 @@ To try out this new arrangement;
 	$ layer-cake destroy
 	$ layer-cake create
 	$ layer-cake add test_server_10.py server
-	$ layer-cake add test_worker_10.py worker --count=8
+	$ layer-cake add test_worker_10.py worker --role-count=8
 
-An initial destroy command deletes the previous definition of the composite process. The add command accepts a \--count parameter
+An initial destroy command deletes the previous definition of the composite process. The add command accepts a \--role-count parameter
 that is used to add multiple instances of the same module. Decoration of the instance name with an ordinal number is automated;
 
 .. code-block:: console

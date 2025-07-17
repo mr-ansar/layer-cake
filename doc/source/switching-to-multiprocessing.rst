@@ -480,8 +480,9 @@ Process Orchestration And Housekeeping
 **************************************
 
 The final implementation of multiprocessing is a reasonably difficult example of process orchestration. There may be hundreds
-of processes in the worker spool that must be managed at all times. A significant challenge if assigned the task of developing
-such a process from scratch.
+of processes in the worker spool that must be managed at all times. Worker processes may terminate and require restarts, or
+a full teardown of the server process and all its workers may suddenly be required at any moment. A significant challenge if
+assigned the task of developing such a process from scratch.
 
 The final act of process orchestration is to terminate cleanly. This involves the managed teardown of all platform resources
 such as processes and network ports. When any layer cake process is terminated (e.g. a control-c) there is a phase of
@@ -489,5 +490,44 @@ housekeeping. Open connections are closed, listen ports are closed and lastly, c
 
 This housekeeping occurs by default and obviates the need for any housekeeping by the developer of a layer cake process. Where
 there is a specific need, there is always the ability to release those platform resources manually. To close a connection \- send
-the :class:`~.Close` message to the transport, to close a listen port \- use :func:`~.stop_listening`, and to terminate a process \- send
-the :class:`~.Stop` message to the address of the :class:`~.ProcessObject`.
+the :class:`~.Close` message to the transport, to close a listen port \- use :func:`~.stop_listening`, and to terminate a
+process \- send the :class:`~.Stop` message to the address of the :class:`~.ProcessObject`.
+
+Standard Process Arguments
+**************************
+
+As well as the arguments defined by application objects (e.g. :func:`server`), every layer-cake executable accepts a set
+of standard arguments. Most of these are related to integration of a process into the asynchronous runtime. The following
+are for general use;
+
+.. list-table::
+   :widths: 25 15 75
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Notes
+   * - **full-output**
+     - bool
+     - *enable output of full encoding on termination*
+   * - **debug-level**
+     - :class:`~.USER_LOG`
+     - *enable output of logs at the selected level*
+   * - **home-path**
+     - string
+     - *folder path, location of the composite process*
+   * - **role-name**
+     - string
+     - *unique name of the process within the home*
+   * - **resource-path**
+     - string
+     - *location of read-only files, override default*
+   * - **model-path**
+     - string
+     - *location of operational files, override default*
+   * - **dump-types**
+     - bool
+     - *list the types registered within the process*
+   * - **connect-to-directory**
+     - :class:`~.HostPort`
+     - *network address of the directory to join, override default behaviour*

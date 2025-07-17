@@ -45,7 +45,7 @@ class TestRoutinePoint(TestCase):
 
 	def test_virtual_class(self):
 		try:
-			lc.bind_routine(empty, return_type=lc.Integer8)
+			lc.bind_routine(empty, return_type=lc.VectorOf)
 			assert False
 		except lc.PointConstructionError:
 			pass

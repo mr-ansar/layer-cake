@@ -4,7 +4,7 @@ echo '--- CREATE ---'
 layer_cake create
 layer_cake add test_server.py server
 layer_cake add test_publisher.py publisher
-layer_cake add test_subscriber.py subscriber --count=4
+layer_cake add test_subscriber.py subscriber --role-count=4
 
 # No resources for test_server.py.
 [[ `layer_cake resource test_server.py | wc -l` -eq '0' ]] || exit 1

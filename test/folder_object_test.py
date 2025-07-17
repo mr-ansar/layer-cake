@@ -33,7 +33,7 @@ class TestFolderObject(TestCase):
 		# 3. Write and then read the object in that file
 		# 4. Compare r to d.
 		F = lc.Folder(self.temp)
-		f = F.file('write-read-inferred', te=t)
+		f = F.file('write-read-inferred', tip=t)
 
 		f.store(d)
 		r = f.recover()
@@ -51,7 +51,7 @@ class TestFolderObject(TestCase):
 		# 3. Write and then read the object in that file
 		# 4. Compare r to d.
 		F = lc.Folder(name)
-		f = F.file('inferred-t', te=t)
+		f = F.file('inferred-t', tip=t)
 
 		f.store(d)
 		r = f.recover()
@@ -66,8 +66,8 @@ class TestFolderObject(TestCase):
 
 		# Give test its own folder.
 		name = os.path.join(self.temp, 'store-recover-cycle')
-		f = lc.Folder(name, te=t, keys_names=kn)
-		a = lc.Folder(name, te=t, keys_names=kn)
+		f = lc.Folder(name, tip=t, keys_names=kn)
+		a = lc.Folder(name, tip=t, keys_names=kn)
 
 		# Generate a suitable map.
 		d = {}
@@ -99,7 +99,7 @@ class TestFolderObject(TestCase):
 
 		# Give test its own folder.
 		name = os.path.join(self.temp, 'add-remove')
-		f = lc.Folder(name, te=t, keys_names=kn)
+		f = lc.Folder(name, tip=t, keys_names=kn)
 
 		# Generate a suitable map.
 		d = {}
@@ -141,7 +141,7 @@ class TestFolderObject(TestCase):
 
 		# Give test its own folder.
 		name = os.path.join(self.temp, 'store-clear')
-		f = lc.Folder(name, te=t, keys_names=kn)
+		f = lc.Folder(name, tip=t, keys_names=kn)
 
 		# Generate a suitable map.
 		d = {}
@@ -166,7 +166,7 @@ class TestFolderObject(TestCase):
 		kn = (lambda m: m.b, lambda m: '%04d' % (m.b,))
 		name = os.path.join(self.temp, 'trees')
 
-		f = lc.Folder(name, te=t, keys_names=kn)
+		f = lc.Folder(name, tip=t, keys_names=kn)
 
 		# Create a small tree, remembering the
 		# folder at the deepest location.
@@ -188,7 +188,7 @@ class TestFolderObject(TestCase):
 		kn = (lambda m: m.b, lambda m: '%04d' % (m.b,))
 		name = os.path.join(self.temp, 'tree-of-files')
 
-		f = lc.Folder(name, te=t, keys_names=kn)
+		f = lc.Folder(name, tip=t, keys_names=kn)
 
 		X = f.folder('X')
 		X.folder('a')
@@ -201,7 +201,7 @@ class TestFolderObject(TestCase):
 		assert X.exists('a')
 		assert X.exists(cy.path)
 
-		cyf = cy.file('f', te=t)
+		cyf = cy.file('f', tip=t)
 		cyf.store(d)
 
 		assert cy.exists('f')

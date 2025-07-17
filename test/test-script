@@ -81,7 +81,7 @@ echo
 echo '--- ADD (COUNT)'
 python3 lyrck.py create
 python3 lyrck.py add test_publisher.py publisher
-python3 lyrck.py add test_subscriber.py subscriber --count=10
+python3 lyrck.py add test_subscriber.py subscriber --role-count=10
 [[ `python3 lyrck.py list | wc -l` -eq 11 ]] || exit 1
 
 python3 lyrck.py delete subscriber-'[02468]'
@@ -103,7 +103,7 @@ sleep 2
 python3 lyrck.py stop
 python3 lyrck.py status && exit 1
 
-python3 lyrck.py add test_subscriber.py subscriber --count=10
+python3 lyrck.py add test_subscriber.py subscriber --role-count=10
 python3 lyrck.py start
 sleep 2
 [[ `python3 lyrck.py status | wc -l` -eq 11 ]] || exit 1
@@ -118,7 +118,7 @@ echo
 echo '--- LOG'
 python3 lyrck.py create
 python3 lyrck.py add test_publisher.py publisher
-python3 lyrck.py add test_subscriber.py subscriber --count=10
+python3 lyrck.py add test_subscriber.py subscriber --role-count=10
 python3 lyrck.py start
 sleep 2
 [[ `python3 lyrck.py log publisher --rewind=10000 | grep "Received list_list_float" | wc -l` -eq 10 ]] || exit 1

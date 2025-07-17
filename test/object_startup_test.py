@@ -147,9 +147,9 @@ class TestObjectStartup(TestCase):
 		lc.create(say_hi, sticky=True)
 		PB.exit_status = None
 
-		r = lc.resource()
-		m = lc.model()
-		t = lc.tmp()
+		r = lc.resource_folder()
+		m = lc.model_folder()
+		t = lc.tmp_folder()
 
 		assert isinstance(r, lc.Folder)
 		assert isinstance(m, lc.Folder)

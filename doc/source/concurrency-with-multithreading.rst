@@ -121,8 +121,8 @@ Use ``curl`` (or some other HTTP client) to make a call to the network service;
 		]
 	}
 
-The service returns the table as one part of a larger response. Logs associated with the processing of
-the request will look like;
+The 2D table of floats can be seen together with supporting information. Logs associated with
+the processing of the request will look like;
 
 .. code-block:: console
 
@@ -166,21 +166,27 @@ To send a message (i.e. a named collection of typed members) in layer cake it ne
 used to describe the arguments passed to the :meth:`__init__` method. Lastly, the class is registered with the layer cake library
 using :func:`~.bind`.
 
-Registration prepares information needed during logging. It’s also needed for the conversion of the HTTP representation \- ``/Xy?x=2&y=3`` \- into
-an instance of the :class:`Xy` class during network messaging.
+Registration prepares information needed for the conversion of the HTTP representation \- ``/Xy?x=2&y=3`` \- into an instance of
+the :class:`Xy` class during network messaging. It also prepares for logging.
 
 To send anything other than a registered class, the type must be registered using the :func:`~.def_type` function. This produces a
 portable object that is used to mark the relevant Python data when required, e.g. :func:`~.cast_to`. As far as the Python type system
-is concerned the response variable is a list of anything. This is not enough information by itself for effective processing at the receiver.
+is concerned the response variable could be anything. This is not enough information by itself for effective processing at the receiver.
 
-In the world of network messaging, the ability to send something like a list of :class:`Xy` objects or a 3D table of floats is uncommon (is this the
-first?). Normally this issue is resolved with a message containing the single member. However, in some areas of code it can become tedious to
-maintain large numbers of message classes that contain a single member. This can happen in a network API over a database, where many responses
-are the result of querying different database tables, i.e. lists of different message types.
+In the world of network messaging, the ability to send something like a list of :class:`Xy` objects or a 3D cube of floats is uncommon
+(is this the first?). Normally this issue is resolved with a message containing the single member. However, in some areas of code it
+can become tedious to maintain large numbers of message classes that contain a single member. This can happen in a network API over
+a database, where many responses are the result of querying different database tables, i.e. lists of different message types.
 
-Layer cake software that restricts itself to only sending registered messages can completely avoid the details involved in sending data such
-as ``list[list[float]]``. However, it is crucial to the complete integration of multithreading and multiprocessing into layer cake processes
-and does allow for some nice behaviour around the command line (refer to later sections).
+Layer cake software that restricts itself to only sending registered messages can completely avoid the details involved in sending
+data such as ``list[list[float]]``. However, the capability to do so is fundamental to the complete integration of multithreading and
+multiprocessing into layer cake processes. It does allow for some nice behaviour around the command line (refer to later sections).
+
+.. note::
+
+	Through integration of Python type hints, much of the additional type information needed by the library is available as a
+	by-product of good coding practise. However, the **layer-cake** type system is necessarily more extensive, and sometimes
+	Python hints are not enough. Further information on types can be found :ref:`here<layer-cake-type-reference>`.
 
 A Brief Outline
 ***************

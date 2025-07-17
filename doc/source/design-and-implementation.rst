@@ -26,7 +26,7 @@ There is no intention to port **layer-cake** to other languages.
 Supported Platforms
 ===================
 
-**layer-cake** has been tested on the following platforms;
+**layer-cake** has been tested on the following platforms, using Python 3.10+;
 
 * Ubuntu 20+
 * Debian 12+
@@ -37,7 +37,7 @@ Supported Platforms
 Other Linux Platforms
 +++++++++++++++++++++
 
-Any combination of a modern Python interpreter (3.7+) and a Linux-based operating system may support
+Any combination of a modern Python interpreter (3.10+) and a Linux-based operating system may support
 **layer-cake** operation. Only those included in **layer-cake** testing are listed in the previous section.
 
 Windows Support
@@ -61,7 +61,7 @@ send and receive messages, create new objects, and terminate.
 There is a single internal map of objects, where the key is an integer and the value is one of the
 supported object types, i.e. a function with its own thread, or a machine. The integer key is often
 referred to as a **layer-cake** address. Every async application starts with the creation of a single object,
-using :func:`create()`.
+using :func:`~.create()`.
 
 An async application may accumulate tens of thousands of objects. Attempting to create large
 numbers in a burst may encounter message overflow problems (refer to following paragraps).
@@ -246,13 +246,13 @@ Long term connections are at risk of failures in the operational environment. Th
 events such as dropout of network infrastructure (e.g. someone pulls the plug on a network
 switch) and discarded NAT mappings. The significance of these events is that they are likely
 to go unreported. There will be no related activity in the local network stack and therefore
-no :class:`Closed` message propagated to the application.
+no :class:`~.Closed` message propagated to the application.
 
-Enabling the ``self_checking`` flag on the call to :func:`connect` activates
+Enabling the ``self_checking`` flag on the call to :func:`~.connect` activates
 a keep-alive capability. After a period of inactivity - no messages sent or received - the
 library will perform a low-level enquiry-ack exchange to verify the operational status of
 the network transport and the remote application. This may result in either an error in
-the network stack or a timeout, further resulting in a :class:`Closed` message.
+the network stack or a timeout, further resulting in a :class:`~.Closed` message.
 
 Inactivity is defined to be a period of two minutes with no message activity. The enquiry-ack
 exchange is expected to complete within five seconds.

@@ -167,3 +167,41 @@ Concurrency
 .. currentmodule:: layer_cake.process_object
 
 .. autoclass:: ProcessObject
+
+.. currentmodule:: layer_cake.retry_intervals
+
+.. autoclass:: RetryIntervals
+
+Composite Processes
+*******************
+
+.. currentmodule:: layer_cake.home_role
+
+.. autofunction:: resource_path
+.. autofunction:: model_path
+.. autofunction:: tmp_path
+
+Folders And Files
+*****************
+
+.. currentmodule:: layer_cake.folder_object
+
+.. autoclass:: Folder
+.. automethod:: Folder.file
+.. automethod:: Folder.folder
+.. automethod:: Folder.matching
+.. automethod:: Folder.each
+.. automethod:: Folder.store
+.. automethod:: Folder.recover
+.. automethod:: Folder.add
+.. automethod:: Folder.update
+.. automethod:: Folder.remove
+.. automethod:: Folder.clear
+.. automethod:: Folder.erase
+.. automethod:: Folder.exists
+
+.. currentmodule:: layer_cake.file_object
+
+.. autoclass:: File
+.. automethod:: File.store
+.. automethod:: File.recover

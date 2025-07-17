@@ -87,7 +87,7 @@ class TestFileObject(TestCase):
 		t = lc.UserDefined(AutoTypes)
 		d = lc.make(t)
 
-		f = lc.File(a, expression=t)
+		f = lc.File(a, t)
 
 		f.store(d)
 		r = f.recover()

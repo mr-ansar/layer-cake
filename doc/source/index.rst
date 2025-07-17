@@ -61,8 +61,10 @@ numbers of clients is provided at the end.
    switching-to-multiprocessing
    distribution-with-multihosting
    simulating-http-clients
-   design-and-implementation
    layer-cake-command-reference
+   layer-cake-type-reference
+   folders-and-files
+   design-and-implementation
    classes-and-functions
 
 .. only: html
