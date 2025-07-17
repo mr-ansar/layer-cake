@@ -797,7 +797,7 @@ class SocketProxy(Point, StateMachine):
 		self.checked = 0
 	
 	def first_few(self):
-		if self.checked > 12:
+		if self.checked > 4:
 			return False
 		self.checked += 1
 		return True
@@ -825,7 +825,7 @@ def SocketProxy_NORMAL_TransportTick(self, message):
 		# an enquiry/ack verification that transport is
 		# still functional.
 		if self.first_few():
-			self.log(USER_TAG.CONSOLE, f'Transport idle, send TransportEnquiry and start timer')
+			self.log(USER_TAG.CONSOLE, f'Transport idle, send TransportEnquiry')
 		self.send(TransportEnquiry(), self.keeper)
 		self.start(TransportCheck, RESPONSIVE_TRANSPORT)
 		return CHECKING
@@ -862,7 +862,7 @@ def SocketProxy_CHECKING_TransportTick(self, message):
 def SocketProxy_CHECKING_TransportAck(self, message):
 	# Transport verified. Return to normal operation.
 	if self.first_few():
-		self.log(USER_TAG.CONSOLE, f'Received TransportAck, return to normal operation')
+		self.log(USER_TAG.TRACE, f'Received TransportAck, continue')
 	self.cancel(TransportCheck)
 	self.transport.idling = False
 	return NORMAL
@@ -870,8 +870,7 @@ def SocketProxy_CHECKING_TransportAck(self, message):
 def SocketProxy_CHECKING_TransportCheck(self, message):
 	# No acknowledgement within time limit. Close
 	# this connection down.
-	if self.first_few():
-		self.log(USER_TAG.CONSOLE, f'Timed out, close transport')
+	self.log(USER_TAG.WARNING, f'Timed out, close transport')
 	c = Close(value=None, reason=EndOfTransport.WENT_STALE, note='keep-alive timeout')
 	self.channel.send(Shutdown(self.s, c), self.object_address)
 	self.send(Stop(), self.keeper)
