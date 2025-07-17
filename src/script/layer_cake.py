@@ -48,12 +48,12 @@ GROUP_EXECUTABLE = 'group-cake'
 def layer_cake(self, *word):
 	# At [0] is the tuple created by command_sub_arguments() based on the
 	# presence of a valid sub-command name, or its None.
+	if not word:
+		# A non-sub execution of the utility.
+		return lc.Faulted('no sub-command')
 	sub = word[0]
 	word = word[1:]
 
-	if sub is None:
-		# A non-sub execution of the utility.
-		return
 	sub_command, jump, sub_args, remainder = sub
 
 	# Catch uncurated args that are not going anywhere.
