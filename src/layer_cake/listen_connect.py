@@ -583,7 +583,7 @@ class MessageStream(object):
 					h = diffie_hellman[0]
 					body, to_address, return_address = h
 				elif isinstance(body, KeepAlive):
-					sockets.send(body, return_address)
+					sockets.send(OpenKeep(body, return_address), proxy_address)
 					continue
 				else:
 					pass	# Normal application messaging.
@@ -709,15 +709,21 @@ class TcpTransport(object):
 #
 #
 class KeepAlive(object):
-	def __init__(self, seconds=0.0):
+	def __init__(self, seconds: float=0.0):
 		self.seconds = seconds
 
+class OpenKeep(object):
+	def __init__(self, keep: KeepAlive=None, return_address: Address=None):
+		self.keep = keep
+		self.return_address = return_address
+
 class StillThere(object):
-	def __init__(self, seconds=0.0):
+	def __init__(self, seconds: float=0.0):
 		self.seconds = seconds
 
 bind(KeepAlive, copy_before_sending=False, execution_trace=True, message_trail=True)
 bind(StillThere, copy_before_sending=False, execution_trace=True, message_trail=True)
+bind(OpenKeep, copy_before_sending=False, execution_trace=True, message_trail=True)
 
 IDLE_TRANSPORT = 60.0
 RESPONSIVE_TRANSPORT = 5.0
@@ -825,11 +831,11 @@ SOCKET_DOWN = (errno.ECONNRESET, errno.EHOSTDOWN, errno.ENETDOWN, errno.ENETRESE
 
 def SocketProxy_INITIAL_Start(self, message):
 	if self.self_checking:
-		self.keeper = self.create(SocketKeeper, self.object_address)
+		self.keeper = self.create(SocketKeeper, proxy_address=self.object_address)
 	return NORMAL
 
-def SocketProxy_NORMAL_KeepAlive(self, message):
-	self.keeper = self.create(SocketKeeper, self.object_address, message.seconds)
+def SocketProxy_NORMAL_OpenKeep(self, message):
+	self.keeper = self.create(SocketKeeper, proxy_address=message.return_address, expecting=message.keep.seconds)
 	return NORMAL
 
 def SocketProxy_NORMAL_Unknown(self, message):
@@ -863,7 +869,7 @@ TCP_PROXY_DISPATCH = {
 		()
 	),
 	NORMAL: (
-		(KeepAlive, Unknown, Close, Stop),
+		(OpenKeep, Unknown, Close, Stop),
 		()
 	),
 	CLEARING: (
