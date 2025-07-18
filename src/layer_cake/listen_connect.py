@@ -583,7 +583,7 @@ class MessageStream(object):
 					h = diffie_hellman[0]
 					body, to_address, return_address = h
 				elif isinstance(body, KeepAlive):
-					sockets.send(body, proxy_address)
+					sockets.send(body, return_address)
 					continue
 				else:
 					pass	# Normal application messaging.
@@ -716,8 +716,8 @@ class StillThere(object):
 	def __init__(self, seconds=0.0):
 		self.seconds = seconds
 
-bind(KeepAlive, copy_before_sending=False, execution_trace=False, message_trail=False)
-bind(StillThere, copy_before_sending=False, execution_trace=False, message_trail=False)
+bind(KeepAlive, copy_before_sending=False, execution_trace=True, message_trail=True)
+bind(StillThere, copy_before_sending=False, execution_trace=True, message_trail=True)
 
 IDLE_TRANSPORT = 60.0
 RESPONSIVE_TRANSPORT = 5.0
@@ -726,15 +726,16 @@ DELAYED_KEEPALIVE = T1
 REQUESTED_CHECK = T2
 
 class SocketKeeper(Point, StateMachine):
-	def __init__(self, remote_address=None, expecting=None):
+	def __init__(self, proxy_address=None, expecting=None):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
-		self.remote_address = remote_address
+		self.proxy_address = proxy_address
 		self.expecting = expecting
+		self.keeper_address = None
 
-	def originate(self, message):
+	def originate(self, message, address):
 		s = spread_out(IDLE_TRANSPORT, 5)
-		self.send(message(s), self.remote_address)
+		self.send(message(s), address)
 		return s
 
 def SocketKeeper_INITIAL_Start(self, message):
@@ -742,11 +743,12 @@ def SocketKeeper_INITIAL_Start(self, message):
 		self.start(T1, IDLE_TRANSPORT / 4.0)
 		return PAUSING
 
+	self.keeper_address = self.proxy_address
 	self.start(T2, self.expecting)
 	return PENDING
 
 def SocketKeeper_PAUSING_T1(self, message):
-	s = self.originate(KeepAlive)
+	s = self.originate(KeepAlive, self.proxy_address)
 	self.start(T3, s + 3.0)						# Expect response.
 	return CHECKING
 
@@ -754,7 +756,7 @@ def SocketKeeper_PAUSING_Stop(self, message):
 	self.complete(Aborted())
 
 def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own cycle.
-	s = self.originate(StillThere)
+	s = self.originate(StillThere, self.keeper_address)
 	self.start(T3, s + 5.0)						# Expect response.
 	return CHECKING
 
@@ -762,6 +764,7 @@ def SocketKeeper_PENDING_Stop(self, message):
 	self.complete(Aborted())
 
 def SocketKeeper_CHECKING_StillThere(self, message):
+	self.keeper_address = self.return_address
 	self.cancel(T3)
 	self.start(T2, message.seconds)						# All good. Keep going.
 	return PENDING
