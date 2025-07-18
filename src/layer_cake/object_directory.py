@@ -1794,6 +1794,12 @@ def ObjectDirectory_READY_Returned(self, message):
 def ObjectDirectory_READY_Stop(self, message):
 	self.complete()
 
+import json
+def ObjectDirectory_READY_Incognito(self, message):
+	s = json.dumps(message.decoded_word)
+	self.console(type_name=message.type_name, word=s)
+	return READY
+
 OBJECT_DIRECTORY_DISPATCH = {
 	INITIAL: (
 		(Start,),
@@ -1816,7 +1822,8 @@ OBJECT_DIRECTORY_DISPATCH = {
 		OpenLibrary,
 		SubscriberRoute,
 		Returned,
-		Stop,),
+		Stop,
+		Incognito,),
 		()
 	),
 }
