@@ -774,7 +774,7 @@ def SocketKeeper_CHECKING_StillThere(self, message):
 	return PENDING
 
 def SocketKeeper_CHECKING_T3(self, message):
-	self.send(Close(), self.remote_address)
+	self.send(Close(reason=EndOfTransport.WENT_STALE, note='no response'), self.proxy_address)
 	self.complete(TimedOut(T3))
 
 def SocketKeeper_CHECKING_Stop(self, message):
