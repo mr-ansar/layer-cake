@@ -737,7 +737,6 @@ class SocketKeeper(Point, StateMachine):
 		StateMachine.__init__(self, INITIAL)
 		self.proxy_address = proxy_address
 		self.expecting = expecting
-		self.keeper_address = None
 
 	def originate(self, message, address):
 		s = spread_out(IDLE_TRANSPORT, 5)
@@ -749,7 +748,6 @@ def SocketKeeper_INITIAL_Start(self, message):
 		self.start(T1, IDLE_TRANSPORT / 4.0)
 		return PAUSING
 
-	self.keeper_address = self.proxy_address
 	self.start(T2, self.expecting)
 	return PENDING
 
@@ -762,7 +760,7 @@ def SocketKeeper_PAUSING_Stop(self, message):
 	self.complete(Aborted())
 
 def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own cycle.
-	s = self.originate(StillThere, self.keeper_address)
+	s = self.originate(StillThere, self.proxy_address)
 	self.start(T3, s + 5.0)						# Expect response.
 	return CHECKING
 
@@ -770,7 +768,7 @@ def SocketKeeper_PENDING_Stop(self, message):
 	self.complete(Aborted())
 
 def SocketKeeper_CHECKING_StillThere(self, message):
-	self.keeper_address = self.return_address
+	self.proxy_address = self.return_address
 	self.cancel(T3)
 	self.start(T2, message.seconds)						# All good. Keep going.
 	return PENDING
