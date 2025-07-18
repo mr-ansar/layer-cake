@@ -85,6 +85,7 @@ class PENDING: pass
 class NORMAL: pass
 class CHECKING: pass
 class CLEARING: pass
+class PAUSING: pass
 
 # Control messages sent to the sockets thread
 # via the control channel.
@@ -581,10 +582,9 @@ class MessageStream(object):
 						continue
 					h = diffie_hellman[0]
 					body, to_address, return_address = h
-				elif isinstance(body, TransportEnquiry):
-					body = TransportAck()
-					to_address = header.return_address
-					return_address = header.to_address
+				elif isinstance(body, KeepAlive):
+					sockets.send(body, proxy_address)
+					continue
 				else:
 					pass	# Normal application messaging.
 
@@ -632,7 +632,6 @@ class TcpTransport(object):
 		self.pending = []			# Messages not yet in the loop.
 		self.lock = threading.RLock()		# Safe sharing and empty detection.
 		self.messages_to_encode = deque()
-		self.idling = False
 
 		self.encoded_bytes = bytearray()
 
@@ -662,7 +661,6 @@ class TcpTransport(object):
 			t3 = (m, t, r)
 			self.pending.append(t3)
 		finally:
-			self.idling = False
 			self.lock.release()
 		return empty
 
@@ -706,69 +704,87 @@ class TcpTransport(object):
 	# Input.
 	def receive_a_message(self, received, sockets):
 		for body, to_address, return_address in self.messaging.recover_message(received, sockets):
-			self.idling = False
 			sockets.forward(body, to_address, return_address)
 
 #
 #
-class TransportTick(object):
-	pass
+class KeepAlive(object):
+	def __init__(self, seconds=0.0):
+		self.seconds = seconds
 
-class TransportCheck(object):
-	pass
+class StillThere(object):
+	def __init__(self, seconds=0.0):
+		self.seconds = seconds
 
-class TransportEnquiry(object):
-	pass
-
-class TransportAck(object):
-	pass
-
-bind(TransportTick, copy_before_sending=False, execution_trace=False, message_trail=False)
-bind(TransportCheck, copy_before_sending=False, execution_trace=False, message_trail=False)
-bind(TransportEnquiry, copy_before_sending=False, execution_trace=False, message_trail=False)
-bind(TransportAck, copy_before_sending=False, execution_trace=False, message_trail=False)
+bind(KeepAlive, copy_before_sending=False, execution_trace=False, message_trail=False)
+bind(StillThere, copy_before_sending=False, execution_trace=False, message_trail=False)
 
 IDLE_TRANSPORT = 60.0
 RESPONSIVE_TRANSPORT = 5.0
 
-class SocketKeeper(Point, StateMachine):
-	"""Part of the watchdog function to keep network connections functional.
+DELAYED_KEEPALIVE = T1
+REQUESTED_CHECK = T2
 
-	Watchdog needs to run inside the socket proxy (access to transport) but
-	cant because of codec processing of addresses. So this exists as a
-	real address that can be used for TransportEnquiry/TransportAck
-	exchanges.
-	"""
-	def __init__(self):
+class SocketKeeper(Point, StateMachine):
+	def __init__(self, remote_address=None, expecting=None):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
+		self.remote_address = remote_address
+		self.expecting = expecting
+
+	def originate(self, message):
+		s = spread_out(IDLE_TRANSPORT, 5)
+		self.send(message(s), self.remote_address)
+		return s
 
 def SocketKeeper_INITIAL_Start(self, message):
-	return NORMAL
+	if self.expecting is None:
+		self.start(T1, IDLE_TRANSPORT / 4.0)
+		return PAUSING
 
-def SocketKeeper_NORMAL_TransportEnquiry(self, message):
-	# Prompted by the proxy, send the enquiry with this
-	# object as the return address.
-	self.send(message, self.parent_address)
-	return NORMAL
+	self.start(T2, self.expecting)
+	return PENDING
 
-def SocketKeeper_NORMAL_TransportAck(self, message):
-	# Acknowledgement of the enquiry - push to the
-	# true client, i.e. the proxy.
-	self.send(message, self.parent_address)
-	return NORMAL
+def SocketKeeper_PAUSING_T1(self, message):
+	s = self.originate(KeepAlive)
+	self.start(T3, s + 3.0)						# Expect response.
+	return CHECKING
 
-def SocketKeeper_NORMAL_Stop(self, message):
-	self.complete()
+def SocketKeeper_PAUSING_Stop(self, message):
+	self.complete(Aborted())
+
+def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own cycle.
+	s = self.originate(StillThere)
+	self.start(T3, s + 5.0)						# Expect response.
+	return CHECKING
+
+def SocketKeeper_PENDING_Stop(self, message):
+	self.complete(Aborted())
+
+def SocketKeeper_CHECKING_StillThere(self, message):
+	self.cancel(T3)
+	self.start(T2, message.seconds)						# All good. Keep going.
+	return PENDING
+
+def SocketKeeper_CHECKING_T3(self, message):
+	self.send(Close(), self.remote_address)
+	self.complete(TimedOut(T3))
+
+def SocketKeeper_CHECKING_Stop(self, message):
+	self.complete(Aborted())
 
 SOCKET_KEEPER_DISPATCH = {
 	INITIAL: (
-		(Start,),
-		()
+		(Start,), ()
 	),
-	NORMAL: (
-		(TransportEnquiry, TransportAck, Stop),
-		()
+	PAUSING: (
+		(T1, Stop), ()
+	),
+	PENDING: (
+		(T2, Stop), ()
+	),
+	CHECKING: (
+		(StillThere, T3, Stop), ()
 	),
 }
 
@@ -806,12 +822,13 @@ SOCKET_DOWN = (errno.ECONNRESET, errno.EHOSTDOWN, errno.ENETDOWN, errno.ENETRESE
 
 def SocketProxy_INITIAL_Start(self, message):
 	if self.self_checking:
-		self.keeper = self.create(SocketKeeper)
-		self.start(TransportTick, IDLE_TRANSPORT, repeating=True)
+		self.keeper = self.create(SocketKeeper, self.object_address)
 	return NORMAL
 
-#
-#
+def SocketProxy_NORMAL_KeepAlive(self, message):
+	self.keeper = self.create(SocketKeeper, self.object_address, message.seconds)
+	return NORMAL
+
 def SocketProxy_NORMAL_Unknown(self, message):
 	message = cast_to(message, self.received_type)
 	empty = self.transport.put(message, self.to_address, self.return_address)
@@ -819,22 +836,9 @@ def SocketProxy_NORMAL_Unknown(self, message):
 		self.channel.send(Bump(self.s), self.object_address)
 	return NORMAL
 
-def SocketProxy_NORMAL_TransportTick(self, message):
-	if self.transport.idling:
-		# Too much time with no activity. Perform
-		# an enquiry/ack verification that transport is
-		# still functional.
-		if self.first_few():
-			self.log(USER_TAG.CONSOLE, f'Transport idle, send TransportEnquiry')
-		self.send(TransportEnquiry(), self.keeper)
-		self.start(TransportCheck, RESPONSIVE_TRANSPORT)
-		return CHECKING
-	self.transport.idling = True
-	return NORMAL
-
 def SocketProxy_NORMAL_Close(self, message):
 	self.channel.send(Shutdown(self.s, message), self.object_address)
-	if self.self_checking:
+	if self.keeper:
 		self.send(Stop(), self.keeper)
 		return CLEARING
 	self.complete()
@@ -842,51 +846,12 @@ def SocketProxy_NORMAL_Close(self, message):
 def SocketProxy_NORMAL_Stop(self, message):
 	# Close created internally by ListenConnect.
 	self.channel.send(Shutdown(self.s), self.object_address)
-	if self.self_checking:
+	if self.keeper:
 		self.send(Stop(), self.keeper)
 		return CLEARING
 	self.complete()
 
-#
-#
-def SocketProxy_CHECKING_Unknown(self, message):
-	empty = self.transport.put(message, self.to_address, self.return_address)
-	if empty:
-		self.channel.send(Bump(self.s), self.object_address)
-	return CHECKING
-
-def SocketProxy_CHECKING_TransportTick(self, message):
-	# Ignore in this state.
-	return CHECKING
-
-def SocketProxy_CHECKING_TransportAck(self, message):
-	# Transport verified. Return to normal operation.
-	if self.first_few():
-		self.log(USER_TAG.TRACE, f'Received TransportAck, continue')
-	self.cancel(TransportCheck)
-	self.transport.idling = False
-	return NORMAL
-
-def SocketProxy_CHECKING_TransportCheck(self, message):
-	# No acknowledgement within time limit. Close
-	# this connection down.
-	self.log(USER_TAG.WARNING, f'Timed out, close transport')
-	c = Close(value=None, reason=EndOfTransport.WENT_STALE, note='keep-alive timeout')
-	self.channel.send(Shutdown(self.s, c), self.object_address)
-	self.send(Stop(), self.keeper)
-	return CLEARING
-
-def SocketProxy_CHECKING_Close(self, message):
-	self.channel.send(Shutdown(self.s, message), self.object_address)
-	self.send(Stop(), self.keeper)
-	return CLEARING
-
-def SocketProxy_CHECKING_Stop(self, message):
-	self.send(Stop(), self.keeper)
-	return CLEARING
-
 def SocketProxy_CLEARING_Returned(self, message):
-	self.cancel(TransportTick)
 	self.complete()
 
 TCP_PROXY_DISPATCH = {
@@ -895,11 +860,7 @@ TCP_PROXY_DISPATCH = {
 		()
 	),
 	NORMAL: (
-		(Unknown, TransportTick, Close, Stop),
-		()
-	),
-	CHECKING: (
-		(Unknown, TransportTick, TransportAck, TransportCheck, Close, Stop),
+		(KeepAlive, Unknown, Close, Stop),
 		()
 	),
 	CLEARING: (
