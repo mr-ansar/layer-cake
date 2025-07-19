@@ -108,7 +108,7 @@ Message Types
 
 A type is special unit of data that describes instances of data, i.e. it is meta data. A
 type can be included in a message alongside integers and strings and it is portable. A type
-can describe a registered function or class and it can describe inline or anonymous data.
+can describe a registered function or class and it can describe inline or constructed data.
 The **layer-cake** type system is more extensive than Python's and is applied more strictly.
 It includes types such as;
 
@@ -239,6 +239,8 @@ shutdown of the associated socket and a session control message is sent to the r
 (i.e. :class:`Closed`. These are measures to defend against messages that somehow arrive corrupted
 and the possibility of bad actors.
 
+.. _lc-keep-alive:
+
 Long Term Connections And Keep-Alives
 =====================================
 
@@ -248,31 +250,36 @@ switch) and discarded NAT mappings. The significance of these events is that the
 to go unreported. There will be no related activity in the local network stack and therefore
 no :class:`~.Closed` message propagated to the application.
 
-Enabling the ``self_checking`` flag on the call to :func:`~.connect` activates
-a keep-alive capability. After a period of inactivity - no messages sent or received - the
-library will perform a low-level enquiry-ack exchange to verify the operational status of
-the network transport and the remote application. This may result in either an error in
-the network stack or a timeout, further resulting in a :class:`~.Closed` message.
+Enabling the ``keep_alive`` flag on the call to :func:`~.connect` activates
+a keep-alive capability, involving a low bandwidth handshake between the two endpoints. If
+the exchange is interrupted at any point a timer will expire and the connection will be
+:class:`~.Closed` with the :class:`~.EndOfTransport` value set to ``WENT_STALE``. Exactly
+the same handshake machinery runs at both ends of a connection.
 
-Inactivity is defined to be a period of two minutes with no message activity. The enquiry-ack
-exchange is expected to complete within five seconds.
+The handshake is ongoing for the life of the connection and operation is entirely discreet.
+It is also slow, to reduce the network overhead of just keeping the connection alive. From
+the time a cable is unplugged it can take a few minutes before the associated :class:`~.Closed`
+message is generated.
 
-Long term connections are good in that they improve responsiveness. Messages can be sent
-in response to a local event without having to wait for a successful connection. On the
-other hand, regular housekeeping messages are noisey and may create their own problems
-at scale.
+Long term connections are good in that they improve responsiveness; messages can be sent
+in response to a local event without having to wait for a successful connection. There are
+also scenarios where an event needs to propagate from the listen end (i.e. the server) to
+the connect end (i.e. the client) that run into trouble without enduring connections. With
+no connection from the client there is no way for the server to make contact with the other
+party.
 
-Connections initiated with a defined task and an expected completion, in the style of a
-file transfer, do not need a keep-alive capability. The presence of the associated machinery
+Connections initiated with a defined task and an expected completion, e.g. in the style of
+a file transfer, do not need a keep-alive. Failure of the transport will be exposed by the
+failure of the ongoing network I/O. In these scenarios the presence of the associated machinery
 may be an unnecessary complication.
 
-By default the ``self_checking`` flag is disabled. Note also that all connections
-established as a result of :func:`~.subscribe` calls have ``self_checking`` *enabled*.
+By default the ``keep_alive`` flag is disabled. Note that all connections associated
+with pubsub operation, that are *not* within the localhost, have ``keep_alive`` enabled.
 
 Logging associated with keep-alive activity is deliberately limited to the recording of
-a few initial enquiry-ack exchanges. This is to provide evidence that the feature is
-operational and also to preserve the value of the logging facility, i.e. useful log
-entries would be pushed out by the recording of endless enquiry-ack exchanges.
+a few initial handshake messages. This is to provide evidence that the feature is operational
+and also to preserve the value of the logging facility, i.e. useful log entries would be
+pushed out by the recording of endless keep-alive messages.
 
 Data Types And Portability
 ==========================

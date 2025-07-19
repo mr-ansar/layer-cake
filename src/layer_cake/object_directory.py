@@ -683,8 +683,8 @@ class ConnectToPeer(Point, StateMachine):
 
 def ConnectToPeer_INITIAL_Start(self, message):
 	localhost = self.ipp.host.startswith('127.')
-	self_checking = not localhost
-	connect(self, self.ipp, self_checking=self_checking)
+	keep_alive = not localhost
+	connect(self, self.ipp, keep_alive=keep_alive)
 	return PENDING
 
 def ConnectToPeer_PENDING_Connected(self, message):
@@ -1080,7 +1080,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		else:
 			return
 
-		connect(self, self.connect_to_directory, self_checking=self.need_checking())
+		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
 		self.calculate_reconnect(self.connect_to_directory.host)
 
 	def add_publisher(self, listing, origin, publish):
@@ -1433,7 +1433,7 @@ class ObjectDirectory(Threaded, StateMachine):
 def ObjectDirectory_INITIAL_Start(self, message):
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
-		connect(self, self.connect_to_directory, self_checking=self.need_checking())
+		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
 	if self.accept_directories_at.host is not None:
 		listen(self, self.accept_directories_at)
 	return READY
@@ -1463,7 +1463,7 @@ def ObjectDirectory_READY_NotConnected(self, message):
 
 def ObjectDirectory_READY_T1(self, message):
 	if self.connect_to_directory.host is not None:
-		connect(self, self.connect_to_directory, self_checking=self.need_checking())
+		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
 	return READY
 
 def ObjectDirectory_READY_Accepted(self, message):

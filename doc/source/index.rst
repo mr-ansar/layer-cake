@@ -67,6 +67,12 @@ numbers of clients is provided at the end.
    design-and-implementation
    classes-and-functions
 
+The combination of multithreading, multiprocessing and multihosting covers a large technical domain. Documentation
+has been written in a style intended to encourage the less experienced, without frustrating the gurus. Topics such as
+:ref:`type systems<layer-cake-type-reference>` and :ref:`keep-alives<lc-keep-alive>` are not for everyone but its
+ultimately required knowledge. Networking in particular is a huge technical space. Once you leave the relative
+friendliness of localhost, developing production-quality software is a non-trivial exercise.
+
 .. only: html
 
 * :ref:`genindex`
@@ -74,10 +80,11 @@ numbers of clients is provided at the end.
 Author
 ******
 
-The **layer-cake** library was developed by Scott Woods (scott.18.ansar@gmail.com). The library has
+The **layer-cake** library was developed by Scott Woods (scott.suzuki@gmail.com). The library has
 evolved under the influence of several large projects over many years. It recently moved from C++ to
 Python and even more recently, changed name from **ansar-connect** to **layer-cake**. This is a reflection
-of significant differences, mostly around the integration with Python type hints.
+of significant differences, mostly around the modeling of threads and processes, and the integration
+with Python type hints.
 
 License
 *******

@@ -122,18 +122,18 @@ class ConnectStream(object):
 	:type requested_ipp: HostPort
 	:param encrypted: enable encryption
 	:type encrypted: bool
-	:param self_checking: monitor the connection
-	:type self_checking: bool
+	:param keep_alive: monitor the connection
+	:type keep_alive: bool
 	:param http_client: inserted as the path in the request URI
 	:type http_client: str
 	:param layer_cake_json: enable layer cake JSON body
 	:type layer_cake_json: bool
 	"""
-	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False, self_checking: bool=False,
+	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False, keep_alive: bool=False,
 			http_client: str=None, layer_cake_json: bool=False):
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
-		self.self_checking = self_checking
+		self.keep_alive = keep_alive
 		self.http_client = http_client
 		self.layer_cake_json = layer_cake_json
 
@@ -373,8 +373,8 @@ class TcpClient(object):
 	def encrypted(self):
 		return self.request.encrypted
 
-	def self_checking(self):
-		return self.request.self_checking
+	def keep_alive(self):
+		return self.request.keep_alive
 
 # Underlying network constraints.
 #
@@ -774,7 +774,7 @@ def SocketKeeper_CHECKING_StillThere(self, message):
 	return PENDING
 
 def SocketKeeper_CHECKING_T3(self, message):
-	self.send(Close(reason=EndOfTransport.WENT_STALE, note='no response'), self.proxy_address)
+	self.send(Close(reason=EndOfTransport.WENT_STALE, note='unresponsive'), self.proxy_address)
 	self.complete(TimedOut(T3))
 
 def SocketKeeper_CHECKING_Stop(self, message):
@@ -809,13 +809,13 @@ class SocketProxy(Point, StateMachine):
 	:param transport: associated buffering
 	:type transport: internal
 	"""
-	def __init__(self, s, channel, transport, self_checking=False):
+	def __init__(self, s, channel, transport, keep_alive=False):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.s = s
 		self.channel = channel
 		self.transport = transport
-		self.self_checking = self_checking
+		self.keep_alive = keep_alive
 		self.keeper = None
 		self.checked = 0
 	
@@ -828,7 +828,7 @@ class SocketProxy(Point, StateMachine):
 SOCKET_DOWN = (errno.ECONNRESET, errno.EHOSTDOWN, errno.ENETDOWN, errno.ENETRESET)
 
 def SocketProxy_INITIAL_Start(self, message):
-	if self.self_checking:
+	if self.keep_alive:
 		self.keeper = self.create(SocketKeeper, proxy_address=self.object_address)
 	return NORMAL
 
@@ -980,11 +980,11 @@ def close_ending(proxy):
 
 def open_stream(self, parent, s, opened):
 	controller_address = parent.controller_address
-	self_checking = False
+	keep_alive = False
 	ts = MessageStream
 
 	if isinstance(parent, TcpClient):
-		self_checking = parent.self_checking()
+		keep_alive = parent.keep_alive()
 		if parent.request.http_client:
 			ts = ApiClientStream
 	elif isinstance(parent, TcpServer):
@@ -992,7 +992,7 @@ def open_stream(self, parent, s, opened):
 			ts = ApiServerStream
 
 	transport = TcpTransport(ts, parent, controller_address, opened)
-	proxy_address = self.create(SocketProxy, s, self.channel, transport, self_checking=self_checking, object_ending=no_ending)
+	proxy_address = self.create(SocketProxy, s, self.channel, transport, keep_alive=keep_alive, object_ending=no_ending)
 
 	if ts == ApiClientStream:
 		ending = close_ending(proxy_address)
@@ -1593,7 +1593,7 @@ def listen(self, requested_ipp: HostPort, encrypted: bool=False,
 	TS.channel.send(ls, self.object_address)
 	return lid
 
-def connect(self, requested_ipp, encrypted: bool=False, self_checking: bool=False,
+def connect(self, requested_ipp, encrypted: bool=False, keep_alive: bool=False,
 			http_client: str=None, layer_cake_json: bool=False):
 	"""
 	Initiates a network connection to the specified IP
@@ -1605,14 +1605,14 @@ def connect(self, requested_ipp, encrypted: bool=False, self_checking: bool=Fals
 	:type requested_ipp: :class:`~.HostPort`
 	:param encrypted: enable encryption
 	:type encrypted: bool
-	:param self_checking: enable keep-alives
-	:type self_checking: bool
+	:param keep_alive: enable keep-alives
+	:type keep_alive: bool
 	:param http_client: leading part of the outgoing request URI
 	:type http_client: str
 	:param layer_cake_json: is the remote server ansar-enabled
 	:type layer_cake_json: bool
 	"""
-	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, self_checking=self_checking, http_client=http_client, layer_cake_json=layer_cake_json)
+	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, keep_alive=keep_alive, http_client=http_client, layer_cake_json=layer_cake_json)
 	TS.channel.send(cs, self.object_address)
 
 def stop_listening(self, lid):
