@@ -721,9 +721,9 @@ class StillThere(object):
 	def __init__(self, seconds: float=0.0):
 		self.seconds = seconds
 
-bind(KeepAlive, copy_before_sending=False, execution_trace=True, message_trail=True)
-bind(StillThere, copy_before_sending=False, execution_trace=True, message_trail=True)
-bind(OpenKeep, copy_before_sending=False, execution_trace=True, message_trail=True)
+bind(KeepAlive, copy_before_sending=False, execution_trace=False, message_trail=False)
+bind(StillThere, copy_before_sending=False, execution_trace=False, message_trail=False)
+bind(OpenKeep, copy_before_sending=False, execution_trace=False, message_trail=False)
 
 IDLE_TRANSPORT = 60.0
 RESPONSIVE_TRANSPORT = 5.0
@@ -738,6 +738,14 @@ class SocketKeeper(Point, StateMachine):
 		self.proxy_address = proxy_address
 		self.expecting = expecting
 
+		self.log_count = 0
+	
+	def first_few(self):
+		self.log_count += 1
+		if self.log_count < 4:
+			return True
+		return False
+
 	def originate(self, message, address):
 		s = spread_out(IDLE_TRANSPORT, 5)
 		self.send(message(s), address)
@@ -745,23 +753,28 @@ class SocketKeeper(Point, StateMachine):
 
 def SocketKeeper_INITIAL_Start(self, message):
 	if self.expecting is None:
+		self.log(USER_TAG.TRACE, 'Client start (initial stand down)')
 		self.start(T1, IDLE_TRANSPORT / 4.0)
 		return PAUSING
 
+	self.log(USER_TAG.TRACE, f'Server enabled by client (observing radio silence {self.expecting:.1f})')
 	self.start(T2, self.expecting)
 	return PENDING
 
 def SocketKeeper_PAUSING_T1(self, message):
-	s = self.originate(KeepAlive, self.proxy_address)
-	self.start(T3, s + 3.0)						# Expect response.
+	seconds = self.originate(KeepAlive, self.proxy_address)
+	self.start(T3, seconds + 3.0)						# Expect response.
+	self.log(USER_TAG.TRACE, f'Client enables server (requests radio silence {seconds:.1f})')
 	return CHECKING
 
 def SocketKeeper_PAUSING_Stop(self, message):
 	self.complete(Aborted())
 
 def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own cycle.
-	s = self.originate(StillThere, self.proxy_address)
-	self.start(T3, s + 5.0)						# Expect response.
+	seconds = self.originate(StillThere, self.proxy_address)
+	self.start(T3, seconds + 5.0)						# Expect response.
+	if self.first_few():
+		self.log(USER_TAG.TRACE, f'Radio silence observed, advise remote ({seconds:.1f})')
 	return CHECKING
 
 def SocketKeeper_PENDING_Stop(self, message):
@@ -771,9 +784,12 @@ def SocketKeeper_CHECKING_StillThere(self, message):
 	self.proxy_address = self.return_address
 	self.cancel(T3)
 	self.start(T2, message.seconds)						# All good. Keep going.
+	if self.first_few():
+		self.log(USER_TAG.TRACE, f'Radio silence honoured by remote (observing radio silence {message.seconds:.1f})')
 	return PENDING
 
 def SocketKeeper_CHECKING_T3(self, message):
+	self.log(USER_TAG.WARNING, f'Radio silence honoured but no response (closing)')
 	self.send(Close(reason=EndOfTransport.WENT_STALE, note='unresponsive'), self.proxy_address)
 	self.complete(TimedOut(T3))
 
@@ -795,7 +811,7 @@ SOCKET_KEEPER_DISPATCH = {
 	),
 }
 
-bind(SocketKeeper, SOCKET_KEEPER_DISPATCH, thread='keeper', execution_trace=False)
+bind(SocketKeeper, SOCKET_KEEPER_DISPATCH, thread='keeper', execution_trace=False, message_trail=False)
 
 #
 #

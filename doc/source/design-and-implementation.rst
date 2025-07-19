@@ -253,13 +253,14 @@ no :class:`~.Closed` message propagated to the application.
 Enabling the ``keep_alive`` flag on the call to :func:`~.connect` activates
 a keep-alive capability, involving a low bandwidth handshake between the two endpoints. If
 the exchange is interrupted at any point a timer will expire and the connection will be
-:class:`~.Closed` with the :class:`~.EndOfTransport` value set to ``WENT_STALE``. Exactly
-the same handshake machinery runs at both ends of a connection.
+:class:`~.Closed`, with the :class:`~.EndOfTransport` value set to ``WENT_STALE``. Keep-alive
+machinery is symmetrical - the same code runs at both ends of a connection.
 
 The handshake is ongoing for the life of the connection and operation is entirely discreet.
-It is also slow, to reduce the network overhead of just keeping the connection alive. From
-the time a cable is unplugged it can take a few minutes before the associated :class:`~.Closed`
-message is generated.
+Activity is periodic but also randomized to avoid unfortunate synchronization. Each pause in
+proceedings is adjusted by plus-minus, up to 5 percent. It is also slow, to reduce the network
+overhead of just keeping the connection alive. From the time a cable is unplugged it can take
+a few minutes before the associated :class:`~.Closed` message is generated.
 
 Long term connections are good in that they improve responsiveness; messages can be sent
 in response to a local event without having to wait for a successful connection. There are
@@ -271,7 +272,7 @@ party.
 Connections initiated with a defined task and an expected completion, e.g. in the style of
 a file transfer, do not need a keep-alive. Failure of the transport will be exposed by the
 failure of the ongoing network I/O. In these scenarios the presence of the associated machinery
-may be an unnecessary complication.
+would be an unnecessary complication.
 
 By default the ``keep_alive`` flag is disabled. Note that all connections associated
 with pubsub operation, that are *not* within the localhost, have ``keep_alive`` enabled.
