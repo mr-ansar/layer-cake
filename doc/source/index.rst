@@ -67,11 +67,12 @@ numbers of clients is provided at the end.
    design-and-implementation
    classes-and-functions
 
-The combination of multithreading, multiprocessing and multihosting covers a large technical domain. Documentation
-has been written in a style intended to encourage the less experienced, without frustrating the gurus. Topics such as
-:ref:`type systems<layer-cake-type-reference>` and :ref:`keep-alives<lc-keep-alive>` are not for everyone but its
-ultimately required knowledge. Networking in particular is a huge technical space. Once you leave the relative
-friendliness of localhost, developing production-quality software is a non-trivial exercise.
+The combination of multithreading, multiprocessing and multihosting covers a large technical domain. The **layer-cake**
+library has bitten off a big piece of the pie. It cant be the whole pie but it's a deliberate piece. There is a strong
+goal for integrity within that selected domain. Documentation has been written in a style intended to encourage the less
+experienced, without frustrating the gurus. Topics such as :ref:`type systems<layer-cake-type-reference>`
+and :ref:`keep-alives<lc-keep-alive>` are not for everyone, but if you are in the business of production-quality
+development then they are hard to avoid.
 
 .. only: html
 

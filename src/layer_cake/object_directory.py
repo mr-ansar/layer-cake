@@ -1090,7 +1090,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		lp = self.listed_publish.get(listing.published_id, None)
 		if lp is not None:
-			if lp.home_address == listing.home_address:
+			if lp[0].home_address == listing.home_address:
 				self.trace(f'Publish ignored "{name}" (refresh)')
 			else:
 				self.warning(f'Publish ignored "{name}" (same id, multiple addresses)')
@@ -1144,7 +1144,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Existence - by id.
 		ls = self.listed_subscribe.get(listing.subscribed_id, None)
 		if ls is not None:
-			if ls.home_address == listing.home_address:
+			if ls[0].home_address == listing.home_address:
 				self.trace(f'Subscribe ignored "{search}" (refresh)')
 			else:
 				self.warning(f'Subscribe ignored "{search}" (same id, multiple addresses)')
