@@ -218,6 +218,10 @@ def ObjectSpool_SPOOLING_Unknown(self, message):
 	m = cast_to(message, self.received_type)
 	t = clock_now()
 	if not self.idle_object:
+		if self.object_type is None:
+			text = f'Service temporarily unavailable (no workers and external worker discovery)'
+			self.reply(TemporarilyUnavailable(text=text))
+			return SPOOLING
 		len_pending = len(self.pending_request)
 		if self.size_of_queue is None or len_pending < self.size_of_queue:
 			self.pending_request.append((m, self.return_address, t))

@@ -233,10 +233,9 @@ class TemporarilyUnavailable(Faulted):
 	:param request: request that cannot be fulfilled
 	:type request: :ref:`message<lc-message>`
 	"""
-	def __init__(self, text=None, unavailable=None, request=None):
+	def __init__(self, text=None, unavailable=None):
 		Faulted.__init__(self, text)
 		self.unavailable = unavailable or []
-		self.request = request
 
 class Busy(Faulted):
 	"""
@@ -303,7 +302,6 @@ bind_message(TemporarilyUnavailable,
 	error_code=Integer8(),
 	exit_status=Integer8(),
 	unavailable=VectorOf(Unicode()),
-	request=Unicode(),
 )
 
 bind_message(Busy,
