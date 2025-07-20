@@ -114,11 +114,16 @@ class ObjectSpool(Point, StateMachine):
 
 		self.idle_object = deque()
 		self.pending_request = deque()
-		self.forgetten_object = set()
+		self.working_object = {}
 		self.span = deque()
 		self.total_span = 0.0
 		self.average = 0.0
 		self.shard = 0
+
+		if responsiveness is None:
+			self.lazy_object = None
+		else:
+			self.lazy_object = responsiveness * 5.0
 
 	def submit_request(self, message, forward_response, return_address, presented):
 		if self.responsiveness is None:
@@ -132,7 +137,8 @@ class ObjectSpool(Point, StateMachine):
 				return
 
 		idle = self.idle_object.popleft()
-		r = self.create(GetResponse, message, idle)
+		r = self.create(GetResponse, message, idle, seconds=self.lazy_object)
+		self.working_object[idle] = r
 		self.on_return(r, forward_response, idle=idle, return_address=return_address, started=presented)
 
 def ObjectSpool_INITIAL_Start(self, message):
@@ -166,12 +172,8 @@ def ObjectSpool_INITIAL_Start(self, message):
 def forward_response(self, value, kv):
 	# Completion of a request/responsesequence.
 	# Record the idle process.
-	forgetten_object = True
-	try:
-		self.forgetten_object.remove(kv.idle)
-	except KeyError:
-		forgetten_object = False
-		self.idle_object.append(kv.idle)
+	self.working_object.discard(kv.idle)
+	self.idle_object.append(kv.idle)
 
 	# Update the performance metric.
 	span = clock_now() - kv.started
@@ -185,8 +187,6 @@ def forward_response(self, value, kv):
 	# Deliver reponse to the original client.
 	m = cast_to(value, self.returned_type)
 	self.send(m, kv.return_address)
-	if forgetten_object:
-		return
 	if not self.pending_request:
 		return
 	message, return_address, presented = self.pending_request.popleft()
@@ -206,20 +206,28 @@ def ObjectSpool_SPOOLING_JoinSpool(self, message):
 
 def ObjectSpool_SPOOLING_LeaveSpool(self, message):
 	a = message.worker_address
+
+	# Its either idle, or its waiting on
+	# an active request.
 	try:
 		self.idle_object.remove(a)
+		return SPOOLING
 	except ValueError:
-		self.forgetten_object.add(a)
+		pass
 
-	# WHAT ABOUT ACTIVE GETRESPONSE!!!
+	p = self.working_object.pop(a, None)
+	if p is not None:
+		self.send(Stop(), p)
 	return SPOOLING
 
 def ObjectSpool_SPOOLING_Unknown(self, message):
 	m = cast_to(message, self.received_type)
 	t = clock_now()
 	if not self.idle_object:
-		if self.object_type is None:
-			text = f'Service temporarily unavailable (no workers and external worker discovery)'
+		if self.object_type is None and not self.working():
+			# Object_type is None -> no callbacks for worker restart.
+			# No idle workers, external discovery of workers and nothing underway.
+			text = f'Service temporarily unavailable (no worker and no immediate prospects of one)'
 			self.reply(TemporarilyUnavailable(text=text))
 			return SPOOLING
 		len_pending = len(self.pending_request)
@@ -265,8 +273,9 @@ def ObjectSpool_SPOOLING_Returned(self, message):
 	return SPOOLING
 
 def ObjectSpool_SPOOLING_Stop(self, message):
-	self.abort()
-	return CLEARING
+	if self.abort():
+		return CLEARING
+	self.complete(Aborted())
 
 def ObjectSpool_CLEARING_Returned(self, message):
 	d = self.debrief()
