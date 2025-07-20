@@ -172,7 +172,7 @@ def ObjectSpool_INITIAL_Start(self, message):
 def forward_response(self, value, kv):
 	# Completion of a request/responsesequence.
 	# Record the idle process.
-	self.working_object.discard(kv.idle)
+	self.working_object.pop(kv.idle, None)
 	self.idle_object.append(kv.idle)
 
 	# Update the performance metric.
