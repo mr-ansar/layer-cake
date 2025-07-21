@@ -82,6 +82,8 @@ class CommandLine(object):
 	Communicate the context for the new process, e.g. daemon, home/role,
 	settings and parent/child communications.
 
+	:param origin: position in the process/sub-process chain
+	:type origin: ProcessOrigin
 	:param child_process: this process is a standard child of a standard parent
 	:type child_process: bool
 	:param full_output: enable full parent-child process integration
@@ -92,6 +94,10 @@ class CommandLine(object):
 	:type home_path: str
 	:param role_name: role within a process group
 	:type role_name: str
+	:param resource_path: override the location of per-executable, read-only resources
+	:type resource_path: str
+	:param model_path: override the location of per-instance read-write materials
+	:type model_path: str
 	:param help: enable output of help page
 	:type help: bool
 	:param create_role: save the specified settings
@@ -112,8 +118,14 @@ class CommandLine(object):
 	:type dump_types: bool
 	:param output_file: place any output in the specified file
 	:type output_file: str
-	:param group_listen: ephemeral port opened by the parent
-	:type group_listen: int
+	:param directory_scope: scope of this process
+	:type directory_scope: ScopeOfDirectory
+	:param connect_to_directory: IP and port of parent directory
+	:type connect_to_directory: HostPort
+	:param encrypted_directory: enable encryption of connection to parent directory
+	:type encrypted_directory: bool
+	:param accept_directories_at: IP and port where child directories are accepted
+	:type accept_directories_at: HostPort
 	"""
 	def __init__(self,
 			origin: ProcessOrigin=None,
@@ -134,6 +146,7 @@ class CommandLine(object):
 			keep_logs: bool=False,
 			directory_scope: ScopeOfDirectory=None,
 			connect_to_directory: HostPort=None,
+			encrypted_directory: bool=False,
 			accept_directories_at: HostPort=None):
 		self.origin = origin
 		self.child_process = child_process
@@ -156,6 +169,7 @@ class CommandLine(object):
 		self.keep_logs = keep_logs
 		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
+		self.encrypted_directory = encrypted_directory
 		self.accept_directories_at = accept_directories_at or HostPort()
 
 bind_message(CommandLine,

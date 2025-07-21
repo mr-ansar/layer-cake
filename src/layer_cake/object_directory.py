@@ -1013,12 +1013,16 @@ RECONNECT_DELAY = [1.0, 8.0, 32.0, 120.0]	# 1-based indexing from enum, i.e. [0]
 GRACE_BEFORE_CLEARANCE = 8.0
 
 class ObjectDirectory(Threaded, StateMachine):
-	def __init__(self, directory_scope: ScopeOfDirectory=None, connect_to_directory: HostPort=None, accept_directories_at: HostPort=None):
+	def __init__(self, directory_scope: ScopeOfDirectory=None,
+			connect_to_directory: HostPort=None, connect_encrypted: bool=False,
+			accept_directories_at: HostPort=None, accept_encrypted: bool=False):
 		Threaded.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
+		self.connect_encrypted = connect_encrypted
 		self.accept_directories_at = accept_directories_at or HostPort()
+		self.accept_encrypted = accept_encrypted
 		self.reconnect_delay = None
 
 		# Links to the upper and lower parts of the hierarchy.

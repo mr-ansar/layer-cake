@@ -53,12 +53,17 @@ class GROUP_RETURNING: pass
 class Group(lc.Threaded, lc.StateMachine):
 	def __init__(self, *search,
 			directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None,
+			encypted_host: bool=False, encypted_lan: bool=False,
+			encypted_group: bool=False,
 			retry: lc.RetryIntervals=None, main_role: str=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
 		self.directory_at_host = directory_at_host
 		self.directory_at_lan = directory_at_lan
+		self.encypted_host = encypted_host
+		self.encypted_lan = encypted_lan
+		self.encypted_group = encypted_group
 		self.retry = retry
 		self.main_role = main_role
 
@@ -76,12 +81,21 @@ def Group_INITIAL_Start(self, message):
 		s = ', '.join(self.search)
 		self.trace(f'Search "{s}"')
 
-	connect_to = self.directory_at_host or self.directory_at_lan
-	accept_at = lc.HostPort('127.0.0.1', 0)
+	if self.directory_at_host:
+		connect_to_directory = self.directory_at_host
+		connect_encrypted = self.encrypted_host
+	elif self.directory_at_lan:
+		connect_to_directory = self.directory_at_lan
+		connect_encrypted = self.encrypted_lan
+	else:
+		connect_to_directory = None
+		connect_encrypted = False
+
+	accept_directories_at = lc.HostPort('127.0.0.1', 0)
 
 	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.GROUP,
-		connect_to_directory=connect_to,
-		accept_directories_at=accept_at)
+		connect_to_directory=connect_to_directory, connect_encrypted=connect_encrypted,
+		accept_directories_at=accept_directories_at, accept_encrypted=self.encrypted_group)
 	self.assign(self.directory, 0)
 
 	self.send(lc.Enquiry(), self.directory)
