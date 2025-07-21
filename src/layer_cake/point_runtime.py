@@ -293,7 +293,7 @@ bind_message(TimedOut,
 	explanation=Unicode(),
 	error_code=Integer8(),
 	exit_status=Integer8(),
-	timer=Type(),
+	timer=Any(),
 )
 
 bind_message(TemporarilyUnavailable,
