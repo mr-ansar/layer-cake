@@ -99,7 +99,7 @@ class ObjectSpool(Point, StateMachine):
 	:param settings: named arguments to pass on object creation
 	:type settings: dict
 	"""
-	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_queue=None, responsiveness=None, busy_pass_rate=10, stand_down=30.0, **settings):
+	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_queue=None, responsiveness=5.0, busy_pass_rate=10, stand_down=30.0, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_type = object_type
@@ -121,9 +121,9 @@ class ObjectSpool(Point, StateMachine):
 		self.shard = 0
 
 		if responsiveness is None:
-			self.lazy_object = None
+			self.no_response = None
 		else:
-			self.lazy_object = responsiveness * 5.0
+			self.no_response = responsiveness * 5.0
 
 	def submit_request(self, message, forward_response, return_address, presented):
 		if self.responsiveness is None:
@@ -137,7 +137,7 @@ class ObjectSpool(Point, StateMachine):
 				return
 
 		idle = self.idle_object.popleft()
-		r = self.create(GetResponse, message, idle, seconds=self.lazy_object)
+		r = self.create(GetResponse, message, idle, seconds=self.no_response)
 		self.working_object[idle] = r
 		self.on_return(r, forward_response, idle=idle, return_address=return_address, started=presented)
 
@@ -175,14 +175,17 @@ def forward_response(self, value, kv):
 	self.working_object.pop(kv.idle, None)
 	self.idle_object.append(kv.idle)
 
-	# Update the performance metric.
-	span = clock_now() - kv.started
-	self.total_span += span
-	self.span.append(span)
-	while len(self.span) > SPOOL_SPAN:
-		s = self.span.popleft()
-		self.total_span -= s
-	self.average = self.total_span / len(self.span)
+	# Update the performance metric. Dont include
+	# timeouts as they happen for reasons like dropped
+	# connections and skew the stats for a long time.
+	if not isinstance(value, TimedOut):
+		span = clock_now() - kv.started
+		self.total_span += span
+		self.span.append(span)
+		while len(self.span) > SPOOL_SPAN:
+			s = self.span.popleft()
+			self.total_span -= s
+		self.average = self.total_span / len(self.span)
 
 	# Deliver reponse to the original client.
 	m = cast_to(value, self.returned_type)
