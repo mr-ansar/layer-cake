@@ -92,10 +92,11 @@ bind(AcceptAt)
 # Declare publish/subscribe within the host process.
 # Sent by the application objects.
 class PublishAs(object):
-	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, publisher_address: Address=None):
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, publisher_address: Address=None, encrypted: bool=None):
 		self.name = name
 		self.scope = scope
 		self.publisher_address = publisher_address
+		self.encrypted = encrypted
 
 class SubscribeTo(object):
 	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, subscriber_address: Address=None):
@@ -125,11 +126,12 @@ class Published(object):
 	:param home_address: address of the publishing process
 	:type home_address: :ref:`address<lc-address>`
 	"""
-	def __init__(self, name: str=None, scope: ScopeOfDirectory=None,
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, encrypted: bool=False,
 			published_id: UUID=None, listening_ipp: HostPort=None,
 			home_address: Address=None):
 		self.name = name
 		self.scope = scope
+		self.encrypted = encrypted
 		self.published_id = published_id
 		self.listening_ipp = listening_ipp or HostPort()
 		self.home_address = home_address
@@ -308,12 +310,13 @@ class SubscriberRoute(object):
 
 # Derived class for RouteOverConnect.
 class RouteOverLoop(SubscriberRoute):
-	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None,
+	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, encrypted: bool=False,
 			subscribed_id: UUID=None, published_id: UUID=None,
 			ipp: HostPort=None, name: str=None):
 		# Base members.
 		self.route_id = route_id
 		self.scope = scope
+		self.encrypted = encrypted
 		self.subscribed_id = subscribed_id
 		self.published_id = published_id
 		self.name = name
@@ -536,12 +539,13 @@ DIRECTORY_AT_LAN		= HostPort('192.168.0.195', DIRECTORY_PORT)
 # A managed listen. One required for every publish beyond
 # the process scope.
 class ListeningForPeer(Point, StateMachine):
-	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, address: Address=None):
+	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, address: Address=None, encrypted: bool=False):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.name = name
 		self.scope = scope
 		self.address = address
+		self.encrypted = encrypted
 		self.listening = None
 		self.accepted = {}
 
@@ -558,7 +562,7 @@ def ListeningForPeer_INITIAL_Start(self, message):
 	else:
 		self.complete(Faulted(f'Cannot peer for scope [{self.scope}]'))
 
-	listen(self, ipp)
+	listen(self, ipp, encrypted=self.encrypted)
 	return PENDING
 
 def ListeningForPeer_PENDING_Listening(self, message):
@@ -641,10 +645,11 @@ bind(ListeningForPeer, LISTENING_FOR_PEER_DISPATCH)
 # A managed connect. One required for every outbound route
 # on a unique ip+port.
 class ConnectToPeer(Point, StateMachine):
-	def __init__(self, ipp: HostPort=None):
+	def __init__(self, ipp: HostPort=None, encrypted: bool=False):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.ipp = ipp
+		self.encrypted = encrypted
 		self.request = []		# All the RequestLoops.
 		self.available = []		# Requests answered by LoopOpened.
 	
@@ -684,7 +689,7 @@ class ConnectToPeer(Point, StateMachine):
 def ConnectToPeer_INITIAL_Start(self, message):
 	localhost = self.ipp.host.startswith('127.')
 	keep_alive = not localhost
-	connect(self, self.ipp, keep_alive=keep_alive)
+	connect(self, self.ipp, keep_alive=keep_alive, encrypted=self.encrypted)
 	return PENDING
 
 def ConnectToPeer_PENDING_Connected(self, message):
@@ -831,16 +836,17 @@ bind(ConnectToPeer, CONNECT_TO_PEER_DISPATCH)
 # A route is available that would require a peer connection
 # from subscriber to publisher.
 class RouteOverConnect(Point, StateMachine):
-	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, subscriber: Subscribed=None, publisher: Published=None):
+	def __init__(self, route_id: UUID=None, scope: ScopeOfDirectory=None, encrypted: bool=False, subscriber: Subscribed=None, publisher: Published=None):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.route_id = route_id
 		self.scope = scope
+		self.encrypted = encrypted
 		self.subscriber = subscriber
 		self.publisher = publisher
 
 def RouteOverConnect_INITIAL_Start(self, message):
-	r = RouteOverLoop(route_id=self.route_id, scope=self.scope,
+	r = RouteOverLoop(route_id=self.route_id, scope=self.scope, encrypted=self.encrypted,
 		subscribed_id=self.subscriber.subscribed_id, published_id=self.publisher.published_id,
 		name=self.publisher.name, ipp=self.publisher.listening_ipp)
 
@@ -1014,15 +1020,15 @@ GRACE_BEFORE_CLEARANCE = 8.0
 
 class ObjectDirectory(Threaded, StateMachine):
 	def __init__(self, directory_scope: ScopeOfDirectory=None,
-			connect_to_directory: HostPort=None, connect_encrypted: bool=False,
-			accept_directories_at: HostPort=None, accept_encrypted: bool=False):
+			connect_to_directory: HostPort=None, accept_directories_at: HostPort=None,
+			encrypted: bool=None):
 		Threaded.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
-		self.connect_encrypted = connect_encrypted
 		self.accept_directories_at = accept_directories_at or HostPort()
-		self.accept_encrypted = accept_encrypted
+		self.encrypted = encrypted
+
 		self.reconnect_delay = None
 
 		# Links to the upper and lower parts of the hierarchy.
@@ -1036,12 +1042,12 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.unique_subscribe = {}
 
 		# For quick lookup and distribution.
-		self.listed_publish = {}
-		self.listed_subscribe = {}
+		self.listed_publisher = {}
+		self.listed_subscriber = {}
 
 		# For quick matching.
-		self.published = {}
-		self.subscribed = {}
+		self.published_name = {}
+		self.subscribed_search = {}
 
 		# Routed listings.
 		self.routed_publish = {}
@@ -1061,10 +1067,15 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.reconnect_delay = spread_out(seconds, 10)
 		self.trace(f'Update parameter', reconnect_delay=self.reconnect_delay)
 
-	def need_checking(self):
+	def keep_alive(self):
 		host = self.connect_to_directory.host
 		localhost = host.startswith('127.')
 		return not localhost
+
+	def encrypted_directory(self):
+		if self.encrypted is None:
+			return CL.encrypted_process
+		return self.encrypted
 
 	def auto_connect(self, message):
 		# If certain conditions are met, auto-assign a parent directory address
@@ -1084,15 +1095,18 @@ class ObjectDirectory(Threaded, StateMachine):
 		else:
 			return
 
-		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
+		connect(self, self.connect_to_directory,
+			keep_alive=self.keep_alive(),
+			encrypted=self.encrypted_directory())
 		self.calculate_reconnect(self.connect_to_directory.host)
 
-	def add_publisher(self, listing, origin, publish):
+	def add_publisher(self, listing: Published, origin: Address, publish: PublishAs):
 		name = listing.name
 		scope = listing.scope
+		encrypted = listing.encrypted
 
 		# Existence - by id.
-		lp = self.listed_publish.get(listing.published_id, None)
+		lp = self.listed_publisher.get(listing.published_id, None)
 		if lp is not None:
 			if lp[0].home_address == listing.home_address:
 				self.trace(f'Publish ignored "{name}" (refresh)')
@@ -1101,7 +1115,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			return False
 
 		# And search name.
-		lp = self.published.get(name, None)
+		lp = self.published_name.get(name, None)
 		if lp is not None:
 			self.warning(f'Cannot publish "{name}" (multiple ids, same name)')
 			return False
@@ -1110,7 +1124,9 @@ class ObjectDirectory(Threaded, StateMachine):
 			# Publishing object is in this process. Is an
 			# access point required.
 			if scope.value < ScopeOfDirectory.PROCESS.value:
-				a = self.create(ListeningForPeer, name, scope, publish.publisher_address)
+				a = self.create(ListeningForPeer,
+					name=name, scope=scope,
+					address=publish.publisher_address, encrypted=encrypted)
 				self.assign(a, (listing, publish))
 				return False
 
@@ -1133,20 +1149,20 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.console(f'Published "{name}"[{self.directory_scope}] ({listing.listening_ipp})')
 
 		lp = (listing, publish)
-		self.published[name] = lp
-		self.listed_publish[listing.published_id] = lp
+		self.published_name[name] = lp
+		self.listed_publisher[listing.published_id] = lp
 
 		if origin is not None:
 			origin.add(listing.published_id)
 		return True
 
-	def add_subscriber(self, listing, origin, subscribe):
+	def add_subscriber(self, listing: Subscribed, origin: Address, subscribe: SubscribeTo):
 		search = listing.search
 		scope = listing.scope
 		subscribed_id = listing.subscribed_id
 
 		# Existence - by id.
-		ls = self.listed_subscribe.get(listing.subscribed_id, None)
+		ls = self.listed_subscriber.get(listing.subscribed_id, None)
 		if ls is not None:
 			if ls[0].home_address == listing.home_address:
 				self.trace(f'Subscribe ignored "{search}" (refresh)')
@@ -1155,7 +1171,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			return False
 
 		# and search. Build out required structure.
-		sr = self.subscribed.get(search, None)
+		sr = self.subscribed_search.get(search, None)
 		if sr is None:
 			try:
 				# Keep a single pre-compiled search machine.
@@ -1166,7 +1182,7 @@ class ObjectDirectory(Threaded, StateMachine):
 				return False
 			s = {}
 			sr = [s, r]
-			self.subscribed[search] = sr
+			self.subscribed_search[search] = sr
 		else:
 			s = sr[0]
 
@@ -1179,44 +1195,46 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		ls = (listing, subscribe)
 		s[subscribed_id] = ls
-		self.listed_subscribe[subscribed_id] = ls
+		self.listed_subscriber[subscribed_id] = ls
 
 		if origin is not None:
 			origin.add(listing.subscribed_id)
 		return True
 
-	def find_subscribers(self, published):
+	def find_subscribers(self, published: Published):
 		# Turn a search into a flat list of matching subscribers.
-		for k, v in self.subscribed.items():
+		for k, v in self.subscribed_search.items():
 			m = v[1].match(published.name)
 			if m:
 				for s in v[0].values():
 					yield s[0]
 
-	def find_publishers(self, subscribed):
+	def find_publishers(self, subscribed: Subscribed):
 		# Turn a search into a flat list of matching publishers.
-		sr = self.subscribed.get(subscribed.search, None)
+		sr = self.subscribed_search.get(subscribed.search, None)
 		if sr is None:
 			return
 		machine = sr[1]
-		for k, lp in self.published.items():
+		for k, lp in self.published_name.items():
 			m = machine.match(k)
 			if m:
 				yield lp[0]
 
-	def create_route(self, subscriber, publisher):
-		self.console(f'Route', name=publisher.name, scope=self.directory_scope)
+	def create_route(self, subscriber: Subscribed, publisher: Published):
+		self.console(f'Route', name=publisher.name, scope=self.directory_scope, encrypted=publisher.encrypted)
 		# There is a match at this scope between given sub and pub.
 		# Create the appropriate route object and record its existence.
 		# Communication with relevant directories is up to the route.
 
 		route_id = uuid.uuid4()
 		if self.directory_scope in (ScopeOfDirectory.LAN, ScopeOfDirectory.HOST, ScopeOfDirectory.GROUP):
-			r = self.create(RouteOverConnect, route_id=route_id, scope=self.directory_scope, subscriber=subscriber, publisher=publisher)
+			r = self.create(RouteOverConnect,
+				route_id=route_id, scope=self.directory_scope, encrypted=publisher.encrypted,
+				subscriber=subscriber, publisher=publisher)
 
 		elif self.directory_scope == ScopeOfDirectory.PROCESS:
-			s = self.listed_subscribe[subscriber.subscribed_id][1]
-			p = self.listed_publish[publisher.published_id][1]
+			s = self.listed_subscriber[subscriber.subscribed_id][1]
+			p = self.listed_publisher[publisher.published_id][1]
 
 			r = self.create(RouteInProcess, route_id=route_id,
 				subscriber=subscriber, publisher=publisher,
@@ -1265,12 +1283,12 @@ class ObjectDirectory(Threaded, StateMachine):
 					self.send(stop, a)
 
 			# Remove from the listings.
-			listed_subscribe = self.listed_subscribe.pop(s, None)
+			listed_subscribe = self.listed_subscriber.pop(s, None)
 			if listed_subscribe is None:
 				continue
 
 			# Remove from the matching machinery.
-			subscribed = self.subscribed.get(listed_subscribe[0].search, None)
+			subscribed = self.subscribed_search.get(listed_subscribe[0].search, None)
 			if subscribed is None:
 				continue
 			a, m = subscribed
@@ -1291,12 +1309,12 @@ class ObjectDirectory(Threaded, StateMachine):
 					self.send(stop, a)
 
 			# Remove from the listings.
-			listed_publish = self.listed_publish.pop(p, None)
+			listed_publish = self.listed_publisher.pop(p, None)
 			if listed_publish is None:
 				continue
 
 			# Remove from the matching machinery.
-			self.published.pop(listed_publish[0].name, None)
+			self.published_name.pop(listed_publish[0].name, None)
 
 			# If this is the home directory, remove from uniqueness check.
 			if listed_publish[1] is not None:
@@ -1316,10 +1334,10 @@ class ObjectDirectory(Threaded, StateMachine):
 		if isinstance(route, RouteOverLoop):
 			# Comms is over a standard message connection between this process
 			# and the process at the given network address.
-			ls = self.listed_subscribe.get(route.subscribed_id, None)
+			ls = self.listed_subscriber.get(route.subscribed_id, None)
 			c = self.peer_connect.get(route.ipp, None)
 			if c is None:
-				c = self.create(ConnectToPeer, route.ipp)
+				c = self.create(ConnectToPeer, route.ipp, route.encrypted)
 				self.on_return(c, clear_ipp, ipp=route.ipp)
 				self.peer_connect[route.ipp] = c
 			address = ls[1].subscriber_address
@@ -1425,9 +1443,9 @@ class ObjectDirectory(Threaded, StateMachine):
 				self.send(listing, self.connected.proxy_address)
 
 	def push_up(self):
-		published = [v[0] for k, v in self.published.items() if v[0].scope.value < self.directory_scope.value]
+		published = [v[0] for k, v in self.published_name.items() if v[0].scope.value < self.directory_scope.value]
 		subscribed = []
-		for k, v in self.subscribed.items():
+		for k, v in self.subscribed_search.items():
 			for t in v[0].values():
 				if t[0].scope.value < self.directory_scope.value:
 					subscribed.append(t[0])
@@ -1437,9 +1455,12 @@ class ObjectDirectory(Threaded, StateMachine):
 def ObjectDirectory_INITIAL_Start(self, message):
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
-		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
+		connect(self, self.connect_to_directory,
+			keep_alive=self.keep_alive(),
+			encrypted=self.encrypted_directory())
 	if self.accept_directories_at.host is not None:
-		listen(self, self.accept_directories_at)
+		listen(self, self.accept_directories_at,
+			encrypted=self.encrypted_directory())
 	return READY
 
 #
@@ -1467,7 +1488,9 @@ def ObjectDirectory_READY_NotConnected(self, message):
 
 def ObjectDirectory_READY_T1(self, message):
 	if self.connect_to_directory.host is not None:
-		connect(self, self.connect_to_directory, keep_alive=self.need_checking())
+		connect(self, self.connect_to_directory,
+			keep_alive=self.keep_alive(),
+			encrypted=self.encrypted_directory())
 	return READY
 
 def ObjectDirectory_READY_Accepted(self, message):
@@ -1492,7 +1515,8 @@ def ObjectDirectory_READY_Closed(self, message):
 def ObjectDirectory_READY_Enquiry(self, message):
 	if self.accept_directories_at.host is None:
 		self.accept_directories_at = DIRECTORY_AT_EPHEMERAL
-		listen(self, self.accept_directories_at)
+		listen(self, self.accept_directories_at,
+			encrypted=self.encrypted_directory())
 		self.pending_enquiry.add(self.return_address)
 		return READY
 
@@ -1506,6 +1530,7 @@ def ObjectDirectory_READY_Enquiry(self, message):
 def ObjectDirectory_READY_PublishAs(self, message):
 	name = message.name
 	scope = message.scope
+	encrypted = message.encrypted
 
 	unique_publish = name
 	r = self.unique_publish.get(unique_publish, None)
@@ -1516,7 +1541,8 @@ def ObjectDirectory_READY_PublishAs(self, message):
 	self.auto_connect(message)
 
 	published_id = uuid.uuid4()
-	listing = Published(name=name, scope=scope, published_id=published_id, home_address=self.object_address)
+	listing = Published(name=name, scope=scope, encrypted=encrypted,
+		published_id=published_id, home_address=self.object_address)
 
 	if not self.add_publisher(listing, None, message):
 		return READY
@@ -1540,8 +1566,8 @@ def ObjectDirectory_READY_HostPort(self, message):
 
 	self.console(f'Published[{self.directory_scope}]', name=listing.name, listening=message)
 	
-	self.published[listing.name] = (listing, publish)
-	self.listed_publish[listing.published_id] = (listing, publish)
+	self.published_name[listing.name] = (listing, publish)
+	self.listed_publisher[listing.published_id] = (listing, publish)
 
 	unique_publish = publish.name
 	self.unique_publish[unique_publish] = listing.published_id
@@ -1670,7 +1696,7 @@ def ObjectDirectory_READY_ClearSubscribed(self, message):
 
 def ObjectDirectory_READY_ClearSubscriberRoute(self, message):
 	subscribed_id = message.subscribed_id
-	listing = self.listed_subscribe.get(subscribed_id, None)
+	listing = self.listed_subscriber.get(subscribed_id, None)
 	if listing is None:
 		self.warning('No such subscription')
 		return READY
@@ -1703,7 +1729,7 @@ def ObjectDirectory_READY_ClearSubscriberRoute(self, message):
 	return READY
 
 def ObjectDirectory_READY_ClearPublisherRoute(self, message):
-	p = self.listed_publish.get(message.published_id, None)
+	p = self.listed_publisher.get(message.published_id, None)
 	if p is None:
 		return READY
 	# So far there is no action required on the
@@ -1712,11 +1738,11 @@ def ObjectDirectory_READY_ClearPublisherRoute(self, message):
 
 def ObjectDirectory_READY_OpenLibrary(self, message):
 	if message.published_id:
-		p = self.listed_publish.get(message.published_id, None)
+		p = self.listed_publisher.get(message.published_id, None)
 		if p[1]:
 			self.reply(p[1])
 	elif message.subscribed_id:
-		s = self.listed_subscribe.get(message.subscribed_id, None)
+		s = self.listed_subscriber.get(message.subscribed_id, None)
 		if s[1]:
 			self.reply(s[1])
 	return READY
@@ -1727,7 +1753,7 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 	# Add the route to the routing[subscriber][name] table.
 	# Evaluate the (changed) routing options.
 	# If no current loop, initiate the best option.
-	ls = self.listed_subscribe.get(subscribed_id, None)
+	ls = self.listed_subscriber.get(subscribed_id, None)
 	if ls is None or ls[1] is None:
 		self.warning('No such subscription or not the home directory')
 		return READY
