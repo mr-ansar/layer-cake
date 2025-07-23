@@ -36,11 +36,12 @@ class RUNNING: pass
 class CLEARING: pass
 
 class Host(lc.Threaded, lc.StateMachine):
-	def __init__(self, directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None):
+	def __init__(self, directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None, encrypted_directory: bool=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.directory_at_host = directory_at_host
 		self.directory_at_lan = directory_at_lan
+		self.encrypted_directory = encrypted_directory
 
 def Host_INITIAL_Start(self, message):
 	connect_to_directory = self.directory_at_lan
@@ -48,7 +49,8 @@ def Host_INITIAL_Start(self, message):
 
 	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.HOST,
 		connect_to_directory=connect_to_directory,
-		accept_directories_at=accept_directories_at)
+		accept_directories_at=accept_directories_at,
+		encrypted=self.encrypted_directory)
 	
 	self.assign(self.directory, 1)
 	return RUNNING

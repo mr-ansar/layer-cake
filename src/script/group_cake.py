@@ -53,17 +53,14 @@ class GROUP_RETURNING: pass
 class Group(lc.Threaded, lc.StateMachine):
 	def __init__(self, *search,
 			directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None,
-			encypted_host: bool=False, encypted_lan: bool=False,
-			encypted_group: bool=False,
+			encrypted_directory: bool=None,
 			retry: lc.RetryIntervals=None, main_role: str=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
 		self.directory_at_host = directory_at_host
 		self.directory_at_lan = directory_at_lan
-		self.encypted_host = encypted_host
-		self.encypted_lan = encypted_lan
-		self.encypted_group = encypted_group
+		self.encrypted_directory = encrypted_directory
 		self.retry = retry
 		self.main_role = main_role
 
@@ -83,19 +80,17 @@ def Group_INITIAL_Start(self, message):
 
 	if self.directory_at_host:
 		connect_to_directory = self.directory_at_host
-		connect_encrypted = self.encrypted_host
 	elif self.directory_at_lan:
 		connect_to_directory = self.directory_at_lan
-		connect_encrypted = self.encrypted_lan
 	else:
 		connect_to_directory = None
-		connect_encrypted = False
 
 	accept_directories_at = lc.HostPort('127.0.0.1', 0)
 
 	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.GROUP,
-		connect_to_directory=connect_to_directory, connect_encrypted=connect_encrypted,
-		accept_directories_at=accept_directories_at, accept_encrypted=self.encrypted_group)
+		connect_to_directory=connect_to_directory,
+		accept_directories_at=accept_directories_at,
+		encrypted=self.encrypted_directory)
 	self.assign(self.directory, 0)
 
 	self.send(lc.Enquiry(), self.directory)
@@ -135,10 +130,13 @@ def Group_ENQUIRING_HostPort(self, message):
 		self.complete(lc.Faulted(f'No roles at location "{self.home_path}"'))
 
 	# Start the roles in this non-empty list.
+	encrypted_process = self.encrypted_directory == True
 	for k, v in home.items():
 		a = self.create(lc.ProcessObject, v,
 			home_path=self.home_path, role_name=k, top_role=True,
-			directory_scope=lc.ScopeOfDirectory.PROCESS, connect_to_directory=self.ephemeral)
+			directory_scope=lc.ScopeOfDirectory.PROCESS,
+			connect_to_directory=self.ephemeral,
+			encrypted_process=encrypted_process)
 		self.assign(a, k)
 
 	# Remember for restarts.

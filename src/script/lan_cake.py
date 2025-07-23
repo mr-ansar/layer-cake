@@ -36,17 +36,19 @@ class RUNNING: pass
 class CLEARING: pass
 
 class Lan(lc.Threaded, lc.StateMachine):
-	def __init__(self, directory_at_lan: lc.HostPort=None):
+	def __init__(self, directory_at_lan: lc.HostPort=None, encrypted_directory: bool=None):
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.directory_at_lan = directory_at_lan
+		self.encrypted_directory = encrypted_directory
 
 def Lan_INITIAL_Start(self, message):
 	# Does not try to infer listening IP. Its either an argument or its all interfaces.
 	accept_directories_at = self.directory_at_lan or lc.HostPort('0.0.0.0', lc.DIRECTORY_PORT)
 
 	self.directory = self.create(lc.ObjectDirectory, directory_scope=lc.ScopeOfDirectory.LAN,
-		accept_directories_at=accept_directories_at)
+		accept_directories_at=accept_directories_at,
+		encrypted=self.encrypted_directory)
 	
 	self.assign(self.directory, 1)
 	return RUNNING
