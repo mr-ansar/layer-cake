@@ -68,11 +68,10 @@ class ProcessOrigin(Enum):
 	* START - background run, entry in a composite process
 	* START_CHILD - background run, subprocess of a composite entry
 	"""
-	SHELL=1
-	RUN=2
-	RUN_CHILD=3
-	START=4
-	START_CHILD=5
+	RUN=1
+	RUN_CHILD=2
+	START=3
+	START_CHILD=4
 
 #
 class CommandLine(object):
@@ -122,8 +121,8 @@ class CommandLine(object):
 	:type directory_scope: ScopeOfDirectory
 	:param connect_to_directory: IP and port of parent directory
 	:type connect_to_directory: HostPort
-	:param encrypted_directory: enable encryption of connection to parent directory
-	:type encrypted_directory: bool
+	:param encrypted_process: enable encryption of connection to parent directory
+	:type encrypted_process: bool
 	:param accept_directories_at: IP and port where child directories are accepted
 	:type accept_directories_at: HostPort
 	"""
@@ -146,8 +145,8 @@ class CommandLine(object):
 			keep_logs: bool=False,
 			directory_scope: ScopeOfDirectory=None,
 			connect_to_directory: HostPort=None,
-			encrypted_directory: bool=False,
-			accept_directories_at: HostPort=None):
+			accept_directories_at: HostPort=None,
+			encrypted_process: bool=False):
 		self.origin = origin
 		self.child_process = child_process
 		self.full_output = full_output
@@ -169,8 +168,8 @@ class CommandLine(object):
 		self.keep_logs = keep_logs
 		self.directory_scope = directory_scope or ScopeOfDirectory.PROCESS
 		self.connect_to_directory = connect_to_directory or HostPort()
-		self.encrypted_directory = encrypted_directory
 		self.accept_directories_at = accept_directories_at or HostPort()
+		self.encrypted_process = encrypted_process
 
 bind_message(CommandLine,
 	debug_level=Enumeration(USER_LOG),
