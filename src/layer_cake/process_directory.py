@@ -73,7 +73,7 @@ def stop_directory(root):
 AddOn(create_directory, stop_directory)
 
 #
-def publish(self, name, scope=ScopeOfDirectory.HOST):
+def publish(self, name, scope=ScopeOfDirectory.HOST, encrypted=False):
 	"""
 	Establish a service presence under the specified name.
 
@@ -84,7 +84,7 @@ def publish(self, name, scope=ScopeOfDirectory.HOST):
 	:param scope: scope in which the name is available
 	:type scope: ScopeOfDirectory
 	"""
-	p = PublishAs(name=name, scope=scope, publisher_address=self.object_address)
+	p = PublishAs(name=name, scope=scope, publisher_address=self.object_address, encrypted=encrypted)
 	self.send(p, PD.directory)
 
 def subscribe(self, search, scope=ScopeOfDirectory.HOST):
