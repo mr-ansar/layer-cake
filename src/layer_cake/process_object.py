@@ -209,9 +209,14 @@ class ProcessObject(Point, StateMachine):
 		try:
 			c = CodecNoop()
 			if self.listening_for_directories:
+				e = self.settings.get('encrypted_process', None)
+				encrypted_process = e == True
+
 				v = encode_argument(c, self.listening_for_directories, UserDefined(HostPort))
+				b = encode_argument(c, encrypted_process, Boolean())
 				command.append(f'--directory-scope=LIBRARY')
 				command.append(f'--connect-to-directory={v}')
+				command.append(f'--encrypted-process={b}')
 
 				subscribe(self, self.role_name, scope=ScopeOfDirectory.PROCESS)
 
