@@ -48,9 +48,7 @@ class HostPort(object):
 	"""Combination of an IP address or name, and a port number.
 
 	:param host: IP address or name
-	:type host: str
 	:param port: network port
-	:type port: int
 	"""
 	def __init__(self, host: str=None, port: int=None):
 		self.host = host

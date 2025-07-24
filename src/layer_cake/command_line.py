@@ -82,49 +82,27 @@ class CommandLine(object):
 	settings and parent/child communications.
 
 	:param origin: position in the process/sub-process chain
-	:type origin: ProcessOrigin
 	:param child_process: this process is a standard child of a standard parent
-	:type child_process: bool
 	:param full_output: enable full parent-child process integration
-	:type full_output: bool
 	:param debug_level: select the level of logs to display
-	:type debug_level: enum
 	:param home_path: location of the process group
-	:type home_path: str
 	:param role_name: role within a process group
-	:type role_name: str
 	:param resource_path: override the location of per-executable, read-only resources
-	:type resource_path: str
 	:param model_path: override the location of per-instance read-write materials
-	:type model_path: str
 	:param help: enable output of help page
-	:type help: bool
 	:param create_role: save the specified settings
-	:type create_role: bool
 	:param update_role: add/override the specified settings
-	:type update_role: bool
 	:param dump_role: enable output of current settings
-	:type dump_role: bool
 	:param edit_role: enable visual editing of the current settings
-	:type edit_role: bool
 	:param factory_reset: discard stored settings
-	:type factory_reset: bool
 	:param delete_role: remove persisted settings
-	:type delete_role: bool
 	:param role_file: use the settings in the specified file
-	:type role_file: str
 	:param dump_types: enable output of type table
-	:type dump_types: bool
 	:param output_file: place any output in the specified file
-	:type output_file: str
 	:param directory_scope: scope of this process
-	:type directory_scope: ScopeOfDirectory
 	:param connect_to_directory: IP and port of parent directory
-	:type connect_to_directory: HostPort
 	:param encrypted_process: enable encryption of connection to parent directory
-	:type encrypted_process: bool
 	:param accept_directories_at: IP and port where child directories are accepted
-	:type accept_directories_at: HostPort
 	"""
 	def __init__(self,
 			origin: ProcessOrigin=None,

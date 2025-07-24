@@ -85,13 +85,11 @@ class ConversionError(Exception):
 class ConversionDecodeError(ConversionError):
 	"""Exception raised on failure of one of the :py:mod:`~ansar.encode.convert` decoding functions."""
 
-	def __init__(self, need, text):
+	def __init__(self, need: str, text: str):
 		"""Construct the exception.
 
 		:param need: type to be decoded
-		:type need: str
-		:param need: description of failure
-		:type need: str
+		:param text: description of failure
 		"""
 		self.need = need
 		self.text = text
@@ -104,13 +102,11 @@ class ConversionDecodeError(ConversionError):
 class ConversionEncodeError(ConversionError):
 	"""Exception raised on failure of one of the :py:mod:`~ansar.encode.convert` encoding functions."""
 
-	def __init__(self, need, text):
+	def __init__(self, need: str, text: str):
 		"""Construct the exception.
 
 		:param need: type to be encoded
-		:type need: str
-		:param need: description of failure
-		:type need: str
+		:param text: description of failure
 		"""
 		self.need = need
 		self.text = text

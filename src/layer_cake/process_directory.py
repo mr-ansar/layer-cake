@@ -73,58 +73,47 @@ def stop_directory(root):
 AddOn(create_directory, stop_directory)
 
 #
-def publish(self, name, scope=ScopeOfDirectory.HOST, encrypted=False):
+def publish(self: Point, name: str, scope: ScopeOfDirectory=ScopeOfDirectory.HOST, encrypted: bool=False):
 	"""
 	Establish a service presence under the specified name.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param name: name to be used as alias for the given object
-	:type name: str
 	:param scope: scope in which the name is available
-	:type scope: ScopeOfDirectory
+	:param encrypted: enable encryption of subscriber sessions
 	"""
 	p = PublishAs(name=name, scope=scope, publisher_address=self.object_address, encrypted=encrypted)
 	self.send(p, PD.directory)
 
-def subscribe(self, search, scope=ScopeOfDirectory.HOST):
+def subscribe(self: Point, search: str, scope: ScopeOfDirectory=ScopeOfDirectory.HOST):
 	"""
 	Establish a lookup for services matching the specified pattern.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param search: pattern to be used for matching with services
-	:type name: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	"""
 	p = SubscribeTo(search=search, scope=scope, subscriber_address=self.object_address)
 	self.send(p, PD.directory)
 
-def clear_published(self, published: Published, note=None):
+def clear_published(self: Point, published: Published, note: str=None):
 	"""
 	Remove all trace of the previously published service.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param published: message confirming a :func:`~.publish`
-	:type published: Published
 	:param note: short description added to logs
-	:type note: str
 	"""
 	p = ClearPublished(name=published.name, scope=published.scope, published_id=published.published_id, note=note)
 	self.send(p, PD.directory)
 
-def clear_subscribed(self, subscribed: Subscribed, note=None):
+def clear_subscribed(self: Point, subscribed: Subscribed, note: str=None):
 	"""
 	Remove all trace of the previously registered search.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param published: message confirming a :func:`~.subscribe`
-	:type published: Subscribed
 	:param note: short description added to logs
-	:type note: str
 	"""
 	s = ClearSubscribed(search=subscribed.search, scope=subscribed.scope, subscribed_id=subscribed.subscribed_id, note=note)
 	self.send(s, PD.directory)

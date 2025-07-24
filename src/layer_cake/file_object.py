@@ -57,19 +57,15 @@ class File(object):
 	"""Store and recover application values using files.
 
 	:param name: name of the file
-	:type name: str
 	:param tip: type expression for the content
 	:type tip: :ref:`tip<layer-cake-type-reference>`
 	:param encoding: selection of representation, defaults to ``CodecJson``
 	:type encoding: class
 	:param create_default: return default instance if file not found on read, defaults to ``False``
-	:type create_default: bool
 	:param pretty_format: generate human-readable file contents, defaults to ``True``
-	:type pretty_format: bool
 	:param decorate_names: auto-append an encoding-dependent extension to the file name, defaults to ``True``
-	:type decorate_names: bool
 	"""
-	def __init__(self, name, tip, encoding=None, create_default=False, pretty_format=True, decorate_names=True):
+	def __init__(self, name: str, tip, encoding=None, create_default: bool=False, pretty_format: bool=True, decorate_names: bool=True):
 		"""Not published."""
 		self.name = name
 
@@ -91,8 +87,7 @@ class File(object):
 		"""Generate a representation of ``value`` and write to the saved ``name``.
 
 		:param value: any application value
-		:type value: matching the saved type expression
-		:return: none
+		:type value: matching the saved :ref:`tip<layer-cake-type-reference>`
 		"""
 		if as_path:
 			if as_name:
@@ -109,15 +104,11 @@ class File(object):
 		write_to_file(value, name, self.file_type, encoding=self.encoding,
 			decorate_names=self.decorate_names, pretty_format=self.pretty_format)
 
-	def recover(self, *args, **kwargs):
+	def recover(self):
 		"""Read from the saved ``name``, parse and marshal into an application value.
 
-		:param args: remaining positional parameters
-		:type args: tuple
-		:param kwargs: remaining named parameters
-		:type kwargs: dict
-		:return: 2-tuple of an application value and a version.
-		:rtype: value matching the saved ``expression`` and a ``str``
+		:return: any application value
+		:rtype: matching the saved :ref:`tip<layer-cake-type-reference>`
 		"""
 		try:
 			r = read_from_file(self.file_type, self.name, encoding=self.encoding, decorate_names=self.decorate_names)

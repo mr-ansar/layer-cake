@@ -232,7 +232,7 @@ the worker and that the worker is being put to use by the spool;
 
 The layer-cake CLI tool is \- among other things \- a process orchestration tool. It provides sub commands for describing a set
 of processes and sub commands for initiating those processes. The result might be called a composite process. This concept is
-strengthened by the discreet inclusion of group-cake, which provides the supporting pubsub machinery to bring the :func:`server()`
+strengthened by the discreet inclusion of ``group-cake``, which provides the supporting pubsub machinery to bring the :func:`server()`
 and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
@@ -422,8 +422,8 @@ A final implementation of multihosting has been included, i.e. ``test_server_11.
 those areas that struggled as load increased. Generally these could be tuned away using configuration values in the network
 service. Under extreme load the network stack will shutdown the listen, resulting in a :class:`~.NotListening` message arriving
 at the :func:`server()`. This final implementation takes a more careful approach to termination, performing a managed
-termination of the spool and the subscription. The ``layer-cake`` update command should be used to configure a restart of
-the process. A new process is probably a better response than trying to recover a potentially compromised process.
+termination of the spool and the subscription. See the following section for notes on configuring a group for automatic
+restarts.
 
 Connecting To Multiple Hosts
 ****************************
@@ -432,9 +432,9 @@ At this point there is no more coding to be done. Courtesy of pubsub networking,
 be deployed anywhere on a network and the :func:`server` will find it. However, proper operation will require some initial,
 one-time setup.
 
-The next level of pubsub is provided by ``host-cake``. This enables a wider range of networking scenarios, but still within
-the boundary of a single host. Assuming that the previous demonstration of ``group-cake`` is still running, enter the following
-command in a separate shell;
+The next level of pubsub is provided by ``host-cake``. The presence of this component enables a wider range of networking
+scenarios, but still within the boundary of a single host. Assuming that the previous demonstration of ``group-cake`` is
+still running, enter the following command in a separate shell;
 
 .. code-block:: console
 
@@ -462,7 +462,8 @@ should be configured with the following commands;
 	$ layer-cake update group --retry='{"regular_steps": 30.0}'
 
 The update command is used to configure a restart of ``host-cake`` in 30 seconds, in the event that it terminates. Other members
-of the retry argument are available to randomize the delay. At boot-time the host should execute the following command;
+of the retry argument (i.e. :class:`~.RetryIntervals`) are available to randomize the delay. At boot-time the host should execute
+the following command;
 
 .. code-block:: console
 
@@ -575,7 +576,7 @@ Both the :func:`~.publish()` and :func:`~.subscribe()` functions accept a scope 
 
 	lc.publish(self, 'super-system:log-store', scope=lc.ScopeOfDirectory.GROUP)
 
-Service information is not propagated beyond its declared scope. Even with connectivity through ``host_group`` or ``lan_group``
+Service information is not propagated beyond its declared scope. Even with connectivity through ``host-group`` or ``lan-group``
 processes, subscribers outside the group cannot see the ``super-system:log-store`` and cannot establish a session.
 
 Where no scope is specified, the default is HOST. For full, automated matching of all subscribers to their intended

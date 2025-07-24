@@ -97,8 +97,8 @@ around inside a process, between threads and machines. It can also move between 
 over a network connection, or between a process and a disk file.
 
 Messages are either an instance of a registered class (i.e. refer to :func:`~.bind()`) or an
-instance of an inline, or anonymous type, such as a table of floats, cube of integers or map
-of integers to strings. The latter requires specific handling with :func:`~.def_type`
+instance of an inline, or anonymous type (e.g. a table of floats, cube of integers or map
+of integers to strings). The latter requires specific handling with :func:`~.def_type`
 and :func:`~.cast_to`.
 
 .. _lc-type:
@@ -123,7 +123,7 @@ It includes types such as;
 * any,
 * pointer
 
-Python type hints are converted to internal **layer-cake** types as necessary.
+Internally, Python type hints are converted to **layer-cake** types.
 
 .. _lc-object-type:
 

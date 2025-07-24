@@ -93,17 +93,11 @@ class ListenForStream(object):
 	"""Session request, open a server presence.
 
 	:param lid: unique id for this listen request
-	:type lid: UUID
 	:param requested_ipp: IP and port requested by the application
-	:type requested_ipp: HostPort
 	:param encrypted: enable encryption
-	:type encrypted: bool
 	:param http_server: list of classes
-	:type http_server: list
 	:param default_to_request: default to :class:`~.HttpRequest`
-	:type default_to_request: bool
 	:param ansar_client: expect layer cake encodings
-	:type ansar_client: bool
 	"""
 	def __init__(self, lid: UUID=None, requested_ipp: HostPort=None, encrypted: bool=False,
 			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
@@ -119,15 +113,10 @@ class ConnectStream(object):
 	Session request, open a transport to an address.
 
 	:param requested_ipp: IP and port requested by the application
-	:type requested_ipp: HostPort
 	:param encrypted: enable encryption
-	:type encrypted: bool
 	:param keep_alive: monitor the connection
-	:type keep_alive: bool
 	:param http_client: inserted as the path in the request URI
-	:type http_client: str
 	:param layer_cake_json: enable layer cake JSON body
-	:type layer_cake_json: bool
 	"""
 	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False, keep_alive: bool=False,
 			http_client: str=None, layer_cake_json: bool=False):
@@ -146,11 +135,8 @@ class Listening(object):
 	"""Session notification, server presence established.
 
 	:param request: original listen request
-	:type request: ListenForStream
 	:param listening_ipp: network address in use
-	:type listening_ipp: HostPort
 	:param controller_address: object that requested the listen
-	:type controller_address: :ref:`address<lc-address>`
 	"""
 	def __init__(self, request: ListenForStream=None,
 			listening_ipp: HostPort=None,
@@ -163,13 +149,9 @@ class Accepted(object):
 	"""Session notification, transport to client established.
 
 	:param listening: listening server
-	:type listening: Listening
 	:param opened_ipp: network address of accepted transport
-	:type opened_ipp: HostPort
 	:param proxy_address: address of remote party
-	:type proxy_address: :ref:`address<lc-address>`
 	:param opened_at: moment of acceptance
-	:type opened_at: datetime
 	"""
 	def __init__(self, listening: Listening=None,
 			opened_ipp: HostPort=None,
@@ -184,13 +166,9 @@ class Connected(object):
 	"""Session notification, transport to server established.
 
 	:param request: original connect request
-	:type request: ConnectStream
 	:param opened_ipp: network address of connected transport
-	:type opened_ipp: HostPort
 	:param proxy_address: address of remote party
-	:type proxy_address: :ref:`address<lc-address>`
 	:param opened_at: moment of connection
-	:type opened_at: datetime
 	"""
 	def __init__(self, request: ConnectStream=None, opened_ipp: HostPort=None,
 			proxy_address: Address=None,
@@ -204,11 +182,8 @@ class NotListening(Faulted):
 	"""Session notification, server not established.
 
 	:param request: original listen request
-	:type request: ListenForStream
 	:param error_code: platform error number
-	:type error_code: int
 	:param error_text: platform error message
-	:type error_text: str
 	"""
 	def __init__(self, request: ListenForStream=None, error_code: int=0, error_text: str=None):
 		self.request = request or ListenForStream()
@@ -224,11 +199,8 @@ class NotAccepted(Faulted):
 	"""Session notification, transport to client not established.
 
 	:param listening: listening server
-	:type listening: Listening
 	:param error_code: platform error number
-	:type error_code: int
 	:param error_text: platform error message
-	:type error_text: str
 	"""
 	def __init__(self, listening: Listening=None, error_code: int=0, error_text: str=None):
 		self.listening = listening or Listening()
@@ -240,11 +212,8 @@ class NotConnected(Faulted):
 	"""Session notification, transport to server not established.
 
 	:param request: original connect request
-	:type request: ConnectStream
 	:param error_code: platform error number
-	:type error_code: int
 	:param error_text: platform error message
-	:type error_text: str
 	"""
 	def __init__(self, request: ConnectStream=None, error_code: int=0, error_text: str=None):
 		self.request = request or ConnectStream()
@@ -285,13 +254,10 @@ class Close(object):
 	"""Session control, terminate the messaging transport.
 
 	:param value: completion value for the session
-	:type value: any
+	:type value: ref:`message<lc-message>`
 	:param reason: what prompted the termination
-	:type reason: EndOfTransport
 	:param note: short diagnostic
-	:type note: str
 	:param error_code: platform error code
-	:type error_code: int
 	"""
 	def __init__(self, value: Any=None, reason: EndOfTransport=None, note: str=None, error_code: int=None):
 		self.value = value
@@ -304,17 +270,12 @@ class Closed(object):
 	Session notification, local termination of the messaging transport.
 
 	:param value: completion value for the session
-	:type value: any
+	:type value: ref:`message<lc-message>`
 	:param reason: what prompted the termination
-	:type reason: EndOfTransport
 	:param note: short diagnostic
-	:type note: str
 	:param error_code: platform error code
-	:type error_code: int
 	:param opened_ipp: network address of terminated transport
-	:type opened_ipp: HostPort
 	:param opened_at: moment of termination
-	:type opened_at: datetime
 	"""
 	def __init__(self, value: Any=None, reason: EndOfTransport=None,
 			note: str=None, error_code: int=None,
@@ -1584,24 +1545,18 @@ def stop_sockets(root):
 AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
-def listen(self, requested_ipp: HostPort, encrypted: bool=False,
+def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
 			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number. Returns UUID.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param requested_ipp: network address to listen at
-	:type requested_ipp: HostPort
 	:param encrypted: enable encryption
-	:type encrypted: bool
 	:param http_server: enable HTTP with list of expected requests
-	:type http_server: list
 	:param default_to_request: enable default conversion into HttpRequests
-	:type default_to_request: bool
 	:param ansar_client: enable layer cake json
-	:type ansar_client: bool
 	:rtype: UUID
 	"""
 	lid = uuid.uuid4()
@@ -1609,36 +1564,27 @@ def listen(self, requested_ipp: HostPort, encrypted: bool=False,
 	TS.channel.send(ls, self.object_address)
 	return lid
 
-def connect(self, requested_ipp, encrypted: bool=False, keep_alive: bool=False,
+def connect(self: Point, requested_ipp: HostPort, encrypted: bool=False, keep_alive: bool=False,
 			http_client: str=None, layer_cake_json: bool=False):
 	"""
 	Initiates a network connection to the specified IP
 	address and port number.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param requested_ipp: host and port to connect to
-	:type requested_ipp: :class:`~.HostPort`
 	:param encrypted: enable encryption
-	:type encrypted: bool
 	:param keep_alive: enable keep-alives
-	:type keep_alive: bool
 	:param http_client: leading part of the outgoing request URI
-	:type http_client: str
 	:param layer_cake_json: is the remote server ansar-enabled
-	:type layer_cake_json: bool
 	"""
 	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, keep_alive=keep_alive, http_client=http_client, layer_cake_json=layer_cake_json)
 	TS.channel.send(cs, self.object_address)
 
-def stop_listening(self, lid):
+def stop_listening(self: Point, lid: UUID):
 	"""
 	Shutdown the listen port with the specified identity.
 
 	:param self: asynchronous identity
-	:type self: :class:`~.Point`
 	:param lid: UUID assigned at time of :func:`~.listen`
-	:type lid: UUID
-	:rtype: None
 	"""
 	TS.channel.send(StopListening(lid), self.object_address)

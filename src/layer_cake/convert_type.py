@@ -338,19 +338,18 @@ def def_type(hint_or_type):
 	converted into layer cake types before storing.
 
 	:param hint_or_type: a type description
-	:type hint_or_type: Python hint or layer cake type
+	:type hint_or_type: ref:`tip<layer-cake-type-reference>`
 	"""
 	p = install_type(hint_or_type)
 	return p
 
-def cast_to(message, p):
+def cast_to(message, p: Portable):
 	"""
 	Transform the message for transfer across the network or into storage.
 
 	:param message: the application value
 	:type message: :ref:`message<lc-message>`
 	:param p: portable representation of type
-	:type p: a layer-cake type
 	"""
 	if isinstance(p, UserDefined):
 		return message

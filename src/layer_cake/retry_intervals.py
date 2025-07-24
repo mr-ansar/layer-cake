@@ -60,15 +60,10 @@ class RetryIntervals(object):
 	Capture the values needed to manage exponential backoff.
 
 	:param first_steps: initial series of explicit float values
-	:type first_steps: list
 	:param regular_steps: float value repeated after ``first_steps``
-	:type regular_steps: float
 	:param step_limit: maximum number of steps
-	:type step_limit: int
 	:param randomized: micro-steps used when randomizing
-	:type randomized: float
 	:param truncated: add step * truncated when randomizing
-	:type truncated: float
 	"""
 	def __init__(self, first_steps: list[float]=None, regular_steps: float=None, step_limit: int=None, randomized: float=None, truncated: float=None):
 		self.first_steps = first_steps or []

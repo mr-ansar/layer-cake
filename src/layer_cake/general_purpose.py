@@ -54,7 +54,6 @@ class Gas(object):
 	"""Build an object from the specified k-v args, suitable as a global context.
 
 	:param kv: map of names and value
-	:type path: dict
 	"""
 	def __init__(self, **kv):
 		"""Convert the named values into object attributes."""
@@ -112,22 +111,25 @@ def short_delta(d):
 
 #
 class CreateFrame(object):
-	"""Capture values needed for async object creation.
+	"""
+	Capture values needed for async object creation.
 
 	:param object_type: type to be created
-	:type object_type: function or Point-based class
-	:param args: positional parameters
-	:type args: tuple
-	:param kw: named parameters
-	:type kw: dict
+	:type object_type: :ref:`object type<layer-cake-object-type>`
 	"""
 	def __init__(self, object_type, *args, **kw):
 		self.object_type = object_type
 		self.args = args
 		self.kw = kw
 
-def spread_out(period, delta=25):
-	'''Adjust a base value in a random way. Return a float.'''
+def spread_out(period: float, delta: int=25):
+	'''
+	Adjust a base value in a random way. Return a float.
+	
+
+	:param period: base time period
+	:param delta: range of adjustment as percent denominator
+	'''
 	lo = 100 - delta
 	hi = 100 + delta
 	cf = random.randrange(lo, hi) / 100

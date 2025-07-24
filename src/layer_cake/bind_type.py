@@ -49,19 +49,15 @@ class PointRuntime(Runtime):
 	Settings to control logging and other behaviour, for a Point.
 
 	:param name: the name of the class being registered
-	:type name: str
 	:param module: the name of the module the class is located in
-	:type module: str
 	:param return_type: hint/portable describing the return type
-	:type return_type: hint/portable
+	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
-	:type api: list of messages
 	:param flags: named values passed on
-	:type flags: dict
 	"""
 
 	def __init__(self,
-			name, module, return_type=None, api=None,
+			name: str, module: str, return_type=None, api: tuple=None,
 			**flags):
 		super().__init__(name, module, **flags)
 		self.return_type = return_type
@@ -69,7 +65,9 @@ class PointRuntime(Runtime):
 		self.value = None
 
 #
-def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
+def bind_routine(routine, return_type=None, api: tuple=None,
+		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
+		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the function.
 
@@ -77,22 +75,14 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	the given type.
 
 	:param routine: function to be registered as a routine
-	:type routine: Python function
+	:type routine: :ref:`object type<layer-cake-object-type>`
 	:param return_type: type expression for the return value
 	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
-	:type api: list of classes
 	:param lifecycle: enable log at creation, ending...
-	:type lifecycle: bool
 	:param message_trail: enable log when message is sent
-	:type message_trail: bool
 	:param execution_trace: enable log when message is received
-	:type execution_trace: bool
 	:param user_logs: the logging level for this message type
-	:type user_logs: :class:`~.USER_LOG`
-	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
-	:type explicit_schema: dict
-	:rtype: None
 	"""
 	rt = PointRuntime(routine.__name__, routine.__module__,
 		lifecycle=lifecycle,
@@ -125,7 +115,9 @@ def bind_routine(routine, return_type=None, api=None, lifecycle=True, message_tr
 	install_portable(UserDefined(routine))
 
 
-def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, message_trail=True, execution_trace=True, user_logs=USER_LOG.DEBUG, **explicit_schema):
+def bind_point(point: Point, return_type=None, api: tuple=None, thread: str=None,
+		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
+		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the asynchronous object.
 
@@ -133,18 +125,12 @@ def bind_point(point, return_type=None, api=None, thread=None, lifecycle=True, m
 	the given type.
 
 	:param point: instance of an asynchronous object
-	:type point: :class:`~.Point`
 	:param return_type: type expression for the return value
 	:type return_type: :ref:`tip<layer-cake-type-reference>`
+	:param lifecycle: enable log when object is created or destroyed
 	:param message_trail: enable log when message is sent
-	:type message_trail: bool
 	:param execution_trace: enable log when message is received
-	:type execution_trace: bool
 	:param user_logs: the logging level for this object type
-	:type user_logs: :class:`~.USER_LOG`
-	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
-	:type explicit_schema: dict
-	:rtype: None
 	"""
 	rt = PointRuntime(point.__name__, point.__module__,
 		lifecycle=lifecycle,
@@ -207,7 +193,7 @@ def unfold(folded):
 		else:
 			yield f
 
-def bind_stateless(machine, dispatch, return_type=None, api=None, **explicit_schema):
+def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: tuple=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the non-FSM machine.
 
@@ -215,16 +201,10 @@ def bind_stateless(machine, dispatch, return_type=None, api=None, **explicit_sch
 	the given type.
 
 	:param machine: class to be registered as a machine
-	:type machine: :class:`~.Stateless`
 	:param dispatch: list of expected messages
-	:type dispatch: list
 	:param return_type: type expression for the return value
 	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
-	:type api: list
-	:param kv_args: names and :ref:`tips<layer-cake-type-reference>`
-	:type kv_args: dict
-	:rtype: None
 	"""
 	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
 	if dispatch is None:
@@ -252,7 +232,7 @@ def bind_stateless(machine, dispatch, return_type=None, api=None, **explicit_sch
 
 	machine.__art__.value = (shift, messaging)
 
-def bind_statemachine(machine, dispatch, return_type=None, api=None, **explicit_schema):
+def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, api: tuple=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the FSM machine.
 
@@ -272,16 +252,10 @@ def bind_statemachine(machine, dispatch, return_type=None, api=None, **explicit_
 	will save an additional message, ``Check``.
 
 	:param machine: class to be registered as a machine
-	:type machine: :class:`~.StateMachine`
 	:param dispatch: table of current state and expected messages
-	:type dispatch: dict
 	:param return_type: type expression for the return value
 	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages
-	:type api: list
-	:param explicit_schema: names and :ref:`tips<layer-cake-type-reference>`
-	:type explicit_schema: dict
-	:rtype: None
 	"""
 	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
 	if dispatch is None:

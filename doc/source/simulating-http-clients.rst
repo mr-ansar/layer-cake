@@ -15,7 +15,7 @@ The test client will use multithreading and multiprocessing to deliver multiple 
 
 * a thread that connects, performs a series of request-response sequences and disconnects,  
 * a process that starts and maintains a number of threads,  
-* and a process that starts a number of the threading processes.
+* and a process that starts a number of the multithreading processes.
 
 The number of threads and processes will be configurable to allow for tuning.
 

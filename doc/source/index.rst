@@ -61,6 +61,7 @@ numbers of clients is provided at the end.
    switching-to-multiprocessing
    distribution-with-multihosting
    simulating-http-clients
+   encrypted-networking
    layer-cake-command-reference
    layer-cake-type-reference
    folders-and-files

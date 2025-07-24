@@ -29,6 +29,7 @@ __docformat__ = 'restructuredtext'
 
 from .message_memory import *
 from .convert_type import *
+from .virtual_memory import *
 from .virtual_point import *
 from .virtual_runtime import *
 from .point_runtime import *
@@ -48,11 +49,7 @@ class CreateFrame(object):
 	"""Capture values needed for async object creation.
 
 	:param object_type: type to be created
-	:type object_type: function or Point-based class
-	:param args: positional parameters
-	:type args: tuple
-	:param kw: named parameters
-	:type kw: dict
+	:type object_type: :ref:`object type<layer-cake-object-type>`
 	"""
 	def __init__(self, object_type, *args, **kw):
 		self.object_type = object_type
@@ -71,11 +68,9 @@ class GetResponse(Point, Stateless):
 	:param request: message to be sent
 	:type request: :ref:`message<lc-message>`
 	:param server_address: where to send the message
-	:type server_address: :ref:`address<lc-address>`
 	:param seconds: acceptable delay (optional)
-	:type seconds: float
 	"""
-	def __init__(self, request, server_address, seconds=None):
+	def __init__(self, request, server_address: Address, seconds: float=None):
 		Point.__init__(self)
 		Stateless.__init__(self)
 		self.request = request

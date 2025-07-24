@@ -106,30 +106,24 @@ class Folder(object):
 	"""Create and manage a folder of application encodings.
 
 	:param path: the location in the filesystem
-	:type path: str
 	:param tip: type expression for the content
 	:type tip: :ref:`tip<layer-cake-type-reference>`
-	:param re: formal description of expected file names
-	:type re: a Python regular expression
+	:param re: formal, regular expression description of expected file names
 	:param encoding: selection of representation, defaults to ``CodecJson``
 	:type encoding: class
 	:param pretty_format: generate human-readable file contents, defaults to ``True``
-	:type pretty_format: bool
 	:param decorate_names: auto-append an encoding-dependent extension to the file name, defaults to ``True``
-	:type decorate_names: bool
 	:param keys_names: a key-composer function and a name-composer function
 	:type keys_names: 2-tuple of functions
 	:param make_absolute: expand a relative path to be an absolute location, defaults to ``True``
-	:type make_absolute: bool
 	:param auto_create: create folders as necessary, defaults to ``True``
-	:type auto_create: bool
 	"""
 
-	def __init__(self, path=None,
-			tip=None, re=None, encoding=None,
-			pretty_format=True, decorate_names=True,
-			create_default=False, keys_names=None,
-			make_absolute=False, auto_create=True):
+	def __init__(self, path: str=None,
+			tip=None, re: str=None, encoding=None,
+			pretty_format: bool=True, decorate_names: bool=True,
+			create_default: bool=False, keys_names=None,
+			make_absolute: bool=False, auto_create: bool=True):
 		"""Construct a Folder instance."""
 		path = path or '.'
 		if make_absolute:
@@ -165,29 +159,23 @@ class Folder(object):
 			if e.errno == errno.EEXIST:
 				return
 
-	def folder(self, name, tip=None, re=None, encoding=None,
-			pretty_format=None, decorate_names=None, create_default=None,
-			auto_create=None, keys_names=None):
+	def folder(self, name: str, tip=None, re: str=None, encoding=None,
+			pretty_format: bool=None, decorate_names: bool=None, create_default: bool=None,
+			auto_create: bool=None, keys_names=None):
 		"""Create a new :class:`~.Folder` object representing a sub-folder at the current location.
 
 		:param path: the name to be added to the saved ``path``
-		:type path: str
 		:param tip: type expression for the content
 		:type tip: :ref:`tip<layer-cake-type-reference>`
-		:param re: formal description of expected file names
-		:type re: a Python regular expression
+		:param re: formal, regular expression description of expected file names
 		:param encoding: selection of representation, defaults to ``CodecJson``
 		:type encoding: class
 		:param pretty_format: generate human-readable file contents, defaults to ``True``
-		:type pretty_format: bool
 		:param decorate_names: auto-append an encoding-dependent extension to the file name, defaults to ``True``
-		:type decorate_names: bool
 		:param keys_names: a key-composer function and a name-composer function
 		:type keys_names: 2-tuple of functions
 		:param make_absolute: expand a relative path to be an absolute location, defaults to ``True``
-		:type make_absolute: bool
 		:param auto_create: create folders as necessary, defaults to ``None``
-		:type auto_create: bool
 		:return: a new location in the filesystem
 		:rtype: Folder
 		"""
@@ -208,22 +196,18 @@ class Folder(object):
 			pretty_format=pretty_format, decorate_names=decorate_names, create_default=create_default,
 			keys_names=keys_names, make_absolute=False, auto_create=auto_create)
 
-	def file(self, name, tip=None, encoding=None,
-			pretty_format=None, decorate_names=None, create_default=None):
+	def file(self, name: str, tip=None, encoding=None,
+			pretty_format: bool=None, decorate_names: bool=None, create_default: bool=None):
 		"""Create a new :class:`~.File` object representing a file at the current location.
 
 		:param name: the name to be added to the saved ``path``
-		:type name: str
 		:param tip: type expression for the content
 		:type tip: :ref:`tip<layer-cake-type-reference>`
 		:param encoding: selection of representation, defaults to ``CodecJson``
 		:type encoding: class
 		:param pretty_format: generate human-readable file contents, defaults to ``True``
-		:type pretty_format: bool
 		:param decorate_names: auto-append an encoding-dependent extension to the file name, defaults to ``True``
-		:type decorate_names: bool
 		:param create_default: return default instance on file not found, defaults to ``False``
-		:type create_default: bool
 		:return: a new file in the filesystem
 		:rtype: File
 		"""
@@ -265,9 +249,8 @@ class Folder(object):
 	def each(self):
 		"""Process the files in the folder.
 
-		:return: a sequence of :class:`~.File` objects matching
-			the :class:`~.Folder` criteria.
-		:rtype: :class:`~.File`
+		:return: a sequence of :class:`~.File` objects matching the :class:`~.Folder` criteria.
+		:rtype: File
 		"""
 		# Get a fresh image of folder/slice.
 		# Use a snapshot for iteration to avoid
@@ -278,12 +261,10 @@ class Folder(object):
 		for f in matched:
 			yield self.file(f, tip=self.file_type)
 
-	def store(self, values):
+	def store(self, values: dict):
 		"""Store a ``dict`` of values as files in the folder.
 
 		:param values: a collection of application values
-		:type values: dict
-		:return: None.
 		"""
 		# Get a fresh image of folder/slice.
 		matched = set(self.matching())
@@ -300,7 +281,7 @@ class Folder(object):
 		for m in matched:
 			self.erase(m)
 
-	def recover(self, *args, **kwargs):
+	def recover(self):
 		"""Recover application values from the files in the folder.
 
 		A generator function that yields a sequence of tuples that
@@ -313,17 +294,8 @@ class Folder(object):
 		the mechanism by which applications can select different code-paths in support of
 		older versions of encoded materials.
 
-		:param upgrade: promote decoded object
-		:type upgrade: function
-		:param migrate: if true, store any upgraded object
-		:type migrate: bool
-		:param args: remaining positional parameters
-		:type args: tuple
-		:param kwargs: remaining named parameters
-		:type kwargs: dict
-
-		:return: a sequence of 3-tuples, 0) key, 1) the value and 2) a version tag or ``None``
-		:rtype: a 3-tuple
+		:return: a sequence of 2-tuples, 0) key and 1) the value
+		:rtype: tuple
 		"""
 		# Get a fresh image of folder/slice.
 		matched = [f for f in self.matching()]
@@ -331,20 +303,19 @@ class Folder(object):
 		# Yield the key, message tuple.
 		for f in matched:
 			io = self.file(f, tip=self.file_type)
-			r = io.recover(*args, **kwargs)
+			r = io.recover()
 			if self.keys_names is None:
 				k = None
 			else:
 				k = self.key(r)
 			yield k, r
 
-	def add(self, values, item):
+	def add(self, values: dict, item):
 		"""Add a value, both to a ``dict`` of values and as a file in the folder.
 
 		:param values: a collection of application values
-		:type values: dict
 		:param item: the value to be added
-		:type item: refer to ``Folder.tip``
+		:type item: :ref:`tip<layer-cake-type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -359,13 +330,13 @@ class Folder(object):
 		io.store(item)
 		values[key] = item
 
-	def update(self, values, item):
+	def update(self, values: dict, item):
 		"""Update a value, both in a ``dict`` of values and as a file in the folder.
 
 		:param values: a collection of application values
 		:type values: dict
 		:param item: the value to be updated
-		:type item: refer to ``Folder.tip``
+		:type item: :ref:`tip<layer-cake-type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -381,13 +352,13 @@ class Folder(object):
 		io.store(item)
 		values[key] = item
 
-	def remove(self, values, item):
+	def remove(self, values: dict, item):
 		"""Remove a value, both from a ``dict`` of values and as a file in the folder.
 
 		:param values: a collection of application values
 		:type values: dict
 		:param item: the value to be removed
-		:type item: refer to ``Folder.tip``
+		:type item: :ref:`tip<layer-cake-type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -398,11 +369,10 @@ class Folder(object):
 		self.erase(name)
 		del values[key]
 
-	def clear(self, values):
+	def clear(self, values: dict):
 		"""Remove all values, both from a ``dict`` of values and as files in the folder.
 
 		:param values: a collection of application values
-		:type values: dict
 		"""
 		# Brute force. Delete any candidates from
 		# the folder and dump everything from the dict.
@@ -411,11 +381,10 @@ class Folder(object):
 			self.erase(removing)
 		values.clear()
 
-	def erase(self, name):
+	def erase(self, name: str):
 		"""Delete the named file from the folder.
 
 		:param name: a name of a file
-		:type name: str
 		"""
 		path = os.path.join(self.path, name)
 		name = path
@@ -429,11 +398,10 @@ class Folder(object):
 			return True
 		return False
 
-	def exists(self, name=None):
+	def exists(self, name: str=None):
 		"""Detect the named file, within the folder.
 
 		:param name: a name of a file
-		:type name: str
 		:return: does the file exist
 		:rtype: bool
 		"""
@@ -454,7 +422,7 @@ class Folder(object):
 		"""Generate the stable key for a given application value.
 
 		:param item: an application value
-		:type name: see ``Folder.tip``
+		:type item: :ref:`tip<layer-cake-type-reference>`
 		:return: the key
 		:rtype: folder dependent
 		"""
@@ -467,7 +435,7 @@ class Folder(object):
 		"""Generate the stable filename for a given application value.
 
 		:param item: an application value
-		:type name: see ``Folder.tip``
+		:type item: :ref:`tip<layer-cake-type-reference>`
 		:return: the filename
 		:rtype: str
 		"""

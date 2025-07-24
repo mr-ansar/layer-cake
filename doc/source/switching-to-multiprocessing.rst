@@ -14,7 +14,7 @@ Under the layer cake library there are only minor differences between thread-bas
 The following sections step through the same recent series of thread-based server implementations, but switching
 multithreading for multiprocessing.
 
-Don’t forget to change to the relevant folder;
+First, change to the relevant folder;
 
 .. code-block:: console
 
@@ -168,7 +168,8 @@ useful at the command line;
 		]
 	]
 
-The JSON output exactly reflects the ``list[list[float]]`` type hint, allowing for natural use of the ``jq`` utility;
+Arguments passed on the command-line mimic the passing of named arguments to a Python function, and the JSON output exactly
+reflects the ``list[list[float]]`` type hint, allowing for natural use of the ``jq`` utility;
 
 .. code-block:: console
 
@@ -474,7 +475,7 @@ is separation of concern, i.e. nasty bugs inside the worker do not pollute the p
 
 These benefits come at the cost of a slightly slower startup and the relatively slow exchange of request and response messages,
 when compared with the multithreading implementation. Network messaging in this scenario (i.e. across the loopback interface)
-is quick; in the order of a few thousand a second with current hardware.
+is quick; in the order of a few thousand request-response pairs a second, with current hardware.
 
 Process Orchestration And Housekeeping
 **************************************
@@ -514,16 +515,16 @@ are for general use;
      - :class:`~.USER_LOG`
      - *enable output of logs at the selected level*
    * - **home-path**
-     - string
+     - str
      - *folder path, location of the composite process*
    * - **role-name**
-     - string
+     - str
      - *unique name of the process within the home*
    * - **resource-path**
-     - string
+     - str
      - *location of read-only files, override default*
    * - **model-path**
-     - string
+     - str
      - *location of operational files, override default*
    * - **dump-types**
      - bool
@@ -531,3 +532,6 @@ are for general use;
    * - **connect-to-directory**
      - :class:`~.HostPort`
      - *network address of the directory to join, override default behaviour*
+   * - **encrypted-process**
+     - bool
+     - *all associated directory activity is encrypted*
