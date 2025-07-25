@@ -329,18 +329,17 @@ def install_type(t):
 		return install_portable(t)
 	return install_hint(t)
 
-def def_type(hint_or_type):
+def def_type(hint_or_portable):
 	"""
-	Enter the type into the runtime table of known types.
+	Register an application type. Return :class:`~.Portable`.
 
-	A layer cake process compiles a full set of known types before
-	the first asynchronous object is created. Python hints are
-	converted into layer cake types before storing.
+	Register a type for use within an application. Convert Python hints into
+	a :class:`~.Portable` equivalent.
 
-	:param hint_or_type: a type description
-	:type hint_or_type: ref:`tip<layer-cake-type-reference>`
+	:param hint_or_portable: a type description
+	:type hint_or_portable: ref:`tip<layer-cake-type-reference>`
 	"""
-	p = install_type(hint_or_type)
+	p = install_type(hint_or_portable)
 	return p
 
 def cast_to(message, p: Portable):

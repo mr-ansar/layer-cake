@@ -75,7 +75,7 @@ def bind_routine(routine, return_type=None, api: tuple=None,
 	the given type.
 
 	:param routine: function to be registered as a routine
-	:type routine: :ref:`object type<layer-cake-object-type>`
+	:type routine: :ref:`object type<lc-object-type>`
 	:param return_type: type expression for the return value
 	:type return_type: :ref:`tip<layer-cake-type-reference>`
 	:param api: enable API with list of expected messages

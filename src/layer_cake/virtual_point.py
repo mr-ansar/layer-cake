@@ -265,11 +265,9 @@ class Point(object):
 		:param object_type: type of object to instantiate
 		:type object_type: :ref:`object type<lc-object-type>`
 		:param args: positional arguments passed to the new object
-		:type args: tuple
 		:param object_ending: override standard termination (optional)
 		:type object_ending: function
 		:param kw: named arguments passed to the new object
-		:type kw: dict
 		:rtype: :ref:`address<lc-address>`, or channel
 		"""
 		return create_a_point(object_type, object_ending, self.object_address, args, kw)
@@ -694,7 +692,7 @@ class Player(object):
 	def pushback(self, message):
 		"""Retain the [message, to, return] triplet for later replay."""
 		mtr = self.get_frame
-		# Cannot verify in the presence of anonymous types.
+		# Cannot verify in the presence of constructed types.
 		# This pushes back the most recent pull.
 		#if id(message) != id(mtr[0]):
 		#	return

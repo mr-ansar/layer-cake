@@ -115,7 +115,7 @@ class CreateFrame(object):
 	Capture values needed for async object creation.
 
 	:param object_type: type to be created
-	:type object_type: :ref:`object type<layer-cake-object-type>`
+	:type object_type: :ref:`object type<lc-object-type>`
 	"""
 	def __init__(self, object_type, *args, **kw):
 		self.object_type = object_type

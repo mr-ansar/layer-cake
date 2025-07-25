@@ -176,13 +176,12 @@ def open_channel():
 	channel = root.create(Channel)
 	return channel
 
-def drop_channel(c):
+def drop_channel(c: Point):
 	"""End the runtime for a non-standard executable. Return nothing.
 
 	Tear down the runtime created by ``open_channel()``, i.e. ``boot_up()``.
 
 	:param c: a channel returned by open_channel()
-	:type c: Point-based object
 	:rtype: none
 	"""
 	if c.__art__.lifecycle:

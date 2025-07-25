@@ -192,14 +192,11 @@ class Unicode(Portable):
 	"""A sequence of Rune."""
 
 class Enumeration(Portable):
-	"""Names for integers.
-
-	:param element: entry in the type system.
-	:type element: class
+	"""
+	Names for integers.
 	"""
 
 	def __init__(self, element):
-		"""Refer to class."""
 		self.element = element
 
 class ClockTime(Portable):
@@ -221,12 +218,10 @@ class ArrayOf(Container):
 	"""A fixed-length sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<layer-cake-type-reference>`
 	:param size: fixed size.
-	:type size: int
 	"""
 
-	def __init__(self, element, size):
+	def __init__(self, element: Portable, size: int):
 		"""Refer to class."""
 		self.element = element
 		self.size = size
@@ -235,10 +230,9 @@ class VectorOf(Container):
 	"""A variable-length sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<layer-cake-type-referencepressions>`
 	"""
 
-	def __init__(self, element):
+	def __init__(self, element: Portable):
 		"""Refer to class."""
 		self.element = element
 
@@ -246,10 +240,9 @@ class DequeOf(Container):
 	"""A double-ended sequence of elements.
 
 	:param element: type of the content.
-	:type element: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
-	def __init__(self, element):
+	def __init__(self, element: Portable):
 		"""Refer to class."""
 		self.element = element
 
@@ -257,10 +250,9 @@ class SetOf(Container):
 	"""A collection of unique elements.
 
 	:param element: type of the content, a hash-able value.
-	:type element: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
-	def __init__(self, element):
+	def __init__(self, element: Portable):
 		"""Refer to class."""
 		self.element = element
 
@@ -268,12 +260,10 @@ class MapOf(Container):
 	"""A map of unique, key-value pairs.
 
 	:param key: type of the key, a hash-able value.
-	:type key: :ref:`type expression<layer-cake-type-reference>`
 	:param value: type of the content.
-	:type value: :ref:`type expression<layer-cake-type-reference>`
 	"""
 
-	def __init__(self, key, value):
+	def __init__(self, key: Portable, value: Portable):
 		"""Refer to class."""
 		self.key = key
 		self.value = value
@@ -281,8 +271,8 @@ class MapOf(Container):
 class UserDefined(Container):
 	"""A structure of named elements.
 
-	:param element: registered class.
-	:type element: class
+	:param element: registered class
+	:type element: :ref:`object type<lc-object-type>`
 	"""
 
 	def __init__(self, element):
@@ -290,30 +280,61 @@ class UserDefined(Container):
 		self.element = element
 
 class PointerTo(Container):
-	"""An object that refers to another object.
+	"""An instance of an object that may be appear in multiple places.
 
-	:param element: type of the object being pointed to.
-	:type element: :ref:`type expression<layer-cake-type-reference>`
+	These are instances of data that are tracked by their Python id.
+	When they are encoded for the purposes of networking or saving
+	as a file, multiple appearances of the same id are collapsed into
+	one actual data item and multiple references. This process is
+	reversed during decoding, allowing the passing of graphs (linked
+	lists, trees and networks) across network connections. Circular
+	references are properly handled, pointer-to-pointer is not.
 	"""
 
-	def __init__(self, element):
+	def __init__(self, element: Portable):
 		"""Refer to class."""
 		self.element = element
 
 class Any(Portable):
-	"""The combination of a Type and a Word."""
+	"""
+	The combination of a :class:`~.Type` and a :class:`~.Word`.
+
+	A portable representation of any registered type (see :func:`~.bind`
+	and :func:`~.def_type`). Suitable for passing across a network
+	connection or storing in a file.
+	"""
 
 class TargetAddress(Portable):
 	"""The address of a receiving object."""
 
 class Address(Portable):
-	"""The address of a sending object."""
+	"""
+	A runtime-generated, **layer-cake** address.
+
+	These are the values that can be passed as a destination
+	to functions such as :meth:`~.Point.send`.
+	"""
 
 class Type(Portable):
-	"""The unique, portable identity of a registered message."""
+	"""
+	The unique, portable identity of a registered class or function.
+	
+	These are the values that allow type information to pass
+	across a network connection, allowing processes to return
+	:class:`~.Any` type and messaging to send
+	and receive with the same flexibility.
+	"""
 
 class Word(Portable):
-	"""A well-formed but untyped unit of data."""
+	"""
+	An intermediate form of application data.
+
+	This is a transformation of application into a generic
+	form before it is presented for encoding and it is the
+	generic form that results from a decoding, e.g. a
+	``dict`` has no representation in JSON and is converted
+	into a list of pairs.
+	"""
 
 # List of the library types.
 VIRTUAL_MEMORY_LIST = [

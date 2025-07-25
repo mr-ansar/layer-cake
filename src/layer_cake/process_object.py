@@ -124,28 +124,19 @@ class ProcessObject(Point, StateMachine):
 	:param object_or_name: object to run as a process or the executable file name
 	:type object_or_name: :ref:`object type<lc-object-type>` or str
 	:param args: positional arguments to be passed to the process
-	:type args: tuple
 	:param origin: processing context
-	:type origin: ProcessOrigin
 	:param home_path: location of a composite process
-	:type home_path: str
 	:param role_name: name within the composite process
-	:type role_name: str
 	:param top_role: enable top-level behaviour
-	:type top_role: bool
-	:param object_api: enable private library behaviour
-	:type object_api: bool
+	:param object_api: enable private library behaviour for named process (str)
 	:param extra_types: force loading of library types
-	:type extra_types: list
 	:param remainder_args: forward unknown command-line args to process
-	:type remainder_args: tuple
 	:param settings: named arguments to be encoded for the process
-	:type settings: dict
 	"""
 	def __init__(self, object_or_name, *args, origin: ProcessOrigin=None,
-			home_path=None, role_name=None, top_role: bool=False,
-			object_api=None, extra_types=None,
-			remainder_args=None, **settings):
+			home_path: str=None, role_name: str=None, top_role: bool=False,
+			object_api: list=None, extra_types: list=None,
+			remainder_args: list=None, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.args = args

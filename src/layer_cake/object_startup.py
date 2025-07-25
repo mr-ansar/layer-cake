@@ -589,22 +589,17 @@ def object_output(value):
 	object_encode(value)
 
 #
-def create(object_type, object_table=None, environment_variables=None, sticky=False, strict=True):
+def create(object_type, object_table=None, environment_variables=None, sticky: bool=False, strict: bool=True):
 	"""Creates an async process shim around a "main" async object. Returns nothing.
 
 	:param object_type: type of object to be instantiated
 	:type object_type: :ref:`object type<lc-object-type>`
-	:param object_table: sub-commmands accepted by this object type (optional)
+	:param object_table: sub-commmands accepted by this object type
 	:type object_table: a list of registered functions
-	:param environment_variables: container of values to be extracted from environment (optional)
-	:type environment_variables: instance of registered class
+	:param environment_variables: container of values to be extracted from environment
+	:type environment_variables: :ref:`message<lc-message>`
 	:param sticky: object requires persistent storage
-	:type sticky: bool
 	:param strict: object requires all args to match
-	:type strict: bool
-	:param scope: enumeration of position in the directory
-	:type scope: ScopeOfDirectory
-	:rtype: None
 	"""
 	early_return = False
 	try:

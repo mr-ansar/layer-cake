@@ -83,23 +83,17 @@ class ObjectSpool(Point, StateMachine):
 	:param object_type: type of asynchronous object
 	:type object_type: :ref:`object type<lc-object-type>`
 	:param args: positional arguments to pass on object creation
-	:type args: tuple
 	:param role_name: name of process objects, e.g. spool-{i} or None
-	:type role_name: str
 	:param object_count: number of objects to create
-	:type object_count: int
 	:param size_of_queue: maximum number of pending messages
-	:type size_of_queue: int
 	:param responsiveness: expected performance before imposing busy state
-	:type responsiveness: float
 	:param busy_pass_rate: rate of messages processed in busy state, as a denominator
-	:type busy_pass_rate: int
 	:param stand_down: delay in seconds before restart of terminated object
-	:type stand_down: float
 	:param settings: named arguments to pass on object creation
-	:type settings: dict
 	"""
-	def __init__(self, object_type, *args, role_name=None, object_count=8, size_of_queue=None, responsiveness=5.0, busy_pass_rate=10, stand_down=30.0, **settings):
+	def __init__(self, object_type, *args, role_name: str=None,
+			object_count: int=8, size_of_queue: int=None,
+			responsiveness: float=5.0, busy_pass_rate: int=10, stand_down: float=30.0, **settings):
 		Point.__init__(self)
 		StateMachine.__init__(self, INITIAL)
 		self.object_type = object_type

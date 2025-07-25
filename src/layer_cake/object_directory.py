@@ -116,15 +116,10 @@ class Published(object):
 	Successful completion of :func:`~.publish`.
 
 	:param name: name the service is known by
-	:type name: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	:param published_id: unique identity assigned to registration
-	:type published_id: UUID
 	:param listening_ipp: IP and port assigned to this service
-	:type listening_ipp: HostPort
 	:param home_address: address of the publishing process
-	:type home_address: :ref:`address<lc-address>`
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, encrypted: bool=False,
 			published_id: UUID=None, listening_ipp: HostPort=None,
@@ -141,13 +136,9 @@ class Subscribed(object):
 	Successful completion of :func:`~.subscribe`.
 
 	:param search: pattern to match with services
-	:type search: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	:param subscribed_id: unique identity assigned to registration
-	:type subscribed_id: UUID
 	:param home_address: address of the subscribing process
-	:type home_address: :ref:`address<lc-address>`
 	"""
 	def __init__(self, search: str=None, scope: ScopeOfDirectory=None,
 			subscribed_id: UUID=None, home_address: Address=None):
@@ -189,13 +180,9 @@ class PublishedCleared(object):
 	Successful completion of :func:`~.clear_published`.
 
 	:param name: name the service is known by
-	:type name: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	:param published_id: unique identity assigned to registration
-	:type published_id: UUID
 	:param note: short description appearing in logs
-	:type note: str
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, published_id: UUID=None, note: str=None):
 		self.name = name
@@ -208,13 +195,9 @@ class SubscribedCleared(object):
 	Successful completion of :func:`~.clear_subscribed`.
 
 	:param name: name the service is known by
-	:type name: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	:param subscribed_id: unique identity assigned to registration
-	:type subscribed_id: UUID
 	:param note: short description appearing in logs
-	:type note: str
 	"""
 	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, subscribed_id: UUID=None, note: str=None):
 		self.search = search
@@ -235,11 +218,8 @@ class NotPublished(Faulted):
 	Derived from :class:`~.Faulted`
 
 	:param name: name the service would be known by
-	:type name: str
 	:param scope: scope in which service would be available
-	:type scope: ScopeOfDirectory
 	:param note: short description added to logs
-	:type note: str
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, note: str=None):
 		self.name = name
@@ -254,11 +234,8 @@ class NotSubscribed(Faulted):
 	Derived from :class:`~.Faulted`
 
 	:param name: pattern for matching services
-	:type name: str
 	:param scope: scope in which to search
-	:type scope: ScopeOfDirectory
 	:param note: short description added to logs
-	:type note: str
 	"""
 	def __init__(self, search: str=None, scope: ScopeOfDirectory=None, note: str=None):
 		self.search = search
@@ -436,19 +413,12 @@ class Available(object):
 	"""Session notification, peer transport to service established.
 
 	:param name: name of the matched service
-	:type name: str
 	:param scope: scope at which name was matched
-	:type scope: ScopeOfDirectory
 	:param route_id: unique identity assigned to match
-	:type route_id: UUID
 	:param subscribed_id: unique identity assigned to subscription
-	:type subscribed_id: UUID
 	:param published_id: unique identity assigned to publication
-	:type published_id: UUID
 	:param publisher_address: address of the publishing process
-	:type publisher_address: :ref:`address<lc-address>`
 	:param opened_at: moment the match occurred
-	:type opened_at: datetime
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -466,19 +436,12 @@ class Delivered(object):
 	"""Session notification, peer transport to subscriber established.
 
 	:param name: name of the matched service
-	:type name: str
 	:param scope: scope at which name was matched
-	:type scope: ScopeOfDirectory
 	:param route_id: unique identity assigned to match
-	:type route_id: UUID
 	:param subscribed_id: unique identity assigned to subscription
-	:type subscribed_id: UUID
 	:param published_id: unique identity assigned to publication
-	:type published_id: UUID
 	:param subscriber_address: address of the subscribing process
-	:type subscriber_address: :ref:`address<lc-address>`
 	:param opened_at: moment the match occurred
-	:type opened_at: datetime
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,
@@ -496,19 +459,12 @@ class Dropped(object):
 	"""Session notification, peer transport to published/subscriber lost.
 
 	:param name: name of the matched service
-	:type name: str
 	:param scope: scope at which name was matched
-	:type scope: ScopeOfDirectory
 	:param route_id: unique identity assigned to match
-	:type route_id: UUID
 	:param subscribed_id: unique identity assigned to subscription
-	:type subscribed_id: UUID
 	:param published_id: unique identity assigned to publication
-	:type published_id: UUID
 	:param remote_address: address of the subscriber/publisher
-	:type remote_address: :ref:`address<lc-address>`
 	:param opened_at: moment the match occurred
-	:type opened_at: datetime
 	"""
 	def __init__(self, name: str=None, scope: ScopeOfDirectory=None, route_id: UUID=None,
 			subscribed_id: UUID=None, published_id: UUID=None,

@@ -74,11 +74,10 @@ class Returned(object):
 	Notification sent to parent, from terminating object.
 
 	:param value: value returned by the asynchronous object
-	:type value: any
 	:param created_type: type of the parent
 	:type created_type: :ref:`object type<lc-object-type>`
 	"""
-	def __init__(self, value=None, created_type=None):
+	def __init__(self, value: Any=None, created_type=None):
 		self.value = value
 		self.created_type = created_type
 	
@@ -173,13 +172,9 @@ class Faulted(object):
 	Generic error signal to interested party.
 	
 	:param condition: description of fault
-	:type condition: str
 	:param explanation: description of cause (optional)
-	:type explanation: str
 	:param error_code: internal error code (optional)
-	:type error_code: int
 	:param exit_status: recommended exit status (optional)
-	:type exit_status: int
 	"""
 	def __init__(self, condition: str=None, explanation: str=None, error_code: int=None, exit_status: int=None):
 		self.condition = condition or 'fault'
@@ -227,13 +222,9 @@ class TemporarilyUnavailable(Faulted):
 	Derived from :class:`~.Faulted`.
 
 	:param text: description of reason
-	:type text: str
 	:param unavailable: names of unavailable services
-	:type unavailable: list
-	:param request: request that cannot be fulfilled
-	:type request: :ref:`message<lc-message>`
 	"""
-	def __init__(self, text=None, unavailable=None):
+	def __init__(self, text: str=None, unavailable: list[str]=None):
 		Faulted.__init__(self, text)
 		self.unavailable = unavailable or []
 
@@ -243,12 +234,10 @@ class Busy(Faulted):
 	
 	Derived from :class:`~.Faulted`.
 
-	:param condition: description of load (optional)
-	:type condition: str
-	:param explanation: description of cause (optional)
-	:type explanation: str
+	:param condition: description of load
+	:param explanation: description of cause
 	"""
-	def __init__(self, condition=None, explanation=None):
+	def __init__(self, condition: str=None, explanation: str=None):
 		Faulted.__init__(self, condition, explanation)
 
 class Overloaded(Faulted):
@@ -258,13 +247,9 @@ class Overloaded(Faulted):
 	Derived from :class:`~.Faulted`.
 
 	:param text: description of condition (optional)
-	:type text: str
-	:param request: rejected message (optional)
-	:type request: :ref:`message<lc-message>`
 	"""
-	def __init__(self, text=None, request=None):
+	def __init__(self, text: str=None):
 		Faulted.__init__(self, text)
-		self.request = request
 
 class OutOfService(Faulted):
 	"""
@@ -273,13 +258,9 @@ class OutOfService(Faulted):
 	Derived from :class:`~.Faulted`.
 
 	:param text: description of load (optional)
-	:type text: str
-	:param request: rejected message (optional)
-	:type request: :ref:`message<lc-message>`
 	"""
-	def __init__(self, text=None, request=None):
+	def __init__(self, text: str=None):
 		Faulted.__init__(self, text)
-		self.request = request
 
 bind_message(Aborted,
 	condition=Unicode(),

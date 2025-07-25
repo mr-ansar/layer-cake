@@ -120,12 +120,10 @@ class MessageRegistrationError(MessageError):
 	"""A request to register a class cannot be fulfilled.
 
 	:param name: the name of the class being registered
-	:type name: str
 	:param reason: a short description
-	:type reason: str
 	"""
 
-	def __init__(self, name, reason):
+	def __init__(self, name: str, reason: str):
 		"""Refer to class."""
 		self.name = name
 		self.reason = reason
@@ -168,12 +166,14 @@ class Incognito(object):
 	"""A class that holds the recovered materials of an unregistered message.
 
 	:param type_name: portable identity of the associated word
-	:type type_name: str
 	:param decoded_word: parsed but unmarshaled object
-	:type decoded_word: word
+	:param saved_pointers: table of :class:`~.Pointer` values
+	:type saved_pointers: internal
+	:param address_book: table of :class:`~.Address` values
+	:type address_book: internal
 	"""
 
-	def __init__(self, type_name=None, decoded_word=None, saved_pointers=None, address_book=None):
+	def __init__(self, type_name: str=None, decoded_word: Word=None, saved_pointers=None, address_book=None):
 		"""Refer to class."""
 		self.type_name = type_name
 		self.decoded_word = decoded_word
@@ -501,8 +501,8 @@ def compile_schema(message, explicit_schema):
 
 #
 def bind_message(message,
-		message_trail=True, execution_trace=True,
-		copy_before_sending=True, not_portable=False,
+		message_trail: bool=True, execution_trace: bool=True,
+		copy_before_sending: bool=True, not_portable: bool=False,
 		**object_schema):
 	"""
 	Set the type information and runtime controls for the given message type.
@@ -511,17 +511,12 @@ def bind_message(message,
 	the given type.
 
 	:param message: class to be registered as a message
-	:type message: class
+	:type message: :ref:`message<lc-message>`
 	:param message_trail: enable log when message is sent
-	:type message_trail: bool
 	:param execution_trace: enable log when message is received
-	:type execution_trace: bool
 	:param copy_before_sending: enable copying of message before each send
-	:type copy_before_sending: bool
 	:param not_portable: disable serialization/transfer, e.g. of a file handle
-	:type not_portable: bool
 	:param object_schema: explicit type declarations by name
-	:type object_schema: dict
 	:rtype: None
 	"""
 	rt = Runtime(message.__name__, message.__module__,

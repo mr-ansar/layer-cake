@@ -87,7 +87,7 @@ class File(object):
 		"""Generate a representation of ``value`` and write to the saved ``name``.
 
 		:param value: any application value
-		:type value: matching the saved :ref:`tip<layer-cake-type-reference>`
+		:type value: matching the :ref:`tip<layer-cake-type-reference>` saved on construction
 		"""
 		if as_path:
 			if as_name:

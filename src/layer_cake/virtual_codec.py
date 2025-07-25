@@ -123,38 +123,29 @@ NoneType = type(None)
 class CodecError(Exception):
 	"""Base exception for all codec exceptions."""
 
-	def __init__(self, note):
-		"""Construct the exception.
-
-		:param note: hint as to what happened
-		:type name: str
-		"""
+	def __init__(self, note: str):
 		Exception.__init__(self, note)
 		self.note = note				# For quick access.
 
 class CodecUsageError(CodecError):
 	"""Cannot proceed due to its supplied environment such as unusable parameters."""
 
-	def __init__(self, note, *a):
+	def __init__(self, note: str, *a):
 		"""Construct the exception.
 
 		:param note: a short, helpful description
-		:type note: str
 		:param a: values to be substituted into ``note``
-		:type a: list
 		"""
 		CodecError.__init__(self, note % a)
 
 class CodecRuntimeError(CodecError):
 	"""Failure during actual encoding or decoding, such as parsing."""
 
-	def __init__(self, note, *a):
+	def __init__(self, note: str, *a):
 		"""Construct the exception.
 
 		:param note: a short, helpful description
-		:type note: str
 		:param a: values to be substituted into ``note``
-		:type a: list
 		"""
 		CodecError.__init__(self, note % a)
 

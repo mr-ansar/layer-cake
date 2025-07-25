@@ -334,7 +334,6 @@ class Folder(object):
 		"""Update a value, both in a ``dict`` of values and as a file in the folder.
 
 		:param values: a collection of application values
-		:type values: dict
 		:param item: the value to be updated
 		:type item: :ref:`tip<layer-cake-type-reference>`
 		"""
@@ -356,7 +355,6 @@ class Folder(object):
 		"""Remove a value, both from a ``dict`` of values and as a file in the folder.
 
 		:param values: a collection of application values
-		:type values: dict
 		:param item: the value to be removed
 		:type item: :ref:`tip<layer-cake-type-reference>`
 		"""
