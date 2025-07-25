@@ -305,9 +305,15 @@ def kv_arguments(extracted):
 def remaining_arguments(remainder):
 	argument = []
 	for k, v in remainder[0].items():
-		argument.append(f'--{k}={v}')
+		if v:
+			argument.append(f'--{k}={v}')
+		else:
+			argument.append(f'--{k}')
 	for k, v in remainder[1].items():
-		argument.append(f'-{k}={v}')
+		if v:
+			argument.append(f'-{k}={v}')
+		else:
+			argument.append(f'-{k}')
 	return argument
 
 def command_arguments(object_type, override_arguments=None):
