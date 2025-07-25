@@ -96,6 +96,7 @@ def create(self, word, remainder):
 
 	# Folder created by execution of group create-role.
 	self.create(lc.ProcessObject, GROUP_EXECUTABLE,
+		origin=lc.ProcessOrigin.RUN,
 		home_path=home_path,
 		role_name=GROUP_ROLE, top_role=True,
 		create_role=True,
@@ -157,6 +158,7 @@ def add(self, word, remainder, role_count: int=None, role_start: int=0):
 
 	for r in role_call:
 		a = self.create(lc.ProcessObject, executable,
+			origin=lc.ProcessOrigin.RUN,
 			home_path=home_path,
 			role_name=r, top_role=True,
 			create_role=True,
@@ -225,6 +227,7 @@ def update(self, search, remainder):
 
 	for k, v in home.items():
 		a = self.create(lc.ProcessObject, v,
+			origin=lc.ProcessOrigin.RUN,
 			home_path=home_path,
 			role_name=k, top_role=True,
 			update_role=True,
