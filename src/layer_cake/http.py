@@ -427,7 +427,6 @@ class ApiServerStream(object):
 		transport = self.transport
 		encoded_bytes = transport.encoded_bytes
 		codec = transport.codec
-		ansar_client = transport.parent.request.ansar_client
 
 		# App is sending an explicit HTTP response.
 		# Add the barest automation, e.g. content length.
@@ -437,20 +436,6 @@ class ApiServerStream(object):
 				header=m.header, body=m.body)
 			return
 
-		# Ansar at remote end?
-		if ansar_client:
-			header = {'Content-Type': 'application/json'}
-			e = codec.encode(m, Any())
-			body = e.encode('utf-8')
-
-			stream_response(encoded_bytes,
-				header=header,
-				body=body)
-			return
-
-		# Not a full integration. May as well provide full
-		# details even if the client doesnt understand it.
-		# Good for command-line scenarios, e.g. curl.
 		header = {'Content-Type': 'application/json'}
 		if isinstance(m, Faulted):
 			sr = (500, 'Server Error')
@@ -630,8 +615,8 @@ class ApiServerStream(object):
 				return message, to_address, return_address
 
 			elif content_type == 'application/json':
-				# Unlikely that 3rd party JSON will be in ansar layout.
-				# This is effectively for ansar clients.
+				# Unlikely that 3rd party JSON will be in layer-cake layout.
+				# This is effectively for layer-cake clients.
 				if method != 'POST':
 					raise ValueError(f'unexpected HTTP method "{method}"')
 				if body:
@@ -1078,7 +1063,7 @@ class ApiClientStream(object):
 				body=self.body)
 			return message, to_address, return_address
 
-		# Solely for when client is connected to ansar server.
+		# Solely for when client is connected to layer-cake server.
 		# Preconditions for json decode.
 		client_error = None
 		if http != 'HTTP/1.1':
