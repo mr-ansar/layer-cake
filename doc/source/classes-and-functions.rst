@@ -145,6 +145,40 @@ Message And Registration
 .. autoclass:: Stateless
 .. autoclass:: StateMachine
 
+Portable Type System
+********************
+
+.. currentmodule:: layer_cake.message_memory
+
+.. autoclass:: Portable
+
+.. autoclass:: Boolean
+.. autoclass:: Integer8
+.. autoclass:: Float8
+.. autoclass:: Byte
+.. autoclass:: Character
+.. autoclass:: Rune
+.. autoclass:: String
+.. autoclass:: Unicode
+.. autoclass:: Block
+.. autoclass:: Enumeration
+.. autoclass:: ClockTime
+.. autoclass:: TimeSpan
+.. autoclass:: WorldTime
+.. autoclass:: TimeDelta
+.. autoclass:: UUID
+.. autoclass:: UserDefined
+.. autoclass:: ArrayOf
+.. autoclass:: VectorOf
+.. autoclass:: DequeOf
+.. autoclass:: SetOf
+.. autoclass:: MapOf
+.. autoclass:: Type
+.. autoclass:: Word
+.. autoclass:: Any
+.. autoclass:: Address
+.. autoclass:: PointerTo
+
 Message I/O
 ***********
 

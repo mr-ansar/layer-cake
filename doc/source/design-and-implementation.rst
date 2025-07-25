@@ -97,8 +97,8 @@ around inside a process, between threads and machines. It can also move between 
 over a network connection, or between a process and a disk file.
 
 Messages are either an instance of a registered class (i.e. refer to :func:`~.bind()`) or an
-instance of an inline, or anonymous type (e.g. a table of floats, cube of integers or map
-of integers to strings). The latter requires specific handling with :func:`~.def_type`
+instance of a constructed type (e.g. a table of floats, cube of integers or map of integers to
+strings). The latter requires specific handling with :func:`~.def_type`
 and :func:`~.cast_to`.
 
 .. _lc-type:
@@ -108,7 +108,7 @@ Message Types
 
 A type is special unit of data that describes instances of data, i.e. it is meta data. A
 type can be included in a message alongside integers and strings and it is portable. A type
-can describe a registered function or class and it can describe inline or constructed data.
+can describe a registered function or class and it can describe constructed data.
 The **layer-cake** type system is more extensive than Python's and is applied more strictly.
 It includes types such as;
 

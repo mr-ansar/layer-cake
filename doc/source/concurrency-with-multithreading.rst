@@ -173,10 +173,10 @@ To send anything other than a registered class, the type must be registered usin
 portable object that is used to mark the relevant Python data when required, e.g. :func:`~.cast_to`. As far as the Python type system
 is concerned the response variable could be anything. This is not enough information by itself for effective processing at the receiver.
 
-In the world of network messaging, the ability to send something like a list of :class:`Xy` objects or a 3D cube of floats is uncommon
-(is this the first?). Normally this issue is resolved with a message containing the single member. However, in some areas of code it
+In the world of network messaging, the ability to send something like a list of :class:`Xy` objects or a 3D cube of floats is
+uncommon. Normally this issue is resolved with a message containing the single member. However, in some areas of code it
 can become tedious to maintain large numbers of message classes that contain a single member. This can happen in a network API over
-a database, where many responses are the result of querying different database tables, i.e. lists of different message types.
+a database, where many responses are the result of querying different database tables, i.e. lists of different row types.
 
 Layer cake software that restricts itself to only sending registered messages can completely avoid the details involved in sending
 data such as ``list[list[float]]``. However, the capability to do so is fundamental to the complete integration of multithreading and

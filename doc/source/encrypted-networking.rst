@@ -73,13 +73,13 @@ Examples are provided below;
 
 .. code-block:: console
 
-	$ lan-cake --directory-at-lan='{"host": "192.168.1.176", "port": 54196}' --encrypted-directory=true
-	$ host-cake -debug-level=DEBUG --encrypted-directory=true
+	$ lan-cake --directory-at-lan='{"host": "192.168.1.176", "port": 54196}' --encrypted-directory
+	$ host-cake -debug-level=DEBUG --encrypted-directory
 
 	$ layer-cake create
 	$ layer-cake add lan-cake
 	$ layer-cake update lan-cake --directory-at-lan='{"host": "192.168.1.176", "port": 54197}'
-	$ layer-cake update lan-cake --encrypted-directory=true
+	$ layer-cake update lan-cake --encrypted-directory
 	$ layer-cake start
 	$
 
@@ -87,13 +87,13 @@ To enable encryption of application processes use;
 
 .. code-block:: console
 
-	$ python3 test_worker_10.py --encrypted-process=true
+	$ python3 test_worker_10.py --encrypted-process
 
 Lastly, to enable encryption of a *composite process*;
 
 .. code-block:: console
 
-	$ layer-cake create --encrypted-directory=true
+	$ layer-cake create --encrypted-directory
 	$ layer-cake add test_server_10.py server
 	$ layer-cake add test_worker_10.py worker --role-count=8
 	$ layer-cake run --debug-level=DEBUG
@@ -107,17 +107,17 @@ Security And Availability Of Directory Services
 ===============================================
 
 Encryption of network connections brings security of data that is in-flight, at the cost of
-additional CPU cycles and development and support difficulties. A more obvious need for
-encryption might be where LAN messaging is associated with sensitive business information.
-It seems less applicable to localhost messaging (e.g. a *composite process*) or messaging
-over a dedicated network segment. Legal requirements such as the GDPR would have all
-in-flight data encrypted.
+additional CPU cycles and development and support difficulties. An obvious need for encryption
+might be where LAN messaging is associated with sensitive business information, especially in
+the presence of wireless networking. It seems less applicable to localhost messaging
+(e.g. a *composite process*) or messaging over a dedicated, wired network segment. Legal
+requirements such as the GDPR would have all in-flight data encrypted.
 
 Layer-cake supports encrypted and unencrypted directory operation. It is reasonably simple to
-reconfigure a directory as one or the other, but even simpler to maintain dual directories. At
-each point of component installation (i.e. ``group-cake``, ``host-cake`` and ``lan-cake``) there
-are two components added. The second is configured to run on a port beside the first and for
-encrypted operation;
+reconfigure a directory to be one or the other, but even simpler to maintain dual directories.
+At each point of component installation (i.e. ``group-cake``, ``host-cake`` and ``lan-cake``)
+there are two components added. The second is configured to run on a port beside the first
+and for encrypted operation;
 
 .. code-block:: console
 
@@ -126,16 +126,16 @@ encrypted operation;
 	$ layer-cake add lan-cake lan-cake-encrypted
 	$ layer-cake update lan-cake --directory-at-lan='{"host": "192.168.1.195", "port": 54195}'
 	$ layer-cake update lan-cake-encrypted  --directory-at-lan='{"host": "192.168.1.195", "port": 54196}'
-	$ layer-cake update lan-cake-encrypted --encrypted-directory=true
+	$ layer-cake update lan-cake-encrypted --encrypted-directory
 	$ layer-cake start
 
 Default behaviour of **layer-cake** processes will result in connection to the first, unencrypted
 directory. This might be for convenience of development work. Production deployments would be
 configured to run on the second directory.
 
-For reasons such as security, reliability and performance, it is possible to configure a directory
+For reasons such as security, reliability and performance, there may be benefit in a directory
 for the exclusive use of a single solution. The resource footprint of directory components is low
-(CPU cycles, memory peaks) and there is no disk usage other than logging. All **layer-cake** logging
-is self-maintaining and capped at around 2Gb per role (i.e. a process within a *composite process*).
-Directory components are *not* involved in messaging between application processes, in the manner
-of a message broker.
+(i.e. CPU cycles, memory peaks) and there is no disk usage other than logging. All **layer-cake**
+logging is self-maintaining and capped at around 2Gb per role (i.e. a process within a *composite
+process*). Directory components are *not* involved in messaging between application processes, in
+the manner of a message broker.
