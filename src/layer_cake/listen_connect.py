@@ -714,9 +714,10 @@ class SocketKeeper(Point, StateMachine):
 
 def SocketKeeper_INITIAL_Start(self, message):
 	if self.expecting is None:
-		self.log(USER_TAG.TRACE, 'Client start (initial stand down)')
-		self.start(T1, IDLE_TRANSPORT / 4.0)
-		return PAUSING
+		seconds = self.originate(KeepAlive, self.proxy_address)
+		self.start(T3, seconds + 3.0)						# Expect response.
+		self.log(USER_TAG.TRACE, f'Client enables server (requests radio silence {seconds:.1f})')
+		return CHECKING
 
 	self.log(USER_TAG.TRACE, f'Server enabled by client (observing radio silence {self.expecting:.1f})')
 	self.start(T2, self.expecting)
