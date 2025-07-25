@@ -97,16 +97,14 @@ class ListenForStream(object):
 	:param encrypted: enable encryption
 	:param http_server: list of classes
 	:param default_to_request: default to :class:`~.HttpRequest`
-	:param ansar_client: expect layer cake encodings
 	"""
 	def __init__(self, lid: UUID=None, requested_ipp: HostPort=None, encrypted: bool=False,
-			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
+			http_server: list[Type]=None, default_to_request: bool=True):
 		self.lid = lid
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
 		self.http_server = http_server or []
 		self.default_to_request = default_to_request
-		self.ansar_client = ansar_client
 
 class ConnectStream(object):
 	"""
@@ -716,14 +714,15 @@ def SocketKeeper_INITIAL_Start(self, message):
 	if self.expecting is None:
 		seconds = self.originate(KeepAlive, self.proxy_address)
 		self.start(T3, seconds + 3.0)						# Expect response.
-		self.log(USER_TAG.TRACE, f'Client enables server (requests radio silence {seconds:.1f})')
+		self.log(USER_TAG.TRACE, f'Keeper enabled at local client (requests remote silence {seconds:.1f})')
 		return CHECKING
 
-	self.log(USER_TAG.TRACE, f'Server enabled by client (observing radio silence {self.expecting:.1f})')
+	self.log(USER_TAG.TRACE, f'Keeper enabled by remote client (observing requested silence {self.expecting:.1f})')
 	self.start(T2, self.expecting)
 	return PENDING
 
 def SocketKeeper_PAUSING_T1(self, message):
+	# DEFUNCT
 	seconds = self.originate(KeepAlive, self.proxy_address)
 	self.start(T3, seconds + 3.0)						# Expect response.
 	self.log(USER_TAG.TRACE, f'Client enables server (requests radio silence {seconds:.1f})')
@@ -736,7 +735,7 @@ def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own 
 	seconds = self.originate(StillThere, self.proxy_address)
 	self.start(T3, seconds + 5.0)						# Expect response.
 	if self.first_few():
-		self.log(USER_TAG.TRACE, f'Radio silence observed, advise remote ({seconds:.1f})')
+		self.log(USER_TAG.TRACE, f'Silence observed, requests remote slience ({seconds:.1f})')
 	return CHECKING
 
 def SocketKeeper_PENDING_Stop(self, message):
@@ -747,11 +746,11 @@ def SocketKeeper_CHECKING_StillThere(self, message):
 	self.cancel(T3)
 	self.start(T2, message.seconds)						# All good. Keep going.
 	if self.first_few():
-		self.log(USER_TAG.TRACE, f'Radio silence honoured by remote (observing radio silence {message.seconds:.1f})')
+		self.log(USER_TAG.TRACE, f'Silence honoured by remote (observing requested silence {message.seconds:.1f})')
 	return PENDING
 
 def SocketKeeper_CHECKING_T3(self, message):
-	self.log(USER_TAG.WARNING, f'Radio silence honoured but no response (closing)')
+	self.log(USER_TAG.WARNING, f'Silence request timed out, closing')
 	self.send(Close(reason=EndOfTransport.WENT_STALE, note='unresponsive'), self.proxy_address)
 	self.complete(TimedOut(T3))
 
@@ -1547,7 +1546,7 @@ AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
 def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
-			http_server: list[Type]=None, default_to_request: bool=True, ansar_client: bool=False):
+			http_server: list[Type]=None, default_to_request: bool=True):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number. Returns UUID.
@@ -1557,11 +1556,10 @@ def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
 	:param encrypted: enable encryption
 	:param http_server: enable HTTP with list of expected requests
 	:param default_to_request: enable default conversion into HttpRequests
-	:param ansar_client: enable layer cake json
 	:rtype: UUID
 	"""
 	lid = uuid.uuid4()
-	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, http_server=http_server, default_to_request=default_to_request, ansar_client=ansar_client)
+	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, http_server=http_server, default_to_request=default_to_request)
 	TS.channel.send(ls, self.object_address)
 	return lid
 
@@ -1576,7 +1574,7 @@ def connect(self: Point, requested_ipp: HostPort, encrypted: bool=False, keep_al
 	:param encrypted: enable encryption
 	:param keep_alive: enable keep-alives
 	:param http_client: leading part of the outgoing request URI
-	:param layer_cake_json: is the remote server ansar-enabled
+	:param layer_cake_json: is the remote server a layer-cake server
 	"""
 	cs = ConnectStream(requested_ipp=requested_ipp, encrypted=encrypted, keep_alive=keep_alive, http_client=http_client, layer_cake_json=layer_cake_json)
 	TS.channel.send(cs, self.object_address)
