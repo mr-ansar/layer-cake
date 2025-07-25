@@ -335,7 +335,11 @@ def open_home(home_path, grouping=False, sub_roles=False):
 def object_home(executable, home_role, resource_path, sticky=False):
 	'''Compile the runtime, file-based context for the current process. Return HomeRole and role.'''
 
-	role = open_role(home_role, resource_path)
+	if CL.origin == ProcessOrigin.SHELL:
+		role = None
+	else:
+		role = open_role(home_role, resource_path)
+
 	if CL.create_role:
 		if role is not None:
 			raise Incomplete(Faulted(f'cannot create "{home_role}"', f'already exists'))
