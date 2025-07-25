@@ -68,6 +68,7 @@ class ProcessOrigin(Enum):
 	* START - background run, entry in a composite process
 	* START_CHILD - background run, subprocess of a composite entry
 	"""
+	SHELL=0
 	RUN=1
 	RUN_CHILD=2
 	START=3
@@ -105,7 +106,7 @@ class CommandLine(object):
 	:param accept_directories_at: IP and port where child directories are accepted
 	"""
 	def __init__(self,
-			origin: ProcessOrigin=None,
+			origin: ProcessOrigin=ProcessOrigin.SHELL,
 			child_process: bool=False,
 			full_output: bool=False,
 			debug_level=None,
