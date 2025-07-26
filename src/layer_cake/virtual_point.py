@@ -205,7 +205,7 @@ def check_line():
 # Low level control over behaviour of terminating
 # object, i.e. some go quietly.
 def returned_object(value, parent, address, object_type):
-	send_a_message(Returned(value, object_type), parent, address)
+	send_a_message(Returned(value), parent, address)
 
 # Automation of response to completion.
 class OnReturned(object):
