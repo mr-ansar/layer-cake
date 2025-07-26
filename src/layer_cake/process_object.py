@@ -218,6 +218,8 @@ class ProcessObject(Point, StateMachine):
 				schema = CommandLine.__art__.schema
 
 			for k, v in self.settings.items():
+				if v is None:
+					continue
 				name = k
 				e = schema.get(k, None)
 				if e:
