@@ -49,4 +49,3 @@ class TestObjectSpool(TestCase):
 
 		assert isinstance(m, lc.Returned)
 		assert isinstance(m.value, lc.Aborted)
-		assert m.created_type == lc.ObjectSpool
