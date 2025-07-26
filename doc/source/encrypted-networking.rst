@@ -59,11 +59,11 @@ To enable directory encryption within the different processes, use the following
 +-----------------------+-------------------------+----------------------------------------------+
 | Process               | Argument                | Notes                                        |
 +=======================+=========================+==============================================+
-| ``lan-cake``          | ``encrypted-directory`` | During installaiton of the component.        |
+| ``lan-cake``          | ``encrypted-directory`` | During installation of the component.        |
 +-----------------------+-------------------------+----------------------------------------------+
-| ``host-cake``         | ``encrypted-directory`` | During installaiton of the component.        |
+| ``host-cake``         | ``encrypted-directory`` | During installation of the component.        |
 +-----------------------+-------------------------+----------------------------------------------+
-| ``group-cake``        | ``encrypted-directory`` | During installaiton of the component.        |
+| ``group-cake``        | ``encrypted-directory`` | During installation of the component.        |
 +-----------------------+-------------------------+----------------------------------------------+
 | *application process* | ``encrypted-process``   | 1) Automatic within a *composite process*.   |
 |                       |                         | 2) On the process command line.              |
@@ -93,7 +93,8 @@ Lastly, to enable encryption of a *composite process*;
 
 .. code-block:: console
 
-	$ layer-cake create --encrypted-directory
+	$ layer-cake create
+	$ layer-cake update group --encrypted-directory
 	$ layer-cake add test_server_10.py server
 	$ layer-cake add test_worker_10.py worker --role-count=8
 	$ layer-cake run --debug-level=DEBUG
