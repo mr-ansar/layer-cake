@@ -58,6 +58,7 @@ __all__ = [
 	'datetime_type',
 	'timedelta_type',
 	'uuid_type',
+	'message_to_tag',
 ]
 
 from .virtual_memory import *
@@ -377,3 +378,17 @@ bytearray_type = def_type(Block())
 datetime_type = def_type(WorldTime())
 timedelta_type = def_type(TimeDelta())
 uuid_type = def_type(UUID())
+
+def message_to_tag(message):
+	if message is None:
+		return '<none>'
+
+	art = getattr(message, '__art__', None)
+	if art:
+		t = art.path
+	elif isinstance(message, tuple) and len(message) == 2 and isinstance(message[1], Portable):
+		t = portable_to_tag(message[1])
+	else:
+		t = '<not-an-any>'
+
+	return t
