@@ -106,12 +106,13 @@ def create(self, word, remainder):
 	if not isinstance(m, lc.Returned):
 		return lc.Faulted(cannot_create, f'unexpected process response {m}')
 
-	if isinstance(m.value, lc.Faulted):
-		return m.value
+	if isinstance(m.message, lc.Faulted):
+		return m.message
 
 	# Consume the expected response.
-	if not isinstance(m.value, lc.CommandResponse):
-		return lc.Faulted(cannot_create, f'unexpected command response {m.value}')
+	if not isinstance(m.message, lc.CommandResponse):
+		t = lc.message_to_tag(m.message)
+		return lc.Faulted(cannot_create, f'unexpected command response {t}')
 
 	return None
 
@@ -167,11 +168,12 @@ def add(self, word, remainder, role_count: int=None, role_start: int=0):
 		if not isinstance(m, lc.Returned):
 			return lc.Faulted(cannot_add, f'unexpected process response {m}')
 
-		if isinstance(m.value, lc.Faulted):
-			return m.value
+		if isinstance(m.message, lc.Faulted):
+			return m.message
 
-		if not isinstance(m.value, lc.CommandResponse):
-			return lc.Faulted(cannot_add, f'unexpected command response {m.value}')
+		if not isinstance(m.message, lc.CommandResponse):
+			t = lc.message_to_tag(m.message)
+			return lc.Faulted(cannot_add, f'unexpected command response {t}')
 
 	return None
 
@@ -236,11 +238,12 @@ def update(self, search, remainder):
 		if not isinstance(m, lc.Returned):
 			return lc.Faulted(cannot_update, f'unexpected process response {m}')
 
-		if isinstance(m.value, lc.Faulted):
-			return m.value
+		if isinstance(m.message, lc.Faulted):
+			return m.message
 
-		if not isinstance(m.value, lc.CommandResponse):
-			return lc.Faulted(cannot_update, f'not a proper command response {m.value}')
+		if not isinstance(m.message, lc.CommandResponse):
+			t = lc.message_to_tag(m.message)
+			return lc.Faulted(cannot_update, f'not a proper command response {t}')
 
 	return None
 
@@ -370,7 +373,7 @@ def run(self, search, remainder, main_role: str=None):
 			m = self.input()
 			if isinstance(m, lc.Returned):
 				self.debrief()
-				return m.value
+				return m.message
 			elif isinstance(m, lc.Faulted):
 				return m
 			elif isinstance(m, lc.Stop):
@@ -427,7 +430,7 @@ def start(self, search, remainder, main_role: str=None):
 			m = self.input()
 			if isinstance(m, lc.Returned):
 				self.debrief()
-				if not isinstance(m.value, lc.CommandResponse):
+				if not isinstance(m.message, lc.CommandResponse):
 					return lc.Faulted(cannot_start, f'unexpected response from group')
 				return None
 			elif isinstance(m, lc.Faulted):
@@ -840,11 +843,11 @@ def log(self, word, remainder, clock: bool=False,
 		m, i = self.select(lc.Returned)
 		return lc.Aborted()
 
-	value = m.value
-	if value is None:   # Reached the end.
+	message = m.message
+	if message is None:   # Reached the end.
 		pass
-	elif isinstance(value, lc.Faulted):	 # lc.Failed to complete stream.
-		return value
+	elif isinstance(message, lc.Faulted):	 # lc.Failed to complete stream.
+		return message
 	else:
 		return lc.Faulted(cannot_log, f'unexpected reader response')
 
@@ -1013,9 +1016,9 @@ def resource(self, word, remainder,
 	except (OSError, ValueError) as e:
 		return lc.Faulted(cannot_resource, str(e))
 
-	value = m.value
-	if isinstance(value, lc.Faulted):
-		return value
+	message = m.message
+	if isinstance(message, lc.Faulted):
+		return message
 	return None
 
 lc.bind(resource)
@@ -1143,9 +1146,9 @@ def model(self, word, remainder,
 	except (OSError, ValueError) as e:
 		return lc.Faulted(cannot_model, str(e))
 
-	value = m.value
-	if isinstance(value, lc.Faulted):
-		return value
+	message = m.message
+	if isinstance(message, lc.Faulted):
+		return message
 	return None
 
 lc.bind(model)
@@ -1260,9 +1263,9 @@ def script(self, word, remainder,
 	except (OSError, ValueError) as e:
 		return lc.Faulted(cannot_script, str(e))
 
-	value = m.value
-	if isinstance(value, lc.Faulted):
-		return value
+	message = m.message
+	if isinstance(message, lc.Faulted):
+		return message
 	return None
 
 lc.bind(script)
@@ -1315,7 +1318,7 @@ def home_running(self, home):
 		m, i = self.select(lc.Ready, lc.Returned)
 		if isinstance(m, lc.Returned):	# Cannot lock.
 			r = self.debrief()
-			running[r] = m.value	# LockedOut
+			running[r] = m.message	# LockedOut
 
 	return running
 
