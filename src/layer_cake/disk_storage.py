@@ -719,8 +719,8 @@ def FolderTransfer_INITIAL_Start(self, message):
 	return RUNNING
 
 def FolderTransfer_RUNNING_Returned(self, message):
-	value = message.value
-	self.complete(value)
+	message = message.message
+	self.complete(message)
 
 def FolderTransfer_RUNNING_Stop(self, message):
 	halt(self.transfer)
