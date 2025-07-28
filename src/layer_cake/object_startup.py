@@ -79,8 +79,8 @@ FAULTY_EXIT = 71
 class Unassigned(object): pass
 
 class Incomplete(Exception):
-	def __init__(self, value=Unassigned):
-		self.value = value
+	def __init__(self, message=Unassigned):
+		self.message = message
 
 class CommandResponse(object):
 	def __init__(self, command: str=None, note: str=None):
@@ -461,13 +461,13 @@ def start_vector(self, object_type, word, args):
 			self.send(m, a)
 			m, i = self.select(Returned)
 
-		return m.value
+		return m.message
 
 bind_routine(start_vector)
 
 def run_object(home, object_type, word, args, logs, locking):
 	'''Start the async runtime, lock if required and make arrangements for control-c handling.'''
-	output = None
+	message = None
 	try:
 		# Install signal handlers, i.e. control-c.
 		ps = PS.platform_signal
@@ -490,8 +490,8 @@ def run_object(home, object_type, word, args, logs, locking):
 				raise Incomplete(c)
 
 		if CL.edit_role:
-			output = HR.edit_role(root, home)
-			return output
+			message = HR.edit_role(root, home)
+			return message
 
 		# Respond to daemon context, i.e. send output and close stdout.
 		#if CL.origin == ProcessOrigin.START:	# or no_output:
@@ -525,7 +525,7 @@ def run_object(home, object_type, word, args, logs, locking):
 				running = False
 
 		m, i = root.select(Returned)		# End of start_vector.
-		output = m.value
+		message = m.message
 
 	finally:
 		root.abort()					# Stop the lock if present.
@@ -533,12 +533,12 @@ def run_object(home, object_type, word, args, logs, locking):
 			root.select(Returned)
 			root.debrief()
 
-		home.stopped(output)
+		home.stopped(message)
 
-	#if early_return:		# Already sent output. Silence any output.
+	#if early_return:		# Already sent message. Silence any output.
 	#	return None
 
-	return output
+	return message
 
 def object_encode(value):
 	'''Put the encoding of the final result, on to stdout.'''
@@ -715,7 +715,7 @@ def create(object_type, object_table=None, environment_variables=None, sticky: b
 		s = str(e)
 		output = Faulted(s)
 	except Incomplete as e:
-		output = e.value
+		output = e.message
 
 	if HR.temp_dir is not None:
 		HR.temp_dir.cleanup()
