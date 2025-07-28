@@ -68,7 +68,7 @@ def Host_RUNNING_Stop(self, message):
 	return CLEARING
 
 def Host_CLEARING_Returned(self, message):
-	self.complete(self.aborted_value)
+	self.complete(self.aborted_message)
 
 HOST_DISPATCH = {
 	INITIAL: (
