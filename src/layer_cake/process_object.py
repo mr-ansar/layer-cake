@@ -420,7 +420,7 @@ def ProcessObject_EXECUTING_Returned(self, message):
 
 	# Wait thread has returned
 	# Forward the result.
-	code, page = message.value.code, message.value.page
+	code, page = message.message.code, message.message.page
 
 	self.log(USER_TAG.ENDED, f'Process ({self.p.pid}) ended with {code}')
 
@@ -464,7 +464,7 @@ def ProcessObject_CLEARING_Returned(self, message):
 
 	# Wait thread has returned
 	# Forward the result.
-	code, page = message.value.code, message.value.page
+	code, page = message.message.code, message.message.page
 
 	self.log(USER_TAG.ENDED, f'Process aborted [{self.p.pid}] (code {code})')
 	self.complete(Aborted())
@@ -697,7 +697,7 @@ def Utility_INITIAL_Start(self, message):
 	return EXECUTING
 
 def Utility_EXECUTING_Returned(self, message):
-	code, page = message.value.code, message.value.page
+	code, page = message.message.code, message.message.page
 
 	if code == 0:
 		if not page:
