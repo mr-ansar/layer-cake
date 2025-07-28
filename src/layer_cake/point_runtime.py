@@ -73,24 +73,27 @@ class Returned(object):
 	"""
 	Notification sent to parent, from terminating object.
 
-	:param value: value returned by the asynchronous object
-	:param created_type: type of the parent
-	:type created_type: :ref:`object type<lc-object-type>`
+	:type message: message returned to the parent
+	:type message: :ref:`message<lc-message>`
 	"""
-	def __init__(self, value: Any=None, created_type=None):
-		self.value = value
-		self.created_type = created_type
+	def __init__(self, message: Any=None):
+		self.message = message
 	
-	def value_only(self):
-		m, p, a = cast_back(self.value)
+	def value(self):
+		"""
+		Extract the Python value from the returned message.
+
+		:rtype: the expected, application data
+		"""
+		m, p, a = cast_back(self.message)
 		return m
 	
-	def value_and_type(self):
-		m, p, a = cast_back(self.value)
+	def cast_back(self):
+		m, p, a = cast_back(self.message)
 		return m, p
 
 bind_message(Start)
-bind_message(Returned, value=Any(), created_type=Type())
+bind_message(Returned)
 
 #
 #
