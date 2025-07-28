@@ -302,6 +302,8 @@ class Any(Portable):
 	A portable representation of any registered type (see :func:`~.bind`
 	and :func:`~.def_type`). Suitable for passing across a network
 	connection or storing in a file.
+
+	Further information can be found :ref:`here<lc-message>`.
 	"""
 
 class TargetAddress(Portable):
@@ -311,8 +313,11 @@ class Address(Portable):
 	"""
 	A runtime-generated, **layer-cake** address.
 
-	These are the values that can be passed as a destination
-	to functions such as :meth:`~.Point.send`.
+	The unique identity of an asynchronous object, usually obtained from
+	a call to :meth:`~.Point.create`. These are the values that can be
+	passed as a destination to functions such as :meth:`~.Point.send`.
+
+	Further information can be found :ref:`here<lc-address>`.
 	"""
 
 class Type(Portable):
