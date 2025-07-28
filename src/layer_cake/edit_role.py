@@ -61,9 +61,9 @@ def edit_role(self, home, editor=None):
 		e = self.debrief()
 		if isinstance(m, Faulted) and not testing:
 			return m
-		value = m.value
-		if isinstance(value, Faulted) and not testing:
-			return value
+		message = m.message
+		if isinstance(message, Faulted) and not testing:
+			return message
 
 		# Was the file modified?
 		if os.stat(name).st_mtime == modified:
