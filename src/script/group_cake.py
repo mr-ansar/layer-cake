@@ -50,11 +50,13 @@ class RUNNING: pass
 class RETURNING: pass
 class GROUP_RETURNING: pass
 
+dict_type = lc.def_type(dict[str,lc.Any])
+
 class Group(lc.Threaded, lc.StateMachine):
 	def __init__(self, *search,
 			directory_at_host: lc.HostPort=None, directory_at_lan: lc.HostPort=None,
 			encrypted_directory: bool=None,
-			retry: lc.RetryIntervals=None, main_role: str=None):
+			retry: lc.RetryIntervals=None, main_role: str=None) -> lc.Any:
 		lc.Threaded.__init__(self)
 		lc.StateMachine.__init__(self, INITIAL)
 		self.search = search			# List or re's.
@@ -157,17 +159,18 @@ def Group_RUNNING_Returned(self, message):
 
 	if d == self.main_role:						# Declared "main" - no retries.
 		if not self.working():					# Includes ProcessObjects and restart callbacks.
-			self.complete(message.value)
+			self.complete(message.message)
 
-		self.abort(message.value)
+		self.abort(message.message)
 		return RETURNING
 
 	#
-	self.group_returned[d] = message.value
+	self.group_returned[d] = message.message
 
 	if self.retry is None:						# Not configured for restarts.
 		if not self.working():					# As above.
-			self.complete(self.group_returned)
+			message = lc.cast_to(self.group_returned, dict_type)
+			self.complete(message)
 
 		if self.main_role is None:
 			self.abort()
@@ -185,7 +188,8 @@ def Group_RUNNING_Returned(self, message):
 		self.trace(f'Restart "{d}" ({seconds} seconds)')
 	except StopIteration:
 		if not self.working():					# As above.
-			self.complete(self.group_returned)
+			message = lc.cast_to(self.group_returned, dict_type)
+			self.complete(message)
 
 		if self.main_role is None:
 			self.abort()
@@ -208,7 +212,7 @@ def Group_RUNNING_Faulted(self, message):
 	if not self.working():
 		self.complete(message)
 
-	self.abort(message.value)
+	self.abort(message.message)
 	return RETURNING
 
 def Group_RUNNING_Stop(self, message):
@@ -224,7 +228,7 @@ def Group_RETURNING_Returned(self, message):
 		pass
 
 	if not self.working():					# Includes ProcessObjects and restart callbacks.
-		self.complete(self.aborted_value)
+		self.complete(self.aborted_message)
 
 	return RETURNING
 
@@ -233,10 +237,11 @@ def Group_GROUP_RETURNING_Returned(self, message):
 	if isinstance(d, lc.OnReturned):		# Restart callbacks.
 		pass
 	else:
-		self.group_returned[d] = message.value
+		self.group_returned[d] = message.message
 
 	if not self.working():					# Includes ProcessObjects and restart callbacks.
-		self.complete(self.group_returned)
+		message = lc.cast_to(self.group_returned, dict_type)
+		self.complete(message)
 
 	return GROUP_RETURNING
 
@@ -264,7 +269,7 @@ GROUP_DISPATCH = {
 	),
 }
 
-lc.bind(Group, GROUP_DISPATCH, return_type=lc.MapOf(lc.Unicode(),lc.Any()))
+lc.bind(Group, GROUP_DISPATCH)
 
 def main():
 	# See send(lc.Enquiry()) and Group_ENQUIRING_HostPort for how
