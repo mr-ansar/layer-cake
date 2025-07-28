@@ -107,30 +107,30 @@ def running_in_thread(routine, queue, args, kw_args):
 	# code, to help maintain integrity of object map. But also
 	# need to allow system exceptions pass through.
 	try:
-		value = routine(queue, *args, **kw_args)
+		message = routine(queue, *args, **kw_args)
 	# Necessary replication of exceptions in
 	# object_dispatch.
 	except KeyboardInterrupt:
 		s = 'unexpected keyboard interrrupt'
 		queue.fault(s)
-		value = Faulted('object compromised', s)
+		message = Faulted('object compromised', s)
 	except SystemExit:
 		s = 'unexpected system exit'
 		queue.fault(s)
-		value = Faulted('object compromised', s)
+		message = Faulted('object compromised', s)
 	except Completion as c:
 		# From run_object (threads dedicated to machines), object_dispatch (e.g. class
 		# threads) and all custom routines.
-		value = c.value
+		message = c.message
 	except Exception as e:
 		s = str(e)
 		s = f'unhandled exception ({s})'
 		queue.fault(s)
-		value = Faulted('object faulted', s)
+		message = Faulted('object faulted', s)
 	except:
 		s = 'unhandled opaque exception'
 		queue.fault(s)
-		value = Faulted('object faulted', s)
+		message = Faulted('object faulted', s)
 
 	if queue.__art__.lifecycle:
 		queue.log(USER_TAG.DESTROYED, 'Destroyed')
@@ -138,14 +138,14 @@ def running_in_thread(routine, queue, args, kw_args):
 	return_type = routine.__art__.return_type
 	if return_type is None:
 		pass
-	elif isinstance(return_type, (Any, UserDefined)):
+	elif isinstance(return_type, Any):
 		pass
 	elif isinstance(return_type, Portable):
-		if not hasattr(value, '__art__'):
-			value = (value, return_type)
+		if not hasattr(message, '__art__'):
+			message = (message, return_type)
 	else:
-		value = Faulted(f'unexpected return type for routine "{routine.__name__}"')
+		message = Faulted(f'unexpected return type for routine "{routine.__name__}"')
 
 	ending = queue.object_ending
 	destroy_an_object(address)
-	ending(value, parent, address, routine)
+	ending(message, parent, address)
