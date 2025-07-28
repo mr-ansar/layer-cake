@@ -251,14 +251,14 @@ class EndOfTransport(Enum):
 class Close(object):
 	"""Session control, terminate the messaging transport.
 
-	:param value: completion value for the session
-	:type value: ref:`message<lc-message>`
+	:param message: completion message for the session
+	:type message: ref:`message<lc-message>`
 	:param reason: what prompted the termination
 	:param note: short diagnostic
 	:param error_code: platform error code
 	"""
-	def __init__(self, value: Any=None, reason: EndOfTransport=None, note: str=None, error_code: int=None):
-		self.value = value
+	def __init__(self, message: Any=None, reason: EndOfTransport=None, note: str=None, error_code: int=None):
+		self.message = message
 		self.reason = reason or EndOfTransport.ON_REQUEST
 		self.note = note
 		self.error_code = error_code
@@ -267,18 +267,18 @@ class Closed(object):
 	"""
 	Session notification, local termination of the messaging transport.
 
-	:param value: completion value for the session
-	:type value: ref:`message<lc-message>`
+	:param message: completion message for the session
+	:type message: ref:`message<lc-message>`
 	:param reason: what prompted the termination
 	:param note: short diagnostic
 	:param error_code: platform error code
 	:param opened_ipp: network address of terminated transport
 	:param opened_at: moment of termination
 	"""
-	def __init__(self, value: Any=None, reason: EndOfTransport=None,
+	def __init__(self, message: Any=None, reason: EndOfTransport=None,
 			note: str=None, error_code: int=None,
 			opened_ipp: HostPort=None, opened_at: datetime=None):
-		self.value = value
+		self.message = message
 		self.reason = reason or EndOfTransport.ON_REQUEST
 		self.note = note
 		self.error_code = error_code
@@ -951,8 +951,8 @@ def ControlChannel_ListenForStream(self, control, mr):
 	self.send(listening, r)
 
 def close_ending(proxy):
-	def ending(value, parent, address, object_type):
-		send_a_message(Close(value), proxy, address)
+	def ending(message, parent, address):
+		send_a_message(Close(message), proxy, address)
 	return ending
 
 def open_stream(self, parent, s, opened):
@@ -1275,7 +1275,7 @@ def clear_out_session(self, transport, s, reason=None, note=None, error_code=Non
 
 	if transport.closing:
 		close = transport.closing
-		c = Closed(value=close.value,
+		c = Closed(message=close.message,
 			reason=close.reason,
 			note=close.note,
 			error_code=close.error_code,
@@ -1283,8 +1283,7 @@ def clear_out_session(self, transport, s, reason=None, note=None, error_code=Non
 			opened_at=transport.opened.opened_at)
 	else:
 		self.send(Stop(), transport.proxy_address)
-		c = Closed(value=None,
-			reason=reason,
+		c = Closed(reason=reason,
 			note=note,
 			error_code=error_code,
 			opened_ipp=ipp,
