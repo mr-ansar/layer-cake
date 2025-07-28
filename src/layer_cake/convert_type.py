@@ -343,31 +343,42 @@ def def_type(hint_or_portable):
 	p = install_type(hint_or_portable)
 	return p
 
-def cast_to(message, p: Portable):
+def cast_to(value, p: Portable):
 	"""
-	Transform the message for transfer across the network or into storage.
+	Accept Python value and type. Return a :ref:`message<lc-message>`.
 
-	:param message: the application value
-	:type message: :ref:`message<lc-message>`
+	For registered messages, this is a no-op. For constructed types it's
+	required for encoding/decoding to function properly.
+
+	:param value: the application value
 	:param p: portable representation of type
 	"""
 	if isinstance(p, UserDefined):
-		return message
-	return (message, p)
+		return value
+	return (value, p)
 
-def cast_back(message):
+def cast_back(message: Any):
+	"""
+	Accept the results of a :func:`~.cast_to` or network receive. Returns a 3-tuple.
+
+	Splits the polymorphic form into a Python value, portable representation and
+	the technical details registered at runtime.
+
+	:param message: the application value
+	:param p: portable representation of type
+	"""
 	if message is None:
 		return None, Any(), None
 	art = getattr(message, '__art__', None)
 	if art:
-		m = message
+		value = message
 		p = lookup_signature(art.path)
-	elif isinstance(message, tuple):
-		m = message[0]
+	elif isinstance(message, tuple) and len(message) == 2 and isinstance(message[1], Portable):
+		value = message[0]
 		p = message[1]
 	else:
 		raise ValueError(f'cannot unroll {message}')
-	return m, p, art
+	return value, p, art
 
 bool_type = def_type(Boolean())
 int_type = def_type(Integer8())
