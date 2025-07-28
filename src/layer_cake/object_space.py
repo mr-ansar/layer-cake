@@ -45,8 +45,8 @@ __all__ = [
 
 # Mechanism for jumping out of non-thread objects, e.g. machines.
 class Completion(Exception):
-	def __init__(self, value=None):
-		self.value = value
+	def __init__(self, message=None):
+		self.message = message
 
 # THE BIG BANG STARTS HERE.
 # Core async object management.
