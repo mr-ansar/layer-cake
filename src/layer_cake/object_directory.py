@@ -1218,11 +1218,19 @@ class ObjectDirectory(Threaded, StateMachine):
 		def clear(self, value, args):
 			pr = self.routed_publish.get(args.published_id)
 			if pr is not None:
+				self.console(f'Cleared route "{pr[0].name}"[{self.directory_scope}] ({args.published_id})')
+
 				pr[1].discard(args.route)
+				if len(pr[1]) == 0:
+					self.routed_publish.pop(args.published_id, None)
+			else:
+				self.console(f'Route not cleared "{args.published_id}" [{self.directory_scope}]')
 
 			sr = self.routed_subscribe.get(args.subscribed_id)
 			if sr is not None:
 				sr[1].discard(args.route)
+				if len(sr[1]) == 0:
+					self.routed_subscribe.pop(args.subscribed_id, None)
 
 		self.on_return(r, clear, subscribed_id=subscriber.subscribed_id, published_id=publisher.published_id, route=r)
 
@@ -1242,13 +1250,16 @@ class ObjectDirectory(Threaded, StateMachine):
 			listed_subscribe = self.listed_subscriber.pop(s, None)
 			if listed_subscribe is None:
 				continue
+			search = listed_subscribe[0].search
 
 			# Remove from the matching machinery.
-			subscribed = self.subscribed_search.get(listed_subscribe[0].search, None)
+			subscribed = self.subscribed_search.get(search, None)
 			if subscribed is None:
 				continue
 			a, m = subscribed
 			a.pop(s, None)
+
+			self.console(f'Cleared subscribed "{search}"[{self.directory_scope}]')
 
 			# If this is the home directory, remove from uniqueness check.
 			if listed_subscribe[1] is not None:
@@ -1268,9 +1279,12 @@ class ObjectDirectory(Threaded, StateMachine):
 			listed_publish = self.listed_publisher.pop(p, None)
 			if listed_publish is None:
 				continue
+			name = listed_publish[0].name
 
 			# Remove from the matching machinery.
-			self.published_name.pop(listed_publish[0].name, None)
+			self.published_name.pop(name, None)
+
+			self.console(f'Cleared published "{name}"[{self.directory_scope}]')
 
 			# If this is the home directory, remove from uniqueness check.
 			if listed_publish[1] is not None:
@@ -1438,8 +1452,9 @@ def ObjectDirectory_READY_Connected(self, message):
 	return READY
 
 def ObjectDirectory_READY_NotConnected(self, message):
-	self.connected = message
-	self.start(T1, self.reconnect_delay)
+	if self.connect_to_directory.host:
+		self.connected = message
+		self.start(T1, self.reconnect_delay)
 	return READY
 
 def ObjectDirectory_READY_T1(self, message):
