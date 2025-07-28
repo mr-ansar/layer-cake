@@ -247,7 +247,7 @@ def ObjectSpool_SPOOLING_Returned(self, message):
 	if self.object_type is None:
 		return SPOOLING
 
-	self.trace(f'Spool process termination', returned_value=message.value)
+	self.trace(f'Spool process termination', returned_value=message_to_tag(message.message))
 
 	stand_down = self.stand_down
 	if stand_down is None:
@@ -265,7 +265,7 @@ def ObjectSpool_SPOOLING_Returned(self, message):
 		self.idle_object.append(a)
 
 	# Run a no-op with the desired timeout.
-	a = self.create(GetResponse, Enquiry(), NO_SUCH_ADDRESS, seconds=seconds)
+	a = self.create(Delay, seconds=seconds)
 	self.on_return(a, restart, role_name=d)
 	return SPOOLING
 
