@@ -204,8 +204,8 @@ def check_line():
 
 # Low level control over behaviour of terminating
 # object, i.e. some go quietly.
-def returned_object(value, parent, address, object_type):
-	send_a_message(Returned(value), parent, address)
+def returned_object(message, parent, address):
+	send_a_message(Returned(message), parent, address)
 
 # Automation of response to completion.
 class OnReturned(object):
@@ -223,7 +223,7 @@ class OnReturned(object):
 		self.args = args
 
 	def __call__(self, point, returned):
-		m, p, a = cast_back(returned.value)
+		m, p, a = cast_back(returned.message)
 		point.returned_type = p
 		return self.routine(point, m, self.args)	# Make the call.
 
@@ -256,7 +256,7 @@ class Point(object):
 		self.current_state = None
 
 		self.address_job = {}
-		self.aborted_value = None
+		self.aborted_message = None
 
 	def create(self, object_type, *args, object_ending=returned_object, **kw):
 		"""
@@ -272,14 +272,11 @@ class Point(object):
 		"""
 		return create_a_point(object_type, object_ending, self.object_address, args, kw)
 
-	def send(self, message, to):
+	def send(self, message: Any, to: Address):
 		"""Transfer a message to the specified address.
 
 		:param message: message to be sent
-		:type message: :ref:`message<lc-message>`
 		:param to: intended receiver of the message
-		:type to: :ref:`address<lc-address>`
-		:rtype: None
 		"""
 		pf = self.__art__
 		try:
@@ -296,7 +293,7 @@ class Point(object):
 				return
 		send_a_message(message, to, self.object_address)
 
-	def reply(self, message):
+	def reply(self, message: Any):
 		"""
 		Send a response to the sender of the current message.
 
@@ -304,11 +301,10 @@ class Point(object):
 		keystrokes and risk of typos.
 
 		:param message: the message to be sent
-		:type message: :ref:`message<lc-message>`
 		"""
 		self.send(message, self.return_address)
 
-	def forward(self, message, to, return_address):
+	def forward(self, message: Any, to: Address, return_address: Address):
 		"""Send a message to an address, as if it came from a 3rd party.
 
 		Send a message but override the return address with the address of
@@ -320,11 +316,8 @@ class Point(object):
 		conversations behind.
 
 		:param message: the message to be sent
-		:type message: :ref:`message<lc-message>`
 		:param to: intended receiver of the message
-		:type to: :ref:`address<lc-address>`
 		:param return_address: the other object
-		:type return_address: :ref:`address<lc-address>`
 		"""
 		pf = self.__art__
 		try:
@@ -342,10 +335,10 @@ class Point(object):
 				return
 		send_a_message(message, to, return_address)
 
-	def start(self, timer, seconds, repeating=False):
+	def start(self, timer, seconds: float, repeating: bool=False):
 		"""Start the specified timer for this object.
 
-		An instance of the timer class will be sent to this address after the
+		An instance of the ``timer`` class will be sent to this address after the
 		given number of seconds. Any registered message can be used as a timer.
 		Layer cake provides the standard timers T1, T2, T3, and T4 for convenience
 		and to reduce duplication.
@@ -354,7 +347,7 @@ class Point(object):
 		number of pending timers an object may have. Starting a timer with the
 		same class is not an error, the timeout for that timer is reset to the
 		new number of seconds. It is also not an error to terminate an object
-		with outstanding timers - they fall on the floor.
+		with outstanding timers - expiry messages fall on the floor.
 
 		It is difficult to make guarantees about the order that messages will
 		arrive at an object. In the case of timers, its possible to receive
@@ -364,9 +357,7 @@ class Point(object):
 		:param timer: type of the object that will be sent back on timeout
 		:type timer: class
 		:param seconds: time span before expiry
-		:type seconds: float
 		:param repeating: enable endless repeat
-		:type repeating: bool
 		"""
 		self.send(StartTimer(timer, seconds, repeating), VP.timer_address)
 
@@ -382,20 +373,18 @@ class Point(object):
 		"""
 		self.send(CancelTimer(timer), VP.timer_address)
 
-	def complete(self, value=None):
+	def complete(self, message: Any=None):
 		"""Cause an immediate termination. The method never returns.
 
-		:param value: value to be returned to parent.
-		:type value: any
+		:param message: message to be returned to parent.
 		"""
-		value = self.aborted_value or value
-		raise Completion(value)
+		message = self.aborted_message or message
+		raise Completion(message)
 
-	def assign(self, address, job=True):
+	def assign(self, address: Address, job=True):
 		"""The specified child object is associated with the specified job, e.g. callback.
 
 		:param address: address of the child object
-		:type address: :ref:`address<lc-address>`
 		:param job: what the child object is doing on behalf of this object
 		:type job: any
 		"""
@@ -409,13 +398,12 @@ class Point(object):
 		"""
 		return len(self.address_job)
 
-	def progress(self, address=None):
+	def progress(self, address: Address=None):
 		"""Find the job associated with the specified child object. Return the job or None.
 
 		If no address is provided the current return address is used.
 
 		:param address: address of the child object
-		:type address: :ref:`address<lc-address>`
 		:rtype: any
 		"""
 		a = address or self.return_address
@@ -430,24 +418,23 @@ class Point(object):
 		for k, v in self.address_job.items():
 			yield v, k
 
-	def abort(self, aborted_value=None):
+	def abort(self, message: Any=None):
 		"""
 		Initiate termination of all pending child objects. Return nothing.
 
 		If required, a single value is stored for later retrieval
-		as ``self.aborted_value``.
+		as ``self.aborted_message``.
 
-		:param aborted_value: value to save
-		:type aborted_value: any
+		:param message: value to save
 		:rtype: None
 		"""
-		self.aborted_value = aborted_value
+		self.aborted_message = message
 		for _, a in self.running():
 			self.send(Stop(), a)
 		n = len(self.address_job)
 		return n
 
-	def debrief(self, address=None):
+	def debrief(self, address: Address=None):
 		"""
 		Find the job associated with the child object. Return the job.
 
@@ -456,14 +443,13 @@ class Point(object):
 		number of active jobs.
 
 		:param address: address of the child object
-		:type address: :ref:`address<lc-address>`
 		:rtype: any
 		"""
 		a = address or self.return_address
 		c = self.address_job.pop(a, None)
 		return c
 
-	def on_return(self, address, f, **kw):
+	def on_return(self, address: Address, f, **kw):
 		"""
 		Register a callback, to be executed on termination of the object.
 
@@ -716,11 +702,11 @@ class SelectTimer(object):
 
 class Other(object):
 	"""Capture un-declared input."""
-	def __init__(self, value=None):
-		self.value = value
+	def __init__(self, message: Any=None):
+		self.message = message
 
 bind_message(SelectTimer)
-bind_message(Other, value=Any())
+bind_message(Other)
 
 class Dispatching(Player):
 	"""Provides input mechanism for any machine with its own queue."""
@@ -783,6 +769,9 @@ class Buffering(Player):
 				self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (a.name, r[-1]))
 		self.received_type = p
 		return m
+	
+	def is_type(self, p: Portable):
+		return self.received_type is p
 
 	def select(self, *matching, saving=None, seconds=0):
 		"""Expect one of the listed messages, with optional saving and timeout.
@@ -974,27 +963,27 @@ def object_dispatch(queue):
 		except KeyboardInterrupt:
 			s = 'unexpected keyboard interrrupt'
 			p.fault(s)
-			value = Faulted('object compromised', s)
+			message = Faulted('object compromised', s)
 		except SystemExit:
 			s = 'unexpected system exit'
 			p.fault(s)
-			value = Faulted('object compromised', s)
+			message = Faulted('object compromised', s)
 		except Completion as c:
-			value = c.value
+			message = c.message
 		except Exception as e:
 			s = str(e)
 			s = f'unhandled exception ({s})'
 			p.fault(s)
-			value = Faulted('object faulted', s)
+			message = Faulted('object faulted', s)
 		except:
 			s = 'unhandled opaque exception'
 			p.fault(s)
-			value = Faulted('object faulted', s)
+			message = Faulted('object faulted', s)
 
 		# Convert the exception to a message.
 		if p.__art__.lifecycle:
 			p.log(USER_TAG.DESTROYED, 'Destroyed')
-		s = p.parent_address
+		parent = p.parent_address
 
 		return_type = p.__art__.return_type
 		if return_type is None:
@@ -1002,14 +991,14 @@ def object_dispatch(queue):
 		elif isinstance(return_type, Any):
 			pass
 		elif isinstance(return_type, Portable):
-			if not hasattr(value, '__art__'):
-				value = (value, return_type)
+			if not hasattr(message, '__art__'):
+				message = (message, return_type)
 		else:
-			value = Faulted(f'unexpected return type for machine "{p.__class__.__name__}"')
+			message = Faulted(f'unexpected return type for machine "{p.__class__.__name__}"')
 
 		ending = p.object_ending
 		destroy_an_object(t)
-		ending(value, s, t, type(p))
+		ending(message, parent, t)
 
 	# Termination of child objects occurs by raising of the
 	# Completion exception from within the received() call [2].
@@ -1018,7 +1007,7 @@ def object_dispatch(queue):
 	# as for any object, by sending a Stop(). The running_in_thread
 	# function concludes the protocol.
 
-def no_ending(value, parent, address, object_type):
+def no_ending(message, parent, address):
 	pass
 
 # Object creation.
