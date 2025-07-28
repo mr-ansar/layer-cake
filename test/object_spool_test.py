@@ -48,4 +48,4 @@ class TestObjectSpool(TestCase):
 			m, i = ch.select(lc.Returned, lc.Faulted, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Aborted)
+		assert isinstance(m.message, lc.Aborted)

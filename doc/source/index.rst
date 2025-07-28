@@ -10,8 +10,8 @@ layer-cake
 The **layer-cake** library is for anyone developing software that involves multithreading,
 multiprocessing or multihosting, usually with the goal of achieving concurrency. Along the way,
 it manages to pull off some effective network messaging too. If you are trying to improve the
-throughput of a request processing system, or just maintain responsiveness in complex scenarios,
-this library is intended for you.
+throughput of a request processing system, like a website backend, or just maintain responsiveness
+in complex scenarios, this library is intended for you.
 
 A few highlights include;
 
@@ -24,7 +24,7 @@ A few highlights include;
 Installation
 ************
 
-**layer-cake** can be installed from PyPI using *pip*;
+**Layer-cake** can be installed from PyPI using *pip*;
 
 .. code::
 
@@ -46,12 +46,12 @@ event-driven execution environment. Demonstrations include;
 * creation of a pool of request threads with a single call,
 * load distribution of requests across the pool,
 * detection of periods of heavy loading and appropriate client feedback,
-* switching to a pool of request processes with the addition of a single argument,
-* switching to a pool of request hosts with around 10 lines of additional code.
+* switching to a pool of request *processes* with the addition of a single argument,
+* switching to a pool of request *hosts* with around 10 lines of additional code.
 
-The material is arranged as a series of guides. Some background implementation details are covered where this
-may explain certain behaviours. A testing client, capable of replicating the workload of large
-numbers of clients is provided at the end.
+The material is arranged as a series of guides. Some background implementation details are covered
+where this might help with less obvious behaviours. A testing client, capable of replicating the
+workload of large numbers of clients is provided at the end.
 
 .. toctree::
    :maxdepth: 1
@@ -69,11 +69,10 @@ numbers of clients is provided at the end.
    classes-and-functions
 
 The combination of multithreading, multiprocessing and multihosting covers a large technical domain. The **layer-cake**
-library has bitten off a big piece of the pie. It cant be the whole pie but it's a deliberate piece. There is a strong
-goal for integrity within that selected domain. Documentation has been written in a style intended to encourage the less
-experienced, without frustrating the gurus. Topics such as :ref:`type systems<layer-cake-type-reference>`
-and :ref:`keep-alives<lc-keep-alive>` are not for everyone, but if you are in the business of production-quality
-development then they are hard to avoid.
+library has bitten off a big piece of that pie. It can't be the whole pie but it's a deliberate piece. There is a strong
+goal for integrity within that selected subdomain. Documentation has been written in a style intended to encourage the less
+experienced, without frustrating the gurus. If you are not familiar with asynchronous messaging and the more obscure
+details of networking (e.g. :ref:`keep-alives<lc-keep-alive>`) this may require a second reading.
 
 .. only: html
 

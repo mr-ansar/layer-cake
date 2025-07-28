@@ -104,7 +104,7 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert m.value is None
+		assert m.message is None
 
 	def test_return_int_expecting_none(self):
 		# test_main_return returns values according to flag arguments.
@@ -114,8 +114,8 @@ class TestProcessObject(TestCase):
 			ch.create(lc.ProcessObject, test_main_return.main, return_an_int=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
-		assert isinstance(m.value, lc.Faulted)
-		s = str(m.value)
+		assert isinstance(m.message, lc.Faulted)
+		s = str(m.message)
 		assert 'cannot encode' in s
 		assert 'int/Any' in s
 
@@ -127,9 +127,9 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, tuple)
-		assert isinstance(m.value[0], int)
-		assert m.value[0] == number
+		assert isinstance(m.message, tuple)
+		assert isinstance(m.message[0], int)
+		assert m.message[0] == number
 
 	def test_return_any_default(self):
 		name = 'Gerald'
@@ -145,8 +145,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, tuple)
-		assert isinstance(m.value[0], bool)
+		assert isinstance(m.message, tuple)
+		assert isinstance(m.message[0], bool)
 
 	def test_return_any_faulted(self):
 		name = 'Gerald'
@@ -162,8 +162,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Faulted)
-		s = str(m.value)
+		assert isinstance(m.message, lc.Faulted)
+		s = str(m.message)
 		assert 'out of bounds' in s
 
 	def test_return_any_person(self):
@@ -180,9 +180,9 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, tuple)
-		table = m.value[0]
-		shape = m.value[1]
+		assert isinstance(m.message, tuple)
+		table = m.message[0]
+		shape = m.message[1]
 		assert len(table) == height
 		first, last = table[0], table[height-1]
 		assert isinstance(first, list)
@@ -205,9 +205,9 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, tuple)
-		table = m.value[0]
-		shape = m.value[1]
+		assert isinstance(m.message, tuple)
+		table = m.message[0]
+		shape = m.message[1]
 		assert len(table) == height
 		first, last = table[0], table[height-1]
 		assert isinstance(first, list)
@@ -228,7 +228,7 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert m.value is None
+		assert m.message is None
 
 	def test_pass_mismatched_arg(self):
 		table = dict(recent=[Person('Gerard'), Person('Niall')])
@@ -241,8 +241,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Faulted)
-		s = str(m.value)
+		assert isinstance(m.message, lc.Faulted)
+		s = str(m.message)
 		# None in message is cos of test framework.
 		assert 'cannot encode' in s
 		assert 'argument "table"' in s
@@ -255,8 +255,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'create-role'
 		assert response.note == 'empty'
 
@@ -265,8 +265,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'delete-role'
 		assert response.note is None
 
@@ -284,8 +284,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'create-role'
 		assert response.note == 'table,count,ratio,when,unique_id'
 
@@ -294,8 +294,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'delete-role'
 		assert response.note is None
 
@@ -314,8 +314,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'create-role'
 		assert response.note == 'table,count'
 
@@ -326,8 +326,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'update-role'
 		assert response.note == 'table,count,ratio,when,unique_id'
 
@@ -336,8 +336,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'delete-role'
 		assert response.note is None
 
@@ -348,8 +348,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'create-role'
 		assert response.note == 'empty'
 
@@ -359,8 +359,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Faulted)
-		response = str(m.value)
+		assert isinstance(m.message, lc.Faulted)
+		response = str(m.message)
 		assert 'already exists' in response
 
 		with lc.channel() as ch:
@@ -368,8 +368,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.CommandResponse)
-		response = m.value
+		assert isinstance(m.message, lc.CommandResponse)
+		response = m.message
 		assert response.command == 'delete-role'
 		assert response.note is None
 
@@ -378,8 +378,8 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Faulted)
-		response = str(m.value)
+		assert isinstance(m.message, lc.Faulted)
+		response = str(m.message)
 		assert 'no settings available' in response
 
 	def test_str_name(self):
@@ -389,5 +389,5 @@ class TestProcessObject(TestCase):
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Faulted)
-		assert 'cannot open' in m.value.condition
+		assert isinstance(m.message, lc.Faulted)
+		assert 'cannot open' in m.message.condition

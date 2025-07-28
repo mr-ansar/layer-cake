@@ -59,7 +59,7 @@ class TestGetResponse(TestCase):
 			s.reply(lc.Ack())
 			selected, i = c.select()
 			assert isinstance(selected, lc.Returned)
-			assert isinstance(selected.value, lc.Ack)
+			assert isinstance(selected.message, lc.Ack)
 
 	def test_concurrently(self):
 		with lc.channel() as s, lc.channel() as c:
@@ -96,8 +96,8 @@ class TestGetResponse(TestCase):
 
 			selected, i = c.select()
 			assert isinstance(selected, lc.Returned)
-			assert isinstance(selected.value, list)
-			assert isinstance(selected.value[0], lc.Ack)
+			assert isinstance(selected.message, list)
+			assert isinstance(selected.message[0], lc.Ack)
 
 	def test_sequentially(self):
 		with lc.channel() as ch:
@@ -112,8 +112,8 @@ class TestGetResponse(TestCase):
 
 			selected, i = ch.select()
 			assert isinstance(selected, lc.Returned)
-			assert isinstance(selected.value, list)
-			assert isinstance(selected.value[0], lc.Ack)
+			assert isinstance(selected.message, list)
+			assert isinstance(selected.message[0], lc.Ack)
 
 			ch.send(lc.Stop(), server)
 			selected, i = ch.select()

@@ -98,7 +98,7 @@ class TestDiskStorage(TestCase):
 				m, _ = ch.select(lc.Returned)
 
 		assert isinstance(m, lc.Returned)
-		assert isinstance(m.value, lc.Ack)
+		assert isinstance(m.message, lc.Ack)
 
 		source, t = lc.storage_manifest('asset/mixed-content')
 		target, t = lc.storage_manifest(self.temp)
