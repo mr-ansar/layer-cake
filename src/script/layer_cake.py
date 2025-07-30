@@ -36,6 +36,8 @@ import re
 import datetime
 import layer_cake as lc
 import layer_cake.rolling_log as rl
+import layer_cake.process_directory as pd
+import layer_cake.object_directory as od
 
 from enum import Enum
 import calendar
@@ -1504,6 +1506,71 @@ lc.bind(sampler)
 
 #
 #
+def print_scope(s):
+	s = str(s)
+	i = s.rfind('.')
+	return s[i+1:]
+
+def print_directory(d, ipp=None, tab=0):
+	s = 'root'
+	if ipp:
+		s = str(ipp)
+
+	ds = print_scope(d.scope)
+	lc.output_line(f'[{ds}] {s}', tab=tab)
+	for p in d.published:
+		lc.output_line(f'"{p.name}" - {p.listening_ipp} ({p.published_id})', tab=tab+1)
+
+	for k, v in d.sub_directory.items():
+		print_directory(v, ipp=k, tab=tab+1)
+
+def published(self, word, remainder):
+	'''. Return Faulted/None.'''
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	if home_path is None:
+		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+
+	cannot_network = f'cannot open "{home_path}"'
+
+	# Check for connected directory.
+	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.start(lc.T1, 30.0)
+	while True:
+		m = self.input()
+		if isinstance(m, lc.Connected):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T1):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	# Directory is connected to something. Query
+	# for the whole tree.
+	self.send(od.ListDirectory(), pd.PD.directory)
+	self.start(lc.T2, 10.0)
+	while True:
+		m = self.input()
+		if isinstance(m, od.DirectoryListing):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T2):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	print_directory(m, tab=0)
+
+	output = None
+	return output
+
+lc.bind(published)
+
+#
+#
 table = [
 	# CRUD for a set of role definitions.
 	create,
@@ -1530,6 +1597,9 @@ table = [
 	resource,
 	model,
 	script,
+
+	# Network administration.
+	published,
 ]
 
 # For package scripting.
