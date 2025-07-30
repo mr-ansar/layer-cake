@@ -482,6 +482,31 @@ bind(Delivered)
 bind(Dropped)
 
 #
+#
+class OpenDirectory(object): pass
+class ListDirectory(object): pass
+class GetDirectory(object): pass
+
+class DirectoryListing(object):
+	"""Network administration, contents.
+
+	.
+	"""
+	def __init__(self, scope: ScopeOfDirectory=None,
+			published: list[Published]=None, subscribed: list[Subscribed]=None,
+			accepted: int=0, sub_directory=None):
+		self.scope = scope
+		self.published = published or []
+		self.subscribed = subscribed or []
+		self.accepted = accepted
+		self.sub_directory = sub_directory or {}
+
+bind(OpenDirectory)
+bind(ListDirectory)
+bind(GetDirectory)
+bind(DirectoryListing, sub_directory=MapOf(UserDefined(HostPort), UserDefined(DirectoryListing)))
+
+#
 class INITIAL: pass
 class PENDING: pass
 class READY: pass
@@ -1015,6 +1040,8 @@ class ObjectDirectory(Threaded, StateMachine):
 		# Connections across group, host and lan domains.
 		self.peer_connect = {}
 
+		self.directory_opened = None
+
 	def calculate_reconnect(self, host):
 		if host is None:
 			return
@@ -1422,6 +1449,36 @@ class ObjectDirectory(Threaded, StateMachine):
 		if published or subscribed:
 			self.send(PublishedDirectory(published, subscribed), self.connected.proxy_address)
 
+	def get_directory(self, client_address):
+		published = [v[0] for k, v in self.listed_publisher.items()]
+		subscribed = [v[0] for k, v in self.listed_subscriber.items()]
+		accepted = len(self.accepted)
+
+		directory = DirectoryListing(scope=self.directory_scope,
+			published=published, subscribed=subscribed, accepted=accepted)
+
+		if accepted == 0:
+			self.send(directory, client_address)
+			return
+
+		def response(self, value, args):
+			sub = args.directory.sub_directory
+			accepted = args.directory.accepted
+
+			sub[args.ipp] = value
+			n = len(sub)
+			self.trace(f'Loaded directory from {args.ipp}', n=n, accepted=accepted)
+			if n < accepted:
+				return
+			self.send(args.directory, args.client_address)
+
+		for k, v in self.accepted.items():
+			a, sub, pub = v
+			r = self.create(GetResponse, GetDirectory(), a.proxy_address)
+			self.on_return(r, response, directory=directory, ipp=a.opened_ipp, client_address=client_address)
+
+#
+#
 def ObjectDirectory_INITIAL_Start(self, message):
 	self.calculate_reconnect(self.connect_to_directory.host)
 	if self.connect_to_directory.host is not None:
@@ -1449,12 +1506,17 @@ def ObjectDirectory_READY_NotListening(self, message):
 def ObjectDirectory_READY_Connected(self, message):
 	self.connected = message
 	self.push_up()
+	if self.directory_opened:
+		self.send(message, self.directory_opened)
+		self.directory_opened = None
 	return READY
 
 def ObjectDirectory_READY_NotConnected(self, message):
 	if self.connect_to_directory.host:
 		self.connected = message
 		self.start(T1, self.reconnect_delay)
+		if self.directory_opened:
+			self.send(message, self.directory_opened)
 	return READY
 
 def ObjectDirectory_READY_T1(self, message):
@@ -1801,6 +1863,31 @@ def ObjectDirectory_READY_Incognito(self, message):
 	self.console(type_name=message.type_name, word=s)
 	return READY
 
+def ObjectDirectory_READY_OpenDirectory(self, message):
+	self.directory_opened = self.return_address
+
+	if self.connected:
+		self.reply(self.connected)
+		return READY
+
+	if self.connect_to_directory.host is None:
+		pa = PublishAs(name='open-directory', scope=ScopeOfDirectory.LAN)
+		self.auto_connect(pa)
+
+	return READY
+
+def ObjectDirectory_READY_ListDirectory(self, message):
+	if isinstance(self.connected, Connected):
+		self.forward(message, self.connected.proxy_address, self.return_address)
+		return READY
+
+	self.get_directory(self.return_address)
+	return READY
+
+def ObjectDirectory_READY_GetDirectory(self, message):
+	self.get_directory(self.return_address)
+	return READY
+
 OBJECT_DIRECTORY_DISPATCH = {
 	INITIAL: (
 		(Start,),
@@ -1824,7 +1911,8 @@ OBJECT_DIRECTORY_DISPATCH = {
 		SubscriberRoute,
 		Returned,
 		Stop,
-		Incognito,),
+		Incognito,
+		OpenDirectory, ListDirectory, GetDirectory,),
 		()
 	),
 }
