@@ -3,6 +3,10 @@
 Switching To Multiprocessing
 ############################
 
+.. note::
+
+	To follow the materials mentioned in this section, change to the ``layer-cake-demos/multiprocessing`` folder.
+
 Multithreading in the Python environment is affected by the presence of the GIL. The only true concurrency
 available to the Python language is through multiprocessing but that brings the difficulties of process
 management and network communication. Together these factors can dampen the enthusiasm for multiprocessing.
@@ -10,15 +14,9 @@ management and network communication. Together these factors can dampen the enth
 Basic Use Of Multiprocessing
 ****************************
 
-Under the layer cake library there are only minor differences between thread-based and process-based concurrency.
+Under the **layer-cake** library there are only minor differences between thread-based and process-based concurrency.
 The following sections step through the same recent series of thread-based server implementations, but switching
 multithreading for multiprocessing.
-
-First, change to the relevant folder;
-
-.. code-block:: console
-
-	$ cd ../multiprocessing
 
 The most basic use of multiprocessing looks like;
 
@@ -30,7 +28,7 @@ The most basic use of multiprocessing looks like;
 	from test_function_5 import texture
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -54,16 +52,16 @@ The most basic use of multiprocessing looks like;
 			client_address = self.return_address
 			self.create(lc.ProcessObject, texture, x=m.x, y=m.y)
 			m = self.input()
-			response = m.value
+			response = m.message
 
-			self.send(lc.cast_to(response, self.received_type), client_address)
+			self.send(response, client_address)
 
 	lc.bind(server)
 
 	if __name__ == '__main__':
 		lc.create(server)
 
-Rather than calling :func:`texture()`, or creating a thread that calls the function, there is now the creation of
+Rather than calling :func:`texture`, or creating a thread that calls the function, there is now the creation of
 a :class:`~.ProcessObject`, passing ``texture`` as the first argument;
 
 .. code-block:: python
@@ -71,12 +69,12 @@ a :class:`~.ProcessObject`, passing ``texture`` as the first argument;
 	self.create(lc.ProcessObject, texture, x=m.x, y=m.y)
 
 This is a library facility that initiates a platform process, passes arguments and waits for completion. A return value is
-decoded from ``stdout`` and passed back to the :func:`server()` inside the :class:`~.Returned` message. The benefit of this approach is
+decoded from ``stdout`` and passed back to the :func:`server` inside the :class:`~.Returned` message. The benefit of this approach is
 that process behaviour follows the same model as thread behaviour.
 
 Passing ``texture`` as the first argument provides the :class:`~.ProcessObject` with everything it needs to perform its role.
 The module the function was loaded from is recorded in the function object and the type information needed to encode the
-arguments and decode the output is available in the information registered using :func:`~.bind()`.
+arguments and decode the output is available in the information registered using :func:`~.bind`.
 
 The following lines have been added to the ``test_function_5.py`` module;
 
@@ -87,30 +85,24 @@ The following lines have been added to the ``test_function_5.py`` module;
 	if __name__ == '__main__':
 		lc.create(texture)
 
-The ``self`` parameter has also been added to the function definition. The call to :func:`~.create()` ensures that the module is
+The ``self`` parameter has also been added to the function definition. The call to :func:`~.create` ensures that the module is
 loadable and there is the expected processing of arguments.
 
 The sequence of;
 
 .. code-block:: python
 
-	self.create(lc.ProcessObject, texture, ...)
+	self.create(lc.ProcessObject, texture, x=m.x, y=m.y)
 	m = self.input()
-	response = m.value
+	response = m.message
 
-is a process-based equivalent to;
+is a process-based equivalent to the thread-based version;
 
 .. code-block:: python
 
 	self.create(texture, ...)
 	m = self.input()
-	response = m.value
-
-and also;
-
-.. code-block:: python
-
-	response = texture(...)
+	response = m.message
 
 There is no networking involved in this implementation. Logs from the processing of a request include details such as;
 
@@ -131,9 +123,9 @@ There is no networking involved in this implementation. Logs from the processing
 There is a full record of the arguments passed on creation of the process. Eventually a :class:`~.Returned` message is
 received at the :func:`server()` and it can extract the response.
 
-This example is intended to illustrate how processes are integrated into the layer cake library. It is in no way a
-recommended implementation of a network service. It suffers from the same fundamental problem as the first server that
-called :func:`texture()` directly. A problem only made worse by the overhead of loading a process.
+This example is intended to illustrate how processes are integrated into the **layer-cake** library. It is in no way a
+recommended implementation of a network service. It suffers from the same fundamental problem as the very first server
+that called :func:`texture()` directly. A problem only made worse by the overhead of loading a process.
 
 Command-Line Access To The Function
 ***********************************
@@ -202,7 +194,7 @@ This is the output seen from previous use of the ``curl`` client and it is also 
 facility, i.e. the ``--full-output`` flag is always added within the multiprocessing machinery. Full output includes a type
 signature that must be present for a successful decoding process.
 
-It is the absence of the ``--full-output`` flag at the command-line that results in the more convenient output.
+It is the absence of the ``--full-output`` flag at the command-line that results in the more human-friendly output.
 
 All the server implementations use the same technique for a process entry-point and therefore enjoy the same means of passing
 arguments;
@@ -236,7 +228,7 @@ A slight improvement can be achieved with the use of callbacks;
 	from test_function_6 import texture
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -313,12 +305,12 @@ A process is needed that accepts multiple :class:`Xy` requests over a network co
 			table = texture(x=m.x, y=m.y)
 			self.send(lc.cast_to(table, table_type), self.return_address)
 
-	lc.bind(worker, api=(Xy,))
+	lc.bind(worker, api=[Xy,])
 
 	if __name__ == '__main__':
 		lc.create(worker)
 
-This is similar to the previous implementations of :func:`worker()`, except ``api=(Xy,)`` has been added to the
+This is similar to the previous implementations of :func:`worker()`, except ``api=[Xy,]`` has been added to the
 registration. To take advantage of this new worker there needs to be a matching server;
 
 .. code-block:: python
@@ -329,7 +321,7 @@ registration. To take advantage of this new worker there needs to be a matching 
 	from test_worker_7 import worker
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -391,7 +383,7 @@ checks the registered details for ``worker``;
 
 .. code-block:: python
 
-	lc.bind(worker, api=(Xy,))
+	lc.bind(worker, api=[Xy,])
 
 It detects the declaration of an API and passes a special argument at process creation time. This directs the asynchronous
 framework within the new ``worker`` to make a special connection back to the parent process. Further background routing occurs
@@ -419,7 +411,7 @@ A spool of worker processes is needed. The changes to convert the multithreading
 	from test_worker_8 import worker
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -451,8 +443,7 @@ A spool of worker processes is needed. The changes to convert the multithreading
 
 			# Callback for on_return.
 			def respond(self, response, args):
-				self.send(lc.cast_to(response, self.returned_type),
-					args.return_address)
+				self.send(lc.cast_to(response, self.returned_type), args.return_address)
 
 			a = self.create(lc.GetResponse, m, worker_spool)
 			self.on_return(a, respond, return_address=self.return_address)
@@ -470,8 +461,7 @@ this library facility uses its arguments to create a pool of objects;
 	worker_spool = self.create(lc.ObjectSpool, lc.ProcessObject, worker)
 
 Rather than creating a pool of worker threads, there is now a pool of worker processes. This brings those same benefits enjoyed
-by a spool of worker threads, plus there is true concurrency in the activities of the separate worker processes. Lastly, there
-is separation of concern, i.e. nasty bugs inside the worker do not pollute the parent process, encouraging reliability.
+by a spool of worker threads, plus there is true concurrency in the activities of the separate worker processes.
 
 These benefits come at the cost of a slightly slower startup and the relatively slow exchange of request and response messages,
 when compared with the multithreading implementation. Network messaging in this scenario (i.e. across the loopback interface)
@@ -486,52 +476,10 @@ a full teardown of the server process and all its workers may suddenly be requir
 assigned the task of developing such a process from scratch.
 
 The final act of process orchestration is to terminate cleanly. This involves the managed teardown of all platform resources
-such as processes and network ports. When any layer cake process is terminated (e.g. a control-c) there is a phase of
+such as processes and network ports. When any **layer-cake** process is terminated (e.g. a control-c) there is a phase of
 housekeeping. Open connections are closed, listen ports are closed and lastly, child processes are terminated. 
 
-This housekeeping occurs by default and obviates the need for any housekeeping by the developer of a layer cake process. Where
+This housekeeping occurs by default and obviates the need for any housekeeping by the developer of a **layer-cake** process. Where
 there is a specific need, there is always the ability to release those platform resources manually. To close a connection \- send
 the :class:`~.Close` message to the transport, to close a listen port \- use :func:`~.stop_listening`, and to terminate a
 process \- send the :class:`~.Stop` message to the address of the :class:`~.ProcessObject`.
-
-Standard Process Arguments
-**************************
-
-As well as the arguments defined by application objects (e.g. :func:`server`), every layer-cake executable accepts a set
-of standard arguments. Most of these are related to integration of a process into the asynchronous runtime. The following
-are for general use;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **full-output**
-     - bool
-     - *enable output of full encoding on termination*
-   * - **debug-level**
-     - :class:`~.USER_LOG`
-     - *enable output of logs at the selected level*
-   * - **home-path**
-     - str
-     - *folder path, location of the composite process*
-   * - **role-name**
-     - str
-     - *unique name of the process within the home*
-   * - **resource-path**
-     - str
-     - *location of read-only files, override default*
-   * - **model-path**
-     - str
-     - *location of operational files, override default*
-   * - **dump-types**
-     - bool
-     - *list the types registered within the process*
-   * - **connect-to-directory**
-     - :class:`~.HostPort`
-     - *network address of the directory to join, override default behaviour*
-   * - **encrypted-process**
-     - bool
-     - *all associated directory activity is encrypted*

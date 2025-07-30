@@ -1,5 +1,5 @@
 .. layer-cake documentation master file, created by
-   sphinx-quickstart on Tue April 18 16:07:56 2021.
+   sphinx-quickstart on June 2025.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -28,7 +28,7 @@ Installation
 
 .. code::
 
-	$ cd <new-folder>
+	$ cd <project-folder>
 	$ python3 -m venv .env
 	$ source .env/bin/activate
 	$ pip3 install layer-cake

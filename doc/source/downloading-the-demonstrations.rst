@@ -23,7 +23,8 @@ After cloning, a virtual environment is needed;
 	$ source .env/bin/activate
 	$ pip3 install layer-cake
 
-To begin the multithreading demos and verify the environment, enter the following commands (logs appearing in this document have been reduced to fit);
+To begin the multithreading demos and verify the environment, enter the following commands (logs appearing in this document
+have been reduced to fit);
 
 .. code-block:: console
 

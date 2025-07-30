@@ -3,6 +3,10 @@
 Concurrency With Multithreading
 ###############################
 
+.. note::
+
+	To follow the materials mentioned in this section, change to the ``layer-cake-demos/multithreading`` folder.
+
 The :func:`texture` function accepts size parameters and returns a 2D table of the specified dimensions, filled with random
 floating-point values. Execution of the code consumes computing resources such as memory and CPU cycles.
 
@@ -24,18 +28,18 @@ floating-point values. Execution of the code consumes computing resources such a
 		return table
 
 Standard Python hints describe the nature of the values passed to the function (``int``) and the nature of what the function
-produces (``list[list[float]]``). As the software evolves these hints become a requirement.
+produces (``list[list[float]]``).
 
 .. code-block:: console
 
 	$ python3
 	...
-	>>> from test_function import texture
+	>>> from test_function_1 import texture
 	>>> texture(x=2, y=2)
 	[[0.7612548315750599, 0.23818407873566672], [0.3034216434184227, 0.06614148124376695]]
 	>>>
 
-Calling the function produces a list of lists matching the specified dimensions.
+Calling the function produces a list of lists matching the given dimensions.
 
 Providing Network Access To The Function
 ****************************************
@@ -52,7 +56,7 @@ message-driven software. The more interesting aspects of this approach are cover
 	from test_function_1 import texture
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -162,9 +166,9 @@ Details about the API are defined separately in the ``test_api.py`` file. This f
 
 	table_type = lc.def_type(list[list[float]])
 
-To send a message (i.e. a named collection of typed members) in layer cake it needs to be defined as a class. Type hints must be
-used to describe the arguments passed to the :meth:`__init__` method. Lastly, the class is registered with the layer cake library
-using :func:`~.bind`.
+To send a message (i.e. a named collection of typed members) in **layer-cake** it needs to be defined as a class. Type
+hints must be used to describe the arguments passed to the :meth:`__init__` method. Lastly, the class is registered with
+the library using :func:`~.bind`.
 
 Registration prepares information needed for the conversion of the HTTP representation \- ``/Xy?x=2&y=3`` \- into an instance of
 the :class:`Xy` class during network messaging. It also prepares for logging.
@@ -178,7 +182,7 @@ uncommon. Normally this issue is resolved with a message containing the single m
 can become tedious to maintain large numbers of message classes that contain a single member. This can happen in a network API over
 a database, where many responses are the result of querying different database tables, i.e. lists of different row types.
 
-Layer cake software that restricts itself to only sending registered messages can completely avoid the details involved in sending
+**Layer-cake** software that restricts itself to only sending registered messages can completely avoid the details involved in sending
 data such as ``list[list[float]]``. However, the capability to do so is fundamental to the complete integration of multithreading and
 multiprocessing into layer cake processes. It does allow for some nice behaviour around the command line (refer to later sections).
 
@@ -265,12 +269,12 @@ Message-driven software inevitably includes message dispatching code;
 	else:
 		continue
 
-The lack of a switch statement in Python is a little unfortunate. Layer cake includes the concept of machines, which tackles the issue of
+The lack of a ``switch`` statement in Python is a little unfortunate. **Layer-cake** includes the concept of machines, which tackles the issue of
 dispatching head on. A short introduction of machines appears in a later section.
 
 Perhaps the most important aspect to this initial implementation is the fundamentally asynchronous approach to the processing of an HTTP
 request message. HTTP clients are restricted to a synchronous, request-response interaction with HTTP servers. There is no such constraint
-on the internal workings of the :func:`server` and it is in this area that effective concurrency can be delivered. Layer cake can’t help
+on the internal workings of the :func:`server` and it is in this area that effective concurrency can be delivered. **Layer-cake** can’t help
 individual clients with the blocking nature of their HTTP requests but it can deliver true concurrency across multiple connected clients.
 
 Concurrency Using Multithreading
@@ -290,7 +294,7 @@ sub-optimal. A few minor changes arrange for full concurrency;
 	from test_function_2 import texture
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -419,7 +423,7 @@ To benefit from this approach the server needs to look like;
 	from test_worker_3 import worker
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -452,8 +456,7 @@ To benefit from this approach the server needs to look like;
 
 			# Callback for on_return.
 			def respond(self, response, args):
-				self.send(lc.cast_to(response, self.returned_type),
-					args.return_address)
+				self.send(lc.cast_to(response, self.returned_type), args.return_address)
 
 			a = self.create(lc.GetResponse, m, worker_address)
 			self.on_return(a, respond, return_address=self.return_address)
@@ -469,15 +472,15 @@ There are two points of interest;
 * ``a = self.create(lc.GetResponse, m, worker_address)``
 
 An instance of :func:`worker` is created during startup and its address saved as ``worker_address``. Rather than sending the
-requests directly to that address there is now a :meth:`~.Point.create`. This special library facility forwards the given message to
-the specified address and waits for a response. This somewhat convoluted approach allows for continued use of the callback
-mechanism. Without the presence of :class:`~.GetResponse` the worker would send the response directly to the server and there would
-be no :class:`~.Returned` message to drive the callback machinery.
+requests directly to that address there is now a :meth:`~.Point.create`, passing ``GetResponse`` as a parameter. This special
+library facility forwards the given message to the specified address and waits for a response. This somewhat convoluted
+approach allows for continued use of the callback mechanism. Without the presence of :class:`~.GetResponse` the worker would
+send the response directly to the server and there would be no :class:`~.Returned` message to drive the callback machinery.
 
 .. note::
 
 	Developers familar with event-driven software will recognise the role that :class:`~.GetResponse` plays
-	in this scenario. It is the equivalent of an entry in a `pending request table`. Within the layer cake
+	in this scenario. It is the equivalent of an entry in a *pending request table*. Within the **layer-cake**
 	framework there is no need to allocate ids, match responses with requests and update the table. This happens
 	as a natural by-product of delegating to an independent, asynchronous object.
 
@@ -505,7 +508,7 @@ implementation is trivial;
 	from test_worker_4 import worker
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS

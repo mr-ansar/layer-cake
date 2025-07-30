@@ -3,8 +3,13 @@
 Distribution With Multihosting
 ##############################
 
+.. note::
+
+	To follow the materials mentioned in this section, change to the ``layer-cake-demos/multihosting`` folder.
+
 Multithreading and multiprocessing demonstrations have focused on the implementation of concurrency within the scope of a
-single process. Processes that start and manage sub-processes are included within the definition of a single process.
+single process. Processes that start and manage sub-processes to their completion, are included within the definition of
+a single process.
 
 To make use of physically distributed computing resources there needs to be multihosting, where the network service is
 no longer a single process. Instead it consists of a logically related collection of processes, each of which may be
@@ -28,12 +33,6 @@ is the placement of ``lan-cake``. Further detail appears in the following sectio
 
 A Session With A Published Service
 **********************************
-
-Change to the correct demonstration folder before accessing the following modules;
-
-.. code-block:: console
-
-	$ cd ../multihosting
 
 Registering a worker as a service looks like;
 
@@ -88,7 +87,7 @@ Establishing a subscriber session from the :func:`server()` looks like;
 	from test_api import Xy, table_type
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -230,14 +229,17 @@ the worker and that the worker is being put to use by the spool;
 		]
 	}
 
-The layer-cake CLI tool is \- among other things \- a process orchestration tool. It provides sub commands for describing a set
-of processes and sub commands for initiating those processes. The result might be called a composite process. This concept is
+The ``layer-cake`` CLI tool is \- among other things \- a process orchestration tool. It provides sub-commands for describing a set
+of processes and sub-commands for initiating those processes. The result might be called a *composite process*. This concept is
 strengthened by the discreet inclusion of ``group-cake``, which provides the supporting pubsub machinery to bring the :func:`server()`
 and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
-requirement that sessions occur immediately. A :func:`~.subscribe` is an expression of interest that can result in an
-immediate match, or no matches for days, or no matches at all.
+requirement that sessions occur immediately. Over time, instances of publishers and subscribers can come and go. Session
+notifications :class:`~.Available` and :class:`~.Dropped` delimit those periods where matching parties are both present. There
+is no need to be concerned about starting order of servers vs clients, and software can be updated at any time. Restarting a process
+to effect the loading of software changes, automatically results in the session notifications needed for implementation of strong
+software.
 
 Connecting To Multiple Instances Of A Service
 *********************************************
@@ -296,7 +298,7 @@ announced to the network under a unique name. Establishing a client session from
 	from test_api import Xy
 
 	DEFAULT_ADDRESS = lc.HostPort('127.0.0.1', 5050)
-	SERVER_API = (Xy,)
+	SERVER_API = [Xy,]
 
 	def server(self, server_address: lc.HostPort=None):
 		server_address = server_address or DEFAULT_ADDRESS
@@ -366,8 +368,8 @@ To try out this new arrangement;
 	$ layer-cake add test_server_10.py server
 	$ layer-cake add test_worker_10.py worker --role-count=8
 
-An initial destroy command deletes the previous definition of the composite process. The add command accepts a \--role-count parameter
-that is used to add multiple instances of the same module. Decoration of the instance name with an ordinal number is automated;
+An initial ``destroy`` command deletes the previous definition of the composite process. The ``add`` command accepts a ``--role-count``
+parameter that is used to add multiple instances of the same module. Decoration of the instance name with an ordinal number is automated;
 
 .. code-block:: console
 
@@ -525,7 +527,7 @@ with the proper network address, it also needs to be configured with the followi
 
 At boot-time the host should execute the following command;
 
-.. code-block::console
+.. code-block:: console
 
 	$ cd <operational-folder>
 	$ layer-cake start

@@ -281,7 +281,7 @@ After the initial instantiation of clients and callbacks the :func:`clients_as_t
 a simple method that returns the number of outstanding callbacks. As long as there is pending work the process waits for the next
 message, e.g. :class:`~.Stop`.
 
-Calling :meth:`~.Point.abort()` causes the broadcast of an :class:`~.Stop` to every object with an outstanding callback. As the :class:`~.Returned`
+Calling :meth:`~.Point.abort()` causes the broadcast of a :class:`~.Stop` to every object with an outstanding callback. As the :class:`~.Returned`
 messages are processed the number of those still outstanding falls to zero and the while loop terminates.
 
 An alternative implementation of :func:`clients_as_threads()` would have the parent process performing the :func:`~.connect()` and passing

@@ -120,6 +120,7 @@ Message And Registration
 
 .. autofunction:: def_type
 .. autofunction:: cast_to
+.. autofunction:: cast_back
 
 .. currentmodule:: layer_cake.virtual_point
 
