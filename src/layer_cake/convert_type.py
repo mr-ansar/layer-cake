@@ -334,11 +334,11 @@ def def_type(hint_or_portable):
 	"""
 	Register an application type. Return :class:`~.Portable`.
 
-	Register a type for use within an application. Convert Python hints into
-	a :class:`~.Portable` equivalent.
+	Register a type for use within an application. Where necessary, convert Python
+	hints into :class:`~.Portable` equivalents.
 
 	:param hint_or_portable: a type description
-	:type hint_or_portable: ref:`tip<layer-cake-type-reference>`
+	:type hint_or_portable: :ref:`tip<layer-cake-type-reference>`
 	"""
 	p = install_type(hint_or_portable)
 	return p
@@ -361,11 +361,10 @@ def cast_back(message: Any):
 	"""
 	Accept the results of a :func:`~.cast_to` or network receive. Returns a 3-tuple.
 
-	Splits the polymorphic form into a Python value, portable representation and
+	Splits the portable form into an application value, portable representation and
 	the technical details registered at runtime.
 
-	:param message: the application value
-	:param p: portable representation of type
+	:param message: the portable data
 	"""
 	if message is None:
 		return None, Any(), None
