@@ -175,9 +175,9 @@ class Faulted(object):
 	Generic error signal to interested party.
 	
 	:param condition: description of fault
-	:param explanation: description of cause (optional)
-	:param error_code: internal error code (optional)
-	:param exit_status: recommended exit status (optional)
+	:param explanation: description of cause
+	:param error_code: internal error code
+	:param exit_status: recommended exit status
 	"""
 	def __init__(self, condition: str=None, explanation: str=None, error_code: int=None, exit_status: int=None):
 		self.condition = condition or 'fault'
@@ -249,7 +249,7 @@ class Overloaded(Faulted):
 	
 	Derived from :class:`~.Faulted`.
 
-	:param text: description of condition (optional)
+	:param text: description of condition
 	"""
 	def __init__(self, text: str=None):
 		Faulted.__init__(self, text)
@@ -260,7 +260,7 @@ class OutOfService(Faulted):
 	
 	Derived from :class:`~.Faulted`.
 
-	:param text: description of load (optional)
+	:param text: description of load
 	"""
 	def __init__(self, text: str=None):
 		Faulted.__init__(self, text)
