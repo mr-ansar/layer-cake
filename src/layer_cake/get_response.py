@@ -68,7 +68,7 @@ class GetResponse(Point, Stateless):
 	:param request: message to be sent
 	:type request: :ref:`message<lc-message>`
 	:param server_address: where to send the message
-	:param seconds: acceptable delay (optional)
+	:param seconds: acceptable delay
 	"""
 	def __init__(self, request, server_address: Address, seconds: float=None):
 		Point.__init__(self)
