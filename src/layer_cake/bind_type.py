@@ -57,7 +57,7 @@ class PointRuntime(Runtime):
 	"""
 
 	def __init__(self,
-			name: str, module: str, return_type=None, api: tuple=None,
+			name: str, module: str, return_type=None, api: list=None,
 			**flags):
 		super().__init__(name, module, **flags)
 		self.return_type = return_type
@@ -65,7 +65,7 @@ class PointRuntime(Runtime):
 		self.value = None
 
 #
-def bind_routine(routine, return_type=None, api: tuple=None,
+def bind_routine(routine, return_type=None, api: list=None,
 		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
 		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
@@ -115,7 +115,7 @@ def bind_routine(routine, return_type=None, api: tuple=None,
 	install_portable(UserDefined(routine))
 
 
-def bind_point(point: Point, return_type=None, api: tuple=None, thread: str=None,
+def bind_point(point: Point, return_type=None, api: list=None, thread: str=None,
 		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
 		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
@@ -193,7 +193,7 @@ def unfold(folded):
 		else:
 			yield f
 
-def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: tuple=None, **explicit_schema):
+def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: list=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the non-FSM machine.
 
@@ -232,7 +232,7 @@ def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: t
 
 	machine.__art__.value = (shift, messaging)
 
-def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, api: tuple=None, **explicit_schema):
+def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, api: list=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the FSM machine.
 
