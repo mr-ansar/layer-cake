@@ -265,10 +265,10 @@ class Point(object):
 		:param object_type: type of object to instantiate
 		:type object_type: :ref:`object type<lc-object-type>`
 		:param args: positional arguments passed to the new object
-		:param object_ending: override standard termination (optional)
+		:param object_ending: override standard termination
 		:type object_ending: function
 		:param kw: named arguments passed to the new object
-		:rtype: :ref:`address<lc-address>`, or channel
+		:rtype: Address
 		"""
 		return create_a_point(object_type, object_ending, self.object_address, args, kw)
 
@@ -719,9 +719,9 @@ class Dispatching(Player):
 		"""Block until the next message arrives. Return the value.
 
 		Part of the "save" machinery that can buffer and replay messages. Sets addresses and
-		type information associated with the received message.
+		type information (i.e. ``Point.received_type``) associated with the received message.
 
-		:rtype: message
+		:rtype: application value
 		"""
 		m, t, r = self.pull()
 		self.to_address = t
@@ -756,9 +756,9 @@ class Buffering(Player):
 		"""Block until the next message arrives. Return the value.
 
 		Part of the "save" machinery that can buffer and replay messages. Sets addresses and
-		type information associated with the received message.
+		type information (i.e. ``Point.received_type``) associated with the received message.
 
-		:rtype: message
+		:rtype: application value
 		"""
 		m, t, r = self.pull()
 		self.to_address = t
