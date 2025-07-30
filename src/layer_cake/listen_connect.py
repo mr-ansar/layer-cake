@@ -236,7 +236,7 @@ class EndOfTransport(Enum):
 	"""
 	Enumeration of the reasons that a connect/listen transport might close.
 
-	* ON_REQUEST - local process sent a Closed.
+	* ON_REQUEST - local process sent a :class:`~.Close`.
 	* ABANDONED_BY_REMOTE - transport abandoned by network or remote.
 	* WENT_STALE - transport closed by keep-alive machinery.
 	* OUTBOUND_STREAMING - fault during outboud serialization.
@@ -252,7 +252,7 @@ class Close(object):
 	"""Session control, terminate the messaging transport.
 
 	:param message: completion message for the session
-	:type message: ref:`message<lc-message>`
+	:type message: :ref:`message<lc-message>`
 	:param reason: what prompted the termination
 	:param note: short diagnostic
 	:param error_code: platform error code
@@ -268,7 +268,7 @@ class Closed(object):
 	Session notification, local termination of the messaging transport.
 
 	:param message: completion message for the session
-	:type message: ref:`message<lc-message>`
+	:type message: :ref:`message<lc-message>`
 	:param reason: what prompted the termination
 	:param note: short diagnostic
 	:param error_code: platform error code
@@ -1221,7 +1221,7 @@ def TcpClient_ReceiveBlock(self, selector, s):
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
 			self.warning(f'cannot receive_a_message ({e})')
-			c = Close(value=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
+			c = Close(message=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
 			close_by_socket(transport, c, s)
 		return
 
@@ -1298,7 +1298,7 @@ def TcpTransport_ReadyToSend(self, transport, s):
 			return
 	except (CodecError, OverflowError, ValueError) as e:
 		self.warning(f'cannot send_a_block ({e})')
-		c = Close(value=None, reason=EndOfTransport.OUTBOUND_STREAMING, note=str(e))
+		c = Close(message=None, reason=EndOfTransport.OUTBOUND_STREAMING, note=str(e))
 		close_by_socket(transport, c, s)
 		return
 
@@ -1322,7 +1322,7 @@ def TcpTransport_ReceiveBlock(self, transport, s):
 			transport.receive_a_message(scrap, self)
 		except (CodecError, OverflowError, ValueError) as e:
 			self.warning(f'Cannot receive_a_message ({e})')
-			c = Close(value=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
+			c = Close(message=None, reason=EndOfTransport.INBOUND_STREAMING, note=str(e))
 			close_by_socket(transport, c, s)
 		return
 
@@ -1545,7 +1545,7 @@ AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
 def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
-			http_server: list[Type]=None, default_to_request: bool=True):
+			http_server: list=None, default_to_request: bool=True):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number. Returns UUID.
