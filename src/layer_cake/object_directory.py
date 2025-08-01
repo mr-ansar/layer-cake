@@ -487,23 +487,56 @@ class OpenDirectory(object): pass
 class ListDirectory(object): pass
 class GetDirectory(object): pass
 
+class DirectoryRoute(object):
+	"""A [scope][name] route from subscribed id to published id.
+
+	.
+	"""
+	def __init__(self, name: str=None,
+			subscribed_id: UUID=None, published_id: UUID=None):
+		self.name = name
+		self.subscribed_id = subscribed_id
+		self.published_id = published_id
+
+class PeerSession(object):
+	def __init__(self, name: str=None, route: Any=None, status: Any=None):
+		self.name = name
+		self.route = route
+		self.status = status
+
+class DirectoryPeer(object):
+	def __init__(self, subscribed_id: UUID=None, search: str=None, session: list[PeerSession]=None):
+		self.subscribed_id = subscribed_id
+		self.search = search
+		self.session = session or []
+
 class DirectoryListing(object):
 	"""Network administration, contents.
 
 	.
 	"""
-	def __init__(self, scope: ScopeOfDirectory=None,
+	def __init__(self, unique_id: UUID=None,
+			directory_address: Address=None, scope: ScopeOfDirectory=None,
 			published: list[Published]=None, subscribed: list[Subscribed]=None,
+			routed: list[DirectoryRoute]=None,
+			peer: dict[UUID, DirectoryPeer]=None,
 			accepted: int=0, sub_directory=None):
+		self.unique_id = unique_id
+		self.directory_address = directory_address
 		self.scope = scope
 		self.published = published or []
 		self.subscribed = subscribed or []
+		self.routed = routed or []
+		self.peer = peer or {}
 		self.accepted = accepted
 		self.sub_directory = sub_directory or {}
 
 bind(OpenDirectory)
 bind(ListDirectory)
 bind(GetDirectory)
+bind(DirectoryRoute)
+bind(PeerSession)
+bind(DirectoryPeer)
 bind(DirectoryListing, sub_directory=MapOf(UserDefined(HostPort), UserDefined(DirectoryListing)))
 
 #
@@ -636,7 +669,8 @@ class ConnectToPeer(Point, StateMachine):
 	
 	def delete_request(self, route_id):
 		d = None
-		for i, r in enumerate(self.request):
+		for i, ra in enumerate(self.request):
+			r, a = ra
 			if r.route_id == route_id:
 				d = i
 				break
@@ -677,11 +711,13 @@ def ConnectToPeer_PENDING_Connected(self, message):
 	self.connected = message
 
 	def opened(self, loop, args):
+		request = args.request
+		client_address = args.client_address
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
+			self.send(loop, client_address)
 			return
-		request = args.request
 
 		a = Available(name=request.name, scope=request.scope, route_id=request.route_id,
 			published_id=request.published_id, subscribed_id=request.subscribed_id,
@@ -689,22 +725,25 @@ def ConnectToPeer_PENDING_Connected(self, message):
 
 		self.forward(a, request.subscriber_address, loop.publisher_address)
 		self.available.append((a, request.subscriber_address, loop.publisher_address))
+		self.send(self.connected, client_address)
 
 	# Send OpenLoop on behalf of each client.
-	for r in self.request:
+	for ra in self.request:
+		r, a = ra
 		address = r.subscriber_address
 		open = OpenLoop(name=r.name, scope=r.scope, route_id=r.route_id,
 			subscribed_id=r.subscribed_id, published_id=r.published_id,
 			subscriber_address=address)
-		a = self.create(GetResponse, open, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-		self.on_return(a, opened, request=r)
+		g = self.create(GetResponse, open, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
+		self.on_return(g, opened, request=r, client_address=a)
 	return READY
 
 def ConnectToPeer_PENDING_NotConnected(self, message):
 	self.complete()
 
 def ConnectToPeer_PENDING_RequestLoop(self, message):
-	self.request.append(message)
+	request_and_address = (message, self.return_address)
+	self.request.append(request_and_address)
 	return PENDING
 
 def ConnectToPeer_PENDING_DropLoop(self, message):
@@ -714,14 +753,17 @@ def ConnectToPeer_PENDING_DropLoop(self, message):
 	return PENDING
 
 def ConnectToPeer_READY_RequestLoop(self, message):
-	self.request.append(message)
+	request_and_address = (message, self.return_address)
+	self.request.append(request_and_address)
 
 	def opened(self, loop, args):
+		request = args.request
+		client_address = args.client_address
 		if not isinstance(loop, LoopOpened):
 			self.warning(f'Closing peer connection (unexpected looping response {loop})')
 			self.send(Close(), self.connected.proxy_address)
+			self.send(loop, self.client_address)
 			return
-		request = args.request
 
 		a = Available(name=request.name, scope=request.scope, route_id=request.route_id,
 			published_id=request.published_id, subscribed_id=request.subscribed_id,
@@ -729,13 +771,14 @@ def ConnectToPeer_READY_RequestLoop(self, message):
 
 		self.forward(a, request.subscriber_address, loop.publisher_address)
 		self.available.append((a, request.subscriber_address, loop.publisher_address))
+		self.send(self.connected, client_address)
 
 	open = OpenLoop(name=message.name, scope=message.scope, route_id=message.route_id,
 		subscribed_id=message.subscribed_id, published_id=message.published_id,
 		subscriber_address=message.subscriber_address)
 
 	a = self.create(GetResponse, open, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-	self.on_return(a, opened, request=message)
+	self.on_return(a, opened, request=message, client_address=self.return_address)
 	return READY
 
 def ConnectToPeer_READY_DropLoop(self, message):
@@ -749,6 +792,8 @@ def ConnectToPeer_READY_DropLoop(self, message):
 
 	def closed(self, loop, args):
 		request, available, return_address = args.request, args.available, args.return_address
+		client_address = args.client_address
+
 		if isinstance(loop, LoopClosed):
 			d = Dropped(name=request.name, scope=request.scope, route_id=request.route_id,
 				subscribed_id=request.subscribed_id, published_id=request.published_id,
@@ -761,6 +806,7 @@ def ConnectToPeer_READY_DropLoop(self, message):
 			if len(self.request) == 0:
 				self.start(T1, GRACE_BEFORE_CLEARANCE)
 			return
+
 		if isinstance(self.connected, Connected):
 			self.send(Close(), self.connected.proxy_address)
 		self.complete()
@@ -771,7 +817,7 @@ def ConnectToPeer_READY_DropLoop(self, message):
 		subscriber_address=address)
 
 	a = self.create(GetResponse, close, self.connected.proxy_address, seconds=COMPLETE_A_LOOP)
-	self.on_return(a, closed, request=dr, available=da, return_address=self.return_address)
+	self.on_return(a, closed, request=dr[0], client_address=dr[1], available=da, return_address=self.return_address)
 	return READY
 
 def ConnectToPeer_READY_T1(self, message):
@@ -1010,6 +1056,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		self.accept_directories_at = accept_directories_at or HostPort()
 		self.encrypted = encrypted
 
+		self.unique_id = uuid.uuid4()
 		self.reconnect_delay = None
 
 		# Links to the upper and lower parts of the hierarchy.
@@ -1324,6 +1371,19 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.console(f'Clearing peer connection {args.ipp}')
 			self.peer_connect.pop(args.ipp, None)
 
+		def response_to_request(self, value, args):
+			r = args.request
+			sr = self.subscriber_routing.get(r.subscribed_id, None)
+			if sr is None:
+				return
+			if isinstance(value, Faulted):
+				self.console(f'Cannot establish session for {r.subscribed_id} ({value})')
+				return
+			arc = sr.get(r.name, None)
+			if arc is None:
+				return
+			arc[2] = value
+
 		# Initiate the given route. This is on a per-type basis.
 		# Should be a virtual method.
 		self.trace(f'Opening route "{route.name}"[{route.scope}]')
@@ -1344,7 +1404,8 @@ class ObjectDirectory(Threaded, StateMachine):
 				subscribed_id=route.subscribed_id, subscriber_address=address,
 				published_id=route.published_id,
 			)
-			self.send(r, c)
+			a = self.create(GetResponse, r, c)
+			self.on_return(a, response_to_request, request=r)
 
 		elif isinstance(route, RouteToAddress):
 			# Comms is between objects within this process, or this process and a library.
@@ -1454,8 +1515,35 @@ class ObjectDirectory(Threaded, StateMachine):
 		subscribed = [v[0] for k, v in self.listed_subscriber.items()]
 		accepted = len(self.accepted)
 
-		directory = DirectoryListing(scope=self.directory_scope,
-			published=published, subscribed=subscribed, accepted=accepted)
+		directory_route = {}
+		for k, v in self.routed_publish.items():
+			pub, routed = v
+			for r in routed:
+				directory_route[r] = DirectoryRoute(name=pub.name, published_id=pub.published_id)
+
+		for k, v in self.routed_subscribe.items():
+			sub, routed = v
+			for r in routed:
+				dr = directory_route.get(r, None)
+				if dr is None:
+					continue
+				dr.subscribed_id = sub.subscribed_id
+		
+		routed = [v for k, v in directory_route.items() if v.subscribed_id and v.published_id]
+
+		peer = {}
+		for subscribed_id, v in self.subscriber_routing.items():
+			ls = self.listed_subscriber.get(subscribed_id, None)
+			if ls is None:
+				continue
+			s = [PeerSession(name=name, route=t3[0], status=t3[2]) for name, t3 in v.items()]
+			c = DirectoryPeer(subscribed_id=subscribed_id, search=ls[0].search, session=s)
+			peer[subscribed_id] = c
+
+		directory = DirectoryListing(unique_id=self.unique_id,
+			directory_address=self.object_address, scope=self.directory_scope,
+			published=published, subscribed=subscribed,
+			routed=routed, peer=peer, accepted=accepted)
 
 		if accepted == 0:
 			self.send(directory, client_address)
@@ -1474,8 +1562,8 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		for k, v in self.accepted.items():
 			a, sub, pub = v
-			r = self.create(GetResponse, GetDirectory(), a.proxy_address)
-			self.on_return(r, response, directory=directory, ipp=a.opened_ipp, client_address=client_address)
+			g = self.create(GetResponse, GetDirectory(), a.proxy_address)
+			self.on_return(g, response, directory=directory, ipp=a.opened_ipp, client_address=client_address)
 
 #
 #
@@ -1800,7 +1888,7 @@ def ObjectDirectory_READY_SubscriberRoute(self, message):
 	# Per matched name
 	routing = subscriber.get(message.name, None)
 	if routing is None:
-		routing = [None, []]
+		routing = [None, [], ToBeConfirmed('no active route or loop not closed')]
 		subscriber[message.name] = routing
 
 	# Final checks.

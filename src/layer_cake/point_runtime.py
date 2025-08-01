@@ -58,6 +58,7 @@ __all__ = [
 	'Busy',
 	'Overloaded',
 	'OutOfService',
+	'ToBeConfirmed',
 	'SelectTable',
 	'select_list',
 	'select_list_adhoc'
@@ -265,6 +266,17 @@ class OutOfService(Faulted):
 	def __init__(self, text: str=None):
 		Faulted.__init__(self, text)
 
+class ToBeConfirmed(Faulted):
+	"""
+	An exchange is incomplete. An update is expected.
+	
+	Derived from :class:`~.Faulted`.
+
+	:param text: description of the delay
+	"""
+	def __init__(self, text: str=None):
+		Faulted.__init__(self, text)
+
 bind_message(Aborted,
 	condition=Unicode(),
 	explanation=Unicode(),
@@ -304,6 +316,14 @@ bind_message(Overloaded,
 )
 
 bind_message(OutOfService,
+	condition=Unicode(),
+	explanation=Unicode(),
+	error_code=Integer8(),
+	exit_status=Integer8(),
+	request=Unicode(),
+)
+
+bind_message(ToBeConfirmed,
 	condition=Unicode(),
 	explanation=Unicode(),
 	error_code=Integer8(),

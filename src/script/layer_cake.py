@@ -1511,27 +1511,38 @@ def print_scope(s):
 	i = s.rfind('.')
 	return s[i+1:]
 
-def print_directory(d, ipp=None, tab=0):
-	s = 'root'
-	if ipp:
-		s = str(ipp)
+def print_id(uid, full_identity=False):
+	s = str(uid)
+	if full_identity:
+		return s
+	return s[:8]
 
-	ds = print_scope(d.scope)
-	lc.output_line(f'[{ds}] {s}', tab=tab)
+def print_published(d, ipp, full_identity=False, ip_address=False, tab=0):
+	i = print_id(d.unique_id, full_identity=full_identity)
+	s = print_scope(d.scope)
+	a = str(ipp)
+
+	if ip_address:
+		lc.output_line(f'[{s}] ({i}) {ipp}', tab=tab)
+	else:
+		lc.output_line(f'[{s}] ({i})', tab=tab)
+
 	for p in d.published:
-		lc.output_line(f'"{p.name}" - {p.listening_ipp} ({p.published_id})', tab=tab+1)
+		t = print_id(p.published_id, full_identity=full_identity)
+		if ip_address:
+			lc.output_line(f'"{p.name}" ({t}) {p.listening_ipp}', tab=tab+1)
+		else:
+			lc.output_line(f'"{p.name}" ({t})', tab=tab+1)
 
 	for k, v in d.sub_directory.items():
-		print_directory(v, ipp=k, tab=tab+1)
+		print_published(v, k, full_identity=full_identity, ip_address=ip_address, tab=tab+1)
 
-def published(self, word, remainder):
+def published(self, word, remainder, full_identity: bool=False, ip_address: bool=False):
 	'''. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	if home_path is None:
 		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
-
-	cannot_network = f'cannot open "{home_path}"'
 
 	# Check for connected directory.
 	self.send(od.OpenDirectory(), pd.PD.directory)
@@ -1562,12 +1573,197 @@ def published(self, word, remainder):
 		elif isinstance(m, lc.Stop):
 			return lc.Aborted()
 
-	print_directory(m, tab=0)
+	print_published(m, 'root', full_identity=full_identity, ip_address=ip_address, tab=0)
 
 	output = None
 	return output
 
 lc.bind(published)
+
+#
+#
+def print_subscribed(d, ipp, full_identity=False, tab=0):
+	i = print_id(d.unique_id, full_identity=full_identity)
+	s = print_scope(d.scope)
+	a = str(ipp)
+
+	lc.output_line(f'[{s}] ({i})', tab=tab)
+	for s in d.subscribed:
+		t = print_id(s.subscribed_id, full_identity=full_identity)
+		lc.output_line(f'"{s.search}" ({t})', tab=tab+1)
+
+	for k, v in d.sub_directory.items():
+		print_subscribed(v, k, full_identity=full_identity, tab=tab+1)
+
+def subscribed(self, word, remainder, full_identity: bool=False):
+	'''. Return Faulted/None.'''
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	if home_path is None:
+		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+
+	# Check for connected directory.
+	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.start(lc.T1, 30.0)
+	while True:
+		m = self.input()
+		if isinstance(m, lc.Connected):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T1):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	# Directory is connected to something. Query
+	# for the whole tree.
+	self.send(od.ListDirectory(), pd.PD.directory)
+	self.start(lc.T2, 10.0)
+	while True:
+		m = self.input()
+		if isinstance(m, od.DirectoryListing):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T2):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	print_subscribed(m, 'root', full_identity=full_identity, tab=0)
+
+	output = None
+	return output
+
+lc.bind(subscribed)
+
+#
+#
+def print_routed(d, ipp, full_identity=False, tab=0):
+	i = print_id(d.unique_id, full_identity=full_identity)
+	s = print_scope(d.scope)
+	a = str(ipp)
+
+	lc.output_line(f'[{s}] ({i})', tab=tab)
+	for r in d.routed:
+		a = print_id(r.subscribed_id, full_identity=full_identity)
+		b = print_id(r.published_id, full_identity=full_identity)
+		lc.output_line(f'"{r.name}" ({a} -> {b})', tab=tab+1)
+
+	for k, v in d.sub_directory.items():
+		print_routed(v, k, full_identity=full_identity, tab=tab+1)
+
+def routed(self, word, remainder, full_identity: bool=False):
+	'''. Return Faulted/None.'''
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	if home_path is None:
+		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+
+	# Check for connected directory.
+	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.start(lc.T1, 30.0)
+	while True:
+		m = self.input()
+		if isinstance(m, lc.Connected):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T1):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	# Directory is connected to something. Query
+	# for the whole tree.
+	self.send(od.ListDirectory(), pd.PD.directory)
+	self.start(lc.T2, 10.0)
+	while True:
+		m = self.input()
+		if isinstance(m, od.DirectoryListing):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T2):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	print_routed(m, 'root', full_identity=full_identity, tab=0)
+
+	output = None
+	return output
+
+lc.bind(routed)
+
+#
+#
+def print_session(d, ipp, full_identity=False, tab=0):
+	i = print_id(d.unique_id, full_identity=full_identity)
+	s = print_scope(d.scope)
+	a = str(ipp)
+
+	lc.output_line(f'[{s}] ({i})', tab=tab)
+	for subscribed_id, dc in d.peer.items():
+		a = print_id(subscribed_id, full_identity=full_identity)
+		lc.output_line(f'"{dc.search}" ({a})', tab=tab+1)
+		for ds in dc.session:
+			route = ds.route
+			if route is None:
+				lc.output_line(f'"{ds.name}"', tab=tab+2)
+			elif isinstance(route, od.RouteOverLoop):
+				if isinstance(ds.status, lc.Connected):
+					opened_ipp = ds.status.opened_ipp
+					lc.output_line(f'"{ds.name}" ({opened_ipp} -> {route.ipp})', tab=tab+2)
+				else:
+					lc.output_line(f'"{ds.name}" {route.ipp} ({ds.status})', tab=tab+2)
+
+	for k, v in d.sub_directory.items():
+		print_session(v, k, full_identity=full_identity, tab=tab+1)
+
+def session(self, word, remainder, full_identity: bool=False):
+	'''. Return Faulted/None.'''
+	home_path = lc.CL.home_path or lc.DEFAULT_HOME
+
+	if home_path is None:
+		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+
+	# Check for connected directory.
+	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.start(lc.T1, 30.0)
+	while True:
+		m = self.input()
+		if isinstance(m, lc.Connected):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T1):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	# Directory is connected to something. Query
+	# for the whole tree.
+	self.send(od.ListDirectory(), pd.PD.directory)
+	self.start(lc.T2, 10.0)
+	while True:
+		m = self.input()
+		if isinstance(m, od.DirectoryListing):
+			break
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.T2):
+			return lc.TimedOut(m)
+		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+
+	print_session(m, 'root', full_identity=full_identity, tab=0)
+
+	output = None
+	return output
+
+lc.bind(session)
 
 #
 #
@@ -1600,6 +1796,9 @@ table = [
 
 	# Network administration.
 	published,
+	subscribed,
+	routed,
+	session,
 ]
 
 # For package scripting.
