@@ -523,7 +523,7 @@ class DirectoryListing(object):
 			published: list[Published]=None, subscribed: list[Subscribed]=None,
 			routed: list[DirectoryRoute]=None,
 			peer: dict[UUID, DirectoryPeer]=None,
-			accepted: int=0, sub_directory=None):
+			sub_directory: dict[HostPort, Address]=None):
 		self.unique_id = unique_id
 		self.executable = executable
 		self.directory_address = directory_address
@@ -534,7 +534,6 @@ class DirectoryListing(object):
 		self.subscribed = subscribed or []
 		self.routed = routed or []
 		self.peer = peer or {}
-		self.accepted = accepted
 		self.sub_directory = sub_directory or {}
 
 bind(OpenDirectory)
@@ -543,7 +542,7 @@ bind(GetDirectory)
 bind(DirectoryRoute)
 bind(PeerSession)
 bind(DirectoryPeer)
-bind(DirectoryListing, sub_directory=MapOf(UserDefined(HostPort), UserDefined(DirectoryListing)))
+bind(DirectoryListing)
 
 #
 class INITIAL: pass
@@ -1526,7 +1525,6 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		published = [v[0] for k, v in self.listed_publisher.items()]
 		subscribed = [v[0] for k, v in self.listed_subscriber.items()]
-		accepted = len(self.accepted)
 
 		directory_route = {}
 		for k, v in self.routed_publish.items():
@@ -1553,8 +1551,14 @@ class ObjectDirectory(Threaded, StateMachine):
 			c = DirectoryPeer(subscribed_id=subscribed_id, search=ls[0].search, session=s)
 			peer[subscribed_id] = c
 
+		sub_directory = {}
 		if isinstance(self.listening, Listening):
 			accept_directories_at = self.listening.listening_ipp
+			for k, v in self.accepted.items():
+				if k == client_address[-1]:
+					continue
+				ta, sub, pub = v
+				sub_directory[ta.opened_ipp] = ta.proxy_address
 		else:
 			accept_directories_at = self.accept_directories_at
 
@@ -1562,27 +1566,9 @@ class ObjectDirectory(Threaded, StateMachine):
 			directory_address=self.object_address, scope=self.directory_scope,
 			connect_to_directory=self.connect_to_directory, accept_directories_at=accept_directories_at,
 			published=published, subscribed=subscribed,
-			routed=routed, peer=peer, accepted=accepted)
+			routed=routed, peer=peer, sub_directory=sub_directory)
 
-		if accepted == 0:
-			self.send(directory, client_address)
-			return
-
-		def response(self, value, args):
-			sub = args.directory.sub_directory
-			accepted = args.directory.accepted
-
-			sub[args.ipp] = value
-			n = len(sub)
-			self.trace(f'Loaded directory from {args.ipp}', n=n, accepted=accepted)
-			if n < accepted:
-				return
-			self.send(args.directory, args.client_address)
-
-		for k, v in self.accepted.items():
-			a, sub, pub = v
-			g = self.create(GetResponse, GetDirectory(), a.proxy_address)
-			self.on_return(g, response, directory=directory, ipp=a.opened_ipp, client_address=client_address)
+		self.send(directory, client_address)
 
 #
 #

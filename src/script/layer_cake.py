@@ -1520,7 +1520,7 @@ def print_id(uid, full_identity=False):
 
 #
 #
-def print_network(d, ipp, full_identity=False, directory_addresses=False, tab=0,
+def print_network(self, d, ipp, full_identity=False, directory_addresses=False, tab=0,
 		list_published=False, list_subscribed=False, list_routed=False, list_connected=False):
 	i = print_id(d.unique_id, full_identity=full_identity)
 	s = print_scope(d.scope)
@@ -1576,8 +1576,16 @@ def print_network(d, ipp, full_identity=False, directory_addresses=False, tab=0,
 					lc.output_line(f'<A>"{ds.name}"[{scope}] ({si} -> {pi})', tab=tab+2)
 
 	for k, v in d.sub_directory.items():
-		print_network(v, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
-			list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
+		self.send(od.GetDirectory(), v)
+		m = self.input()
+		if isinstance(m, od.DirectoryListing):
+			print_network(self, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
+				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
+			continue
+		elif isinstance(m, lc.Faulted):
+			return m
+		elif isinstance(m, lc.Stop):
+			return lc.TimedOut(m)
 
 def network(self, word, remainder, full_identity: bool=False, directory_addresses: bool=False,
 		list_published: bool=False, list_subscribed: bool=False, list_routed: bool=False, list_connected: bool=False):
@@ -1616,7 +1624,7 @@ def network(self, word, remainder, full_identity: bool=False, directory_addresse
 		elif isinstance(m, lc.Stop):
 			return lc.Aborted()
 
-	print_network(m, 'root', full_identity=full_identity, directory_addresses=directory_addresses, tab=0,
+	print_network(self, m, 'root', full_identity=full_identity, directory_addresses=directory_addresses, tab=0,
 		list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
 
 	output = None
