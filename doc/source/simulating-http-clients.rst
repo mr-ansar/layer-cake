@@ -3,6 +3,10 @@
 Simulating HTTP Clients
 #######################
 
+.. note::
+
+	To follow the materials mentioned in this section, change to the ``layer-cake-demos/testing`` folder.
+
 A testing tool is needed for the demonstration network service. As much as possible it needs to simulate the workload that
 the network service will experience. There will be;
 
@@ -185,7 +189,7 @@ of each action resulting in a unique reaction. It’s worth noting that the :cla
 around the decrement of ``self.request_count`` and that the :func:`ConnectAndRequest_Faulted()` and :func:`ConnectAndRequest_Stop()`
 functions may be called at any time within the lifespan of the machine.
 
-Further implementations of ConnectAndRequest are provided for reference;
+Further implementations of ``ConnectAndRequest`` are provided for reference;
 
 * connect\_and\_request.py … thread allocated to each client  
 * connect\_and\_request\_not\_threaded.py … all clients execute on default thread  
