@@ -1555,7 +1555,7 @@ class ObjectDirectory(Threaded, StateMachine):
 		if isinstance(self.listening, Listening):
 			accept_directories_at = self.listening.listening_ipp
 			for k, v in self.accepted.items():
-				if k == client_address[-1]:
+				if len(client_address) == 1 and k == client_address[-1]:
 					continue
 				ta, sub, pub = v
 				sub_directory[ta.opened_ipp] = ta.proxy_address
