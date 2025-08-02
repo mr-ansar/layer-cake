@@ -55,6 +55,8 @@ class HostPort(object):
 		self.port = port
 
 	def __str__(self):
+		if self.host is None:
+			return '(not set)'
 		return f'{self.host}:{self.port}'
 
 	def inet(self):

@@ -26,6 +26,8 @@
 """
 __docformat__ = 'restructuredtext'
 
+import os
+import sys
 from datetime import datetime
 import uuid
 import re
@@ -515,15 +517,19 @@ class DirectoryListing(object):
 
 	.
 	"""
-	def __init__(self, unique_id: UUID=None,
+	def __init__(self, unique_id: UUID=None, executable: str=None,
 			directory_address: Address=None, scope: ScopeOfDirectory=None,
+			connect_to_directory: HostPort=None, accept_directories_at: HostPort=None,
 			published: list[Published]=None, subscribed: list[Subscribed]=None,
 			routed: list[DirectoryRoute]=None,
 			peer: dict[UUID, DirectoryPeer]=None,
 			accepted: int=0, sub_directory=None):
 		self.unique_id = unique_id
+		self.executable = executable
 		self.directory_address = directory_address
 		self.scope = scope
+		self.connect_to_directory = connect_to_directory
+		self.accept_directories_at = accept_directories_at
 		self.published = published or []
 		self.subscribed = subscribed or []
 		self.routed = routed or []
@@ -1511,6 +1517,13 @@ class ObjectDirectory(Threaded, StateMachine):
 			self.send(PublishedDirectory(published, subscribed), self.connected.proxy_address)
 
 	def get_directory(self, client_address):
+		argv = sys.argv
+		if argv[0].rfind('python') == -1:
+			name = argv[0]
+		else:
+			name = argv[1]
+		executable = os.path.basename(name)
+
 		published = [v[0] for k, v in self.listed_publisher.items()]
 		subscribed = [v[0] for k, v in self.listed_subscriber.items()]
 		accepted = len(self.accepted)
@@ -1540,8 +1553,14 @@ class ObjectDirectory(Threaded, StateMachine):
 			c = DirectoryPeer(subscribed_id=subscribed_id, search=ls[0].search, session=s)
 			peer[subscribed_id] = c
 
-		directory = DirectoryListing(unique_id=self.unique_id,
+		if isinstance(self.listening, Listening):
+			accept_directories_at = self.listening.listening_ipp
+		else:
+			accept_directories_at = self.accept_directories_at
+
+		directory = DirectoryListing(unique_id=self.unique_id, executable=executable,
 			directory_address=self.object_address, scope=self.directory_scope,
+			connect_to_directory=self.connect_to_directory, accept_directories_at=accept_directories_at,
 			published=published, subscribed=subscribed,
 			routed=routed, peer=peer, accepted=accepted)
 
@@ -1976,6 +1995,10 @@ def ObjectDirectory_READY_GetDirectory(self, message):
 	self.get_directory(self.return_address)
 	return READY
 
+def ObjectDirectory_READY_Ping(self, message):
+	self.reply(message)
+	return READY
+
 OBJECT_DIRECTORY_DISPATCH = {
 	INITIAL: (
 		(Start,),
@@ -2000,7 +2023,8 @@ OBJECT_DIRECTORY_DISPATCH = {
 		Returned,
 		Stop,
 		Incognito,
-		OpenDirectory, ListDirectory, GetDirectory,),
+		OpenDirectory, ListDirectory, GetDirectory,
+		Ping,),
 		()
 	),
 }
