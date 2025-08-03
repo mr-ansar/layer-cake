@@ -520,6 +520,7 @@ class DirectoryListing(object):
 	"""
 	def __init__(self, unique_id: UUID=None, executable: str=None,
 			directory_address: Address=None, scope: ScopeOfDirectory=None,
+			primary_ip: str=None,
 			connect_to_directory: HostPort=None, accept_directories_at: HostPort=None,
 			published: list[Published]=None, subscribed: list[Subscribed]=None,
 			routed: list[DirectoryRoute]=None,
@@ -529,6 +530,7 @@ class DirectoryListing(object):
 		self.executable = executable
 		self.directory_address = directory_address
 		self.scope = scope
+		self.primary_ip = primary_ip or '(not detected)'
 		self.connect_to_directory = connect_to_directory
 		self.accept_directories_at = accept_directories_at
 		self.published = published or []
@@ -1553,6 +1555,8 @@ class ObjectDirectory(Threaded, StateMachine):
 			c = DirectoryPeer(subscribed_id=subscribed_id, search=ls[0].search, session=s)
 			peer[subscribed_id] = c
 
+		primary_ip = get_local_ip()
+
 		sub_directory = {}
 		if isinstance(self.listening, Listening):
 			accept_directories_at = self.listening.listening_ipp
@@ -1565,6 +1569,7 @@ class ObjectDirectory(Threaded, StateMachine):
 
 		directory = DirectoryListing(unique_id=self.unique_id, executable=executable,
 			directory_address=self.object_address, scope=self.directory_scope,
+			primary_ip=primary_ip,
 			connect_to_directory=self.connect_to_directory, accept_directories_at=accept_directories_at,
 			published=published, subscribed=subscribed,
 			routed=routed, peer=peer, sub_directory=sub_directory)
