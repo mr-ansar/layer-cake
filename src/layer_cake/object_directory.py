@@ -489,6 +489,14 @@ class OpenDirectory(object): pass
 class ListDirectory(object): pass
 class GetDirectory(object): pass
 
+class DirectoryOpened(object):
+	"""A [scope][name] route from subscribed id to published id.
+
+	.
+	"""
+	def __init__(self, unique_id: UUID=None):
+		self.unique_id = unique_id
+
 class DirectoryRoute(object):
 	"""A [scope][name] route from subscribed id to published id.
 
@@ -537,6 +545,7 @@ class DirectoryListing(object):
 		self.sub_directory = sub_directory or {}
 
 bind(OpenDirectory)
+bind(DirectoryOpened)
 bind(ListDirectory)
 bind(GetDirectory)
 bind(DirectoryRoute)
@@ -1555,8 +1564,6 @@ class ObjectDirectory(Threaded, StateMachine):
 		if isinstance(self.listening, Listening):
 			accept_directories_at = self.listening.listening_ipp
 			for k, v in self.accepted.items():
-				if len(client_address) == 1 and k == client_address[-1]:
-					continue
 				ta, sub, pub = v
 				sub_directory[ta.opened_ipp] = ta.proxy_address
 		else:
@@ -1600,7 +1607,7 @@ def ObjectDirectory_READY_Connected(self, message):
 	self.connected = message
 	self.push_up()
 	if self.directory_opened:
-		self.send(message, self.directory_opened)
+		self.send(DirectoryOpened(self.unique_id), self.directory_opened)
 		self.directory_opened = None
 	return READY
 
@@ -1609,7 +1616,8 @@ def ObjectDirectory_READY_NotConnected(self, message):
 		self.connected = message
 		self.start(T1, self.reconnect_delay)
 		if self.directory_opened:
-			self.send(message, self.directory_opened)
+			self.send(DirectoryOpened(self.unique_id), self.directory_opened)
+			self.directory_opened = None
 	return READY
 
 def ObjectDirectory_READY_T1(self, message):
@@ -1960,7 +1968,7 @@ def ObjectDirectory_READY_OpenDirectory(self, message):
 	self.directory_opened = self.return_address
 
 	if self.connected:
-		self.reply(self.connected)
+		self.reply(DirectoryOpened(self.unique_id))
 		return READY
 
 	if self.connect_to_directory.host is None:

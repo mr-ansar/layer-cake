@@ -1520,7 +1520,7 @@ def print_id(uid, full_identity=False):
 
 #
 #
-def print_network(self, d, ipp, full_identity=False, directory_addresses=False, tab=0,
+def print_network(self, unique_id, d, ipp, full_identity=False, directory_addresses=False, tab=0,
 		list_published=False, list_subscribed=False, list_routed=False, list_connected=False):
 	i = print_id(d.unique_id, full_identity=full_identity)
 	s = print_scope(d.scope)
@@ -1576,16 +1576,22 @@ def print_network(self, d, ipp, full_identity=False, directory_addresses=False, 
 					lc.output_line(f'<A>"{ds.name}"[{scope}] ({si} -> {pi})', tab=tab+2)
 
 	for k, v in d.sub_directory.items():
+		if len(v) < 2:
+			continue
 		self.send(od.GetDirectory(), v)
 		m = self.input()
 		if isinstance(m, od.DirectoryListing):
-			print_network(self, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
+			r = print_network(self, unique_id, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
 				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
+			if isinstance(r, lc.Faulted):
+				return r
 			continue
 		elif isinstance(m, lc.Faulted):
 			return m
 		elif isinstance(m, lc.Stop):
 			return lc.TimedOut(m)
+	
+	return None
 
 def network(self, word, remainder, full_identity: bool=False, directory_addresses: bool=False,
 		list_published: bool=False, list_subscribed: bool=False, list_routed: bool=False, list_connected: bool=False):
@@ -1600,7 +1606,7 @@ def network(self, word, remainder, full_identity: bool=False, directory_addresse
 	self.start(lc.T1, 30.0)
 	while True:
 		m = self.input()
-		if isinstance(m, lc.Connected):
+		if isinstance(m, od.DirectoryOpened):
 			break
 		elif isinstance(m, lc.Faulted):
 			return m
@@ -1611,6 +1617,7 @@ def network(self, word, remainder, full_identity: bool=False, directory_addresse
 
 	# Directory is connected to something. Query
 	# for the whole tree.
+	unique_id = m.unique_id
 	self.send(od.ListDirectory(), pd.PD.directory)
 	self.start(lc.T2, 10.0)
 	while True:
@@ -1624,10 +1631,9 @@ def network(self, word, remainder, full_identity: bool=False, directory_addresse
 		elif isinstance(m, lc.Stop):
 			return lc.Aborted()
 
-	print_network(self, m, 'root', full_identity=full_identity, directory_addresses=directory_addresses, tab=0,
+	output = print_network(self, unique_id, m, 'root', full_identity=full_identity, directory_addresses=directory_addresses, tab=0,
 		list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
 
-	output = None
 	return output
 
 lc.bind(network)
