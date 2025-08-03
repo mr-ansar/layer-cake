@@ -1521,7 +1521,13 @@ def print_id(uid, full_identity=False):
 #
 #
 def print_network(self, unique_id, d, ipp, full_identity=False, directory_addresses=False, tab=0,
-		list_published=False, list_subscribed=False, list_routed=False, list_connected=False):
+		list_published=False, list_subscribed=False, list_routed=False, list_connected=False, bread=None):
+	
+	bread = bread or set()
+	if d.unique_id in bread:
+		return
+	bread.add(d.unique_id)
+
 	i = print_id(d.unique_id, full_identity=full_identity)
 	s = print_scope(d.scope)
 	a = str(ipp)
@@ -1576,19 +1582,19 @@ def print_network(self, unique_id, d, ipp, full_identity=False, directory_addres
 					lc.output_line(f'<A>"{ds.name}"[{scope}] ({si} -> {pi})', tab=tab+2)
 
 	for k, v in d.sub_directory.items():
-		if len(v) < 2:
-			continue
 		self.send(od.GetDirectory(), v)
 		m = self.input()
 		if isinstance(m, od.DirectoryListing):
 			r = print_network(self, unique_id, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
-				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
+				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected, bread=bread)
 			if isinstance(r, lc.Faulted):
 				return r
 			continue
 		elif isinstance(m, lc.Faulted):
 			return m
 		elif isinstance(m, lc.Stop):
+			return lc.Aborted()
+		else:
 			return lc.Aborted()
 	
 	return None
