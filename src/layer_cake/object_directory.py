@@ -1562,7 +1562,6 @@ class ObjectDirectory(Threaded, StateMachine):
 			accept_directories_at = self.listening.listening_ipp
 			for k, v in self.accepted.items():
 				ta, sub, pub = v
-				self.console(opened_ipp=ta.opened_ipp, proxy_address=ta.proxy_address)
 				sub_directory[ta.opened_ipp] = ta.proxy_address
 		else:
 			accept_directories_at = self.accept_directories_at
