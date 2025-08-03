@@ -810,8 +810,8 @@ def w2p_address(c, w, t):
 			# over this connection.
 			w.pop()
 			if len(w) == 0:
-				# Send it to the local proxy.
-				w.append(c.return_proxy)
+				# Except when its the blind address.
+				w.append(c.local_termination)
 		else:
 			w.append(c.return_proxy)
 	p = tuple(w)	# Now convert.

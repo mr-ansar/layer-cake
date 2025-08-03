@@ -488,14 +488,7 @@ bind(Dropped)
 class OpenDirectory(object): pass
 class ListDirectory(object): pass
 class GetDirectory(object): pass
-
-class DirectoryOpened(object):
-	"""A [scope][name] route from subscribed id to published id.
-
-	.
-	"""
-	def __init__(self, unique_id: UUID=None):
-		self.unique_id = unique_id
+class DirectoryOpened(object): pass
 
 class DirectoryRoute(object):
 	"""A [scope][name] route from subscribed id to published id.
@@ -1608,7 +1601,7 @@ def ObjectDirectory_READY_Connected(self, message):
 	self.connected = message
 	self.push_up()
 	if self.directory_opened:
-		self.send(DirectoryOpened(self.unique_id), self.directory_opened)
+		self.send(DirectoryOpened(), self.directory_opened)
 		self.directory_opened = None
 	return READY
 
@@ -1617,7 +1610,7 @@ def ObjectDirectory_READY_NotConnected(self, message):
 		self.connected = message
 		self.start(T1, self.reconnect_delay)
 		if self.directory_opened:
-			self.send(DirectoryOpened(self.unique_id), self.directory_opened)
+			self.send(DirectoryOpened(), self.directory_opened)
 			self.directory_opened = None
 	return READY
 
@@ -1969,7 +1962,7 @@ def ObjectDirectory_READY_OpenDirectory(self, message):
 	self.directory_opened = self.return_address
 
 	if self.connected:
-		self.reply(DirectoryOpened(self.unique_id))
+		self.reply(DirectoryOpened())
 		return READY
 
 	if self.connect_to_directory.host is None:

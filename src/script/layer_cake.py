@@ -1520,17 +1520,21 @@ def print_id(uid, full_identity=False):
 
 #
 #
-def print_network(self, unique_id, d, ipp, full_identity=False, directory_addresses=False, tab=0,
+def print_network(self, d, ipp, full_identity=False, directory_addresses=False, tab=0,
 		list_published=False, list_subscribed=False, list_routed=False, list_connected=False, bread=None):
-	
-	bread = bread or set()
-	if d.unique_id in bread:
-		return
-	bread.add(d.unique_id)
+
+	#lc.output_line(f'scope={d.scope}, unique_id={d.unique_id}, subs={len(d.sub_directory)}')
+	#for k, v in d.sub_directory.items():
+	#	lc.output_line(f'k={k}, v={v}')
 
 	i = print_id(d.unique_id, full_identity=full_identity)
 	s = print_scope(d.scope)
 	a = str(ipp)
+
+	#bread = bread or set()
+	#if d.unique_id in bread:
+	#	return
+	#bread.add(d.unique_id)
 
 	if directory_addresses:
 		lc.output_line(f'[{s}] {d.executable} ({i}) <C>{d.connect_to_directory} <L>{d.accept_directories_at}', tab=tab)
@@ -1584,17 +1588,14 @@ def print_network(self, unique_id, d, ipp, full_identity=False, directory_addres
 	for k, v in d.sub_directory.items():
 		self.send(od.GetDirectory(), v)
 		m = self.input()
+		tag = lc.message_to_tag(m)
+		#lc.output_line(f'm={tag}, k={k}, v={v}', tab=tab+1)
 		if isinstance(m, od.DirectoryListing):
-			r = print_network(self, unique_id, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
+			print_network(self, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
 				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected, bread=bread)
-			if isinstance(r, lc.Faulted):
-				return r
-			continue
 		elif isinstance(m, lc.Faulted):
 			return m
 		elif isinstance(m, lc.Stop):
-			return lc.Aborted()
-		else:
 			return lc.Aborted()
 	
 	return None
@@ -1623,22 +1624,21 @@ def network(self, word, remainder, full_identity: bool=False, directory_addresse
 
 	# Directory is connected to something. Query
 	# for the whole tree.
-	unique_id = m.unique_id
 	self.send(od.ListDirectory(), pd.PD.directory)
 	self.start(lc.T2, 10.0)
-	while True:
-		m = self.input()
-		if isinstance(m, od.DirectoryListing):
-			break
-		elif isinstance(m, lc.Faulted):
-			return m
-		elif isinstance(m, lc.T2):
-			return lc.TimedOut(m)
-		elif isinstance(m, lc.Stop):
-			return lc.Aborted()
 
-	output = print_network(self, unique_id, m, 'root', full_identity=full_identity, directory_addresses=directory_addresses, tab=0,
-		list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
+	m = self.input()
+	if isinstance(m, od.DirectoryListing):
+		output = print_network(self, m, 'root',
+			full_identity=full_identity, directory_addresses=directory_addresses,
+			list_published=list_published, list_subscribed=list_subscribed,
+			list_routed=list_routed, list_connected=list_connected)
+	elif isinstance(m, lc.Faulted):
+		return m
+	elif isinstance(m, lc.T2):
+		return lc.TimedOut(m)
+	elif isinstance(m, lc.Stop):
+		return lc.Aborted()
 
 	return output
 
