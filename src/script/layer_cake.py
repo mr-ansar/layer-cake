@@ -1589,7 +1589,7 @@ def print_network(self, unique_id, d, ipp, full_identity=False, directory_addres
 		elif isinstance(m, lc.Faulted):
 			return m
 		elif isinstance(m, lc.Stop):
-			return lc.TimedOut(m)
+			return lc.Aborted()
 	
 	return None
 
