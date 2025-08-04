@@ -914,7 +914,7 @@ def print_id(uid, full_identity=False):
 #
 #
 def print_network(self, d, ipp, full_identity=False, directory_addresses=False, tab=0,
-		list_published=False, list_subscribed=False, list_routed=False, list_connected=False, bread=None):
+		list_published=False, list_subscribed=False, list_routed=False, list_connected=False):
 
 	#lc.output_line(f'scope={d.scope}, unique_id={d.unique_id}, subs={len(d.sub_directory)}')
 	#for k, v in d.sub_directory.items():
@@ -923,11 +923,6 @@ def print_network(self, d, ipp, full_identity=False, directory_addresses=False, 
 	i = print_id(d.unique_id, full_identity=full_identity)
 	s = print_scope(d.scope)
 	a = str(ipp)
-
-	#bread = bread or set()
-	#if d.unique_id in bread:
-	#	return
-	#bread.add(d.unique_id)
 
 	if directory_addresses:
 		lc.output_line(f'[{s}] {d.executable} ({i}) {d.primary_ip} <C>{d.connect_to_directory} <L>{d.accept_directories_at}', tab=tab)
@@ -939,53 +934,51 @@ def print_network(self, d, ipp, full_identity=False, directory_addresses=False, 
 			t = print_id(p.published_id, full_identity=full_identity)
 			ipp = p.listening_ipp
 			if ipp and ipp.host:
-				lc.output_line(f'<P>"{p.name}" ({t}) {p.listening_ipp}', tab=tab+1)
+				lc.output_line(f'# "{p.name}" ({t}) {p.listening_ipp}', tab=tab+1)
 			else:
-				lc.output_line(f'<P>"{p.name}" ({t})', tab=tab+1)
+				lc.output_line(f'# "{p.name}" ({t})', tab=tab+1)
 
 	if list_subscribed:
 		for s in d.subscribed:
 			t = print_id(s.subscribed_id, full_identity=full_identity)
-			lc.output_line(f'<S>"{s.search}" ({t})', tab=tab+1)
+			lc.output_line(f'? "{s.search}" ({t})', tab=tab+1)
 
 	if list_routed:
 		for r in d.routed:
 			a = print_id(r.subscribed_id, full_identity=full_identity)
 			b = print_id(r.published_id, full_identity=full_identity)
-			lc.output_line(f'<R>"{r.name}" ({a} -> {b})', tab=tab+1)
+			lc.output_line(f'<>" {r.name}" ({a} -> {b})', tab=tab+1)
 
 	if list_connected:
 		for subscribed_id, dc in d.peer.items():
 			a = print_id(subscribed_id, full_identity=full_identity)
-			lc.output_line(f'<S>"{dc.search}" ({a})', tab=tab+1)
+			lc.output_line(f'? "{dc.search}" ({a})', tab=tab+1)
 			for ds in dc.session:
 				route = ds.route
 				scope = print_scope(route.scope)
 				if route is None:
-					lc.output_line(f'<X>"{ds.name}" (no active route)', tab=tab+2)
+					lc.output_line(f'> "{ds.name}" (no active route)', tab=tab+2)
 				elif isinstance(route, od.RouteOverLoop):
 					if isinstance(ds.status, lc.Connected):
 						requested_ipp = ds.status.request.requested_ipp
 						opened_ipp = ds.status.opened_ipp
-						lc.output_line(f'<C>"{ds.name}"[{scope}] ({opened_ipp} -> {requested_ipp})', tab=tab+2)
+						lc.output_line(f'> "{ds.name}"[{scope}] ({opened_ipp} -> {requested_ipp})', tab=tab+2)
 					elif isinstance(ds.status, lc.Faulted):
 						lc.output_line(f'"{ds.name}"[{scope}] {route.ipp} ({ds.status})', tab=tab+2)
 					else:
 						tag = lc.message_to_tag(ds.status)
-						lc.output_line(f'<C>"{ds.name}"[{scope}] {route.ipp} (unexpected "{tag}")', tab=tab+2)
+						lc.output_line(f'> "{ds.name}"[{scope}] {route.ipp} (unexpected "{tag}")', tab=tab+2)
 				elif isinstance(route, od.RouteToAddress):
 					pi = print_id(route.published_id, full_identity=full_identity)
 					si = print_id(route.subscribed_id, full_identity=full_identity)
-					lc.output_line(f'<A>"{ds.name}"[{scope}] ({si} -> {pi})', tab=tab+2)
+					lc.output_line(f'> "{ds.name}"[{scope}] ({si} -> {pi})', tab=tab+2)
 
 	for k, v in d.sub_directory.items():
 		self.send(od.GetDirectory(), v)
 		m = self.input()
-		tag = lc.message_to_tag(m)
-		#lc.output_line(f'm={tag}, k={k}, v={v}', tab=tab+1)
 		if isinstance(m, od.DirectoryListing):
 			print_network(self, m, k, full_identity=full_identity, directory_addresses=directory_addresses, tab=tab+1,
-				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected, bread=bread)
+				list_published=list_published, list_subscribed=list_subscribed, list_routed=list_routed, list_connected=list_connected)
 		elif isinstance(m, lc.Faulted):
 			return m
 		elif isinstance(m, lc.Stop):
@@ -993,16 +986,17 @@ def print_network(self, d, ipp, full_identity=False, directory_addresses=False, 
 	
 	return None
 
-def network(self, word, remainder, full_identity: bool=False, directory_addresses: bool=False,
+def network(self, word, remainder, open_scope: lc.ScopeOfDirectory=None, full_identity: bool=False, directory_addresses: bool=False,
 		list_published: bool=False, list_subscribed: bool=False, list_routed: bool=False, list_connected: bool=False):
 	'''. Return Faulted/None.'''
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
 
 	if home_path is None:
 		return lc.Faulted(f'cannot edit "{home_path}"', f'no role specified')
+	open_scope = open_scope or lc.ScopeOfDirectory.HOST
 
 	# Check for connected directory.
-	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.send(od.OpenDirectory(scope=open_scope), pd.PD.directory)
 	self.start(lc.T1, 30.0)
 	while True:
 		m = self.input()
@@ -1068,15 +1062,16 @@ def find_name(self, d, name):
 
 	return None
 
-def ping(self, word, remainder, ping_count: int=4):
+def ping(self, word, remainder, open_scope: lc.ScopeOfDirectory=None, ping_count: int=4):
 	'''. Return Faulted/None.'''
 	name = word_i(word, 0)
 
 	if name is None:
 		return lc.Faulted(f'cannot ping', f'no identity specified')
+	open_scope = open_scope or lc.ScopeOfDirectory.HOST
 
 	# Check for connected directory.
-	self.send(od.OpenDirectory(), pd.PD.directory)
+	self.send(od.OpenDirectory(scope=open_scope), pd.PD.directory)
 	self.start(lc.T1, 30.0)
 	while True:
 		m = self.input()
