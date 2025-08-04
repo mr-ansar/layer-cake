@@ -43,7 +43,7 @@ __all__ = [
 # Register service or interest in service.
 class ScopeOfDirectory(Enum):
 	"""
-	Enumeration of the scopes within the layer cake directory.
+	Enumeration of the scopes within the **layer-cake** directory.
 
 	* LAN - local area network
 	* HOST - networking limited to 127.0.0.0
