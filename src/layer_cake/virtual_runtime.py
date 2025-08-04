@@ -49,7 +49,7 @@ __all__ = [
 # of logging by its designated significance.
 class USER_LOG(Enum):
 	"""
-	Enumeration of the levels within the layer cake logging.
+	Enumeration of the levels within the **layer-cake** logging.
 
 	* NONE - no logs at all
 	* FAULT - a definite problem that will compromise the service.
