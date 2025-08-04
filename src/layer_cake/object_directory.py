@@ -485,7 +485,10 @@ bind(Dropped)
 
 #
 #
-class OpenDirectory(object): pass
+class OpenDirectory(object):
+	def __init__(self, scope: ScopeOfDirectory=None):
+		self.scope = scope or ScopeOfDirectory.HOST
+
 class ListDirectory(object): pass
 class GetDirectory(object): pass
 class DirectoryOpened(object): pass
@@ -1970,7 +1973,7 @@ def ObjectDirectory_READY_OpenDirectory(self, message):
 		return READY
 
 	if self.connect_to_directory.host is None:
-		pa = PublishAs(name='open-directory', scope=ScopeOfDirectory.LAN)
+		pa = PublishAs(name='open-directory', scope=message.scope)
 		self.auto_connect(pa)
 
 	return READY
