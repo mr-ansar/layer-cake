@@ -114,7 +114,7 @@ class ConnectStream(object):
 	:param encrypted: enable encryption
 	:param keep_alive: monitor the connection
 	:param http_client: inserted as the path in the request URI
-	:param layer_cake_json: enable layer cake JSON body
+	:param layer_cake_json: enable **layer-cake** JSON body
 	"""
 	def __init__(self, requested_ipp: HostPort=None, encrypted: bool=False, keep_alive: bool=False,
 			http_client: str=None, layer_cake_json: bool=False):
