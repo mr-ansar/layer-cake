@@ -184,7 +184,7 @@ a database, where many responses are the result of querying different database t
 
 **Layer-cake** software that restricts itself to only sending registered messages can completely avoid the details involved in sending
 data such as ``list[list[float]]``. However, the capability to do so is fundamental to the complete integration of multithreading and
-multiprocessing into layer cake processes. It does allow for some nice behaviour around the command line (refer to later sections).
+multiprocessing into **layer-cake** processes. It does allow for some nice behaviour around the command line (refer to later sections).
 
 .. note::
 
@@ -252,9 +252,9 @@ will elicit this behaviour;
 	$ python3 test_server_1.py
 	test_server_1.py: cannot listen at "127.0.0.1:5050" ([Errno 98] Address already in use)
 
-Messages are sent to a specified address. These addresses are layer cake addresses, i.e. not network addresses or machine pointers. They are more
-akin to a unique identity, such as the special parameter passed to :func:`server`. At that point where a message is received, the address of
-the sending party is always available as ``self.return_address``. This is how the response table is routed back to the proper HTTP client.
+Messages are sent to an address passed to :meth:`~.Point.send`. These addresses are **layer-cake** addresses, i.e. not network addresses or
+machine pointers. They are a runtime, unique identity. At that point where a message is received, the address of the sending party is always
+available as ``self.return_address``. This is how the response table is routed back to the proper HTTP client.
 
 Message-driven software inevitably includes message dispatching code;
 
@@ -337,7 +337,7 @@ sub-optimal. A few minor changes arrange for full concurrency;
 The direct call to :func:`texture` has been replaced with :meth:`~.Point.create`. The asynchronous framework initiates a platform thread
 and causes the new thread to call :func:`texture`. This is similar to what occurs during startup of the server, i.e. :func:`~.create`.
 
-An address for the new instance is returned in the “a“ variable and that is used to register a callback to the :func:`respond`
+An address for the new instance is returned in the ``a`` variable and that is used to register a callback to the :func:`respond`
 function. When the :func:`texture` call completes the framework generates a :class:`~.Returned` message and routes it back to the
 server. Processing of the :class:`~.Returned` message ultimately results in the deferred call to :func:`respond`, passing the response
 and the collection of saved arguments passed to :meth:`~.Point.on_return`, e.g. ``return_address=self.return_address``. This is critical to
@@ -659,5 +659,5 @@ of a spool should be checking for what they receive as a response. The :class:`~
 from the :class:`~.Faulted` message.
 
 In the event that a worker terminates and depending on the value of ``stand_down``, the spool replaces it with a fresh instance.
-It inserts a randomized delay into this processing to avoid thrashing. The delay applied is ``stand_down`` seconds plus or minus
-up to 25%.
+It inserts a randomized delay into this processing to avoid any unfortunate synchronization. The delay applied is ``stand_down``
+seconds plus or minus up to 25%.

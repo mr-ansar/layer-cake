@@ -36,7 +36,7 @@ Installation
 Documentation
 *************
 
-The goal of this documentation is to demonstrate the use of the layer cake library to deliver complex examples
+The goal of this documentation is to demonstrate the use of the **layer-cake** library to deliver complex examples
 of concurrency. It will show how a few pages of concise Python (100 lines over 4 files) can deliver a complete
 example of a website backend that operates seamlessly across threads, processes and hosts.
 
@@ -69,10 +69,10 @@ workload of large numbers of clients is provided at the end.
    classes-and-functions
 
 The combination of multithreading, multiprocessing and multihosting covers a large technical domain. The **layer-cake**
-library has bitten off a big piece of that pie. It can't be the whole pie but it's a deliberate piece. There is a strong
-goal for integrity within that selected subdomain. Documentation has been written in a style intended to encourage the less
-experienced, without frustrating the gurus. If you are not familiar with asynchronous messaging and the more obscure
-details of networking (e.g. :ref:`keep-alives<lc-keep-alive>`) this may require a second reading.
+library has bitten off a deliberate piece of that pie. There is a strong goal for integrity within that selected
+subdomain. Documentation has been written in a style intended to encourage the less experienced, without frustrating
+the gurus. If you are not familiar with asynchronous messaging and the more obscure details of networking
+(e.g. :ref:`keep-alives<lc-keep-alive>`) this may require a second reading.
 
 .. only: html
 

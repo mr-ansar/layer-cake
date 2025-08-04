@@ -60,6 +60,12 @@ Managing Operational Processes
 * layer-cake :ref:`returned<layer-cake-command-reference-returned>` <*role*>
 * layer-cake :ref:`log<layer-cake-command-reference-log>` <*role*>
 
+Network Support
+===============
+
+* layer-cake :ref:`network<layer-cake-command-reference-network>` <*flags*>...
+* layer-cake :ref:`ping<layer-cake-command-reference-ping>` <*unique-id*>
+
 Development Automation
 ======================
 
@@ -691,6 +697,146 @@ Use of the ``clock`` argument causes the output of local time values. To disting
 between the date and time fields is folded to lowercase. Input time values such as ``from_`` are also assumed to be in
 UTC format. Use of the ``clock`` argument in a distributed working environment is generally perilous.
 
+Network Support
+***************
+
+.. _layer-cake-command-reference-network:
+
+NETWORK
+========
+
+    $ layer-cake network <*flags*> ...
+
+Display the current contents of the publish-subscribe network. This command joins the local publish-subscribe
+context and then queries the network for every connected process, publication, subscription, route (subscription
+matched to publication) and connected session. By default the command lists the fundamental structure (i.e. processes
+only);
+
+.. code-block:: console
+
+	(.env) toby@seneca:~/../multihosting$ layer-cake network
+	[LAN] lan-cake (f1a042b8)
+	+   [HOST] host-cake (45199baf)
+	+   +   [PROCESS] test_worker_10.py (87c00a45)
+	+   [HOST] host-cake (fcf744be)
+	+   +   [PROCESS] test_server_10.py (0ae5c793)
+	+   +   +   [LIBRARY] test_worker_10.py (7abbd14c)
+	+   +   [PROCESS] layer-cake (0f7a54d0)
+
+There is a topmost ``LAN`` comprising of two ``HOST`` processes. The second ``HOST`` is running two processes,
+one of which is managing a ``LIBRARY`` process. Each process is listed as a scope, the running executable and a
+unique id (UUID).
+
+Joining the local publish-subscribe network usually involves connection to the local instance of ``host-cake``.
+The ``layer-cake`` CLI behaves in exactly the same manner as any **layer-cake** process - in the absence of other
+information, connection to ``host-cake`` is fully automated. In the configuration shown above the ``layer-cake``
+process has connected to the second ``host-cake``. There is also the ability to specify the directory
+IP and port on the command line, e.g. ``--connect-to-directory``.
+
+.. note::
+
+	By default, and with no ``host-cake`` running, the command will fail. If a compound process contains no pubsub
+	registrations beyond ``GROUP`` then it will not connect to a ``host-cake`` even if present. The result is that
+	a private compound process is truly private. 
+
+Adding the ``--directory-addresses`` flag decorates the listings with IP and port information;
+
+.. code-block:: console
+
+	(.env) toby@seneca:~/../multihosting$ layer-cake network --directory-addresses
+	[LAN] lan-cake (f1a042b8) 192.168.1.176 <C>(not set) <L>0.0.0.0:54195
+	+   [HOST] host-cake (45199baf) 192.168.1.13 <C>192.168.1.176:54195 <L>127.0.0.1:54195
+	+   +   [PROCESS] test_worker_10.py (87c00a45) 192.168.1.13 <C>127.0.0.1:54195 <L>(not set)
+	+   [HOST] host-cake (fcf744be) 192.168.1.106 <C>192.168.1.176:54195 <L>127.0.0.1:54195
+	+   +   [PROCESS] test_server_10.py (0ae5c793) 192.168.1.106 <C>127.0.0.1:54195 <L>127.0.0.1:33465
+	+   +   +   [LIBRARY] test_worker_10.py (7abbd14c) 192.168.1.106 <C>127.0.0.1:33465 <L>(not set)
+	+   +   [PROCESS] layer-cake (cba099a5) 192.168.1.106 <C>127.0.0.1:54195 <L>(not set)
+
+Taking ``test_worker_10.py`` (87c00a45) as an example, the process is running on a host that is probably
+known within the local network as ``192.168.1.13``. It is connected to a parent directory at ``127.0.0.1:54195``
+and is not accepting any connections from sub-directory processes (not set). A standard technique is used to infer
+the local network address.
+
+The command accepts the following arguments;
+
+.. list-table::
+   :widths: 25 15 75
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Notes
+   * - **open-scope**
+     - :class:`~.ScopeOfDirectory`
+     - *probe the specified scope at a minimum, default HOST*
+   * - **full-identity**
+     - bool
+     - *list the full length UUIDs*
+   * - **directory-addresses**
+     - bool
+     - *include structural IP and port information*
+   * - **list-published**
+     - bool
+     - *list all registered names*
+   * - **list-subscribed**
+     - bool
+     - *list all registered searches*
+   * - **list-routed**
+     - bool
+     - *list all matches - routes*
+   * - **list-connected**
+     - bool
+     - *list all current sessions - active routes*
+
+Registered names are marked with a ``#``, followed by the name, unique id, and if relevant, the listening IP
+and port. Registered searches are marked with a ``?`` followed by the search pattern and unique id. Routes
+are marked with ``<>``, followed by the matched name and then a pair of subscriber-publisher unique ids. Lastly,
+connections are marked with a ``>``, followed by the matched name and scope, and either a pair of IP addresses for
+the current, active transport or a pair of unique ids.
+
+.. code-block:: console
+
+	[PROCESS] test_server_10.py (0ae5c793)
+	+   # "test-multihosting:worker-10:aefbd788-007e-4e0b-b43c-920820bb9c1e" (8611e17e) 0.0.0.0:42615
+	+   # "test_worker_10" (87e86ddc)
+	+   # "test-multihosting:worker-10:f91a0a51-a0da-487a-a4aa-85b5d8eee9fd" (b0e651d3) 0.0.0.0:41081
+	+   ? "test-multihosting:worker-10:[-a-f0-9]+" (4d0ddfee)
+	+   ? "test_worker_10" (8d3454e3)
+	+   <> "test-multihosting:worker-10:aefbd788-007e-4e0b-b43c-920820bb9c1e" (4d0ddfee -> 8611e17e)
+	+   <> "test_worker_10" (8d3454e3 -> 87e86ddc)
+	+   <> "test-multihosting:worker-10:f91a0a51-a0da-487a-a4aa-85b5d8eee9fd" (4d0ddfee -> b0e651d3)
+	+   ? "test-multihosting:worker-10:[-a-f0-9]+" (4d0ddfee)
+	+   +   > "test-multihosting:worker-10:aefbd788-007e-4e0b-b43c-920820bb9c1e"[PROCESS] (4d0ddfee -> 8611e17e)
+	+   +   > "test-multihosting:worker-10:0be7bd59-0216-431f-9177-c66d470bfbf9"[LAN] (192.168.1.106:54828 -> 192.168.1.13:39097)
+	+   +   > "test-multihosting:worker-10:f91a0a51-a0da-487a-a4aa-85b5d8eee9fd"[PROCESS] (4d0ddfee -> b0e651d3)
+	+   ? "test_worker_10" (8d3454e3)
+	+   +   > "test_worker_10"[PROCESS] (8d3454e3 -> 87e86ddc)
+	+   [LIBRARY] test_worker_10.py (7abbd14c)
+	+   +   # "test_worker_10" (87e86ddc)
+	+   +   # "test-multihosting:worker-10:f91a0a51-a0da-487a-a4aa-85b5d8eee9fd" (b0e651d3) 0.0.0.0:41081
+
+.. _layer-cake-command-reference-ping:
+
+PING
+====
+
+    $ layer-cake ping <*unique id*> ...
+
+Verify the minimal operation of a specified directory process. This commands joins the local publish-subscribe network,
+searches for the given unique id and then runs a series of timed *ping* operations. A small message is sent to the
+matched process and a response is expected within a few seconds. The round trip is timed.
+
+.. code-block:: console
+
+	(.env) toby@seneca:~/../multihosting$ layer-cake ping eac32b15
+	[0] ... 0.010128s
+	[1] ... 0.010467s
+	[2] ... 0.010396s
+	[3] ... 0.01147s
+
+The *ping* messages travel over the directory network. There is no dedicated connection made from ``layer-cake`` to the
+specified process. This inherently verifies a minimum operational status of all intervening components.
+
 Development Automation
 **********************
 
@@ -955,321 +1101,3 @@ The command accepts the following arguments;
    * - **clear-all**
      - bool
      - *remove all contents from the target area*
-
-Network Administration
-**********************
-
-.. _layer-cake-command-reference-network:
-
-NETWORK
-=======
-
-    $ layer-cake network [<*group-name*> [<*home-path*>]]
-
-View the network environment for the specified group within the specified home. Adding the ``--connect-scope`` argument also
-provides for configuration of the specified environment, where connections are made from one scope to another scope, always
-in an upward direction. Configuration is persistent and may affect the operation of other groups that share a common
-ancestor, e.g. HOST, LAN or WAN.
-
-The default command lists the network environment for the ``default`` group in the ``.layer-cake-home`` folder;
-
-.. code::
-
-	$ layer-cake network
-	+ GROUP 127.0.0.1:45489
-
-The simplest configuration command connects the same group to the installed **layer-cake-host** service;
-
-.. code::
-
-	$ layer-cake network --connect-scope=GROUP --to-scope=HOST
-	$ layer-cake network
-	+ HOST 127.0.0.1:32177
-	+ GROUP 127.0.0.1:45489
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **group-name**
-     - string
-     - *group name, name for a collection of processes*
-   * - **home-path**
-     - string
-     - *folder path, name of the home*
-   * - **connect-scope**
-     - enumeration
-     - *directory scope, start location of a configuration operation*
-   * - **to-scope**
-     - string
-     - *directory scope, end location of a configuration operation*
-   * - **product-name**
-     - string
-     - *directory identity, first part of composite identity for networking*
-   * - **product-instance**
-     - enumeration
-     - *directory identity, second part of composite identity for networking*
-   * - **custom-host**
-     - string
-     - *IP address or name, override a default host*
-   * - **custom-port**
-     - int
-     - *port number, override a default port*
-   * - **connect-file**
-     - string
-     - *file path, address and credentials for connection to layer-cake-wan*
-   * - **connect-disable**
-     - bool
-     - *flag, enable or disable an upward connect from the specified start location*
-   * - **published-services**
-     - bool
-     - *flag, include publisher services in the network listing*
-   * - **subscribed_searches**
-     - bool
-     - *flag, include subscriber searches in the network listing*
-   * - **routed_matches**
-     - bool
-     - *flag, include subscriber-publisher matches in the network listing*
-   * - **accepted-processes**
-     - bool
-     - *flag, include active routes in the network listing*
-
-Adding the ``--product-name`` and ``--product-instance`` arguments to a ``--connect-scope`` command
-switches to the use of the named network environment. The default environment is a global environment.
-
-Adding the ``--custom-host`` and/or ``--custom-port`` arguments to a ``--connect-scope`` command
-overrides the standard IP and port number values. These must match the configuration created when
-installing the layer-cake services; **layer-cake-host** and **layer-cake-lan**.
-
-Connecting an environment to a WAN service requires an *access file* created by the use of
-the :ref:`layer-cake directory <layer-cake-command-reference-directory>` command. This is then combined
-with a ``--connect-scope`` argument using the ``--connect-file`` argument;
-
-.. code::
-
-	$ layer-cake network --connect-scope=GROUP --connect-file=<access-file>
-
-To drop out a section of the network environment, use the ``--connect-disable`` argument;
-
-.. code::
-
-	$ layer-cake network --connect-scope=GROUP --connect-disable
-
-This deletes any existing connection for the associated GROUP, returning it to private operation.
-
-PING
-====
-
-    $ layer-cake ping <*service*> [<*group*> [<*home*>]]
-
-Test connectivity from the current host to the specified service, within the specified network environment. The
-command will print a short list of attempts to provoke a response and the time it took to succeed in doing so;
-
-.. code::
-
-	$ layer-cake ping testing-response-time
-	[LAN] testing-response-time (6 hops)
-	+ received ack after 0.006224s
-	+ received ack after 0.022727s
-	+ received ack after 0.022349s
-	+ received ack after 0.022036s
-	+ received ack after 0.0224s
-	+ received ack after 0.021623s
-	+ received ack after 0.021737s
-	+ received ack after 0.023134s
-
-The output shows the level at which the service was found and the number of network components the ping
-passes through to reach that destination.
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **service-name**
-     - string
-     - *service, name to search for*
-   * - **group-name**
-     - string
-     - *group, lowest level of the network environment*
-   * - **home-path**
-     - string
-     - *folder path, name of the home*
-   * - **ping-count**
-     - int
-     - *number, override for the number of pings*
-
-.. _layer-cake-command-reference-signup:
-
-SIGNUP
-======
-
-    $ layer-cake signup
-
-All networking at the WAN scope requires an account in the **layer-cake-wan**. To create an account use the ``signup``
-command. To access and existing account use the ``login`` command.
-
-The command prompts the user for a list of fields. After entry of the final field the entire set is presented
-to the cloud. If there are any problems a diagnostic will be printed. Silence is an indication that a new
-account has been created. Further cloud commands can be issued without entry of credentials until there is
-an extended period of inactivity (5 minutes). The cloud will mark the account as expired and will require a
-login to start a new timer.
-
-All communications with the cloud are encrypted and authenticated. At least for an initial period the
-information entered is not used, i.e. an email address is required as a unique identity but no email is
-currently being sent. Passwords must be at least 12 characters long and must include alphas, digits and
-symbols (e.g. +).
-
-.. note::
-
-	The status of **layer-cake-wan** can be found `here :ref:<wan-networking-and-supporting-service>`.
-
-.. _layer-cake-command-reference-login:
-
-LOGIN
-=====
-
-    $ layer-cake login
-
-To recover access to an account, use the login command. Enter an email address and the associated
-password. There is either an error message or silence indicating that the account is open for further
-commands.
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **read**
-     - bool
-     - *flag, read and display the current login*
-   * - **login-id**
-     - UUID
-     - *identity, read and display the specified login*
-
-.. _layer-cake-command-reference-account:
-
-ACCOUNT
-=======
-
-    $ layer-cake account
-
-Access information about the current account or modify the account. The default is a full listing of
-account details (minus sensitive information), related logins and directories. The ``--show-identities``
-argument can be used to tag the significant entities with a UUID that can be used in other commands.
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **read**
-     - bool
-     - *flag, read and display the current account (default)*
-   * - **update**
-     - bool
-     - *flag, modify attributes of the account*
-   * - **delete**
-     - bool
-     - *flag, delete the current account*
-   * - **add-login**
-     - bool
-     - *flag, add a new user to the current account*
-   * - **delete-login**
-     - bool
-     - *flag, delete an existing user from the current account*
-   * - **add-directory**
-     - bool
-     - *flag, add a new directory to the current account*
-   * - **delete-directory**
-     - bool
-     - *flag, delete an existing directory from the current account*
-   * - **show-identities**
-     - bool
-     - *flag, enable the inclusion of UUIDs for each cloud entity*
-
-Without use of the ``--update`` or ``--delete`` arguments, the default operation is a ``--read``.
-Update allows for the modification of the account while the delete operation removes the entire
-account along with all its logins and directories. There is no undo.
-
-Additional logins can be added and deleted using the ``--add-login`` and ``--delete-login`` arguments.
-The login created during account creation remains the owner of the account and the only
-identity that can modify the account in this way.
-
-Additional directories can be added and deleted using the ``--add-directory`` and ``--delete-directory`` arguments.
-The account owner is the only identity that can modify the account in this way.
-
-Adding the ``--show-identities`` argument (or the ``-si`` shorthand flag) to a read command results in the
-inclusion of a UUID for each account entity.
-
-.. _layer-cake-command-reference-directory:
-
-DIRECTORY
-=========
-
-    $ layer-cake directory 
-
-Directories may be read (the default), updated or exported. Deletion occurs as an account operation
-and can only be performed by the account owner.
-
-Access credentials can be exported from a directory and used to configure networking environments.
-Consider the following command;
-
-.. code::
-
-	$ layer-cake directory --directory-id=765666dc-6cc8-473a-9130-bff9cc378061 --export --access-name=station --export-file=station.access
-
-This creates a ``station.access`` file in the current directory. The file is passed to the :ref:`layer-cake network <layer-cake-command-reference-network>`
-command to configure a connection from a GROUP, HOST or LAN to the selected directory.
-
-.. code::
-
-	$ layer-cake network --connect-scope=LAN --connect-file=station.access
-
-The command accepts the following explicit arguments;
-
-.. list-table::
-   :widths: 25 15 75
-   :header-rows: 1
-
-   * - Name
-     - Type
-     - Notes
-   * - **read**
-     - bool
-     - *folder path, name of the new home*
-   * - **update**
-     - bool
-     - *folder path, external storage of executables*
-   * - **export**
-     - bool
-     - *folder path, external storage of persistent settings*
-   * - **directory_id**
-     - UUID
-     - *folder path, external storage of process activity*
-   * - **export file**
-     - string
-     - *file path, external storage of read-only materials*
-   * - **access_name**
-     - string
-     - *name, external storage of empty-on-start, transient file materials*
-   * - **show-identities**
-     - bool
-     - *flag, enable inclusion of UUIDs*

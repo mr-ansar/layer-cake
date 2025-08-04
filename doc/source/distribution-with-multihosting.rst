@@ -21,8 +21,8 @@ functions, and :ref:`publish-subscribe networking<publish-subscribe-networking>`
 what **layer-cake** can do, this final section on concurrency will focus on the latter.
 
 One of the most problematic issues relating to multihosting, is arranging for all the right connections between
-all the right processes on all the right hosts. This is a non-trivial issue that is beyond the scope of this
-document. Suffice to say that pubsub is one way to avoid most of the effort and most of the pain that arises
+all the right processes on all the right hosts. Any reasonable description of this problem space is beyond the scope
+of this document. Suffice to say that pubsub is one way to avoid most of the effort and most of the pain that arises
 from making mistakes in this area.
 
 Pubsub is implemented as a small set of networking components; ``group-cake``, ``host-cake`` and ``lan-cake``. At least
@@ -229,17 +229,14 @@ the worker and that the worker is being put to use by the spool;
 		]
 	}
 
-The ``layer-cake`` CLI tool is \- among other things \- a process orchestration tool. It provides sub-commands for describing a set
-of processes and sub-commands for initiating those processes. The result might be called a *composite process*. This concept is
-strengthened by the discreet inclusion of ``group-cake``, which provides the supporting pubsub machinery to bring the :func:`server()`
-and :func:`worker()` together.
+The :ref:`layer-cake<layer-cake-command-reference>` CLI tool is \- among other things \- a process orchestration tool. It provides
+sub-commands for describing a set of processes and sub-commands for initiating those processes, the result of which might be called
+a *composite process*. This concept is strengthened by the discreet inclusion of ``group-cake``, which provides the supporting
+pubsub machinery to bring the :func:`server()` and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
-requirement that sessions occur immediately. Over time, instances of publishers and subscribers can come and go. Session
-notifications :class:`~.Available` and :class:`~.Dropped` delimit those periods where matching parties are both present. There
-is no need to be concerned about starting order of servers vs clients, and software can be updated at any time. Restarting a process
-to effect the loading of software changes, automatically results in the session notifications needed for implementation of strong
-software.
+expectation that subscribing will produce an immediate indication of whether a connection has been created. Connections occur
+when matching parties are detected.
 
 Connecting To Multiple Instances Of A Service
 *********************************************
@@ -452,6 +449,24 @@ is holding is pushed up to the new process. Open another shell and enter the fol
 The new :func:`worker()` instance is immediately added to the pool of workers. This demonstrates pubsub without the presence
 of ``group-cake`` in the sense that this application process connects directly to the ``host-cake`` process.
 
+To verify that all the pieces of your software solution are properly installed into the publish-subscribe machinery, use
+the ``layer-cake network`` command;
+
+.. code-block:: console
+
+	(.env) toby@seneca:~/../multihosting$ layer-cake network
+	[HOST] host-cake (9e7db6d6)
+	+   [GROUP] group-cake (02f461b3)
+	+   +   [PROCESS] test_worker_10.py (873dd3e9)
+	+   +   [PROCESS] test_server_10.py (565edd3c)
+	+   +   [PROCESS] test_worker_10.py (edf78eec)
+	+   [PROCESS] test_worker_10.py (95440db7)
+	+   [PROCESS] layer-cake (ba2eb859)
+
+This shows the composite process (``group-cake``), the standalone ``test_worker_10.py`` and the ``layer-cake`` CLI, all making
+connections to the local instance of ``host-cake``. There is extensive information available through the ``network`` command, including
+listing of all current subscriber-to-publisher sessions. For further information look :ref:`here<layer-cake-command-reference-network>`.
+
 There can be any number of composite processes (i.e. ``group-cake``) and application processes connecting to the local ``host-cake``.
 As demonstrated, once ``host-cake`` is in place this community of processes requires zero networking configuration. The local host
 should be configured with the following commands;
@@ -487,11 +502,11 @@ physical host should be configured to start the virtual machine at boot-time.
 Lastly, the ``lan-cake`` process may be installed alongside other server-room software, on a pre-existing host within the
 operational network.
 
-If at all practicable, the chosen host should be assigned the standard layer cake LAN IP address. This results in an
-environment where every layer cake process involved in inter-host networking can proceed with zero configuration. This
+If at all practicable, the chosen host should be assigned the standard **layer-cake** LAN IP address. This results in an
+environment where every **layer-cake** process involved in inter-host networking can proceed with zero configuration. This
 applies to all ``host-cake``, ``group-cake`` and application processes that ever run within the target network.
 
-The standard layer cake LAN IP is derived from the private address range in use, the primary IP of the local host, a
+The standard **layer-cake** LAN IP is derived from the private address range in use, the primary IP of the local host, a
 defined station number (195) and a defined port number (54195), i.e.
 
 * 10.0.0.195  
@@ -501,7 +516,7 @@ defined station number (195) and a defined port number (54195), i.e.
 The starting point is the primary IP of the local host. This is matched against the possible private address ranges and
 the final octet is replaced with the station number. Intervening octets are set to the base values for that range.
 
-If the standard layer cake LAN IP cannot be used then every connecting process must be started with a command like;
+If the standard **layer-cake** LAN IP cannot be used then every connecting process must be started with a command like;
 
 .. code-block:: console
 
@@ -535,7 +550,7 @@ At boot-time the host should execute the following command;
 A Distributed, Hierarchical Directory
 *************************************
 
-Conceptually, the layer cake directory is a tree with ``group-cake``, ``host-cake`` and ``lan-cake`` at the nodes and
+Conceptually, the **layer-cake** directory is a tree with ``group-cake``, ``host-cake`` and ``lan-cake`` at the nodes and
 application processes as the terminal leaves. A ``lan-cake`` node is at the root of the tree (i.e. the top of the hierarchy).
 
 Installation and configuration of the directory is mostly automated. The items that cannot be automated are;
@@ -549,7 +564,7 @@ These are all one-time operations performed on an as-needed basis; if you are no
 for ``lan-cake``. Composite processes (i.e. using ``group-cake``) are completely self-contained and don’t require the
 presence of other directory components.
 
-The layer cake directory provides service to any layer cake process. This means that the one-time installation and
+The **layer-cake** directory provides service to any **layer-cake** process. This means that the one-time installation and
 configuration of the service will support the operation of multiple networking solutions, side-by-side. This also
 applies to multiple instances of the same solution, e.g. developers can work on their own private instances of a
 distributed solution by adopting an appropriate naming convention. All without concerns about duplicate assignment of

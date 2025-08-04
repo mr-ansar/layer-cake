@@ -23,7 +23,7 @@ The test client will use multithreading and multiprocessing to deliver multiple 
 
 The number of threads and processes will be configurable to allow for tuning.
 
-Implementation uses the machine feature within the layer cake library. This style of programming is inspired by finite state
+Implementation uses the machine feature within the **layer-cake** library. This style of programming is inspired by finite state
 machines (i.e. FSMs or active objects). Rather than defining a function, a machine is defined as a class. The class accepts
 arguments defined using type hints on the :meth:`__init__()` method, and it returns an instance of a type, defined when
 registering the class with :func:`~.bind()`;
@@ -291,11 +291,11 @@ messages are processed the number of those still outstanding falls to zero and t
 An alternative implementation of :func:`clients_as_threads()` would have the parent process performing the :func:`~.connect()` and passing
 the resulting address to each instance of the :class:`ConnectAndRequest` class, rather than passing the IP and port.
 
-The only real value in such an implementation is as a demonstration of the difference between the internal, layer cake, asynchronous
-messaging and HTTP request-response messaging. HTTP does not support multiplexing of requests, forcing layer cake to queue the outgoing
+The only real value in such an implementation is as a demonstration of the difference between the internal, **layer-cake**, asynchronous
+messaging and HTTP request-response messaging. HTTP does not support multiplexing of requests, forcing **layer-cake** to queue the outgoing
 requests. When a response is received it is forwarded to the original requesting party. The next pending request is then sent across
 the connection, and so on. This artificially imposes the request-response model. All this discreet handling allows fully asynchronous
-operation within the layer cake client and layer cake server, but in actual operation it is throttled by the presence of HTTP.
+operation within the **layer-cake** client and **layer-cake** server, but in actual operation it is throttled by the presence of HTTP.
 
 The ``clients_as_threads_2.py`` module is provided for reference. Enter a command like;
 
@@ -370,7 +370,7 @@ arguments are;
 * ``slow-down`` … a pause after each request-response  
 * ``big-table`` … maximum requested size of table
 
-The ability to select the client type was included for broader demonstration of layer cake machines. It's also
+The ability to select the client type was included for broader demonstration of **layer-cake** machines. It's also
 extensible in the sense that further implementations of clients can be written and included in the list of
 client imports. These can be client interactions customized to a particular network service;
 
@@ -379,7 +379,7 @@ client imports. These can be client interactions customized to a particular netw
 * typical user … most common usage pattern by the largest section of the user base,
 * expert user … special cases for those demanding users.
 
-As a side effect of layer cake multithreading and multiprocessing, there are 3 distinct testing tools;
+As a side effect of **layer-cake** multithreading and multiprocessing, there are 3 distinct testing tools;
 
 * ``connect_and_request.py``
 * ``clients_as_threads.py``
@@ -465,7 +465,7 @@ At the client end use;
 The passing of ``http_client`` enables the exchange of HTTP request and response messages. The value (e.g. ``/``) is
 combined with the name of the message and included as the path component of the outgoing URI, e.g. ``/Xy``. To enable
 full processing of response messages into Python messages, enable ``layer_cake_json``. The default is to treat the
-remote party as a non-layer cake service and pass :class:`~.HttpResponse` messages to the client. Processing of the body becomes
+remote party as a non-**layer-cake** service and pass :class:`~.HttpResponse` messages to the client. Processing of the body becomes
 the client's responsibility.
 
 Due to the blocking nature of HTTP there can only ever be one outstanding request per connected client. To actually

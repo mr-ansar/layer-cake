@@ -138,12 +138,8 @@ as if it were a process.
 	if __name__ == '__main__':
 		lc.create(texture)
 
-It does this by using the call to :func:`~.create()` to interrogate the :func:`texture()` function for type hints, for both
-the arguments that it expects and the value that it returns. It then uses the argument hints to decode the ``sys.argv``
-information and pass that decoded information on a call to the actual function. After the function completes the return
-type hint is used to encode the results onto ``stdout``.
-
-A side effect of providing this behaviour for the benefit of complex multiprocessing is that the same behaviour becomes
+It does this by using the call to :func:`~.create()` to interrogate the :func:`texture()` function, as described in the previous
+section. A side effect of providing this behaviour for the benefit of complex multiprocessing is that the same behaviour becomes
 useful at the command line;
 
 .. code-block:: console
