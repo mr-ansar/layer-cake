@@ -481,7 +481,7 @@ class Point(object):
 		if len(a) > 0:
 			note = ' '.join(a)
 			if len(kv) > 0:
-				eq = [f'{k}={v}'for k, v in kv.items()]
+				eq = [f'{k}={v}' for k, v in kv.items()]
 				t = ','.join(eq)
 				text = f'{note} ({t})'
 			else:
@@ -539,8 +539,10 @@ class Point(object):
 	def debug(self, *a, **kv):
 		"""Generate a log at level DEBUG.
 
-		:param a: the message to log
-		:type a: tuple of positional arguments
+		:param a: positional args catenated into a single string
+		:type a: tuple
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
 		if self.__art__.user_logs.value > USER_LOG.DEBUG.value:
 			return
@@ -551,8 +553,10 @@ class Point(object):
 	def trace(self, *a, **kv):
 		"""Generate a log at level TRACE.
 
-		:param a: the message to log
-		:type a: tuple of positional arguments
+		:param a: positional args catenated into a single string
+		:type a: tuple
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
 		if self.__art__.user_logs.value > USER_LOG.TRACE.value:
 			return
@@ -563,8 +567,10 @@ class Point(object):
 	def console(self, *a, **kv):
 		"""Generate a log at level CONSOLE.
 
-		:param a: the message to log
-		:type a: tuple of positional arguments
+		:param a: positional args catenated into a single string
+		:type a: tuple
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
 		if self.__art__.user_logs.value > USER_LOG.CONSOLE.value:
 			return
@@ -573,17 +579,24 @@ class Point(object):
 		if text:
 			self.log(USER_TAG.CONSOLE, text)
 
-	def sample(self, **kv):
-		"""Generate a log at level TRACE.
+	def sample(self, name, **kv):
+		"""Generate a row in a sample stream.
 
-		A quick way to put runtime values in the logs. Also the basis
-		for generating values for statistical analysis. Refer to
-		ansar logging documentation.
+		Logging is limited to a single positional ``name`` and a
+		set of key-value pairs. This appears in the log with the same
+		layout as ``console`` et al, but with the '&' object tag.
+		The **layer-cake** :ref:`log<command-reference-log>`
+		command can be used to extract the series of samples and print
+		them as a row of timestamped values separated by a tab. Logging
+		sample values that may include ',' (comma) or '=' (equals) will
+		eventually lead to unexpected output from the ``log`` command.
 
-		:param kv: the named arguments
-		:type a: dict
+		:param name: name of this dataset
+		:type name: str
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
-		a = ()
+		a = (name,)
 		text = self.a_kv(a, kv)
 		if text:
 			self.log(USER_TAG.SAMPLE, text)
@@ -591,8 +604,10 @@ class Point(object):
 	def warning(self, *a, **kv):
 		"""Generate a log at level WARNING.
 
-		:param a: the message to log
-		:type a: tuple of positional arguments
+		:param a: positional args catenated into a single string
+		:type a: tuple
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
 		if self.__art__.user_logs.value > USER_LOG.WARNING.value:
 			return
@@ -603,8 +618,10 @@ class Point(object):
 	def fault(self, *a, **kv):
 		"""Generate a log at level FAULT.
 
-		:param a: the message to log
-		:type a: tuple of positional arguments
+		:param a: positional args catenated into a single string
+		:type a: tuple
+		:param kv: key-value pairs listed with a separating ``=`` character
+		:type kv: dict
 		"""
 		if self.__art__.user_logs.value > USER_LOG.FAULT.value:
 			return
@@ -613,7 +630,7 @@ class Point(object):
 			self.log(USER_TAG.FAULT, text)
 
 	def test(self, condition, note):
-		"""Generate a log at level WARNING, dependent on the condition.
+		"""Generate a log at level CHECK, dependent on the condition.
 
 		A ``PointTest`` is also sent to an internal collection point, for
 		later recovery, e.g. by test applications. This is sent for both
@@ -621,7 +638,7 @@ class Point(object):
 
 		:param condition: pass or fail
 		:type condition: bool
-		:param note: a simple string of text
+		:param note: short description
 		:type note: str
 		"""
 		s, l, _ = check_line()
@@ -727,9 +744,9 @@ class Dispatching(Player):
 		self.to_address = t
 		self.return_address = r
 		m, p, a = cast_back(m)
-		if a:
-			if self.__art__.execution_trace and a.execution_trace:
-				self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (a.name, r[-1]))
+		if self.__art__.execution_trace and (not a or a.execution_trace):
+			tag = portable_to_tag(p)
+			self.log(USER_TAG.RECEIVED, f'Received {tag} from <{r[-1]:08x}>')
 		self.received_type = p
 		return m
 
@@ -764,9 +781,9 @@ class Buffering(Player):
 		self.to_address = t
 		self.return_address = r
 		m, p, a = cast_back(m)
-		if a:
-			if self.__art__.execution_trace and a.execution_trace:
-				self.log(USER_TAG.RECEIVED, "Received %s from <%08x>" % (a.name, r[-1]))
+		if self.__art__.execution_trace and (not a or a.execution_trace):
+			tag = portable_to_tag(p)
+			self.log(USER_TAG.RECEIVED, f'Received {tag} from <{r[-1]:08x}>')
 		self.received_type = p
 		return m
 	
@@ -808,7 +825,7 @@ class Buffering(Player):
 			matching += (SelectTimer,)
 			self.start(SelectTimer, seconds)
 
-		qf = self.__art__
+		art = self.__art__
 		while True:
 			mtr = self.pull()
 			m = mtr[0]
@@ -820,9 +837,9 @@ class Buffering(Player):
 			if r is not None:
 				if seconds:
 					self.cancel(SelectTimer)
-				if qf.execution_trace:
+				if art.execution_trace:
 					t = portable_to_tag(r[2])
-					self.log(USER_TAG.RECEIVED, f'Received "{t}" from <{a}>')
+					self.log(USER_TAG.RECEIVED, f'Received {t} from <{a:08x}>')
 				self.received_type = r[2]
 				return r[1], r[0]
 
@@ -830,13 +847,9 @@ class Buffering(Player):
 				self.save(m)
 				continue
 
-			if qf.execution_trace:
-				art = getattr(m, '__art__', None)
-				if art:
-					t = art.path
-				else:
-					t = type(m)
-				self.log(USER_TAG.RECEIVED, f'Dropped "{t}" from <{a}>')
+			if art.execution_trace:
+				t = portable_to_tag(r[2])
+				self.log(USER_TAG.RECEIVED, f'Dropped {t} from <{a:08x}>')
 
 	def ask(self, q, r, a, saving=None, seconds=None):
 		"""Query for a response while allowing reordering, with optional timer.
