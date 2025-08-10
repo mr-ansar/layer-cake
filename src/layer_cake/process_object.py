@@ -373,8 +373,8 @@ def ProcessObject_INITIAL_Start(self, message):
 		module = sys.modules[imported_module]
 		self.module_path = module.__file__
 
-		if rt.api is not None and len(rt.api) > 0:
-			self.api = rt.api
+		if rt.entry_point is not None and len(rt.entry_point) > 0:
+			self.entry_point = rt.entry_point
 			self.send(Enquiry(), PD.directory)
 			return PENDING
 
