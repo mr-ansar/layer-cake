@@ -37,13 +37,13 @@ Documentation
 *************
 
 The goal of this documentation is to demonstrate the use of the **layer-cake** library to deliver complex examples
-of concurrency. It will show how a few pages of concise Python (100 lines over 4 files) can deliver a complete
-example of a website backend that operates seamlessly across threads, processes and hosts.
+of concurrency. It will show how a few pages of concise Python (100 lines over 4 files) can deliver a sophisticated
+template for a website backend, that operates seamlessly across threads, processes and hosts.
 
 Externally the software offers a standard HTTP interface, while internally it runs a fully asynchronous,
 event-driven execution environment. Demonstrations include;
 
-* creation of a pool of request threads with a single call,
+* creation of a pool of request *threads* with a single call,
 * load distribution of requests across the pool,
 * detection of periods of heavy loading and appropriate client feedback,
 * switching to a pool of request *processes* with the addition of a single argument,
@@ -61,18 +61,15 @@ workload of large numbers of clients is provided at the end.
    switching-to-multiprocessing
    distribution-with-multihosting
    simulating-http-clients
-   encrypted-networking
-   layer-cake-command-reference
-   layer-cake-type-reference
-   folders-and-files
-   design-and-implementation
    classes-and-functions
+   type-reference
+   command-reference
+   design-and-implementation
 
-The combination of multithreading, multiprocessing and multihosting covers a large technical domain. The **layer-cake**
-library has bitten off a deliberate piece of that pie. There is a strong goal for integrity within that selected
-subdomain. Documentation has been written in a style intended to encourage the less experienced, without frustrating
-the gurus. If you are not familiar with asynchronous messaging and the more obscure details of networking
-(e.g. :ref:`keep-alives<lc-keep-alive>`) this may require a second reading.
+The combination of multithreading, multiprocessing and multihosting covers a large technical domain.
+The **layer-cake** library has bitten off a deliberate piece of that pie. Documentation has been written
+in a tutorial style, intended to get useful code up and running. Some deeper background material appears
+in later sections.
 
 .. only: html
 

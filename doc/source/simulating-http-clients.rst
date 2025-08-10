@@ -145,27 +145,29 @@ messages. Passing the table on the call to :func:`~.bind()` results in the compi
 of the process. As messages are received for the machine there is an efficient lookup using the table, and then a call to
 the appropriate function.
 
-Machines do not make calls to input routines such as :meth:`~.Buffering.input()`; they are purely reactive. To get things going the layer
-cake library generates an :class:`~.Start` message immediately after construction of the class has completed. Execution usually
-continues as a sequence of message exchanges with other machines and functions, all initiated by activity in the start function.
+Machines do not make calls to input routines such as :meth:`~.Buffering.input()`; they are purely reactive. To get things going the
+library generates a :class:`~.Start` message immediately after construction of the class has completed. Execution usually continues
+as a sequence of message exchanges with other machines and functions, all initiated by activity in the start function.
 
 An execution trace for the client goes like this;
 
-* ``lc.create(ConnectAndRequest)``
-* ``ConnectAndRequest.__init__(…)``
-* ``ConnectAndRequest_Start(…):``
-* ``lc.connect(self, self.server_address, …)``
-* ``ConnectAndRequest_Connected(…):``
-* ``self.send(xy, self.client_address)``
-* ``ConnectAndRequest_list_list_float(…)``
-* ``self.start(lc.T1, …)``
-* ``ConnectAndRequest_T1(self, …)``
-* ``self.send(xy, self.client_address)``
-* ``ConnectAndRequest_list_list_float(…)``
-* ``self.start(lc.T1, …)``
-* …
-* ``ConnectAndRequest_Closed(self, …)``
-* ``self.complete()``
+.. code-block:: console
+
+	* lc.create(ConnectAndRequest)
+	* ConnectAndRequest.__init__(…)
+	* ConnectAndRequest_Start(…):
+	* lc.connect(self, self.server_address, …)
+	* ConnectAndRequest_Connected(…):
+	* self.send(xy, self.client_address)
+	* ConnectAndRequest_list_list_float(…)
+	* self.start(lc.T1, …)
+	* ConnectAndRequest_T1(self, …)
+	* self.send(xy, self.client_address)
+	* ConnectAndRequest_list_list_float(…)
+	* self.start(lc.T1, …)
+	* …
+	* ConnectAndRequest_Closed(self, …)
+	* self.complete()
 
 The call to :func:`~.create()` causes the construction of a :class:`ConnectAndRequest` object. The object is given a unique identity
 and the ``self`` object provides the same facilities as the ``self`` object passed to a function, e.g. :func:`server()`.

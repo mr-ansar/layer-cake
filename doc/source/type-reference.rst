@@ -1,18 +1,15 @@
-.. _layer-cake-type-reference:
+.. _type-reference:
 
-Layer Cake Type Reference
-#########################
+Type Reference
+##############
 
 Type Expressions
-================
+----------------
 
 Type expressions (*tips*) are descriptions of memory, e.g. what argument is being passed
-to a process or what an encoding is expected to contain. The **layer-cake** library integrates
-with Python type hints while internally running its own type system. Not all Python types
-are supported (e.g. ``tuples``) and not all library types are implemented in Python (e.g. arrays).
-
-Type expressions must be *compiled* during loading - before the first asynchronous object
-is created. Mostly this happens automatically as a part of function and class definitions;
+to a process or what a file encoding is expected to contain. Type expressions must be *compiled*
+during loading - before the first asynchronous object is created. Mostly this happens automatically
+as a part of function and class definitions;
 
 .. code-block:: python
 
@@ -32,10 +29,10 @@ Type expressions can be used in runtime contexts but it is more efficient to use
 value, e.g. ``table_type``. Using ``dict[str,Person]`` results in a lookup for the
 associated compiled value.
 
-This does create an unfortunate wrinkle where it is good coding practise to use Python type
-hints but a particular hint is also needed somewhere else. The inevitable symptom is duplication
-of type information. These situations can be resolved by adding type information to the
-function or class registration;
+This does create an unfortunate wrinkle where it is good coding practise to use Python type hints
+but a particular hint is needed at multiple code sites. The inevitable symptom is duplication of
+type information. These situations can be resolved by adding type information to the function or
+class registration;
 
 .. code-block:: python
 
@@ -48,9 +45,10 @@ function or class registration;
 	lc.bind(texture, return_type=table_type, x=int)
 
 Type information passed to :func:`~.bind` overrides whatever information is defined on the
-function, using Python hints. The ``return_type`` replaces the ``-> list[list[float]]`` hint
-and the ``x=int`` provides the type information for the ``x`` parameter of ``texture``. The
-``table_type`` can now be used anywhere its needed and there are no duplicate type expressions.
+function, using Python hints. The ``return_type`` substitutes for the ``-> list[list[float]]``
+hint and the ``x=int`` provides the type information for the ``x`` parameter of ``texture``.
+Compiled types cannot appear as Python hints, i.e. a compiled type is an object instance
+whereas Python hints expect classes.
 
 A type expression is an instance of one of the following:
 
@@ -69,30 +67,30 @@ The Python types that are accepted as *tips*, along with their respective librar
 equivalents, are listed below. Internally all Python types are converted to their
 library equivalents before use.
 
-+---------------+-----------------+----------------------------------------------+
-| Python        | Library         | Notes                                        |
-+===============+=================+==============================================+
-| ``bool``      | ``Boolean``     | True or false.                               |
-+---------------+-----------------+----------------------------------------------+
-| ``int``       | ``Integer8``    | A large, signed integer.                     |
-+---------------+-----------------+----------------------------------------------+
-| ``Enum``      | ``UserDefined`` | Subclass of Enum. A name for a number.       |
-+---------------+-----------------+----------------------------------------------+
-| ``float``     | ``Float8``      | A large, floating-point number.              |
-+---------------+-----------------+----------------------------------------------+
-| ``bytearray`` | ``Block``       | A sequence of *arbitrary bytes*.             |
-+---------------+-----------------+----------------------------------------------+
-| ``bytes``     | ``String``      | A sequence of *printable bytes*.             |
-+---------------+-----------------+----------------------------------------------+
-| ``str``       | ``Unicode``     | A sequence of Unicode *codepoints*.          |
-+---------------+-----------------+----------------------------------------------+
-| ``datetime``  | ``WorldTime``   | A datetime object.                           |
-+---------------+-----------------+----------------------------------------------+
-| ``timedelta`` | ``TimeDelta``   | The difference between two datetime objects. |
-+---------------+-----------------+----------------------------------------------+
-| ``uuid.UUID`` | ``UUID``        | A UUID from the standard Python              |
-|               |                 | library.                                     |
-+---------------+-----------------+----------------------------------------------+
++---------------+------------------------+----------------------------------------------+
+| Python        | Library                | Notes                                        |
++===============+========================+==============================================+
+| ``bool``      | :class:`~.Boolean`     | True or false.                               |
++---------------+------------------------+----------------------------------------------+
+| ``int``       | :class:`~.Integer8`    | A large, signed integer.                     |
++---------------+------------------------+----------------------------------------------+
+| ``Enum``      | :class:`~.UserDefined` | Subclass of Enum. A name for a number.       |
++---------------+------------------------+----------------------------------------------+
+| ``float``     | :class:`~.Float8`      | A large, floating-point number.              |
++---------------+------------------------+----------------------------------------------+
+| ``bytearray`` | :class:`~.Block`       | A sequence of *arbitrary bytes*.             |
++---------------+------------------------+----------------------------------------------+
+| ``bytes``     | :class:`~.String`      | A sequence of *printable bytes*.             |
++---------------+------------------------+----------------------------------------------+
+| ``str``       | :class:`~.Unicode`     | A sequence of Unicode *codepoints*.          |
++---------------+------------------------+----------------------------------------------+
+| ``datetime``  | :class:`~.WorldTime`   | A datetime object.                           |
++---------------+------------------------+----------------------------------------------+
+| ``timedelta`` | :class:`~.TimeDelta`   | The difference between two datetime objects. |
++---------------+------------------------+----------------------------------------------+
+| ``uuid.UUID`` | :class:`~.UUID`        | A UUID from the standard Python              |
+|               |                        | library.                                     |
++---------------+------------------------+----------------------------------------------+
 
 Enumerations are defined as sub-classes of ``Enum``;
 
@@ -116,42 +114,41 @@ Python equivalents, are listed below.
 +-------------------------+---------------+-------------------------------------+
 | Library                 | Python        | Notes                               |
 +=========================+===============+=====================================+
-| Boolean                 | ``bool``      | True or false.                      |
+| :class:`~.Boolean`      | ``bool``      | True or false.                      |
 +-------------------------+---------------+-------------------------------------+
-| Byte                    | ``int``       | A single `arbitrary byte`.          |
+| :class:`~.Byte`         | ``int``       | A single `arbitrary byte`.          |
 +-------------------------+---------------+-------------------------------------+
-| Character               | ``bytes``     | A single `printable byte`.          |
+| :class:`~.Character`    | ``bytes``     | A single `printable byte`.          |
 +-------------------------+---------------+-------------------------------------+
-| Rune                    | ``str``       | A single Unicode `code-point`.      |
+| :class:`~.Rune`         | ``str``       | A single Unicode `code-point`.      |
 +-------------------------+---------------+-------------------------------------+
-| Integer8                | ``int``       | Signed integer numbers.             |
+| :class:`~.Integer8`     | ``int``       | Signed integer numbers.             |
 +-------------------------+---------------+-------------------------------------+
-| Float8                  | ``float``     | Signed, floating-point numbers      |
+| :class:`~.Float8`       | ``float``     | Signed, floating-point numbers      |
 +-------------------------+---------------+-------------------------------------+
-| Block                   | ``bytearray`` | A sequence of `arbitrary bytes`.    |
+| :class:`~.Block`        | ``bytearray`` | A sequence of `arbitrary bytes`.    |
 +-------------------------+---------------+-------------------------------------+
-| String                  | ``bytes``     | A sequence of `printable bytes`.    |
+| :class:`~.String`       | ``bytes``     | A sequence of `printable bytes`.    |
 +-------------------------+---------------+-------------------------------------+
-| Unicode                 | ``str``       | A sequence of Unicode `codepoints`. |
+| :class:`~.Unicode`      | ``str``       | A sequence of Unicode `codepoints`. |
 +-------------------------+---------------+-------------------------------------+
-| ClockTime               | ``float``     | A local time, i.e. ``float``.       |
+| :class:`~.ClockTime`    | ``float``     | A local time, i.e. ``float``.       |
 +-------------------------+---------------+-------------------------------------+
-| TimeSpan                | ``float``     | A local time delta, i.e. ``float``. |
+| :class:`~.TimeSpan`     | ``float``     | A local time delta, i.e. ``float``. |
 +-------------------------+---------------+-------------------------------------+
-| WorldTime               | ``datetime``  | A date, time and timezone.          |
+| :class:`~.WorldTime`    | ``datetime``  | A date, time and timezone.          |
 +-------------------------+---------------+-------------------------------------+
-| TimeDelta               | ``timedelta`` | A time delta, i.e. t2 - t1.         |
+| :class:`~.TimeDelta`    | ``timedelta`` | A time delta, i.e. t2 - t1.         |
 +-------------------------+---------------+-------------------------------------+
-| UUID                    | ``UUID``      | A Python uuid.UUID.                 |
+| :class:`~.UUID`         | ``UUID``      | A Python uuid.UUID.                 |
 +-------------------------+---------------+-------------------------------------+
-| Any                     |               | An instance of any registered       |
-|                         |               | type.                               |
+| :class:`~.Any`          |               | A :ref:`message<lc-message>`        |
 +-------------------------+---------------+-------------------------------------+
-| Type                    | ``class``     | A registered class, e.g. Person.    |
+| :class:`~.Type`         | ``class``     | A registered class, e.g. Person.    |
 +-------------------------+---------------+-------------------------------------+
-| Word                    |               | A generic form.                     |
+| :class:`~.Word`         |               | A generic form.                     |
 +-------------------------+---------------+-------------------------------------+
-| Address                 |               | Runtime object identity.            |
+| :class:`~.Address`      |               | Runtime object identity.            |
 +-------------------------+---------------+-------------------------------------+
 
 There are multiple library types that are implemented using common Python types.
@@ -167,7 +164,7 @@ be expressed in the ``TimeSpan`` representation;
 
 	$ python3 schedule-changes.py --adjustment=1d2h
 
-This can be less fragile than expecting the entry of ``93600.0``. The same conversions
+This is more human-friendly than expecting the entry of ``93600.0``. The same conversions
 are happening for network encodings. When debugging network messages at lower
 levels, members defined with the ``TimeSpan`` library type will appear as JSON strings
 like ``"2m34.1s"`` rather than ``154.1``.
@@ -206,7 +203,7 @@ the class, i.e. ``Integer8()`` rather than ``Integer8``.
 .. _strings-of-things:
 
 Strings Of Things
-+++++++++++++++++
+-----------------
 
 The ``Byte``, ``Character`` and ``Rune`` types facilitate the
 proper handling of an `arbitrary byte`, a `printable byte` and a Unicode
@@ -232,21 +229,21 @@ message is represented as a base64-encoded JSON string, with all the attendant
 encoding and decoding behaviour.
 
 Dates, Times And Zones
-++++++++++++++++++++++
+----------------------
 
 The library types associated with time values appear below;
 
-+---------------+----------------+----------------------------------------------+
-| Library       | Python         | Notes                                        |
-+===============+================+==============================================+
-| ClockTime     | ``float``      | A local time, i.e. ``float``.                |
-+---------------+----------------+----------------------------------------------+
-| TimeSpan      | ``float``      | A local time delta, i.e. ``float``.          |
-+---------------+----------------+----------------------------------------------+
-| WorldTime     | ``datetime``   | A date, time and timezone.                   |
-+---------------+----------------+----------------------------------------------+
-| TimeDelta     | ``timedelta``  | A time delta, i.e. t2 - t1.                  |
-+---------------+----------------+----------------------------------------------+
++----------------------+----------------+----------------------------------------------+
+| Library              | Python         | Notes                                        |
++======================+================+==============================================+
+| :class:`~.ClockTime` | ``float``      | A local time, i.e. ``float``.                |
++----------------------+----------------+----------------------------------------------+
+| :class:`~.TimeSpan`  | ``float``      | A local time delta, i.e. ``float``.          |
++----------------------+----------------+----------------------------------------------+
+| :class:`~.WorldTime` | ``datetime``   | A date, time and timezone.                   |
++----------------------+----------------+----------------------------------------------+
+| :class:`~.TimeDelta` | ``timedelta``  | A time delta, i.e. t2 - t1.                  |
++----------------------+----------------+----------------------------------------------+
 
 The library supports the two styles of time values; float-based values that record
 the number of seconds since an epoch (e.g. January 1, 1970) and ``datetime`` objects
@@ -266,7 +263,7 @@ selected by a user from the set of IANA names, must implement their own conversi
 between their datetime objects and library ``datetime`` objects, i.e. ``WorldTime``.
 
 Object Pointers
-+++++++++++++++
+---------------
 
 The proper type expression for an object that may appear at multiple
 points in a single store operation, looks like;

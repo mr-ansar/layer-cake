@@ -85,7 +85,7 @@ message-driven software. The more interesting aspects of this approach are cover
 	if __name__ == '__main__':
 		lc.create(server)
 
-Execution of the server will produce output similar to that shown below;
+Execution of the server will produce output similar to that shown below (logs have been reduced to fit);
 
 .. code-block:: console
 
@@ -103,6 +103,7 @@ Execution of the server will produce output similar to that shown below;
 	00:04:11.424 > <0000000e>ListenConnect - Sent Listening to <00000012>
 	00:04:11.424 < <00000012>server - Received Listening from <0000000e>
 
+Further information on logging output can be found :ref:`here<lc-generating-logs>`.
 Use ``curl`` (or some other HTTP client) to make a call to the network service;
 
 .. code-block:: console
@@ -170,32 +171,22 @@ To send a message (i.e. a named collection of typed members) in **layer-cake** i
 hints must be used to describe the arguments passed to the :meth:`__init__` method. Lastly, the class is registered with
 the library using :func:`~.bind`.
 
-Registration prepares information needed for the conversion of the HTTP representation \- ``/Xy?x=2&y=3`` \- into an instance of
-the :class:`Xy` class during network messaging. It also prepares for logging.
+Registration prepares information needed for the conversion of the HTTP representation \- ``/Xy?x=2&y=3`` \- into an
+instance of the :class:`Xy` class during network messaging. It also prepares for logging.
 
-To send anything other than a registered class, the type must be registered using the :func:`~.def_type` function. This produces a
-portable object that is used to mark the relevant Python data when required, e.g. :func:`~.cast_to`. As far as the Python type system
-is concerned the response variable could be anything. This is not enough information by itself for effective processing at the receiver.
+To send anything other than a registered class, the type must be registered using the :func:`~.def_type` function. This
+produces a portable object that is used to mark the relevant Python data when required, e.g. :func:`~.cast_to`. As far
+as the Python type system is concerned the response variable is a ``list``. Within the **layer-cake** machinery it is
+a ``list[list[float]]`` and that deeper detail needs to travel with the data when it passes between threads and processes.
 
-In the world of network messaging, the ability to send something like a list of :class:`Xy` objects or a 3D cube of floats is
-uncommon. Normally this issue is resolved with a message containing the single member. However, in some areas of code it
-can become tedious to maintain large numbers of message classes that contain a single member. This can happen in a network API over
-a database, where many responses are the result of querying different database tables, i.e. lists of different row types.
-
-**Layer-cake** software that restricts itself to only sending registered messages can completely avoid the details involved in sending
-data such as ``list[list[float]]``. However, the capability to do so is fundamental to the complete integration of multithreading and
-multiprocessing into **layer-cake** processes. It does allow for some nice behaviour around the command line (refer to later sections).
-
-.. note::
-
-	Through integration of Python type hints, much of the additional type information needed by the library is available as a
-	by-product of good coding practise. However, the **layer-cake** type system is necessarily more extensive, and sometimes
-	Python hints are not enough. Further information on types can be found :ref:`here<layer-cake-type-reference>`.
+Further information about registration of types can be found :ref:`here<lc-types-and-registration>`. There is also
+a :ref:`full reference<type-reference>` available.
 
 A Brief Outline
 ***************
 
-An execution trace for the server goes like this;
+An execution trace for the server, together with commentary appears below. General information about the operation of
+asynchronous software can be found :ref:`here<lc-asynchronous-concepts>`;
 
 .. code-block:: console
 
@@ -253,8 +244,8 @@ will elicit this behaviour;
 	test_server_1.py: cannot listen at "127.0.0.1:5050" ([Errno 98] Address already in use)
 
 Messages are sent to an address passed to :meth:`~.Point.send`. These addresses are **layer-cake** addresses, i.e. not network addresses or
-machine pointers. They are a runtime, unique identity. At that point where a message is received, the address of the sending party is always
-available as ``self.return_address``. This is how the response table is routed back to the proper HTTP client.
+machine pointers. At that point where a message is received, the address of the sending party is always available as ``self.return_address``.
+This is how the response table is routed back to the proper HTTP client.
 
 Message-driven software inevitably includes message dispatching code;
 
@@ -270,12 +261,14 @@ Message-driven software inevitably includes message dispatching code;
 		continue
 
 The lack of a ``switch`` statement in Python is a little unfortunate. **Layer-cake** includes the concept of machines, which tackles the issue of
-dispatching head on. A short introduction of machines appears in a later section.
+dispatching head on. A guide to the definition of machines can be found :ref:`here<functions-and-machines>`. A machine approach has also been
+used for the creation of a :ref:`test client<simulating-http-clients>`.
 
 Perhaps the most important aspect to this initial implementation is the fundamentally asynchronous approach to the processing of an HTTP
 request message. HTTP clients are restricted to a synchronous, request-response interaction with HTTP servers. There is no such constraint
 on the internal workings of the :func:`server` and it is in this area that effective concurrency can be delivered. **Layer-cake** can’t help
-individual clients with the blocking nature of their HTTP requests but it can deliver true concurrency across multiple connected clients.
+individual clients with the blocking nature of their HTTP requests but it can deliver true concurrency within the server activity, as it
+juggles the requests from multiple connected clients.
 
 Concurrency Using Multithreading
 ********************************
@@ -349,7 +342,8 @@ of :func:`texture` to terminate “out of sequence”, e.g. where the request fo
 for a small table and the latter returns before the former.
 
 After creating a callback using :meth:`~.Point.on_return` the :func:`server` thread is immediately available for processing of the next
-message, preserving overall responsiveness.
+message, preserving overall responsiveness. An overview of how callbacks fit into general asynchronous operation, is
+available :ref:`here<lc-arranging-a-deferred-call>`.
 
 A minor change was also required in ``test_function_2.py``;
 
@@ -655,7 +649,7 @@ A ``stand_down`` of ``None`` disables the recovery of workers and the failure of
 of the entire spool. Improbable parameters are rejected at startup time.
 
 When a new request encounters a full condition the spool responds immediately with an :class:`~.Overloaded` message. All clients
-of a spool should be checking for what they receive as a response. The :class:`~Overloaded` and :class:`~.Busy` messages derive
+of a spool should be checking for what they receive as a response. The :class:`~.Overloaded` and :class:`~.Busy` messages derive
 from the :class:`~.Faulted` message.
 
 In the event that a worker terminates and depending on the value of ``stand_down``, the spool replaces it with a fresh instance.

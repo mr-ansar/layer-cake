@@ -301,12 +301,12 @@ A process is needed that accepts multiple :class:`Xy` requests over a network co
 			table = texture(x=m.x, y=m.y)
 			self.send(lc.cast_to(table, table_type), self.return_address)
 
-	lc.bind(worker, api=[Xy,])
+	lc.bind(worker, entry_point=[Xy,])
 
 	if __name__ == '__main__':
 		lc.create(worker)
 
-This is similar to the previous implementations of :func:`worker()`, except ``api=[Xy,]`` has been added to the
+This is similar to the previous implementations of :func:`worker()`, except ``entry_point=[Xy,]`` has been added to the
 registration. To take advantage of this new worker there needs to be a matching server;
 
 .. code-block:: python
@@ -379,11 +379,11 @@ checks the registered details for ``worker``;
 
 .. code-block:: python
 
-	lc.bind(worker, api=[Xy,])
+	lc.bind(worker, entry_point=[Xy,])
 
-It detects the declaration of an API and passes a special argument at process creation time. This directs the asynchronous
-framework within the new ``worker`` to make a special connection back to the parent process. Further background routing occurs
-such that any message sent to the :class:`~.ProcessObject` in the server (i.e. ``worker_address``) travels across the connection
+It detects the declaration of an *object entry point* and passes a special argument at process creation time. This directs the
+asynchronous framework within the new ``worker`` to make a special connection back to the parent process. Further background routing
+occurs such that any message sent to the :class:`~.ProcessObject` in the server (i.e. ``worker_address``) travels across the connection
 and is delivered to the :func:`worker()` instance through the :meth:`~.Buffering.input()` function. Responses sent to the ``self.return_address``
 by the :func:`worker()` function find their way back to the original sender, i.e. the :func:`server()` instance in the server process.
 

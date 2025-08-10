@@ -17,13 +17,8 @@ running on any host within a network. For the demonstration network service, thi
 Each worker in the pool could be running on its own physical platform with its own set of computing resources.
 
 The **layer-cake** library provides both traditional networking, through the :func:`~.listen` and :func:`~.connect`
-functions, and :ref:`publish-subscribe networking<publish-subscribe-networking>` (or just pubsub). To really showcase
-what **layer-cake** can do, this final section on concurrency will focus on the latter.
-
-One of the most problematic issues relating to multihosting, is arranging for all the right connections between
-all the right processes on all the right hosts. Any reasonable description of this problem space is beyond the scope
-of this document. Suffice to say that pubsub is one way to avoid most of the effort and most of the pain that arises
-from making mistakes in this area.
+functions, and :ref:`publish-subscribe networking<lc-networking-without-network-addresses>` (or just pubsub). To really
+showcase what **layer-cake** can do, this final section on concurrency will focus on the latter.
 
 Pubsub is implemented as a small set of networking components; ``group-cake``, ``host-cake`` and ``lan-cake``. At least
 one of these components must be present for pubsub to work. The use of the first is effectively automated, while the latter
@@ -74,7 +69,7 @@ The interesting line of code is;
 
 	lc.publish(self, 'test-multihosting:worker-9')
 
-Rather than listening at a particular network IP and port, this :func:`worker()` is publishing its capabilities under a string
+Rather than listening at a particular network IP and port, this :func:`worker()` is advertising its presence under a string
 name. By convention the name is structured as a series of fields separated by a colon. The :func:`worker()` is defined with
 both thread and process entry-points.
 
@@ -229,14 +224,16 @@ the worker and that the worker is being put to use by the spool;
 		]
 	}
 
-The :ref:`layer-cake<layer-cake-command-reference>` CLI tool is \- among other things \- a process orchestration tool. It provides
+The :ref:`layer-cake<command-reference>` CLI tool is \- among other things \- a process orchestration tool. It provides
 sub-commands for describing a set of processes and sub-commands for initiating those processes, the result of which might be called
 a *composite process*. This concept is strengthened by the discreet inclusion of ``group-cake``, which provides the supporting
 pubsub machinery to bring the :func:`server()` and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
 expectation that subscribing will produce an immediate indication of whether a connection has been created. Connections occur
-when matching parties are detected.
+when matching parties are both present. Even though use of the ``layer-cake`` tool ensures that both processes are started quickly,
+there is no guaranteed ordering, i.e. the subscribing may occur before the publishing. With pubsub these ordering issues are
+irrelevant.
 
 Connecting To Multiple Instances Of A Service
 *********************************************
@@ -415,7 +412,9 @@ Go ahead and run this latest service;
 	<00000014>ProcessObject[INITIAL] - .../python3 .../test_server_10.py ...
 
 The logs show the :func:`server()` being notified of the presence of a :func:`worker()` and the information being passed onto
-the spool. This process is repeated the expected number of times.
+the spool. This process is repeated the expected number of times. A view of the hierarchy of processes created by
+the ``layer-cake run`` command, is available through the ``layer-cake network`` command. The proper use of this command is
+described in the following section.
 
 A final implementation of multihosting has been included, i.e. ``test_server_11.py``. Load testing of the service highlighted
 those areas that struggled as load increased. Generally these could be tuned away using configuration values in the network
@@ -428,8 +427,8 @@ Connecting To Multiple Hosts
 ****************************
 
 At this point there is no more coding to be done. Courtesy of pubsub networking, the latest version of :func:`worker()` can
-be deployed anywhere on a network and the :func:`server` will find it. However, proper operation will require some initial,
-one-time setup.
+be deployed anywhere on a network and the :func:`server` will find it. However, successful operation will require some
+initial, one-time setup.
 
 The next level of pubsub is provided by ``host-cake``. The presence of this component enables a wider range of networking
 scenarios, but still within the boundary of a single host. Assuming that the previous demonstration of ``group-cake`` is
@@ -460,12 +459,18 @@ the ``layer-cake network`` command;
 	+   +   [PROCESS] test_worker_10.py (873dd3e9)
 	+   +   [PROCESS] test_server_10.py (565edd3c)
 	+   +   [PROCESS] test_worker_10.py (edf78eec)
+	+   +   [PROCESS] test_worker_10.py (4c68fcd9)
+	+   +   [PROCESS] test_worker_10.py (a516934c)
+	+   +   [PROCESS] test_worker_10.py (834198d9)
+	+   +   [PROCESS] test_worker_10.py (2002ab92)
+	+   +   [PROCESS] test_worker_10.py (daf02dd7)
+	+   +   [PROCESS] test_worker_10.py (3773514d)
 	+   [PROCESS] test_worker_10.py (95440db7)
 	+   [PROCESS] layer-cake (ba2eb859)
 
 This shows the composite process (``group-cake``), the standalone ``test_worker_10.py`` and the ``layer-cake`` CLI, all making
 connections to the local instance of ``host-cake``. There is extensive information available through the ``network`` command, including
-listing of all current subscriber-to-publisher sessions. For further information look :ref:`here<layer-cake-command-reference-network>`.
+listing of all current subscriber-to-publisher sessions. For further information look :ref:`here<command-reference-network>`.
 
 There can be any number of composite processes (i.e. ``group-cake``) and application processes connecting to the local ``host-cake``.
 As demonstrated, once ``host-cake`` is in place this community of processes requires zero networking configuration. The local host
@@ -491,9 +496,9 @@ The next level of pubsub support is provided by ``lan-cake``. Setup at this leve
 operational environment is a strictly controlled network. The new ``lan-cake`` process needs to be located on a machine by
 itself. More accurately it cannot be cohabiting a machine with an application process such as ``test_server_10.py``.
 
-The simplest deployment of the ``lan-cake`` process would be to configure the process to run at boot-time, on a dedicated
-host. This might be appropriate use of an SBC, e.g. a Raspberry Pi. Otherwise, this is the least likely scenario and given
-the low resource requirements of the ``lan-cake`` process, probably a squandering of computing power.
+The simplest scenario for deployment of the ``lan-cake`` process would be to configure the process to run at boot-time, on
+a dedicated host. This might be appropriate use of an SBC, e.g. a Raspberry Pi. Otherwise, this is the least likely scenario
+and given the low resource requirements of the ``lan-cake`` process, probably a squandering of computing power.
 
 The next option is to configure the process to run at boot-time on a dedicated virtual machine, e.g. using VirtualBox. This
 provides the separation that the process needs from all application processes without the cost of dedicated hardware. The
@@ -552,6 +557,27 @@ A Distributed, Hierarchical Directory
 
 Conceptually, the **layer-cake** directory is a tree with ``group-cake``, ``host-cake`` and ``lan-cake`` at the nodes and
 application processes as the terminal leaves. A ``lan-cake`` node is at the root of the tree (i.e. the top of the hierarchy).
+A directory with all elements present, and with pubsub sessions displayed, looks like;
+
+.. code-block:: console
+
+	(.env) toby@seneca:~/../multihosting$ layer-cake network -lc
+	[LAN] lan-cake (f1a042b8)
+	+   [HOST] host-cake (45199baf)
+	+   +   [PROCESS] test_worker_10.py (87c00a45)
+	+   [HOST] host-cake (fcf744be)
+	+   +   [PROCESS] test_server_10.py (0ae5c793)
+	+   +   +   ? "test-multihosting:worker-10:[-a-f0-9]+" (4d0ddfee)
+	+   +   +   +   > "test-multihosting:worker-10:aefbd788-007e-4e0b-b43c-920820bb9c1e"[PROCESS] (4d0ddfee -> 8611e17e)
+	+   +   +   +   > "test-multihosting:worker-10:0be7bd59-0216-431f-9177-c66d470bfbf9"[LAN] (192.168.1.106:54828 -> 192.168.1.13:39097)
+	+   +   +   +   > "test-multihosting:worker-10:f91a0a51-a0da-487a-a4aa-85b5d8eee9fd"[PROCESS] (4d0ddfee -> b0e651d3)
+	+   +   +   ? "test_worker_10" (8d3454e3)
+	+   +   +   +   > "test_worker_10"[PROCESS] (8d3454e3 -> 87e86ddc)
+	+   +   +   [LIBRARY] test_worker_10.py (7abbd14c)
+	+   +   [PROCESS] layer-cake (d5be138d)
+
+The ``test_server_10.py`` has opened three sessions to matching publications. Two are local (including a ``LIBRARY`` instance)
+and a third is running on the host at ``192.168.1.13``.
 
 Installation and configuration of the directory is mostly automated. The items that cannot be automated are;
 
@@ -561,8 +587,8 @@ Installation and configuration of the directory is mostly automated. The items t
 * installation of ``lan-cake``.
 
 These are all one-time operations performed on an as-needed basis; if you are not multihosting then there is no need
-for ``lan-cake``. Composite processes (i.e. using ``group-cake``) are completely self-contained and don’t require the
-presence of other directory components.
+for ``lan-cake``. Composite processes (i.e. using ``group-cake``) can happily operate as private, standalone directories
+without the need for other directory components.
 
 The **layer-cake** directory provides service to any **layer-cake** process. This means that the one-time installation and
 configuration of the service will support the operation of multiple networking solutions, side-by-side. This also
@@ -570,8 +596,8 @@ applies to multiple instances of the same solution, e.g. developers can work on 
 distributed solution by adopting an appropriate naming convention. All without concerns about duplicate assignment of
 IP addresses and port numbers, or misconfiguration.
 
-A list of the benefits of pubsub networking is long. Less obvious benefits derive from the fact that all the network
-address information pertaining to the solution is updated the moment that anything changes.
+Less obvious benefits derive from the fact that all the network address information pertaining to the solution is
+updated the moment that anything changes.
 
 Pubsub enables the initial installation and startup of the different components in a solution. This can happen in any
 order and over an extended period (e.g. phased rollout).
@@ -584,8 +610,8 @@ shut down and the replacement is started. All reconnections to the new address a
 
 Lastly, solutions can be rearranged across any collection of hosts including a lone host. For development purposes the
 ability to run an entire solution as a single composite process might be advantageous and is always an option. It is
-also possible to generate portable images of composite processes that just need a Python environment to run. Copy it
-to a laptop for demonstrations, sales or training.
+also possible to generate portable images of composite processes that just need the appropriate Python environment to
+run. Copy it to a laptop for demonstrations, sales or training.
 
 Both the :func:`~.publish()` and :func:`~.subscribe()` functions accept a scope parameter;
 
@@ -601,9 +627,9 @@ services, this value might have been set at LAN. However, that could easily lead
 for a ``lan-cake`` that will never be installed and inadvertent services leaks, i.e. access to a service that was never
 intended to be widely available.
 
-Services with the same name can be registered within the directory. The name ``super-system:log-store`` can be registered
-with GROUP scope in multiple groups within a LAN, but there can only be one instance of a name at a given scope. There
-can only be a single instance of ``home-automation:power-supply`` at the LAN scope.
+Services with the same name can be registered within the wider directory. The name ``super-system:log-store`` can be
+registered with GROUP scope in multiple groups within a LAN, but there can only be one instance of a name published to
+a given scope. There can only be a single instance of ``home-automation:power-supply`` at the LAN scope.
 
 Pubsub behaves in a manner similar to the symbol lookups in programming languages. The instance of ``super-system:log-store``
 at GROUP scope has precedence over the instance registered at LAN scope; the GROUP instance is considered to be “nearer”.
