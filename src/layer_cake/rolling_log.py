@@ -216,7 +216,7 @@ def read_log(logs, begin, end, count):
 					continue
 				yield d, l
 
-def rewind_log(logs, count):
+def rewind_log(logs, tail, end, count):
 	'''Coroutine that accepts a log folder, range and yields lines.'''
 
 	# Get the collection of files and their
@@ -238,6 +238,9 @@ def rewind_log(logs, count):
 		return
 	rolling.sort(key=lambda m: m[1], reverse=True)
 
+	if end is not None and end < rolling[0][1]:	 # Timeframe before all records.
+		return
+
 	def get_file():
 		for r in rolling:
 			yield r[0]
@@ -245,14 +248,18 @@ def rewind_log(logs, count):
 	def get_line(r):
 		with open(r, 'r') as f:
 			for line in f:
-				yield line
+				# convert stamp 2023-01-03T19:23:51
+				i = line.index(' ')
+				t = line[:i]
+				d = text_to_world(t)
+				yield d, line
 
 	def get_ending(n):
 		ending = []
 		for r in get_file():
 			q = deque()
-			for l in get_line(r):
-				q.append(l)
+			for dl in get_line(r):
+				q.append(dl)
 				if len(q) > n:
 					q.popleft()
 			ending.append(q)
@@ -261,7 +268,20 @@ def rewind_log(logs, count):
 				return ending
 		return ending
 
-	ending = get_ending(count)
-	for e in reversed(ending):
-		for l in e:
-			yield l
+	ending = get_ending(tail)
+	for r in reversed(ending):
+		if end is not None:
+			for d, l in r:
+				if d < end:
+					yield d, l
+				else:
+					return
+		elif count is not None:
+			for d, l in r:
+				if count == 0:
+					return
+				count -= 1
+				yield d, l
+		else:
+			for d, l in r:
+				yield d, l
