@@ -51,21 +51,21 @@ class PointRuntime(Runtime):
 	:param name: the name of the class being registered
 	:param module: the name of the module the class is located in
 	:param return_type: hint/portable describing the return type
-	:type return_type: :ref:`tip<layer-cake-type-reference>`
-	:param api: enable API with list of expected messages
+	:type return_type: :ref:`tip<type-reference>`
+	:param entry_point: enable library loading with list of expected messages
 	:param flags: named values passed on
 	"""
 
 	def __init__(self,
-			name: str, module: str, return_type=None, api: list=None,
+			name: str, module: str, return_type=None, entry_point: list=None,
 			**flags):
 		super().__init__(name, module, **flags)
 		self.return_type = return_type
-		self.api = api
+		self.entry_point = entry_point
 		self.value = None
 
 #
-def bind_routine(routine, return_type=None, api: list=None,
+def bind_routine(routine, return_type=None, entry_point: list=None,
 		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
 		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
@@ -77,8 +77,8 @@ def bind_routine(routine, return_type=None, api: list=None,
 	:param routine: function to be registered as a routine
 	:type routine: :ref:`object type<lc-object-type>`
 	:param return_type: type expression for the return value
-	:type return_type: :ref:`tip<layer-cake-type-reference>`
-	:param api: enable API with list of expected messages
+	:type return_type: :ref:`tip<type-reference>`
+	:param entry_point: enable library loading with list of expected messages
 	:param lifecycle: enable log at creation, ending...
 	:param message_trail: enable log when message is sent
 	:param execution_trace: enable log when message is received
@@ -105,17 +105,17 @@ def bind_routine(routine, return_type=None, api: list=None,
 	for k, a in explicit_schema.items():
 		routine_hints[k] = a	# Add or override existing.
 
-	if api is not None:
-		api = [install_type(a) for a in api]
+	if entry_point is not None:
+		entry_point = [install_type(a) for a in entry_point]
 
 	rt.schema = routine_hints
 	rt.return_type = routine_return
-	rt.api = api
+	rt.entry_point = entry_point
 
 	install_portable(UserDefined(routine))
 
 
-def bind_point(point: Point, return_type=None, api: list=None, thread: str=None,
+def bind_point(point: Point, return_type=None, entry_point: list=None, thread: str=None,
 		lifecycle: bool=True, message_trail: bool=True, execution_trace: bool=True,
 		user_logs: USER_LOG=USER_LOG.DEBUG, **explicit_schema):
 	"""
@@ -126,7 +126,7 @@ def bind_point(point: Point, return_type=None, api: list=None, thread: str=None,
 
 	:param point: instance of an asynchronous object
 	:param return_type: type expression for the return value
-	:type return_type: :ref:`tip<layer-cake-type-reference>`
+	:type return_type: :ref:`tip<type-reference>`
 	:param lifecycle: enable log when object is created or destroyed
 	:param message_trail: enable log when message is sent
 	:param execution_trace: enable log when message is received
@@ -152,12 +152,12 @@ def bind_point(point: Point, return_type=None, api: list=None, thread: str=None,
 	for k, a in explicit_schema.items():
 		point_hints[k] = a	# Add or override existing.
 
-	if api is not None:
-		api = [install_hint(a) for a in api]
+	if entry_point is not None:
+		entry_point = [install_hint(a) for a in entry_point]
 
 	rt.schema = point_hints
 	rt.return_type = return_type
-	rt.api = api
+	rt.entry_point = entry_point
 
 	if thread:
 		try:
@@ -193,7 +193,7 @@ def unfold(folded):
 		else:
 			yield f
 
-def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: list=None, **explicit_schema):
+def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, entry_point: list=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the non-FSM machine.
 
@@ -203,10 +203,10 @@ def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: l
 	:param machine: class to be registered as a machine
 	:param dispatch: list of expected messages
 	:param return_type: type expression for the return value
-	:type return_type: :ref:`tip<layer-cake-type-reference>`
-	:param api: enable API with list of expected messages
+	:type return_type: :ref:`tip<type-reference>`
+	:param entry_point: enable library loading with list of expected messages
 	"""
-	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
+	bind_point(machine, return_type=return_type, entry_point=entry_point, **explicit_schema)
 	if dispatch is None:
 		return
 
@@ -232,7 +232,7 @@ def bind_stateless(machine: Stateless, dispatch: tuple, return_type=None, api: l
 
 	machine.__art__.value = (shift, messaging)
 
-def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, api: list=None, **explicit_schema):
+def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, entry_point: list=None, **explicit_schema):
 	"""
 	Set the type information and runtime controls for the FSM machine.
 
@@ -254,10 +254,10 @@ def bind_statemachine(machine: StateMachine, dispatch: dict, return_type=None, a
 	:param machine: class to be registered as a machine
 	:param dispatch: table of current state and expected messages
 	:param return_type: type expression for the return value
-	:type return_type: :ref:`tip<layer-cake-type-reference>`
-	:param api: enable API with list of expected messages
+	:type return_type: :ref:`tip<type-reference>`
+	:param entry_point: enable library loading with list of expected messages
 	"""
-	bind_point(machine, return_type=return_type, api=api, **explicit_schema)
+	bind_point(machine, return_type=return_type, entry_point=entry_point, **explicit_schema)
 	if dispatch is None:
 		return
 	shift = {}
