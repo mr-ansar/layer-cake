@@ -41,7 +41,7 @@ __all__ = [
 	'Pump',
 ]
 
-PEAK_BEFORE_DROPPED = 1024 * 8
+PEAK_BEFORE_DROPPED = 16384
 GRACE_PERIOD = 5
 
 # The buffering between senders and receivers. Firstly this is a
