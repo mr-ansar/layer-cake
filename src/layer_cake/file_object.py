@@ -58,7 +58,7 @@ class File(object):
 
 	:param name: name of the file
 	:param tip: type expression for the content
-	:type tip: :ref:`tip<layer-cake-type-reference>`
+	:type tip: :ref:`tip<type-reference>`
 	:param encoding: selection of representation, defaults to ``CodecJson``
 	:type encoding: class
 	:param create_default: return default instance if file not found on read, defaults to ``False``
@@ -87,7 +87,7 @@ class File(object):
 		"""Generate a representation of ``value`` and write to the saved ``name``.
 
 		:param value: any application value
-		:type value: matching the :ref:`tip<layer-cake-type-reference>` saved on construction
+		:type value: matching the :ref:`tip<type-reference>` saved on construction
 		"""
 		if as_path:
 			if as_name:
@@ -108,7 +108,7 @@ class File(object):
 		"""Read from the saved ``name``, parse and marshal into an application value.
 
 		:return: any application value
-		:rtype: matching the saved :ref:`tip<layer-cake-type-reference>`
+		:rtype: matching the saved :ref:`tip<type-reference>`
 		"""
 		try:
 			r = read_from_file(self.file_type, self.name, encoding=self.encoding, decorate_names=self.decorate_names)
