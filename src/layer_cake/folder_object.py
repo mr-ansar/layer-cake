@@ -107,7 +107,7 @@ class Folder(object):
 
 	:param path: the location in the filesystem
 	:param tip: type expression for the content
-	:type tip: :ref:`tip<layer-cake-type-reference>`
+	:type tip: :ref:`tip<type-reference>`
 	:param re: formal, regular expression description of expected file names
 	:param encoding: selection of representation, defaults to ``CodecJson``
 	:type encoding: class
@@ -166,7 +166,7 @@ class Folder(object):
 
 		:param path: the name to be added to the saved ``path``
 		:param tip: type expression for the content
-		:type tip: :ref:`tip<layer-cake-type-reference>`
+		:type tip: :ref:`tip<type-reference>`
 		:param re: formal, regular expression description of expected file names
 		:param encoding: selection of representation, defaults to ``CodecJson``
 		:type encoding: class
@@ -202,7 +202,7 @@ class Folder(object):
 
 		:param name: the name to be added to the saved ``path``
 		:param tip: type expression for the content
-		:type tip: :ref:`tip<layer-cake-type-reference>`
+		:type tip: :ref:`tip<type-reference>`
 		:param encoding: selection of representation, defaults to ``CodecJson``
 		:type encoding: class
 		:param pretty_format: generate human-readable file contents, defaults to ``True``
@@ -315,7 +315,7 @@ class Folder(object):
 
 		:param values: a collection of application values
 		:param item: the value to be added
-		:type item: :ref:`tip<layer-cake-type-reference>`
+		:type item: :ref:`tip<type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -335,7 +335,7 @@ class Folder(object):
 
 		:param values: a collection of application values
 		:param item: the value to be updated
-		:type item: :ref:`tip<layer-cake-type-reference>`
+		:type item: :ref:`tip<type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -356,7 +356,7 @@ class Folder(object):
 
 		:param values: a collection of application values
 		:param item: the value to be removed
-		:type item: :ref:`tip<layer-cake-type-reference>`
+		:type item: :ref:`tip<type-reference>`
 		"""
 		keys_names = self.keys_names
 		if keys_names is None:
@@ -420,7 +420,7 @@ class Folder(object):
 		"""Generate the stable key for a given application value.
 
 		:param item: an application value
-		:type item: :ref:`tip<layer-cake-type-reference>`
+		:type item: :ref:`tip<type-reference>`
 		:return: the key
 		:rtype: folder dependent
 		"""
@@ -433,7 +433,7 @@ class Folder(object):
 		"""Generate the stable filename for a given application value.
 
 		:param item: an application value
-		:type item: :ref:`tip<layer-cake-type-reference>`
+		:type item: :ref:`tip<type-reference>`
 		:return: the filename
 		:rtype: str
 		"""
