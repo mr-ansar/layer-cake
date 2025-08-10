@@ -21,7 +21,7 @@ def Library_Xy(self, message):
 def Library_Stop(self, message):
 	self.complete(lc.Aborted())
 
-lc.bind(Library, (lc.Start, Xy, lc.Stop), api=[Xy,])
+lc.bind(Library, (lc.Start, Xy, lc.Stop), entry_point=[Xy,])
 
 if __name__ == '__main__':
 	lc.create(Library)

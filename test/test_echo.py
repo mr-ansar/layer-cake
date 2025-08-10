@@ -38,7 +38,7 @@ def main(self, requested_ipp: lc.HostPort=None):
 
 	return m
 
-lc.bind(main, api=(lc.Ack, lc.Enquiry))
+lc.bind(main, entry_point=(lc.Ack, lc.Enquiry))
 
 if __name__ == '__main__':
 	lc.create(main)

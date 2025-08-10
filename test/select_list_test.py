@@ -7,7 +7,11 @@ import layer_cake as lc
 from collections import deque
 from layer_cake.convert_type import *
 from layer_cake.virtual_runtime import *
-from layer_cake.virtual_runtime import *
+from layer_cake.virtual_memory import *
+from layer_cake.command_line import *
+from layer_cake.command_startup import *
+from layer_cake.object_runtime import *
+from layer_cake.object_startup import *
 
 from test_person import *
 
@@ -34,9 +38,32 @@ lc.bind(Array, a=lc.ArrayOf(lc.UserDefined(Basic), 8))
 
 truth = lc.select_list(bool)
 basic = lc.select_list(bool, int, float, str, bytes, bytearray, datetime.datetime, datetime.timedelta, uuid.UUID)
+
+list_bool_type = lc.def_type(list[bool])
+dict_int_float_type = lc.def_type(dict[int, float])
+set_str_type = lc.def_type(set[str])
+deque_bytes_type = lc.def_type(deque[bytes])
+
 containers = lc.select_list(list[bool], dict[int, float], set[str], deque[bytes])
 
-class TestServiceList(TestCase):
+def echo(self):
+	while True:
+		m = self.input()
+		self.reply(cast_to(m, self.received_type))
+
+lc.bind(echo)
+
+class TestSelectList(TestCase):
+	def setUp(self):
+		# Test framework doesnt like atexit.
+		PB.tear_down_atexit = False
+		lc.start_up(lc.log_to_stderr)
+		super().__init__()
+
+	def tearDown(self):
+		lc.tear_down()
+		return super().tearDown()
+
 	def test_list(self):
 		b = lc.cast_to(True, bool_type)
 		i, m, t = truth.find(b)
@@ -71,3 +98,37 @@ class TestServiceList(TestCase):
 		assert i == 0
 		assert isinstance(m, dict)
 		assert id(x) == id(p)
+
+	def test_echo(self):
+		with lc.channel() as ch:
+			e = ch.create(echo)
+			ch.send(cast_to(True, Boolean()), e)
+			m, i = ch.select(truth)
+			assert i == 0
+			assert isinstance(m, bool)
+			#assert id(x) == id(p)
+
+	def test_echo_adhoc(self):
+		with lc.channel() as ch:
+			e = ch.create(echo)
+			ch.send(cast_to(True, Boolean()), e)
+			m, i = ch.select(bool)
+			assert i == 0
+			assert isinstance(m, bool)
+			#assert id(x) == id(p)
+
+	def test_echo_containers(self):
+		with lc.channel() as ch:
+			e = ch.create(echo)
+			def test(cast, value, is_i, is_m, is_t):
+				ch.send(cast_to(value, cast), e)
+				m, i = ch.select(containers)
+
+				assert i == is_i
+				assert isinstance(m, is_m)
+				assert isinstance(ch.received_type, is_t)
+
+			test(list_bool_type, [True, False, True], 0, list, lc.VectorOf)
+			test(dict_int_float_type, {1:0.5}, 1, dict, lc.MapOf)
+			test(set_str_type, set(["hello", "world"]), 2, set, lc.SetOf)
+			test(deque_bytes_type, deque([b'1', b'2']), 3, deque, lc.DequeOf)

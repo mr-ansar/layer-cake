@@ -27,7 +27,7 @@ def Publisher_Faulted(self, message):	# All faults routed here including
 def Publisher_Stop(self, message):
 	self.complete(lc.Aborted())			# Leave all the housekeeping to the framework.
 
-lc.bind(Publisher, (lc.Start, Xy, lc.Faulted, lc.Stop), api=[Xy,])
+lc.bind(Publisher, (lc.Start, Xy, lc.Faulted, lc.Stop), entry_point=[Xy,])
 
 if __name__ == '__main__':		# Process entry-point.
 	lc.create(Publisher)

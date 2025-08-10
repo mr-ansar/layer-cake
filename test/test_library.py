@@ -26,7 +26,7 @@ def library(self):
 		table = texture(self, x=m.x, y=m.y)
 		self.send(lc.cast_to(table, table_type), self.return_address)
 
-lc.bind(library, api=[Xy,])		# Register with the framework. Declare the API.
+lc.bind(library, entry_point=[Xy,])		# Register with the framework. Declare the API.
 
 if __name__ == '__main__':		# Process entry-point.
 	lc.create(library)
