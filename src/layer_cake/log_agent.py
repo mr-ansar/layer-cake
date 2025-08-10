@@ -38,7 +38,7 @@ __all__ = [
 
 #
 #
-PEAK_BEFORE_BLOCKING = 1024 * 32
+PEAK_BEFORE_BLOCKING = 1024 * 64
 
 class LogAgent(Threaded, Stateless):
 	"""
