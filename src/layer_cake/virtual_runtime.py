@@ -72,19 +72,19 @@ class USER_TAG(Enum):
 	"""
 	Enumeration of the tags used to stamp each log entry.
 
-	* CREATED - new object
-	* DESTROYED - object gone
-	* SENT - object sent a message
-	* RECEIVED - object received a message
-	* STARTED - object started a subprocess
-	* ENDED - subprocess ended
-	* FAULT - compromised operation
-	* WARNING - may be compromised
-	* CONSOLE - application milestone
-	* TRACE - technical notes
-	* DEBUG - developer notes
-	* SAMPLE - formal sample of local data
-	* CHECK - assert a condition
+	* CREATED ``+`` new object
+	* DESTROYED ``X`` object gone
+	* SENT ``>`` object sent a message
+	* RECEIVED ``<`` object received a message
+	* STARTED ``(`` object started a subprocess
+	* ENDED ``)`` subprocess ended
+	* FAULT ``!`` compromised operation
+	* WARNING ``?`` may be compromised
+	* CONSOLE ``^`` application milestone
+	* TRACE ``~`` technical notes
+	* DEBUG ``_`` developer notes
+	* SAMPLE ``&`` formal sample of local data
+	* CHECK ``=`` assert a condition
 	"""
 	CREATED = '+'
 	DESTROYED = 'X'
