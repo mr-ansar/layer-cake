@@ -61,7 +61,7 @@ def resource_folder():
 	"""Application access to the shared, per-executable file space. Return a folder.
 
 	Static, read-only file data associated with the running executable. This is
-	intended to be the folder managed by the :ref:`resource<layer-cake-command-reference-resource>`
+	intended to be the folder managed by the :ref:`resource<command-reference-resource>`
 	command but may be explicitly set on the command-line using ``--resource-path``, or it
 	is ``None``.
 
@@ -73,7 +73,7 @@ def model_folder():
 	"""Application access to the operational, per-role file space. Return a folder.
 
 	Private, persistent, read-write file data associated with the operational role. This is
-	intended to be the folder managed by the :ref:`model<layer-cake-command-reference-model>`
+	intended to be the folder managed by the :ref:`model<command-reference-model>`
 	command but may be explicitly set on the command-line using ``--model-path``, or it
 	is the current working folder.
 
