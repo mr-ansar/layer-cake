@@ -716,6 +716,19 @@ lc.bind(returned)
 # Extraction of logs for a role.
 #
 class TimeFrame(Enum):
+	"""
+	Enumeration of a general-usage time unit.
+
+	* MONTH - 4 weeks
+	* WEEK - 7 days
+	* DAY - 24 hours
+	* HOUR - 60 minutes
+	* MINUTE - 60 seconds
+	* HALF - 30 minutes
+	* QUARTER - 15 minutes
+	* TEN - 10 minutes
+	* FIVE - 5 minutes
+	"""
 	MONTH=0
 	WEEK=1
 	DAY=2
@@ -727,8 +740,8 @@ class TimeFrame(Enum):
 	FIVE=8
 
 def log(self, word, remainder, clock: bool=False,
-	rewind: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
-	to: str=None, span=None, count: int=None, sample: str=None):
+	tail: int=None, from_: str=None, last: TimeFrame=None, start: int=None, back=None,
+	to: str=None, span=None, count: int=None, sample: str=None, tags: str=None):
 	'''List logging records for the specified process definition. Return Faulted/None.'''
 	role_name = word_i(word, 0) or lc.CL.role_name
 	home_path = lc.CL.home_path or lc.DEFAULT_HOME
@@ -741,23 +754,35 @@ def log(self, word, remainder, clock: bool=False,
 
 	self.console('log', role_name=role_name, home_path=home_path)
 
-	# Initial sanity checks and a default <begin>.
-	f = [rewind, from_, last, start, back]
+	# Need a beginning and an ending.
+	f = [
+		tail,		# Rewind up to a specified number of lines.
+		from_,		# At a specific datetime.
+		last,		# Recent timeframe.
+		start,		# Entry in the start-stop log.
+		back		# Timespan back from now.
+	]
 	c = len(f) - f.count(None)
 	if c == 0:
-		rewind = os.get_terminal_size().lines - 1
+		tail = os.get_terminal_size().lines - 2
 	elif c != 1:
-		# one of <from>, <last>, <start> or <back> is required
-		return lc.Faulted(cannot_log, f'need a rewind, from_, last, start or back')
+		# one of <tail>, <from>, <last>, <start> or <back> is required
+		return lc.Faulted(cannot_log, f'need one of tail, from_, last, start or back')
 
-	t = [to, span, count]
+	# The ending (optional).
+	t = [
+		to,			# Specific datetime.
+		span,		# Timespan from start.
+		count		# Number of lines from start.
+	]
 	c = len(t) - t.count(None)
 	if c == 0:
-		pass		# Default is query to end-of-log or end of start-stop.
+		pass		# Default is query to end-of-log.
 	elif c != 1:
 		# one of <to>, <span> or <count> is required
-		return lc.Faulted(cannot_log, f'need a to, span or count')
+		return lc.Faulted(cannot_log, f'optional use of to, span or count')
 
+	# Open the home and role.
 	home = lc.open_home(home_path, grouping=group_role, sub_roles=sub_roles)
 	if home is None:
 		return lc.Faulted(cannot_log, f'home at "{home_path}" does not exist or contains unexpected/incomplete materials')
@@ -766,11 +791,12 @@ def log(self, word, remainder, clock: bool=False,
 	if role is None:
 		return lc.Faulted(cannot_log, f'does not exist')
 
+	# Calculate the start position and then the
+	# end position - might be relative to start.
 	begin, end = None, None
-	if rewind is not None:
-		if rewind < 1:
-			return lc.Faulted(cannot_log, f'rewind [{rewind}] out of range')
-		begin = rewind			# Rewind expresses the begin and end (count).
+	if tail is not None:
+		if tail < 1:
+			return lc.Faulted(cannot_log, f'tail [{tail}] out of range')
 
 	elif from_ is not None:
 		begin = world_or_clock(from_, clock)
@@ -803,42 +829,31 @@ def log(self, word, remainder, clock: bool=False,
 		t = datetime.timedelta(seconds=back)
 		begin =  d - t
 
-	count = None
+	# Calculate the end.
 	if to is not None:
 		end = world_or_clock(to, clock)
 	elif span is not None:
 		#t = datetime.timedelta(seconds=span)
-		end = begin + span	#t
-	elif count is not None:
-		count = count
-		# Override an assignment associated with "start".
-		end = None
-	# Else
-	#   end remains as the default None or
-	#   the stop part of a start-stop.
+		if begin is None:
+			return lc.Faulted(cannot_log, f'span has nowhere to start')
+		end = begin + span
 
-	# Now that <begin> and <end> have been established, a
+	# Now that <begin>(or tail) and <end> have been established, a
 	# few more sanity checks.
-	if begin is None:
+	if begin is None and tail is None:
 		return lc.Faulted(cannot_log, f'<begin> not defined and not inferred')
 
-	if end is not None and end < begin:
+	if begin is not None and end is not None and end < begin:
 		return lc.Faulted(cannot_log, f'<end> comes before <begin>')
 
-	header = None
-	if sample:
-		header = sample.split(',')
-		if len(header) < 1 or '' in header:
-			return lc.Faulted(cannot_log, f'<sample> empty or contains empty column')
+	if sample is not None and tags is not None:
+		return lc.Faulted(cannot_log, f'sampling is by a specific tag')
 
-	if rewind:
-		a = self.create(backward, role, begin)
-	elif header:
-		a = self.create(sampler, role, begin, end, count, header)
-	elif clock:
-		a = self.create(clocker, role, begin, end, count)
+	# Boundaries are set. Ready to scan.
+	if sample:
+		a = self.create(sampler, role, clock, begin, tail, end, count, sample)
 	else:
-		a = self.create(printer, role, begin, end, count)
+		a = self.create(printer, role, clock, begin, tail, end, count, tags)
 
 	m, i = self.select(lc.Stop, lc.Returned)
 	if isinstance(m, lc.Stop):
@@ -1620,6 +1635,7 @@ def from_last(last):
 	return f
 
 def short_delta(d):
+
 	t = lc.span_to_text(d.total_seconds())
 	i = t.find('d')
 	if i != -1:
@@ -1646,36 +1662,38 @@ def short_delta(d):
 
 #
 #
-def clocker(self, role, begin, end, count):
+def printer(self, role, clock, begin, tail, end, count, tags):
 	try:
-		for d, t in rl.read_log(role.logs, begin, end, count):
+		if begin is not None:
+			reader = rl.read_log(role.logs, begin, end, count)
+		else:
+			reader = rl.rewind_log(role.logs, tail, end, count)
+
+		if clock:
+			for d, t in reader:
+				if self.halted:
+					return lc.Aborted()
+				if tags is not None:
+					if t[24] not in tags:
+						continue
+				c = d.astimezone(tz=None)		   # To localtime.
+				s = c.strftime('%Y-%m-%dt%H:%M:%S') # Normal part.
+				f = c.strftime('%f')[:3]			# Up to milliseconds.
+				h = '%s.%s' % (s, f)
+				i = t.index(' ')
+				lc.output_line(h, newline=False)
+				lc.output_line(t[i:], newline=False)
+			return
+
+		for d, t in reader:
 			if self.halted:
 				return lc.Aborted()
-			c = d.astimezone(tz=None)		   # To localtime.
-			s = c.strftime('%Y-%m-%dt%H:%M:%S') # Normal part.
-			f = c.strftime('%f')[:3]			# Up to milliseconds.
-			h = '%s.%s' % (s, f)
-			i = t.index(' ')
-			lc.output_line(h, newline=False)
-			lc.output_line(t[i:], newline=False)
-	except (KeyboardInterrupt, SystemExit) as e:
-		raise e
-	except Exception as e:
-		condition = str(e)
-		fault = lc.Faulted(condition)
-		return fault
-	return None
-
-lc.bind(clocker)
-
-#
-#
-def printer(self, role, begin, end, count):
-	try:
-		for _, t in rl.read_log(role.logs, begin, end, count):
-			if self.halted:
-				return lc.Aborted()
+			if tags is not None:
+				if t[24] not in tags:
+					continue
 			lc.output_line(t, newline=False)
+
+
 	except (KeyboardInterrupt, SystemExit) as e:
 		raise e
 	except Exception as e:
@@ -1686,58 +1704,55 @@ def printer(self, role, begin, end, count):
 
 lc.bind(printer)
 
-#
-#
-def backward(self, role, count):
+# 2025-08-09T04:49:30.553 > <0000000f>ListenConnect - Forward Xy to <00000015> (from <0000004a>)
+# 2025-08-09T04:49:30.553 < <00000015>server - Received Accepted from <0000004a>
+AMPERSAND_TAG = 24
+OBJECT_NAME = 36
+TIME_STAMP = 23
+
+def sampler(self, role, clock, begin, tail, end, count, sample):
 	try:
-		for t in rl.rewind_log(role.logs, count):
+		if begin is not None:
+			reader = rl.read_log(role.logs, begin, end, count)
+		else:
+			reader = rl.rewind_log(role.logs, tail, end, count)
+
+		for d, t in reader:
 			if self.halted:
 				return lc.Aborted()
-			lc.output_line(t, newline=False)
-	except (KeyboardInterrupt, SystemExit) as e:
-		raise e
-	except Exception as e:
-		condition = str(e)
-		fault = lc.Faulted(condition)
-		return fault
-	return None
-
-lc.bind(backward)
-
-#
-#
-def tabulate(header, kv):
-	t = []
-	for h in header:
-		v = kv.get(h, None)
-		if v is None:
-			return None
-		t.append(v)
-	t = '\t'.join(t)
-	return t
-
-def sampler(self, role, begin, end, count, header):
-	try:
-		#t = '\t'.join(header)
-		#lc.output_line(t, newline=True)
-
-		for _, t in lc.read_log(role.logs, begin, end, count):
-			if self.halted:
-				return lc.Aborted()
-			if t[24] != '&':
+			# Sample log.
+			if t[AMPERSAND_TAG] != '&':
 				continue
-			dash = t.find(' - ', 36)
+			# Begining of logged text, after name and dash.
+			dash = t.find(' - ', OBJECT_NAME)
 			if dash == -1:
 				continue
+			# Name and parens.
 			text = t[dash + 3:-1]
-			colon = text.split(':')
-			equals = [c.split('=') for c in colon]
-			kv = {lr[0]: lr[1] for lr in equals}
-			kv['time'] = t[0:23]
-			t = tabulate(header, kv)
-			if t is None:
+			if text[-1] != ')':
 				continue
-			lc.output_line(t, newline=True)
+			# Separate name from values.
+			left = text.find(' (')
+			if left == -1:
+				continue
+			# Name and values.
+			name = text[:left]
+			if name != sample:
+				continue
+			parens = text[left+2:-1]
+			comma = parens.split(',')
+			values = [c.split('=')[1] for c in comma]
+			tabs = '\t'.join(values)
+			stamp = t[0:TIME_STAMP]
+			if clock:
+				c = d.astimezone(tz=None)			# To localtime.
+				s = c.strftime('%Y-%m-%dt%H:%M:%S') # Normal part.
+				f = c.strftime('%f')[:3]			# Up to milliseconds.
+				stamp = '%s.%s' % (s, f)
+			else:
+				stamp = t[0:TIME_STAMP]
+
+			lc.output_line(f'{stamp}\t{tabs}')
 	except (KeyboardInterrupt, SystemExit) as e:
 		raise e
 	except Exception as e:
