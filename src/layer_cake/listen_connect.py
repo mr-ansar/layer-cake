@@ -735,7 +735,7 @@ def SocketKeeper_PENDING_T2(self, message):		# Fulfil expectation and start own 
 	seconds = self.originate(StillThere, self.proxy_address)
 	self.start(T3, seconds + 5.0)						# Expect response.
 	if self.first_few():
-		self.log(USER_TAG.TRACE, f'Silence observed, requests remote slience ({seconds:.1f})')
+		self.log(USER_TAG.TRACE, f'Silence observed, requests remote silence ({seconds:.1f})')
 	return CHECKING
 
 def SocketKeeper_PENDING_Stop(self, message):
