@@ -1047,7 +1047,7 @@ class Codec(object):
 		:param value: a runtime application value
 		:type value: a type consistent with the specified `expression`
 		:param expression: a formal description of the `value`
-		:type expression: :ref:`type expression<layer-cake-type-reference>`
+		:type expression: :ref:`type expression<type-reference>`
 		:param version: an explicit version override
 		:type version: string
 		:return: a portable representation of the `value`
@@ -1105,7 +1105,7 @@ class Codec(object):
 		:param representation: the result of a previous encode operation
 		:type representation: str
 		:param expression: a formal description of portable
-		:type expression: a :ref:`type expression<layer-cake-type-reference>`
+		:type expression: a :ref:`type expression<type-reference>`
 		:return: an application value
 		"""
 		self.address_book = address_book
