@@ -111,7 +111,7 @@ def start_up(logs=log_to_nowhere):
 			PB.root = root
 			VP.log_address = root.create(LogAgent, logs)
 			VP.timer_address = root.create(CountdownTimer)
-			#PB.test_address = root.create(TestRecord)
+			#VP.test_address = root.create(TestRecord)
 			VP.circuit_address = root.create(timer_circuit, VP.timer_address)
 			bg = root.create(object_dispatch)
 			set_queue(None, bg)
