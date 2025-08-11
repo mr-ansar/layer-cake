@@ -338,7 +338,7 @@ def def_type(hint_or_portable):
 	hints into :class:`~.Portable` equivalents.
 
 	:param hint_or_portable: a type description
-	:type hint_or_portable: :ref:`tip<type-reference>`
+	:type hint_or_portable: :ref:`tip<layer-cake-type-reference>`
 	"""
 	p = install_type(hint_or_portable)
 	return p
