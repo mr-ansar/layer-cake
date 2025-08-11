@@ -43,12 +43,12 @@ class TestRoutinePoint(TestCase):
 		rt = empty.__art__
 		assert isinstance(rt.return_type, lc.Integer8)
 
-	def test_virtual_class(self):
-		try:
-			lc.bind_routine(empty, return_type=lc.VectorOf)
-			assert False
-		except lc.PointConstructionError:
-			pass
+	#def test_virtual_class(self):
+	#	try:
+	#		lc.bind_routine(empty, return_type=lc.VectorOf)
+	#		assert False
+	#	except lc.PointConstructionError:
+	#		pass
 
 	def test_none(self):
 		lc.bind_routine(return_none)

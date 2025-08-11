@@ -23,26 +23,26 @@ dict_UUID_Person_type = lc.def_type(dict[uuid.UUID, Person])
 class TestStateMachine(TestCase):
 	def test_stateless(self):
 		statemachine = Main()
-		m, p, f = statemachine.transition(INITIAL, lc.Start())
+		m, p, a, f = statemachine.transition(INITIAL, lc.Start())
 		assert f == Main_INITIAL_Start
-		m, p, f = statemachine.transition(INITIAL, Person())
+		m, p, a, f = statemachine.transition(INITIAL, Person())
 		assert f == Main_INITIAL_Unknown
 
-		m, p, f = statemachine.transition(READY, lc.cast_to(42, lc.int_type))
+		m, p, a, f = statemachine.transition(READY, lc.cast_to(42, lc.int_type))
 		assert f == Main_READY_int
-		m, p, f = statemachine.transition(READY, lc.cast_to([42,21], list_int_type))
+		m, p, a, f = statemachine.transition(READY, lc.cast_to([42,21], list_int_type))
 		assert f == Main_READY_list_int
-		m, p, f = statemachine.transition(READY, Person('Gwendoline'))
+		m, p, a, f = statemachine.transition(READY, Person('Gwendoline'))
 		assert f == Main_READY_Person
 		d = {uuid.uuid4(): Person('Hieronymus')}
-		m, p, f = statemachine.transition(READY, lc.cast_to(d, dict_UUID_Person_type))
+		m, p, a, f = statemachine.transition(READY, lc.cast_to(d, dict_UUID_Person_type))
 		assert f == Main_READY_dict_UUID_Person
-		m, p, f = statemachine.transition(READY, lc.Stop())
+		m, p, a, f = statemachine.transition(READY, lc.Stop())
 		assert f == Main_READY_Stop
 
-		m, p, f = statemachine.transition(READY, lc.TimedOut())
+		m, p, a, f = statemachine.transition(READY, lc.TimedOut())
 		assert f == Main_READY_TimedOut
-		m, p, f = statemachine.transition(READY, lc.Faulted())
+		m, p, a, f = statemachine.transition(READY, lc.Faulted())
 		assert f == Main_READY_Faulted
-		m, p, f = statemachine.transition(READY, lc.Ack())
+		m, p, a, f = statemachine.transition(READY, lc.Ack())
 		assert f == Main_READY_Unknown

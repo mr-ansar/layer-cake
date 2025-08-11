@@ -23,16 +23,16 @@ dict_UUID_Person_type = lc.def_type(dict[uuid.UUID, Person])
 class TestStateless(TestCase):
 	def test_stateless(self):
 		stateless = Main()
-		m, p, f = stateless.transition(lc.Start())
+		m, p, a, f = stateless.transition(lc.Start())
 		assert f == Main_Start
-		m, p, f = stateless.transition(lc.cast_to(42, lc.int_type))
+		m, p, a, f = stateless.transition(lc.cast_to(42, lc.int_type))
 		assert f == Main_int
-		m, p, f = stateless.transition(lc.cast_to([42,21], list_int_type))
+		m, p, a, f = stateless.transition(lc.cast_to([42,21], list_int_type))
 		assert f == Main_list_int
-		m, p, f = stateless.transition(Person('Gwendoline'))
+		m, p, a, f = stateless.transition(Person('Gwendoline'))
 		assert f == Main_Person
 		d = {uuid.uuid4(): Person('Hieronymus')}
-		m, p, f = stateless.transition(lc.cast_to(d, dict_UUID_Person_type))
+		m, p, a, f = stateless.transition(lc.cast_to(d, dict_UUID_Person_type))
 		assert f == Main_dict_UUID_Person
-		m, p, f = stateless.transition(lc.Stop())
+		m, p, a, f = stateless.transition(lc.Stop())
 		assert f == Main_Stop

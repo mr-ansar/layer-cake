@@ -85,7 +85,7 @@ class TestRollingLog(TestCase):
 		now = lc.world_now()
 		now -= datetime.timedelta(seconds=5.0)
 		read = [r for r in rl.read_log(rolling, now, None, None)]
-		rewind = [r for r in rl.rewind_log(rolling, 15)]
+		rewind = [r for r in rl.rewind_log(rolling, 15, None, None)]
 
 		assert len(read) == 15
 		assert len(rewind) == 15

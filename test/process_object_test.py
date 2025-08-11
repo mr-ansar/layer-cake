@@ -251,7 +251,7 @@ class TestProcessObject(TestCase):
 	def test_create_role_empty(self):
 		# Watch out for materials left in "../layer-cake/test/.layer-cake/test_main_args"
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -261,7 +261,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'empty'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -279,7 +279,7 @@ class TestProcessObject(TestCase):
 		ratio = 0.125
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True,
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', create_role=True,
 			table=table, count=count, ratio=ratio, when=when, unique_id=unique_id)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -290,7 +290,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -309,7 +309,7 @@ class TestProcessObject(TestCase):
 
 		# Create with half.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True,
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', create_role=True,
 			table=table, count=count)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -321,7 +321,7 @@ class TestProcessObject(TestCase):
 
 		# Add other half plus overlap.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', update_role=True,
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', update_role=True,
 			count=count, ratio=ratio, when=when, unique_id=unique_id)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
@@ -332,7 +332,7 @@ class TestProcessObject(TestCase):
 		assert response.note == 'table,count,ratio,when,unique_id'
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -344,7 +344,7 @@ class TestProcessObject(TestCase):
 	def test_settings_faulted(self):
 		# Create with half.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -355,7 +355,7 @@ class TestProcessObject(TestCase):
 
 		# Repeat.
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', create_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', create_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -364,7 +364,7 @@ class TestProcessObject(TestCase):
 		assert 'already exists' in response
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
@@ -374,7 +374,7 @@ class TestProcessObject(TestCase):
 		assert response.note is None
 
 		with lc.channel() as ch:
-			ch.create(lc.ProcessObject, test_main_args.main, home_path='test-cake', role_name='command', delete_role=True)
+			ch.create(lc.ProcessObject, test_main_args.main, origin=lc.ProcessOrigin.RUN, home_path='test-cake', role_name='command', delete_role=True)
 			m, i = ch.select(lc.Returned, lc.Stop)
 
 		assert isinstance(m, lc.Returned)
