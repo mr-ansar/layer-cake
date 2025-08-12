@@ -19,7 +19,7 @@ BRANCH=`git branch --show-current`
 COMMIT=`git rev-parse HEAD`
 VERSION=`git tag | tail -1`
 
-DOC_S3_BUCKET:=layer-cake
+DOC_S3_BUCKET:=layer-cake-manual
 DOC_VERSION:=$(VERSION)
 DOC_LATEST=https://$(DOC_S3_BUCKET).s3.ap-southeast-2.amazonaws.com/$(DOC_VERSION)/index.html
 
