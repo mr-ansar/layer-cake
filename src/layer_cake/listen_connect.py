@@ -49,7 +49,7 @@ from .point_runtime import *
 from .point_machine import *
 from .object_runtime import *
 from .bind_type import *
-from .http import ApiServerStream, ApiClientSession, ApiClientStream
+from .http import ApiServerStream, ApiClientSession, ApiClientStream, ReForm
 
 __all__ = [
 	'ListenForStream',
@@ -99,11 +99,12 @@ class ListenForStream(object):
 	:param default_to_request: default to :class:`~.HttpRequest`
 	"""
 	def __init__(self, lid: UUID=None, requested_ipp: HostPort=None, encrypted: bool=False,
-			http_server: list[Type]=None, default_to_request: bool=True):
+			http_server: list[Type]=None, uri_form: ReForm=None, default_to_request: bool=True):
 		self.lid = lid
 		self.requested_ipp = requested_ipp or HostPort()
 		self.encrypted = encrypted
 		self.http_server = http_server or []
+		self.uri_form = uri_form
 		self.default_to_request = default_to_request
 
 class ConnectStream(object):
@@ -313,11 +314,13 @@ class ControlChannel(object):
 		self.s = s
 
 class TcpServer(object):
-	def __init__(self, s, request, listening, controller_address):
+	def __init__(self, s, request, listening, controller_address, named_type, search_subs):
 		self.s = s
 		self.request = request
 		self.listening = listening
 		self.controller_address = controller_address
+		self.named_type = named_type
+		self.search_subs = search_subs
 
 	def encrypted(self):
 		return self.request.encrypted
@@ -903,6 +906,26 @@ def ControlChannel_ListenForStream(self, control, mr):
 	m, r = mr
 	requested_ipp = m.requested_ipp
 
+	named_type = None
+	search_subs = None
+	if m.http_server:
+		named_type = {t.__art__.name: t for t in m.http_server}
+	elif m.uri_form:
+		if m.uri_form.form is None:
+			error_text = 'URI provided with no pattern'
+			nl = NotListening(m, error_code=e.errno, error_text=error_text)
+			self.send(nl, r)
+			return
+
+		try:
+			search_subs = m.uri_form.compile_form()
+		except re.error as e:
+			error_text = f'URI pattern does not compile, {e}'
+			self.trace(f'{error_text} "{m.uri_form.form}"')
+			nl = NotListening(m, error_text=error_text)
+			self.send(nl, r)
+			return
+
 	if not self.running:
 		nl = NotListening(m, error_code=0, error_text='sockets shutting down')
 		self.send(nl, r)
@@ -942,7 +965,7 @@ def ControlChannel_ListenForStream(self, control, mr):
 
 	listening = Listening(m, listening_ipp=listening_ipp, controller_address=r)
 
-	self.networking[server] = TcpServer(server, m, listening, r)
+	self.networking[server] = TcpServer(server, m, listening, r, named_type, search_subs)
 	self.receiving.append(server)
 	self.faulting.append(server)
 
@@ -965,7 +988,7 @@ def open_stream(self, parent, s, opened):
 		if parent.request.http_client:
 			ts = ApiClientStream
 	elif isinstance(parent, TcpServer):
-		if len(parent.request.http_server) > 0:
+		if len(parent.request.http_server) > 0 or parent.request.uri_form:
 			ts = ApiServerStream
 
 	transport = TcpTransport(ts, parent, controller_address, opened)
@@ -1545,7 +1568,7 @@ AddOn(create_sockets, stop_sockets)
 
 # Interface to the engine.
 def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
-			http_server: list=None, default_to_request: bool=True):
+			http_server: list[Type]=None, uri_form: ReForm=None, default_to_request: bool=True):
 	"""
 	Establishes a network presence at the specified IP
 	address and port number. Returns UUID.
@@ -1558,7 +1581,8 @@ def listen(self: Point, requested_ipp: HostPort, encrypted: bool=False,
 	:rtype: UUID
 	"""
 	lid = uuid.uuid4()
-	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted, http_server=http_server, default_to_request=default_to_request)
+	ls = ListenForStream(lid=lid, requested_ipp=requested_ipp, encrypted=encrypted,
+		http_server=http_server, uri_form=uri_form, default_to_request=default_to_request)
 	TS.channel.send(ls, self.object_address)
 	return lid
 
