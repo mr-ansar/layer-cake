@@ -3,8 +3,16 @@
 Command Reference
 #################
 
-Definitions, Acronyms And Abbreviations
-***************************************
+The **layer-cake** tool creates, modifies, executes and deletes a *home*. It implements a set of sub-commands, identifiable as
+the first *word* on the command line. Each of these sub-commands accepts further information often including an *executable*
+and *role*, as further *words* on the command line. Most sub-commands also support the entry of these entities as
+explicit *arguments*. Ordering of *arguments* has no significance and skipping an argument does not influence assumptions
+about the next.
+
+Where no *home* is specified, the default is ``.layer-cake``.
+
+Definitions
+***********
 
 .. list-table::
    :widths: 25 90
@@ -72,17 +80,6 @@ Development Automation
 * layer-cake :ref:`resource<command-reference-resource>` <*executable*> <*folder*>…
 * layer-cake :ref:`model<command-reference-model>` <*role*> <*folder*>…
 * layer-cake :ref:`script<command-reference-script>` <*arguments*>…
-
-General Information
-*******************
-
-The **layer-cake** tool creates, modifies, executes and deletes a *home*. It implements a set of sub-commands, identifiable as
-the first *word* on the command line. Each of these sub-commands accepts further information often including an *executable*
-and *role*, as further *words* on the command line. Most sub-commands also support the entry of these entities as
-explicit *arguments*. Ordering of *arguments* has no significance and skipping an argument does not influence assumptions
-about the next.
-
-Where no *home* is specified, the default is ``.layer-cake``.
 
 Modification Of Live Files
 **************************
@@ -778,6 +775,8 @@ IP and port on the command line, e.g. ``--connect-to-directory``.
 Adding the ``--directory-addresses`` flag decorates the listings with IP and port information;
 
 .. code-block:: console
+	:linenos:
+	:emphasize-lines: 4
 
 	(.env) toby@seneca:~/../multihosting$ layer-cake network --directory-addresses
 	[LAN] lan-cake (f1a042b8) 192.168.1.176 <C>(not set) <L>0.0.0.0:54195

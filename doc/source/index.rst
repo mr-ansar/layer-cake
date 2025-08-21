@@ -49,9 +49,8 @@ event-driven execution environment. Demonstrations include;
 * switching to a pool of request *processes* with the addition of a single argument,
 * switching to a pool of request *hosts* with around 10 lines of additional code.
 
-The material is arranged as a series of guides. Some background implementation details are covered
-where this might help with less obvious behaviours. A testing client, capable of replicating the
-workload of large numbers of clients is provided at the end.
+The material is arranged as a series of guides. A testing client, capable of replicating the workload of large
+numbers of clients is included. A few references and background information is also provided.
 
 .. toctree::
    :maxdepth: 1
@@ -64,12 +63,8 @@ workload of large numbers of clients is provided at the end.
    classes-and-functions
    type-reference
    command-reference
+   asynchronous-software
    design-and-implementation
-
-The combination of multithreading, multiprocessing and multihosting covers a large technical domain.
-The **layer-cake** library has bitten off a deliberate piece of that pie. Documentation has been written
-in a tutorial style, intended to get useful code up and running. Some deeper background material appears
-in later sections.
 
 .. only: html
 

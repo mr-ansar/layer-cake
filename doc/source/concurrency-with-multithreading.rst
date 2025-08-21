@@ -7,8 +7,9 @@ Concurrency With Multithreading
 
 	To follow the materials mentioned in this section, change to the ``layer-cake-demos/multithreading`` folder.
 
-The :func:`texture` function accepts size parameters and returns a 2D table of the specified dimensions, filled with random
-floating-point values. Execution of the code consumes computing resources such as memory and CPU cycles.
+A function is needed for the following demonstrations. The :func:`texture` function accepts size parameters and returns a
+2D table of the specified dimensions, filled with random floating-point values. Execution of the code consumes computing
+resources such as memory and CPU cycles.
 
 .. code-block:: python
 
@@ -46,7 +47,7 @@ Providing Network Access To The Function
 
 The demonstration function needs to be combined with some network plumbing and management of request and response messages. An
 implementation is presented below. It introduces an asynchronous approach to software operation, also known as event-driven or
-message-driven software. The more interesting aspects of this approach are covered in detail in following sections;
+message-driven software. The more pertinent aspects of this approach are covered in detail in following sections;
 
 .. code-block:: python
 
@@ -103,7 +104,7 @@ Execution of the server will produce output similar to that shown below (logs ha
 	00:04:11.424 > <0000000e>ListenConnect - Sent Listening to <00000012>
 	00:04:11.424 < <00000012>server - Received Listening from <0000000e>
 
-Further information on logging output can be found :ref:`here<lc-generating-logs>`.
+Further information on logging output can be found :ref:`here<layer-cake-command-logging-information>`.
 Use ``curl`` (or some other HTTP client) to make a call to the network service;
 
 .. code-block:: console
@@ -186,7 +187,7 @@ A Brief Outline
 ***************
 
 An execution trace for the server, together with commentary appears below. General information about the operation of
-asynchronous software can be found :ref:`here<lc-asynchronous-concepts>`;
+asynchronous software can be found :ref:`here<lc-asynchronous-software>`;
 
 .. code-block:: console
 
@@ -343,7 +344,7 @@ for a small table and the latter returns before the former.
 
 After creating a callback using :meth:`~.Point.on_return` the :func:`server` thread is immediately available for processing of the next
 message, preserving overall responsiveness. An overview of how callbacks fit into general asynchronous operation, is
-available :ref:`here<lc-arranging-a-deferred-call>`.
+available :ref:`here<lc-arranging-for-a-callback>`.
 
 A minor change was also required in ``test_function_2.py``;
 
@@ -476,7 +477,8 @@ send the response directly to the server and there would be no :class:`~.Returne
 	Developers familar with event-driven software will recognise the role that :class:`~.GetResponse` plays
 	in this scenario. It is the equivalent of an entry in a *pending request table*. Within the **layer-cake**
 	framework there is no need to allocate ids, match responses with requests and update the table. This happens
-	as a natural by-product of delegating to an independent, asynchronous object.
+	as a natural by-product of delegating to an independent, asynchronous object. Further information about
+	management of complex request scenarios can be found :ref:`here<simulation-of-synchronous-calling>`.
 
 On receiving a message the :class:`~.GetResponse` facility terminates, passing the message back to the server inside a :class:`~.Returned`
 message. The standard processing of callbacks occurs resulting in the call to :func:`respond` and a :meth:`~.Point.send` of the table back

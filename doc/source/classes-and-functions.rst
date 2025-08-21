@@ -47,6 +47,8 @@ Portable Type System
 .. autoclass:: Address
 .. autoclass:: PointerTo
 
+.. autoclass:: Incognito
+
 Message And Registration
 ************************
 
@@ -95,6 +97,7 @@ Message And Registration
 .. autoclass:: Busy
 .. autoclass:: Overloaded
 .. autoclass:: OutOfService
+.. autoclass:: ReForm
 
 .. currentmodule:: layer_cake.convert_type
 
@@ -134,14 +137,12 @@ Object Methods
 
 .. autoclass:: Buffering
 .. automethod:: Buffering.input
+.. automethod:: Buffering.select
+.. automethod:: Buffering.save
 
-Callbacks
-*********
+.. currentmodule:: layer_cake.point_runtime
 
-.. currentmodule:: layer_cake.get_response
-
-.. autoclass:: GetResponse
-.. autoclass:: Delay
+.. autofunction:: select_list
 
 Stateless and FSM
 ******************
@@ -154,6 +155,13 @@ Stateless and FSM
 Concurrency
 ***********
 
+.. currentmodule:: layer_cake.get_response
+
+.. autoclass:: CreateFrame
+.. autoclass:: Delay
+.. autoclass:: GetResponse
+.. autoclass:: Concurrently
+
 .. currentmodule:: layer_cake.object_spool
 
 .. autoclass:: ObjectSpool
@@ -165,6 +173,10 @@ Concurrency
 .. currentmodule:: layer_cake.retry_intervals
 
 .. autoclass:: RetryIntervals
+
+.. currentmodule:: layer_cake.general_purpose
+
+.. autoclass:: Gas
 
 Folders And Files
 *****************
@@ -244,6 +256,10 @@ HTTP Integration
 
 .. autoclass:: HttpRequest
 .. autoclass:: HttpResponse
+.. autoclass:: FormRequest
+.. autoclass:: ResourceDispatch
+.. automethod:: ResourceDispatch.add
+.. automethod:: ResourceDispatch.lookup
 
 Composite Processes
 *******************

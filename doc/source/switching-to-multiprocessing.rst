@@ -7,9 +7,15 @@ Switching To Multiprocessing
 
 	To follow the materials mentioned in this section, change to the ``layer-cake-demos/multiprocessing`` folder.
 
-Multithreading in the Python environment is affected by the presence of the GIL. The only true concurrency
-available to the Python language is through multiprocessing but that brings the difficulties of process
-management and network communication. Together these factors can dampen the enthusiasm for multiprocessing.
+Multithreading in the Python environment is affected by the presence of the GIL. A GIL-free version has been
+released but is considered experimental. When this eventually moves to a stable status, existing **layer-cake**
+software will be well positioned. Issues normally associated with multithreading are already addressed through
+adoption of the asynchronous approach. Going GIL-free should simply unlock the performance potential that
+free-threading promises.
+
+At the time of writing, the only true concurrency available to the Python language is through multiprocessing,
+but that brings the difficulties of process management and network communication. Together these factors can
+dampen the enthusiasm for multiprocessing.
 
 Basic Use Of Multiprocessing
 ****************************
@@ -68,13 +74,14 @@ a :class:`~.ProcessObject`, passing ``texture`` as the first argument;
 
 	self.create(lc.ProcessObject, texture, x=m.x, y=m.y)
 
-This is a library facility that initiates a platform process, passes arguments and waits for completion. A return value is
-decoded from ``stdout`` and passed back to the :func:`server` inside the :class:`~.Returned` message. The benefit of this approach is
-that process behaviour follows the same model as thread behaviour.
+This is a library facility that initiates a platform process, passes arguments and waits for completion. A return
+value is decoded from ``stdout`` and passed back to the :func:`server` inside the :class:`~.Returned` message.
+The benefit of this approach is that process behaviour follows the same model as thread behaviour.
 
-Passing ``texture`` as the first argument provides the :class:`~.ProcessObject` with everything it needs to perform its role.
-The module the function was loaded from is recorded in the function object and the type information needed to encode the
-arguments and decode the output is available in the information registered using :func:`~.bind`.
+Passing ``texture`` as the first argument provides the :class:`~.ProcessObject` with everything it needs to
+perform its role. The module the function was loaded from is recorded in the function object and the type
+information needed to encode the arguments and decode the output is available in the information registered
+using :func:`~.bind`.
 
 The following lines have been added to the ``test_function_5.py`` module;
 
@@ -85,8 +92,8 @@ The following lines have been added to the ``test_function_5.py`` module;
 	if __name__ == '__main__':
 		lc.create(texture)
 
-The ``self`` parameter has also been added to the function definition. The call to :func:`~.create` ensures that the module is
-loadable and there is the expected processing of arguments.
+The ``self`` parameter has also been added to the function definition. The call to :func:`~.create` ensures
+that the module is loadable and there is the expected processing of arguments.
 
 The sequence of;
 
@@ -100,11 +107,12 @@ is a process-based equivalent to the thread-based version;
 
 .. code-block:: python
 
-	self.create(texture, ...)
+	self.create(texture, x=m.x, y=m.y)
 	m = self.input()
 	response = m.message
 
-There is no networking involved in this implementation. Logs from the processing of a request include details such as;
+There is no networking involved in this implementation. Logs from the processing of a request include details
+such as;
 
 .. code-block:: console
 
@@ -186,14 +194,16 @@ More complete output can be requested;
 		]
 	}
 
-This is the output seen from previous use of the ``curl`` client and it is also the output seen by the :class:`~.ProcessObject`
-facility, i.e. the ``--full-output`` flag is always added within the multiprocessing machinery. Full output includes a type
-signature that must be present for a successful decoding process.
+This is the output seen from previous use of the ``curl`` client and it is also the output seen by
+the :class:`~.ProcessObject` facility, i.e. the ``--full-output`` flag is always added within the
+multiprocessing machinery. Full output includes a type signature that must be present for a successful
+decoding process.
 
-It is the absence of the ``--full-output`` flag at the command-line that results in the more human-friendly output.
+It is the absence of the ``--full-output`` flag at the command-line that results in the more
+human-friendly output.
 
-All the server implementations use the same technique for a process entry-point and therefore enjoy the same means of passing
-arguments;
+All the server implementations use the same technique for a process entry-point and therefore enjoy
+the same means of passing arguments;
 
 .. code-block:: console
 
@@ -208,8 +218,9 @@ The servers can also be started as a sub-process using;
 
 	a = self.create(lc.ProcessObject, server, server_address=requested_address)
 
-The process entry-point imposes conventions around the execution of a process. Each process becomes a reusable component to be
-incorporated into other developments. It’s also nice that they can be operated from the command-line.
+The process entry-point imposes conventions around the execution of a process. Each process becomes a
+reusable component to be incorporated into other developments. It’s also nice that they can be operated
+from the command-line.
 
 Concurrency Using Multiprocessing
 *********************************
@@ -391,8 +402,14 @@ Processes created in this way effectively operate as private loadable libraries.
 whatever requests are appropriate to the different :class:`~.ProcessObject` addresses. This is true multiprocessing, i.e. process
 management and network messaging, with zero coding effort.
 
+.. note::
+
+	Just in case it wasn't obvious enough, that's a leap from messages moving between threads inside the :func:`server` process, to
+	messages that travel back and forth, across a network transport. No separate networking API, no data conversions, no encoding
+	or decoding and not a socket in sight.
+
 By removing the overhead of starting and stopping a process for every request, the response time is manifestly improved. However,
-there is no real concurrency as requests are queued internally and fed to the single :func:`worker()` process one at a time.
+there is no real concurrency as requests are queued internally and fed to the single :func:`worker` process one at a time.
 
 Distributing Load Across Multiple Processes
 *******************************************

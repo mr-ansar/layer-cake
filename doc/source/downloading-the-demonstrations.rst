@@ -9,7 +9,7 @@ All demonstration materials can be downloaded with the following command;
 
 	$ git clone https://github.com/mr-ansar/layer-cake-demos.git
 
-There are three sub-folders within the git repo, one for each of the concurrency techniques presented, plus a folder
+There are three demo sub-folders within the git repo, one for each of the concurrency techniques presented, plus a folder
 for a testing client. Each of the concurrency folders contains a small set of files with names starting with ``test_server``,
 ``test_function`` and ``test_worker``. The server file is the main module and the other files support the main module. All
 of these files have a numeric suffix (e.g. ``test_server_1.py``) marking their position in the series of implementations.

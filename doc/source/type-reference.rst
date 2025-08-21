@@ -3,69 +3,32 @@
 Type Reference
 ##############
 
-Type Expressions
-----------------
-
-Type expressions (*tips*) are descriptions of memory, e.g. what argument is being passed
-to a process or what a file encoding is expected to contain. Type expressions must be *compiled*
-during loading - before the first asynchronous object is created. Mostly this happens automatically
-as a part of function and class definitions;
-
-.. code-block:: python
-
-	def texture(self, x: int=2, y: int=2) -> list[list[float]]:
-		table = [[1.0, 2.0], [3.0, 4.0]]
-		return table
-
-This compiles and registers entries for ``int``, ``float``, ``list[float]``
-and ``list[list[float]]``. Where a type is required outside the domain of a function
-or class, the :func:`~.def_type` function is available;
-
-.. code-block:: python
-
-	table_type = lc.def_type(dict[str,Person])
-
-Type expressions can be used in runtime contexts but it is more efficient to use the compiled
-value, e.g. ``table_type``. Using ``dict[str,Person]`` results in a lookup for the
-associated compiled value.
-
-This does create an unfortunate wrinkle where it is good coding practise to use Python type hints
-but a particular hint is needed at multiple code sites. The inevitable symptom is duplication of
-type information. These situations can be resolved by adding type information to the function or
-class registration;
-
-.. code-block:: python
-
-	table_type = lc.def_type(list[list[float]])
-	..
-	def texture(self, x=1, y: int=1):
-		..
-		return table
-
-	lc.bind(texture, return_type=table_type, x=int)
-
-Type information passed to :func:`~.bind` overrides whatever information is defined on the
-function, using Python hints. The ``return_type`` substitutes for the ``-> list[list[float]]``
-hint and the ``x=int`` provides the type information for the ``x`` parameter of ``texture``.
-Compiled types cannot appear as Python hints, i.e. a compiled type is an object instance
-whereas Python hints expect classes.
-
-A type expression is an instance of one of the following:
+A type expression is either a Python hint or an instance of the :class:`~.Portable` type.
+Python hints are constructions of class names and syntax tokens (e.g. ``[``). The list
+of potential class names include;
 
 * a basic Python type, e.g. ``float``
-* a constructed type or Python type hint, e.g. ``list[float]``
-* a registered class, e.g. ``Person``
-* one of the basic library types, e.g. ``TimeSpan``
-* an instance of an additional library type, e.g. ``ArrayOf(Unicode(),8)``
+* a basic library type, e.g. ``TimeDelta``
+* a registered class, e.g. ``Customer``
+
+Instances of :class:`~.Portable` are constructed from one of the basic library types
+plus those types listed as additional types. All library types derive from :class:`~.Portable`;
+
+* ``Boolean()``
+* ``VectorOf(Block())``
+* ``MapOf(Unicode(),ArrayOf(Integer8(), 4))``
+
+Library types are constructed from instances, e.g. ``VectorOf(Address())``. The Python
+hint facility does not accept instances, leaving no room for ambiguity between the
+two type systems.
 
 .. _basic-python-types:
 
 Basic Python Types
 ------------------
 
-The Python types that are accepted as *tips*, along with their respective library
-equivalents, are listed below. Internally all Python types are converted to their
-library equivalents before use.
+The Python types that are accepted as a hint class, along with their respective library
+equivalents, are listed below.
 
 +---------------+------------------------+----------------------------------------------+
 | Python        | Library                | Notes                                        |
@@ -108,7 +71,7 @@ Enumerations are defined as sub-classes of ``Enum``;
 Basic Library Types
 -------------------
 
-The **layer-cake** types that are accepted as *tips*, along with their respective
+The **layer-cake** types that are accepted as a hint class, along with their respective
 Python equivalents, are listed below.
 
 +-------------------------+---------------+-------------------------------------+
@@ -175,30 +138,32 @@ Additional Library Types
 ------------------------
 
 The **layer-cake** types that involve additional information and therefore cannot
-appear simply as a class reference, appear below. Types such as ``VectorOf(type)``
-are passed a type expression as an argument. This is a recursive definition,
-though *type* is limited to examples of library types, i.e. use ``VectorOf(Integer8())``
-not ``VectorOf(int)``. Also note that ``VectorOf`` expects an instance of a type not
-the class, i.e. ``Integer8()`` rather than ``Integer8``.
+appear as a hint class, appear below. Types such as ``VectorOf(expression)`` are
+passed a library type expression as an argument. This is a recursive definition.
+Also note that ``VectorOf`` expects an instance of an expression not the class,
+i.e. ``Integer8()`` rather than ``Integer8``.
 
-+-------------------------+---------------+-------------------------------------+
-| Library                 | Python        | Notes                               |
-+=========================+===============+=====================================+
-| ArrayOf(*type*, *size*) | ``list``      | Fixed number of objects.            |
-+-------------------------+---------------+-------------------------------------+
-| VectorOf(*type*)        | ``list``      | A sequence of zero or more objects. |
-+-------------------------+---------------+-------------------------------------+
-| SetOf(*type*)           | ``set``       | A collection of unique objects.     |
-+-------------------------+---------------+-------------------------------------+
-| MapOf(*key*, *type*)    | ``dict``      | A collection of key-value pairs.    |
-+-------------------------+---------------+-------------------------------------+
-| DequeOf(*type*)         | ``deque``     | A double-ended queue of objects.    |
-+-------------------------+---------------+-------------------------------------+
-| UserDefined(*type*)     | ``class``     | An instance of a registered class.  |
-+-------------------------+---------------+-------------------------------------+
-| PointerTo(*type*)       |               | An object that may appear multiple  |
-|                         |               | times in the single representation. |
-+-------------------------+---------------+-------------------------------------+
+Instances of these types can only appear at registration time using :func:`~.bind`,
+around the use of :meth:`~.Buffering.select`, and around :ref:`machine dispatching<stateless-machines>`.
+
++------------------------+---------------+-------------------------------------+
+| Library                | Python        | Notes                               |
++========================+===============+=====================================+
+| :class:`~.ArrayOf`     | ``list``      | Fixed number of objects.            |
++------------------------+---------------+-------------------------------------+
+| :class:`~.VectorOf`    | ``list``      | A sequence of zero or more objects. |
++------------------------+---------------+-------------------------------------+
+| :class:`~.SetOf`       | ``set``       | A collection of unique objects.     |
++------------------------+---------------+-------------------------------------+
+| :class:`~.MapOf`       | ``dict``      | A collection of key-value pairs.    |
++------------------------+---------------+-------------------------------------+
+| :class:`~.DequeOf`     | ``deque``     | A double-ended queue of objects.    |
++------------------------+---------------+-------------------------------------+
+| :class:`~.UserDefined` | ``class``     | An instance of a registered class.  |
++------------------------+---------------+-------------------------------------+
+| :class:`~.PointerTo`   |               | An object that may appear multiple  |
+|                        |               | times in the single representation. |
++------------------------+---------------+-------------------------------------+
 
 .. _strings-of-things:
 
@@ -266,11 +231,11 @@ Object Pointers
 ---------------
 
 The proper type expression for an object that may appear at multiple
-points in a single store operation, looks like;
+points in a single encoding operation, looks like;
 
 .. code-block:: python
 
-    lc.PointerTo(Person)
+    lc.PointerTo(UserDefined(Person))
 
 The library uses these "pointers" to implement graphs, e.g. linked-lists, trees
 and networks.

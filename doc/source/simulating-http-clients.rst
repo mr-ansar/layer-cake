@@ -23,10 +23,11 @@ The test client will use multithreading and multiprocessing to deliver multiple 
 
 The number of threads and processes will be configurable to allow for tuning.
 
-Implementation uses the machine feature within the **layer-cake** library. This style of programming is inspired by finite state
-machines (i.e. FSMs or active objects). Rather than defining a function, a machine is defined as a class. The class accepts
-arguments defined using type hints on the :meth:`__init__()` method, and it returns an instance of a type, defined when
-registering the class with :func:`~.bind()`;
+Implementation uses the machine feature within the **layer-cake** library. This style of programming is inspired by
+finite state machines (i.e. FSMs or active objects). An introduction can be found :ref:`here<functions-and-machines>`.
+
+Rather than defining a function, a machine is defined as a class. The class accepts arguments defined using type hints on
+the :meth:`__init__()` method, and it returns an instance of a type, defined when registering the class with :func:`~.bind()`;
 
 .. code-block:: python
 

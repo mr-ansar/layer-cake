@@ -20,11 +20,12 @@ The **layer-cake** library provides both traditional networking, through the :fu
 functions, and :ref:`publish-subscribe networking<lc-networking-without-network-addresses>` (or just pubsub). To really
 showcase what **layer-cake** can do, this final section on concurrency will focus on the latter.
 
-Pubsub is implemented as a small set of networking components; ``group-cake``, ``host-cake`` and ``lan-cake``. At least
-one of these components must be present for pubsub to work. The use of the first is effectively automated, while the latter
-two need to be installed as part of the operational environment. They play a background role similar to DHCP or dynamic
-DNS. Installation requires a few trivial commands, and then all operation is discreet. The most difficult aspect of pubsub
-is the placement of ``lan-cake``. Further detail appears in the following sections.
+Pubsub is implemented as the :func:`~.publish` and :func:`~.subscribe` pair of functions, and a small set of networking
+components; ``group-cake``, ``host-cake`` and ``lan-cake``. At least one of these components must be present for pubsub
+to work. The use of the first is effectively automated, while the latter two need to be installed as part of the operational
+environment. They play a background role similar to DHCP or dynamic DNS. Installation requires a few trivial commands,
+and then all operation is discreet. The most difficult aspect of pubsub is the placement of ``lan-cake``. Further detail
+appears in the following sections.
 
 A Session With A Published Service
 **********************************
@@ -225,15 +226,15 @@ the worker and that the worker is being put to use by the spool;
 	}
 
 The :ref:`layer-cake<command-reference>` CLI tool is \- among other things \- a process orchestration tool. It provides
-sub-commands for describing a set of processes and sub-commands for initiating those processes, the result of which might be called
-a *composite process*. This concept is strengthened by the discreet inclusion of ``group-cake``, which provides the supporting
+sub-commands for describing a set of processes and sub-commands for initiating those processes, the result of which is known
+as a *composite process*. This concept is strengthened by the discreet inclusion of ``group-cake``, which provides the supporting
 pubsub machinery to bring the :func:`server()` and :func:`worker()` together.
 
 Both :func:`~.publish` and :func:`~.subscribe` are about entering networking information into the pubsub machinery. There is no
 expectation that subscribing will produce an immediate indication of whether a connection has been created. Connections occur
 when matching parties are both present. Even though use of the ``layer-cake`` tool ensures that both processes are started quickly,
-there is no guaranteed ordering, i.e. the subscribing may occur before the publishing. With pubsub these ordering issues are
-irrelevant.
+there is no guaranteed ordering, i.e. the subscribing may occur before the publishing. With pubsub, the non-deterministic
+nature of startup order is of no consequence.
 
 Connecting To Multiple Instances Of A Service
 *********************************************
@@ -423,6 +424,20 @@ at the :func:`server()`. This final implementation takes a more careful approach
 termination of the spool and the subscription. See the following section for notes on configuring a group for automatic
 restarts.
 
+Clients That Fan-Out To Multiple Servers
+****************************************
+
+Through the use of a search pattern in the subscriber, a one-to-many relationship is created between the :func:`~.server` and
+a set of  :func:`~.workers`. Achieving a similar connection graph using traditional :func:`~.listen` and :func:`~.connect` functions
+would be difficult for several reasons. The simplest approach might be to have the workers connect to the central server, but this
+couples the :func:`~.worker` to that specific relationship. In the pubsub solution the workers have no specific knowledge of who
+is establishing a session. Future subscribers can make connnections without disturbing existing relationships, and also without
+requiring any code changes in the :func:`~.worker`.
+
+Arranging for the :func:`~.server` to connect to the :func:`~.workers` would involve an address for every :func:`~.worker`
+instance, making configuration and maintenance more difficult. There would need to be some means of notifying the :func:`~.server`
+of changes to the set of known addresses.
+
 Connecting To Multiple Hosts
 ****************************
 
@@ -561,7 +576,7 @@ A directory with all elements present, and with pubsub sessions displayed, looks
 
 .. code-block:: console
 
-	(.env) toby@seneca:~/../multihosting$ layer-cake network -lc
+	(.env) toby@seneca:~/../multihosting$ layer-cake network --list-connected
 	[LAN] lan-cake (f1a042b8)
 	+   [HOST] host-cake (45199baf)
 	+   +   [PROCESS] test_worker_10.py (87c00a45)
@@ -576,8 +591,10 @@ A directory with all elements present, and with pubsub sessions displayed, looks
 	+   +   +   [LIBRARY] test_worker_10.py (7abbd14c)
 	+   +   [PROCESS] layer-cake (d5be138d)
 
-The ``test_server_10.py`` has opened three sessions to matching publications. Two are local (including a ``LIBRARY`` instance)
-and a third is running on the host at ``192.168.1.13``.
+The ``test_server_10.py`` has opened three ``>`` sessions to matching publications. Two are local and a third is running
+on the host at ``192.168.1.13``. The second listing of a single ``>`` session is related to the presence of the library.
+The session marked with ``(8d3454e3 -> 87e86ddc)`` records the transport used when sending messages to the :class:`~.ProcessObject`
+that are routed to the library process.
 
 Installation and configuration of the directory is mostly automated. The items that cannot be automated are;
 
