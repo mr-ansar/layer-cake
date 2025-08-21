@@ -50,6 +50,8 @@ class CreateFrame(object):
 
 	:param object_type: type to be created
 	:type object_type: :ref:`object type<lc-object-type>`
+	:param args: positional args to be passed on creation
+	:param kw: named values to be passed on creation
 	"""
 	def __init__(self, object_type, *args, **kw):
 		self.object_type = object_type
@@ -99,11 +101,11 @@ GET_RESPONSE_DISPATCH = [
 	Unknown,
 ]
 
-bind_stateless(GetResponse, GET_RESPONSE_DISPATCH, thread='get-response')
+bind_stateless(GetResponse, GET_RESPONSE_DISPATCH, thread='get-response', return_type=Any())
 
 #
 class Delay(Point, Stateless):
-	"""Object that does nothing to specified seconds."""
+	"""Object that does nothing for the specified number of seconds."""
 	def __init__(self, seconds=None):
 		Point.__init__(self)
 		Stateless.__init__(self)
@@ -128,8 +130,17 @@ bind_stateless(Delay, DELAY_DISPATCH, thread='delay')
 
 #
 class Concurrently(Point, Stateless):
-	"""Object that initiates multiple objects and produces list of completions."""
-	def __init__(self, *get, seconds=None):
+	"""
+	Delegated, multi-way request-response.
+
+	Manage one or more concurrent requests. Terminate on completion of full set, or	a timer.
+	Accepts a mixed tuple, i.e. either request-address pairs or :class:`~.CreateFrame` objects.
+
+	:param get: a list of request-address pairs or frames
+	:type get: tuple
+	:param seconds: acceptable delay
+	"""
+	def __init__(self, *get, seconds: float=None):
 		Point.__init__(self)
 		Stateless.__init__(self)
 		self.get = get		# List of object descriptions.
@@ -143,7 +154,7 @@ def Concurrently_Start(self, message):
 
 	def collate(self, response, kv):			# Place the completion in its proper slot.
 		i = kv.i
-		self.orderly[i] = response
+		self.orderly[i] = cast_to(response, self.returned_type)
 		self.count -= 1
 		if self.count < 1:
 			self.complete(self.orderly)
@@ -157,7 +168,7 @@ def Concurrently_Start(self, message):
 			r, s = p
 			a = self.create(GetResponse, r, s)		# Provide the object for simple request-response exchange.
 		else:
-			self.complete(Faulted(f'unexpected collective item [{i}]'))
+			self.complete(Faulted(f'unexpected frame/request [{i}]'))
 
 		self.on_return(a, collate, i=i)
 
@@ -185,7 +196,7 @@ CONCURRENTLY_DISPATCH = [
 	Stop,
 ]
 
-bind_stateless(Concurrently, CONCURRENTLY_DISPATCH, thread='concurrently')
+bind_stateless(Concurrently, CONCURRENTLY_DISPATCH, thread='concurrently', return_type=VectorOf(Any()))
 
 
 #
