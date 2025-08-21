@@ -96,8 +96,9 @@ class TestGetResponse(TestCase):
 
 			selected, i = c.select()
 			assert isinstance(selected, lc.Returned)
-			assert isinstance(selected.message, list)
-			assert isinstance(selected.message[0], lc.Ack)
+			m, p = lc.cast_back(selected.message)
+			assert isinstance(m, list)
+			assert isinstance(m[0], lc.Ack)
 
 	def test_sequentially(self):
 		with lc.channel() as ch:

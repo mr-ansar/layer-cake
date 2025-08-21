@@ -48,14 +48,6 @@ class TestGeneralPurpose(TestCase):
 		d = lc.short_delta(timedelta(days=0.0, seconds=0.25))
 		assert d == '0.2s'
 
-	def test_create_frame(self):
-		g = lc.CreateFrame(f, 10, 1.2, "hello world", a=1, b='hi', c=4.2)
-		assert g.object_type == f
-		assert len(g.args) == 3
-		assert isinstance(g.args[2], str)
-		assert len(g.kw) == 3
-		assert isinstance(g.kw['c'], float)
-
 	def test_spread_out(self):
 		t = lc.spread_out(42.0)
 		assert 42.0 * 0.75 <= t <= 42.0 * 1.25

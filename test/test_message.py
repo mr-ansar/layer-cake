@@ -128,12 +128,13 @@ auto_types = lc.def_type(AutoTypes)
 plain_types = lc.def_type(PlainTypes)
 
 class SpecialTypes(object):
-	def __init__(self, a=None, b=None, c=None, d=None, e=None):
-		self.a = a or auto_types
+	def __init__(self, a=None, b=None, c=None, d=None, e=None, f=None):
+		self.a = a or PlainTypes
 		self.b = b or (3, 5, 7)	 # Will lose the 7.
 		self.c = c or (2, 4, 6)	 # Add the return_proxy
 		self.d = d
-		self.e = {'auto': auto_types, 'plain': plain_types}
+		self.e = {'auto': AutoTypes, 'plain': PlainTypes}
+		self.f = f or []
 
 lc.bind_message(SpecialTypes,
 	a=lc.Type(),
@@ -141,6 +142,7 @@ lc.bind_message(SpecialTypes,
 	c=lc.Address(),
 	d=lc.Any(),
 	e=lc.MapOf(lc.Unicode(), lc.Type()),
+	f=lc.VectorOf(lc.Type()),
 )
 
 class TimeTypes(object):

@@ -70,11 +70,33 @@ class TestCodecJson(TestCase):
 	def test_container(self):
 		assert encode_decode(lc.CodecJson(), ContainerTypes)
 
+	def test_array_of_type(self):
+		c = lc.CodecJson()
+		a = [PlainTypes]
+
+		# Generate the shipment, i.e. a value, an optional
+		# version tag and an optional dict of pointer values.
+		try:
+			s = c.encode(a, lc.VectorOf(lc.Type()))
+		except lc.CodecRuntimeError as e:
+			print(e.note)
+			assert False
+
+		# Recover the application data from the given
+		# shipment.
+		try:
+			b = c.decode(s, lc.VectorOf(lc.Type()))
+		except lc.CodecRuntimeError as e:
+			print(e.note)
+			assert False
+
 	def test_special(self):
 		c = lc.CodecJson(return_proxy=(9,))
 		t = lc.UserDefined(SpecialTypes)
 		r = lc.make(t)
 
+		r.f.append(AutoTypes)
+		r.f.append(ContainerTypes)
 		# Generate the shipment, i.e. a value, an optional
 		# version tag and an optional dict of pointer values.
 		try:
