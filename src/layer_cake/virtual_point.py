@@ -223,7 +223,7 @@ class OnReturned(object):
 		self.args = args
 
 	def __call__(self, point, returned):
-		m, p, a = cast_back(returned.message)
+		m, p, a = un_cast(returned.message)
 		point.returned_type = p
 		return self.routine(point, m, self.args)	# Make the call.
 
@@ -255,7 +255,7 @@ class Point(object):
 		self.received_type = None
 		self.current_state = None
 
-		self.address_job = {}
+		self.address_context = {}
 		self.aborted_message = None
 
 	def create(self, object_type, *args, object_ending=returned_object, **kw):
@@ -381,14 +381,14 @@ class Point(object):
 		message = self.aborted_message or message
 		raise Completion(message)
 
-	def assign(self, address: Address, job=True):
-		"""The specified child object is associated with the specified job, e.g. callback.
+	def assign(self, address: Address, context=True):
+		"""The specified child object is associated with the specified context, e.g. callback.
 
 		:param address: address of the child object
-		:param job: what the child object is doing on behalf of this object
-		:type job: any
+		:param context: what the child object is doing on behalf of this object
+		:type context: any
 		"""
-		self.address_job[address] = job
+		self.address_context[address] = context
 
 	def working(self):
 		"""
@@ -396,10 +396,10 @@ class Point(object):
 
 		:rtype: int
 		"""
-		return len(self.address_job)
+		return len(self.address_context)
 
 	def progress(self, address: Address=None):
-		"""Find the job associated with the specified child object. Return the job or None.
+		"""Find the context associated with the specified child object. Return the context or None.
 
 		If no address is provided the current return address is used.
 
@@ -408,14 +408,14 @@ class Point(object):
 		"""
 		a = address or self.return_address
 		try:
-			j = self.address_job[a]
+			j = self.address_context[a]
 		except KeyError:
 			return None
 		return j
 
 	def running(self):
-		"""Yield a sequence of job, address tuples."""
-		for k, v in self.address_job.items():
+		"""Yield a sequence of context, address tuples."""
+		for k, v in self.address_context.items():
 			yield v, k
 
 	def abort(self, message: Any=None):
@@ -431,30 +431,29 @@ class Point(object):
 		self.aborted_message = message
 		for _, a in self.running():
 			self.send(Stop(), a)
-		n = len(self.address_job)
+		n = len(self.address_context)
 		return n
 
 	def debrief(self, address: Address=None):
 		"""
-		Find the job associated with the child object. Return the job.
+		Find the context associated with the child object. Return the context.
 
 		If no address is provided the current return address is used.
 		If a match is found the record is removed, decrementing the
-		number of active jobs.
+		number of active contexts.
 
 		:param address: address of the child object
 		:rtype: any
 		"""
 		a = address or self.return_address
-		c = self.address_job.pop(a, None)
+		c = self.address_context.pop(a, None)
 		return c
 
 	def on_return(self, address: Address, f, **kw):
 		"""
-		Register a callback, to be executed on termination of the object.
+		Register a callback, to be executed on termination of the specified object.
 
 		:param address: address of the child object
-		:type address: :ref:`address<lc-address>`
 		:param f: the function to be called
 		:type f: function
 		:param kw: named arguments to be saved and presented on the callback
@@ -463,16 +462,14 @@ class Point(object):
 		c = OnReturned(f, Gas(**kw))
 		self.assign(address, c)
 
-	def continuation(self, address, f, args):
+	def continuation(self, address: Address, f, args: Gas):
 		"""
-		Register a chained callback, to be executed on termination of the object.
+		Register a chained callback, to be executed on termination of the specified object.
 
 		:param address: address of the child object
-		:type address: :ref:`address<lc-address>`
 		:param f: the function to be called
 		:type f: function
 		:param args: named arguments saved by a prior :meth:`~.Point.on_return`
-		:type args: dict
 		"""
 		c = OnReturned(f, args)
 		self.assign(address, c)
@@ -743,7 +740,7 @@ class Dispatching(Player):
 		m, t, r = self.pull()
 		self.to_address = t
 		self.return_address = r
-		m, p, a = cast_back(m)
+		m, p, a = un_cast(m)
 		if self.__art__.execution_trace and (not a or a.execution_trace):
 			tag = portable_to_tag(p)
 			self.log(USER_TAG.RECEIVED, f'Received {tag} from <{r[-1]:08x}>')
@@ -762,10 +759,12 @@ class Buffering(Player):
 		"""Construct an instance of Buffering."""
 
 	def save(self, message):
-		"""Retain the [message, to, return] triplet, using values saved during input.
+		"""Pushback the most recent input message.
+
+		Pass the application data that was returned by :meth:`~.Buffering.input`
+		or :meth:`~.Buffering.select`.
 
 		:param message: message to be saved
-		:type message: message object
 		"""
 		self.pushback(message)
 
@@ -780,7 +779,7 @@ class Buffering(Player):
 		m, t, r = self.pull()
 		self.to_address = t
 		self.return_address = r
-		m, p, a = cast_back(m)
+		m, p, a = un_cast(m)
 		if self.__art__.execution_trace and (not a or a.execution_trace):
 			tag = portable_to_tag(p)
 			self.log(USER_TAG.RECEIVED, f'Received {tag} from <{r[-1]:08x}>')
@@ -790,9 +789,18 @@ class Buffering(Player):
 	def is_type(self, p: Portable):
 		return self.received_type is p
 
-	def select(self, *matching, saving=None, seconds=0):
-		"""Expect one of the listed messages, with optional saving and timeout.
+	def select(self, *matching, saving: tuple=None, seconds: float=None):
+		"""Expect one of the listed messages, with optional saving and timeout. Return a 2-tuple.
 
+		Reads the input queue looking for a message matching one of the types
+		listed in ``matching``. The method returns the application-ready data
+		and the ordinal position of the match. Before dropping an unmatched
+		message there is a check against the types listed in ``saving``. A match
+		here results a "push back" of the message onto the input queue.
+
+		For optimum performance the method also accepts the results of :func:`~.select_list`
+		as replacements for ``matching`` and ``saving`` tuples.
+	
 		:param matching: message types to be accepted
 		:type matching: the positional arguments tuple
 		:param saving: message types to be deferred
