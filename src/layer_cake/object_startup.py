@@ -533,7 +533,7 @@ def run_object(home, object_type, word, args, logs, locking):
 			root.select(Returned)
 			root.debrief()
 
-		home.stopped(message)
+	home.stopped(message)
 
 	#if early_return:		# Already sent message. Silence any output.
 	#	return None
