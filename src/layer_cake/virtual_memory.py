@@ -140,7 +140,11 @@ __all__ = [
 ]
 
 class Portable(object):
-	"""Base for all portables."""
+	"""Base for all portables.
+
+	This is the type that is combined with :class:`~.Word` to
+	implement the :class:`~.Any` concept.
+	"""
 
 class Container(Portable):
 	"""The subset of portables that hold zero or more portables."""
@@ -269,9 +273,9 @@ class MapOf(Container):
 		self.value = value
 
 class UserDefined(Container):
-	"""A structure of named elements.
+	"""A function, message class or enum class.
 
-	:param element: registered class
+	:param element: Python reference
 	:type element: :ref:`object type<lc-object-type>`
 	"""
 
@@ -297,7 +301,7 @@ class PointerTo(Container):
 
 class Any(Portable):
 	"""
-	The combination of a :class:`~.Type` and a :class:`~.Word`.
+	The combination of a :class:`~.Portable` and a :class:`~.Word`.
 
 	A portable representation of any registered type (see :func:`~.bind`
 	and :func:`~.def_type`). Suitable for passing across a network
@@ -323,11 +327,9 @@ class Address(Portable):
 class Type(Portable):
 	"""
 	The unique, portable identity of a registered class or function.
-	
-	These are the values that allow type information to pass
-	across a network connection, allowing processes to return
-	:class:`~.Any` type and messaging to send
-	and receive with the same flexibility.
+
+	Transfer a function or class across a network connection. The matching
+	name must exist in the receiver or a :class:`~.TypeNotBound` is created.
 	"""
 
 class Word(Portable):
