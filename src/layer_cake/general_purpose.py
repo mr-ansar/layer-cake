@@ -41,7 +41,6 @@ __all__ = [
 	'breakpath',
 	'output_line',
 	'short_delta',
-	'CreateFrame',
 	'spread_out',
 ]
 
@@ -51,12 +50,15 @@ random.seed()
 #
 #
 class Gas(object):
-	"""Build an object from the specified k-v args, suitable as a global context.
+	"""Build an object from the specified key-value args.
+
+	Create an attribute for each of the named arguments. The
+	values are subsequently available using standard object
+	member access.
 
 	:param kv: map of names and value
 	"""
 	def __init__(self, **kv):
-		"""Convert the named values into object attributes."""
 		for k, v in kv.items():
 			setattr(self, k, v)
 
@@ -108,19 +110,6 @@ def short_delta(d):
 			return t[:i + e] + 's'
 		return t[:i] + 's'
 	return t
-
-#
-class CreateFrame(object):
-	"""
-	Capture values needed for async object creation.
-
-	:param object_type: type to be created
-	:type object_type: :ref:`object type<lc-object-type>`
-	"""
-	def __init__(self, object_type, *args, **kw):
-		self.object_type = object_type
-		self.args = args
-		self.kw = kw
 
 def spread_out(period: float, delta: int=25):
 	'''
