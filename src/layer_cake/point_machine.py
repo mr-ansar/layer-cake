@@ -62,7 +62,7 @@ class Stateless(Machine):
 	def transition(self, message):
 		art = self.__art__
 		shift, messaging = art.value
-		m, p, a = cast_back(message)
+		m, p, a = un_cast(message)
 		s = portable_to_signature(p)
 		f = shift.get(s, None)			# Explicit match.
 		if f:
@@ -132,7 +132,7 @@ class StateMachine(Machine):
 	def transition(self, state, message):
 		art = self.__art__
 		shift, messaging = art.value
-		m, p, a = cast_back(message)
+		m, p, a = un_cast(message)
 		s = portable_to_signature(p)
 		shifted = shift.get(state, None)
 		if shifted is None:
