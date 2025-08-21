@@ -29,6 +29,7 @@
 .. autoclass:: Stop
 """
 
+import re
 from .virtual_memory import *
 from .message_memory import *
 from .convert_signature import *
@@ -61,7 +62,8 @@ __all__ = [
 	'ToBeConfirmed',
 	'SelectTable',
 	'select_list',
-	'select_list_adhoc'
+	'select_list_adhoc',
+	'ReForm',
 ]
 
 #
@@ -79,18 +81,9 @@ class Returned(object):
 	"""
 	def __init__(self, message: Any=None):
 		self.message = message
-	
-	def value(self):
-		"""
-		Extract the Python value from the returned message.
 
-		:rtype: the expected, application data
-		"""
-		m, p, a = cast_back(self.message)
-		return m
-	
 	def cast_back(self):
-		m, p, a = cast_back(self.message)
+		m, p = cast_back(self.message)
 		return m, p
 
 bind_message(Start)
@@ -340,7 +333,7 @@ class SelectTable(object):
 		self.messaging = messaging
 
 	def find(self, message):
-		m, p, a = cast_back(message)
+		m, p, a = un_cast(message)
 		s = portable_to_signature(p)
 		f = self.unique.get(s, None)		# Explicit match.
 		if f:
@@ -357,7 +350,13 @@ class SelectTable(object):
 		return None
 
 def select_list(*selection):
-	'''.'''
+	"""Compile the list of types into an object suitable for :meth:`~.Point.select`.
+
+	Prepare a lookup table for efficient matching of received messages. This is used
+	to create global materials during loading.
+
+	:param selection: message types to be included
+	"""
 	unique = {}
 	messaging = {}
 	for i, t in enumerate(selection):
@@ -379,3 +378,43 @@ def select_list_adhoc(*selection):
 		if isinstance(p, UserDefined):
 			messaging[p.element] = (i, p)
 	return SelectTable(unique, messaging)
+
+
+#
+#
+class ReForm(object):
+	"""Text forms based on re's embedded in character decoration.
+
+	Form is expected as plain text with "{name}" fields. The
+	fields are replaced with matching values from entry. The
+	compile_form() method does all the prep. Returns a 2-tuple of
+	compiled pattern and a list of the field names that can be
+	extracted from a match.
+
+	e.g. '/{resource}(/{identity})?', resource='\\w+'...
+
+	:param form: the text form
+	:param entry: dict of named re's
+	"""
+	def __init__(self, form: str=None, **entry):
+		self.form = form
+		self.entry = entry
+
+	def entry_names(self):
+		s = [s for s in self.entry.keys()]
+		s.sort()
+		return s
+
+	def compile_form(self):
+		form = self.form
+		if form is None:
+			return None, None
+
+		entry = self.entry
+		sr = {k: f'(?P<{k}>{v})' for k, v in entry.items()}
+		formatted = form.format(**sr)
+		search = re.compile(formatted)
+
+		return search, self.entry_names()
+
+bind_message(ReForm, entry=MapOf(Unicode(),Unicode()))
