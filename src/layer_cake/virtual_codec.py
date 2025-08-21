@@ -99,6 +99,7 @@ __all__ = [
 	'w2p_uuid',
 	'w2p_enumeration',
 	'w2p_type',
+	'w2p_portable',
 	'w2p_any',
 
 	'p2w_string',
@@ -110,6 +111,7 @@ __all__ = [
 	'p2w_uuid',
 	'p2w_enumeration',
 	'p2w_type',
+	'p2w_portable',
 	'p2w_any',
 ]
 
@@ -341,6 +343,13 @@ def p2w_pointer(c, p, t):
 	return a[0]
 
 def p2w_type(c, p, t):
+	if isinstance(p, TypeNotBound):
+		return p.module_name
+	b = p.__art__
+	w = b.path
+	return w
+
+def p2w_portable(c, p, t):
 	if isinstance(p, Portable):
 		w = portable_to_signature(p)
 	elif p is None:
@@ -401,7 +410,7 @@ def p2w_any(c, p, t):
 		s = c.any_stack
 		s.append(set())
 		u = UserDefined(type(p))
-		type_name = python_to_word(c, u, Type())
+		type_name = python_to_word(c, u, Portable())
 		encoded_word = python_to_word(c, p, u)
 		n = s.pop()
 		s[-1].update(n)
@@ -410,7 +419,7 @@ def p2w_any(c, p, t):
 	elif isinstance(p, tuple) and len(p) == 2 and isinstance(p[1], Portable):	# An anonymous type.
 		s = c.any_stack
 		s.append(set())
-		type_name = python_to_word(c, p[1], Type())
+		type_name = python_to_word(c, p[1], Portable())
 		encoded_word = python_to_word(c, p[0], p[1])
 		n = s.pop()
 		s[-1].update(n)
@@ -452,7 +461,7 @@ p2w = {
 	(dict, MapOf): p2w_map,
 	(deque, DequeOf): p2w_deque,
 	(TypeType, Type): p2w_type,
-	(Portable, Type): p2w_type,
+	(Portable, Portable): p2w_portable,
 	(tuple, TargetAddress): p2w_target,
 	(tuple, Address): p2w_address,
 
@@ -687,7 +696,17 @@ def w2p_pointer(c, a, t):
 	c.decoded_pointer[a] = p
 	return p
 
+class TypeNotBound:
+	def __init__(self, module_name: str=None):
+		self.module_name = module_name
+
+bind_message(TypeNotBound)
+
 def w2p_type(c, w, t):
+	p = decode_type(w)
+	return p or TypeNotBound(module_name=w)
+
+def w2p_portable(c, w, t):
 	p = lookup_signature(w)
 	if p is None:
 		raise ValueError(f'unknown type "{w}"')
@@ -887,6 +906,7 @@ w2p = {
 	(dict, UserDefined): w2p_message,
 	(list, Any): w2p_any,
 	(str, Type): w2p_type,
+	(str, Portable): w2p_portable,
 
 	# Support for Word, i.e. passthru anything
 	# that could have been produced by generic
@@ -933,6 +953,7 @@ w2p = {
 	# (NoneType, DequeOf): pass_thru,
 	(NoneType, PointerTo): pass_thru,
 	(NoneType, Type): pass_thru,
+	(NoneType, Portable): pass_thru,
 	(NoneType, TargetAddress): pass_thru,
 	(NoneType, Address): pass_thru,
 	(NoneType, Word): pass_thru,
