@@ -48,6 +48,7 @@ __all__ = [
 	'install_hints',
 	'def_type',
 	'cast_to',
+	'un_cast',
 	'cast_back',
 	'bool_type',
 	'int_type',
@@ -338,7 +339,7 @@ def def_type(hint_or_portable):
 	hints into :class:`~.Portable` equivalents.
 
 	:param hint_or_portable: a type description
-	:type hint_or_portable: :ref:`tip<layer-cake-type-reference>`
+	:type hint_or_portable: :ref:`tip<type-reference>`
 	"""
 	p = install_type(hint_or_portable)
 	return p
@@ -357,12 +358,12 @@ def cast_to(value, p: Portable):
 		return value
 	return (value, p)
 
-def cast_back(message: Any):
+def un_cast(message: Any):
 	"""
 	Accept the results of a :func:`~.cast_to` or network receive. Returns a 3-tuple.
 
-	Splits the portable form into an application value, portable representation and
-	the technical details registered at runtime.
+	Splits the :ref:`message<lc-message>` into an application value, portable
+	representation and the technical details registered at runtime.
 
 	:param message: the portable data
 	"""
@@ -378,6 +379,27 @@ def cast_back(message: Any):
 	else:
 		raise ValueError(f'cannot unroll {message}')
 	return value, p, art
+
+def cast_back(message: Any):
+	"""
+	Accept the results of a :func:`~.cast_to` or network receive. Returns a 2-tuple.
+
+	Splits the :ref:`message<lc-message>` into an application value and a portable type.
+
+	:param message: class instance or constructed
+	"""
+	if message is None:
+		return None, Any()
+	art = getattr(message, '__art__', None)
+	if art:
+		value = message
+		p = lookup_signature(art.path)
+	elif isinstance(message, tuple) and len(message) == 2 and isinstance(message[1], Portable):
+		value = message[0]
+		p = message[1]
+	else:
+		raise ValueError(f'cannot unroll {message}')
+	return value, p
 
 bool_type = def_type(Boolean())
 int_type = def_type(Integer8())
