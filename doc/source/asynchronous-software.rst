@@ -170,6 +170,14 @@ parameter identifying the executable to be loaded. Remaining arguments are forwa
 argument strings. On exit of the process, a return value is decoded from ``stdout`` and inserted into the
 termination notification.
 
+The :class:`~.ProcessObject` acts as a proxy for the platform process that it creates. A :class:`~.Stop`
+can be sent to that proxy at any time and the proxy responds by sending a platform signal (e.g. ``SIGINT``)
+to the underlying process. There is an expectation that this will result in the termination of that process.
+
+All processes created by a **layer-cake** process are tracked. If lingering processes are detected during
+termination, the framework takes on the responsibility of sending the :class:`~.Stop` messages and
+waiting for the platform notifications of their subsequent exit.
+
 .. _lc-sending-messages-across-networks:
 
 Sending Messages Across Networks
