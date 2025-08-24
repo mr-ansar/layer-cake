@@ -149,6 +149,14 @@ the processing of the request will look like;
 The connection from ``curl`` is accepted, and is immediately followed by the inbound request. The :func:`server` responds
 with a table and the connection is terminated.
 
+.. note::
+
+	A `RESTful <https://en.wikipedia.org/wiki/REST>`_ style of interfacing is supported through
+	the :class:`~.ReForm` and :class:`~.ResourceDispatch` classes. Refer to the ``test_server_resource.py``
+	module, in the current folder, for an example of the related resource-based dispatching. Also,
+	this `reference information <https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven>`_
+	might be useful.
+
 Declaring An API
 ****************
 
@@ -261,9 +269,9 @@ Message-driven software inevitably includes message dispatching code;
 	else:
 		continue
 
-The lack of a ``switch`` statement in Python is a little unfortunate. **Layer-cake** includes the concept of machines, which tackles the issue of
-dispatching head on. A guide to the definition of machines can be found :ref:`here<functions-and-machines>`. A machine approach has also been
-used for the creation of a :ref:`test client<simulating-http-clients>`.
+Which can become cumbersome especially when mixed with loops. Use of ``match-case`` might produce clearer code. **Layer-cake**
+includes the concept of machines, which tackles the issue of dispatching head on. A guide to the definition of machines can be
+found :ref:`here<functions-and-machines>`. A machine approach has also been adopted for the creation of a :ref:`test client<simulating-http-clients>`.
 
 Perhaps the most important aspect to this initial implementation is the fundamentally asynchronous approach to the processing of an HTTP
 request message. HTTP clients are restricted to a synchronous, request-response interaction with HTTP servers. There is no such constraint

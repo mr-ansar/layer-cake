@@ -260,6 +260,7 @@ HTTP Integration
 .. autoclass:: ResourceDispatch
 .. automethod:: ResourceDispatch.add
 .. automethod:: ResourceDispatch.lookup
+.. automethod:: ResourceDispatch.__call__
 
 Composite Processes
 *******************
