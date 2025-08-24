@@ -85,20 +85,13 @@ class HttpResponse(object):
 	:param header: name-value pairs
 	:param body: payload, value
 	"""
-	def __init__(self, http: str=None, status_code: int=200, reason_phrase: str=None, header: dict[str,str]=None, body: bytearray=None,
-			plain_text=None, application_json=None):
+	def __init__(self, http: str=None, status_code: int=200, reason_phrase: str=None,
+			header: dict[str,str]=None, body: bytearray=None):
 		self.http = http or 'HTTP/1.1'
 		self.status_code = status_code
 		self.reason_phrase = reason_phrase or 'OK'
 		self.header = header or {}
 		self.body = body
-
-		if plain_text is not None:
-			self.header['Content-Type'] = 'plain/text'
-			self.body = plain_text.encode('utf-8')
-		elif application_json is not None:
-			self.header['Content-Type'] = 'application/json'
-			self.body = application_json.encode('utf-8')
 
 bind(HttpRequest)
 bind(HttpResponse)
@@ -173,15 +166,15 @@ def decode_body(portable):
 	return decode
 
 def cannot_be_dispatched(self, request=None, error=None):
-	cannot = f'Cannot map request [{request.method}] "{request.request}"'
-	self.warning(cannot, error=error, **request.form_entry)
-	return Faulted(condition=cannot, explanation=error, error_code=400)
+	cannot = f'Cannot map request [{request.method}] "{request.request}" ({error})'
+	self.warning(cannot, **request.form_entry)
+	return HttpResponse(status_code=400, reason_phrase='Bad Request', body=cannot)
 
 def cannot_be_converted(self, request=None, error=None):
 	c = ','.join([f'{k}={v}' for k, v in request.form_entry.items()])
-	cannot = f'Cannot complete conversion "{c}"'
-	self.warning(cannot, error=error)
-	return Faulted(condition=cannot, explanation=error, error_code=400)
+	cannot = f'Cannot complete conversion "{c}" ({error})'
+	self.warning(cannot)
+	return HttpResponse(status_code=400, reason_phrase='Bad Request', body=cannot)
 
 class ResourceDispatch(object):
 	'''Build up the info needed to dispatch from FormRequest to function.
@@ -637,6 +630,7 @@ class ApiServerStream(object):
 		restful = search_subs is not None
 
 		content_json = {'Content-Type': 'application/json'}
+		content_text = {'Content-Type': 'plain/text'}
 		if isinstance(m, Faulted):
 			status_code, reason_phrase = faulted_status(m.error_code)
 			e = codec.encode(m, Any())
@@ -653,22 +647,31 @@ class ApiServerStream(object):
 				header=content_json,
 				body=body, restful=restful)
 		elif m.body is not None:
-			# Body is declared to be Any but some fairly awful special-case
-			# handling to be aware of.
-			if isinstance(m.body, str):
+			# Special case handling; allow sending of text and
+			# specific content type and payload.
+			if isinstance(m.body, bytearray):
+				if 'Content-Type' not in m.header:
+					body = f'Custom response but "Content-Type" not specified'.encode('utf-8')
+					stream_response(encoded_bytes, status_code=500, reason_phrase='Server Error',
+						header=content_text, body=body, restful=restful)
+					return
+				stream_response(encoded_bytes,
+					http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
+					header=m.header, body=m.body, restful=restful)
+				return
+			elif isinstance(m.body, str):
 				m.header['Content-Type'] = 'plain/text'
 				body = m.body.encode('utf-8')
 				stream_response(encoded_bytes,
 					http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
 					header=m.header, body=body, restful=restful)
 				return
-			b, p = cast_back(m.body)
-			if isinstance(p, Block) and 'Content-Type' in m.header:
-				body = b
-			else:
-				m.header['Content-Type'] = 'application/json'
-				e = codec.encode(m.body, Any())
-				body = e.encode('utf-8')
+
+			# Standard processing. The body is an instance of Any,
+			# i.e. either a class instance or a constructed type.
+			m.header['Content-Type'] = 'application/json'
+			e = codec.encode(m.body, Any())
+			body = e.encode('utf-8')
 			stream_response(encoded_bytes,
 				http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
 				header=m.header, body=body, restful=restful)
