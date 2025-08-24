@@ -1035,7 +1035,7 @@ def directory_at_lan():
 	if not d:
 		return None
 
-	m = four_octets.match(d)
+	m = four_octets.fullmatch(d)
 	if not m:
 		return None
 
@@ -1246,7 +1246,7 @@ class ObjectDirectory(Threaded, StateMachine):
 	def find_subscribers(self, published: Published):
 		# Turn a search into a flat list of matching subscribers.
 		for k, v in self.subscribed_search.items():
-			m = v[1].match(published.name)
+			m = v[1].fullmatch(published.name)
 			if m:
 				for s in v[0].values():
 					yield s[0]
@@ -1258,7 +1258,7 @@ class ObjectDirectory(Threaded, StateMachine):
 			return
 		machine = sr[1]
 		for k, lp in self.published_name.items():
-			m = machine.match(k)
+			m = machine.fullmatch(k)
 			if m:
 				yield lp[0]
 
