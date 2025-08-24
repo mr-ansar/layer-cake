@@ -49,6 +49,7 @@ __all__ = [
 	'decode_resource',
 	'decode_body',
 	'cannot_be_dispatched',
+	'cannot_be_converted',
 	'ResourceDispatch',
 	'ApiServerStream',
 	'ApiClientStream',
@@ -176,6 +177,12 @@ def cannot_be_dispatched(self, request=None, error=None):
 	self.warning(cannot, error=error, **request.form_entry)
 	return Faulted(condition=cannot, explanation=error, error_code=400)
 
+def cannot_be_converted(self, request=None, error=None):
+	c = ','.join([f'{k}={v}' for k, v in request.form_entry.items()])
+	cannot = f'Cannot complete conversion "{c}"'
+	self.warning(cannot, error=error)
+	return Faulted(condition=cannot, explanation=error, error_code=400)
+
 class ResourceDispatch(object):
 	'''Build up the info needed to dispatch from FormRequest to function.
 
@@ -216,33 +223,58 @@ class ResourceDispatch(object):
 			method = HttpMethod[request.method]
 			expected = tuple(request.form_entry[s] is not None for s in self.entry_names)
 			key = (resource, method, *expected)
-			t = self.call_frame.get(key, None)
-			if t is None:
-				return None
-			f, args = t
-			a = {}
-			for k, c in args.items():
-				if k == 'header':
-					value = c(request.header)
-				elif k == 'http':
-					value = c(request.http)
-				elif k == 'body':
-					value = c(request.body, UserDefined(resource))
-				elif c is None:
-					continue
-				else:
-					matched = request.form_entry[k]
-					value = c(matched) 
-				a[k] = value
+			call = self.call_frame.get(key, None)
+			if call is None:
+				f = cannot_be_dispatched
+				a = {
+					'request': request,
+					'error': 'no matching call signature',
+				}
+				return f, a
 		except (ValueError, IndexError, KeyError) as e:
 			s = str(e)
 			f = cannot_be_dispatched
+			a = {
+				'request': request,
+				'error': 'unusable resource, method or URI',
+			}
+			return f, a
+
+		try:
+			f, args = call
+			a = {}
+			for k, c in args.items():
+				if k == 'header':
+					value = request.header if c is None else c(request.header)
+				elif k == 'http':
+					value = request.http if c is None else c(request.http)
+				elif k == 'body':
+					value = request.body if c is None else c(request.body, UserDefined(resource))
+				else:
+					entry = request.form_entry[k]
+					value = entry if c is None else c(entry) 
+				a[k] = value
+		except (ValueError, IndexError, KeyError, TypeError) as e:
+			s = str(e)
+			f = cannot_be_converted
 			a = {
 				'request': request,
 				'error': s,
 			}
 		return f, a
 
+	def __call__(self, layer, request: FormRequest):
+		'''Resolve the request to a function and call it.
+
+		Make the call to lookup() and execute the resulting call materials.
+		If the result of that call is not a None - send it on to the
+		original client.
+		'''
+		return_address = layer.return_address
+		resource_function, entry_args = self.lookup(request)
+		response = resource_function(layer, **entry_args)
+		if response is not None:
+			layer.send(response, return_address)
 
 # Conversion of messages to on-the-wire blocks, and back again.
 # Sync HTTP request-response, fully typed (HTTP body).
@@ -274,6 +306,7 @@ PENDING_REQUESTS = 256
 
 SERVER_SLASH_VERSION = 'Layer-Cake-API-server/1.0'
 CLIENT_SLASH_VERSION = 'Layer-Cake-API-client/1.0'
+SERVER_REST_VERSION = 'Layer-Cake-REST-server/1.0'
 
 LARGE_BODY = 256 * 1024
 
@@ -312,7 +345,7 @@ def stream_request(encoded_bytes, method=None, request_uri=None, http=None, head
 
 # Stream the representation of an HTTP response onto the
 # byte sequence provided.
-def stream_response(encoded_bytes, http=None, status_code=200, reason_phrase=None, header=None, body=None):
+def stream_response(encoded_bytes, http=None, status_code=200, reason_phrase=None, header=None, body=None, restful=False):
 	http = http or 'HTTP/1.1'
 	header = header or {}
 	now = world_now()
@@ -321,16 +354,17 @@ def stream_response(encoded_bytes, http=None, status_code=200, reason_phrase=Non
 	if reason_phrase is None:
 		status_code, reason_phrase = faulted_status(status_code)
 
+	server_version = SERVER_SLASH_VERSION if not restful else SERVER_REST_VERSION
 	if body:
 		content_length = len(body)
 		response = (f'{http} {status_code} {reason_phrase}\r\n'
 			f'Date: {date}\r\n'
-			f'Server: {SERVER_SLASH_VERSION}\r\n'
+			f'Server: {server_version}\r\n'
 			f'Content-Length: {content_length}\r\n')
 	else:
 		response = (f'{http} {status_code} {reason_phrase}\r\n'
 			f'Date: {date}\r\n'
-			f'Server: {SERVER_SLASH_VERSION}\r\n'
+			f'Server: {server_version}\r\n'
 			f'Content-Length: 0\r\n')
 
 	if header:
@@ -599,27 +633,35 @@ class ApiServerStream(object):
 		transport = self.transport
 		encoded_bytes = transport.encoded_bytes
 		codec = transport.codec
+		search_subs = self.transport.parent.search_subs
+		restful = search_subs is not None
 
-		header = {'Content-Type': 'application/json'}
+		content_json = {'Content-Type': 'application/json'}
 		if isinstance(m, Faulted):
 			status_code, reason_phrase = faulted_status(m.error_code)
 			e = codec.encode(m, Any())
 			body = e.encode('utf-8')
 			stream_response(encoded_bytes,
 				status_code=status_code, reason_phrase=reason_phrase,
-				header=header,
-				body=body)
+				header=content_json,
+				body=body, restful=restful)
 		elif not isinstance(m, HttpResponse):
 			e = codec.encode(m, Any())
 			body = e.encode('utf-8')
 			stream_response(encoded_bytes,
 				status_code=200, reason_phrase='OK',
-				header=header,
-				body=body)
+				header=content_json,
+				body=body, restful=restful)
 		elif m.body is not None:
-			# Body is declared to be Any but if that happens to be a Block
-			# and there is a specific content type then assume that the
-			# body is ready-to-send.
+			# Body is declared to be Any but some fairly awful special-case
+			# handling to be aware of.
+			if isinstance(m.body, str):
+				m.header['Content-Type'] = 'plain/text'
+				body = m.body.encode('utf-8')
+				stream_response(encoded_bytes,
+					http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
+					header=m.header, body=body, restful=restful)
+				return
 			b, p = cast_back(m.body)
 			if isinstance(p, Block) and 'Content-Type' in m.header:
 				body = b
@@ -629,11 +671,11 @@ class ApiServerStream(object):
 				body = e.encode('utf-8')
 			stream_response(encoded_bytes,
 				http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
-				header=m.header, body=body)
+				header=m.header, body=body, restful=restful)
 		else:
 			stream_response(encoded_bytes,
 				http=m.http, status_code=m.status_code, reason_phrase=m.reason_phrase,
-				header=m.header)
+				header=m.header, restful=restful)
 
 	# Complete zero or more messages, using the given block.
 	def recover_message(self, received, sockets):
@@ -722,12 +764,12 @@ class ApiServerStream(object):
 
 			if search_subs:
 				search, subs = search_subs
-				match = search.match(request)
+				match = search.fullmatch(request)
 				if match:
 					form_entry = {s: match[s] for s in subs}
 					message = FormRequest(method, request, form_entry, http, header, body)
 					return message, to_address, return_address
-				raise ValueError(f'request URI "{request}" does not match form')
+				raise ValueError(f'request URI does not match form')
 
 			elif not request.startswith('/') or len(request) < 2:
 				raise ValueError(f'unexpected request URI "{request}"')
@@ -826,8 +868,7 @@ class ApiServerStream(object):
 		except (ValueError, ConversionError) as e:
 			s = str(e)
 			s = f'cannot recover request "{request}" ({s})'
-			message = HttpResponse(status_code=400, reason_phrase='Bad Request',
-					plain_text=s)
+			message = HttpResponse(status_code=400, reason_phrase='Bad Request', body=s)
 			return message, return_address, to_address
 
 		# Default is to pass on any request that parsed correctly
@@ -868,7 +909,7 @@ def ApiClientSession_READY_Unknown(self, message):
 			#t = tof(message)
 			self.warning(f'message "tof" from HTTP server has no matching request')
 	elif len(self.pending) > PENDING_REQUESTS:
-		self.reply(HttpResponse(status_code=400, reason_phrase='Client Error', body=b'Request queue overflow'))
+		self.reply(HttpResponse(status_code=400, reason_phrase='Client Error', body='Request queue overflow'))
 	else:
 		mtr = (message, self.received_type, self.return_address)				# Request from local client.
 		self.pending.append(mtr)							# Remember.
@@ -1274,9 +1315,7 @@ class ApiClientStream(object):
 				client_error = f'unexpected body "{s}"'
 
 		if client_error:
-			message = HttpResponse(http=http, status_code=500, reason_phrase='Server Error',
-				header={'Content-Type': 'plain/text'},
-				body=client_error.encode('utf-8'))
+			message = HttpResponse(http=http, status_code=500, reason_phrase='Server Error', body=client_error)
 			return message, to_address, return_address
 
 		return message, to_address, return_address
